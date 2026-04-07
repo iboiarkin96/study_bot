@@ -1,0 +1,42 @@
+@startuml
+title ETR - Review/Retrieve Sequence (Smart UML)
+
+autonumber
+skinparam shadowing false
+skinparam linetype ortho
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 100
+
+actor Client
+participant "HTTP Handler\n(domains/http/handlers.py)" as Http
+participant "LogicEndpoints\n(domains/general/logic_endpoints.py)" as Logic
+participant "ConspectusService\n(services.py)" as Service
+database "SQLite Session\n(database.py + SQLAlchemy)" as Db
+
+Client -> Http: POST /api/v1/conspectuses/{id}/review\n(tag=easy|hard|forgot)
+activate Http
+Http -> Logic: review_conspectus(...)
+activate Logic
+Logic -> Service: mark_retrieval(user_id, id, tag, notes)
+activate Service
+Service -> Db: SELECT current_slot
+Db --> Service: current_slot
+
+alt tag == easy
+  Service -> Service: to_slot = NEXT_SLOT[current_slot]
+else tag in {hard, forgot}
+  Service -> Service: to_slot = "A"
+end
+
+Service -> Service: next_review_at = now + SLOT_TO_DELAY_DAYS[to_slot]
+Service -> Db: UPDATE conspectus(slot, next_review_at)
+Service -> Db: INSERT retrieval_log(from_slot, to_slot, tag)
+Db --> Service: committed
+Service --> Logic: {"from_slot","to_slot","next_review_at"}
+deactivate Service
+Logic --> Http: response payload
+deactivate Logic
+Http --> Client: 200 OK\nReviewResponse
+deactivate Http
+
+@enduml

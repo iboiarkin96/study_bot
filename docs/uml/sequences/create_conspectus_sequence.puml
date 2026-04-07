@@ -1,0 +1,31 @@
+@startuml
+title ETR - Create Conspectus Sequence (Smart UML)
+
+autonumber
+skinparam shadowing false
+skinparam linetype ortho
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 100
+
+actor Client
+participant "HTTP Handler\n(domains/http/handlers.py)" as Http
+participant "LogicEndpoints\n(domains/general/logic_endpoints.py)" as Logic
+participant "ConspectusService\n(services.py)" as Service
+database "SQLite Session\n(database.py + SQLAlchemy)" as Db
+
+Client -> Http: POST /api/v1/conspectuses\n(CreateConspectusRequest)
+activate Http
+Http -> Logic: create_conspectus(...)
+activate Logic
+Logic -> Service: create_conspectus(user_id, payload)
+activate Service
+Service -> Db: INSERT conspectus\nslot=A, next_review_at=calc()
+Db --> Service: conspectus_id
+Service --> Logic: {"conspectus_id", "message"}
+deactivate Service
+Logic --> Http: response payload
+deactivate Logic
+Http --> Client: 201 Created\nCreateConspectusResponse
+deactivate Http
+
+@enduml

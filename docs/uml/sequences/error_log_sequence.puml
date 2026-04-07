@@ -1,0 +1,31 @@
+@startuml
+title ETR - Error Log Sequence (Smart UML)
+
+autonumber
+skinparam shadowing false
+skinparam linetype ortho
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 100
+
+actor Client
+participant "HTTP Handler\n(domains/http/handlers.py)" as Http
+participant "LogicEndpoints\n(domains/general/logic_endpoints.py)" as Logic
+participant "ErrorLogService\n(services.py)" as Service
+database "SQLite Session\n(database.py + SQLAlchemy)" as Db
+
+Client -> Http: POST /api/v1/errors\n(ErrorLogCreateRequest)
+activate Http
+Http -> Logic: create_error_log(...)
+activate Logic
+Logic -> Service: add(user_id, conspectus_id, ...)
+activate Service
+Service -> Db: INSERT error_log
+Db --> Service: committed
+Service --> Logic: success
+deactivate Service
+Logic --> Http: {"message":"Error log saved."}
+deactivate Logic
+Http --> Client: 201 Created
+deactivate Http
+
+@enduml

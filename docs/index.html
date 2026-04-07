@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ETR Study API — Постановка и требования</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f9fc;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --accent: #2563eb;
+      --line: #dbe3ef;
+      --ok: #166534;
+      --warn: #9a3412;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 20px 80px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 2rem;
+    }
+
+    h2 {
+      margin: 28px 0 12px;
+      font-size: 1.35rem;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      margin: 22px 0 8px;
+      font-size: 1.05rem;
+      color: var(--accent);
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    .lead {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 12px 0;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 8px 22px;
+    }
+
+    code {
+      background: #eef2ff;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.92em;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto;
+      border: 1px solid #1e293b;
+      font-size: 0.9rem;
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 10px;
+      margin: 2px 6px 2px 0;
+      font-size: 0.85rem;
+      background: #f8fbff;
+    }
+
+    .ok {
+      color: var(--ok);
+    }
+
+    .warn {
+      color: var(--warn);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: #f1f5f9;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .diagram {
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      margin: 8px 0 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>ETR Study API — Постановка и требования</h1>
+    <p class="lead">
+      Документ фиксирует постановку задачи, границы сервиса, требования и ключевые сценарии для backend-сервиса ETR
+      (Extract–Transform–Retrieve) на FastAPI + SQLite + SQLAlchemy.
+    </p>
+
+    <section>
+      <h2>1. Постановка задачи</h2>
+      <div class="card">
+        <p><strong>Цель продукта:</strong> предоставить API для управления учебным процессом по методике ETR и
+          контролировать интервальные повторения через слоты A/B/C/D.</p>
+        <p><strong>Проблема:</strong> пользователю сложно системно закреплять материал и вести журнал ошибок после
+          сессий повторения.</p>
+        <p><strong>Решение:</strong> сервис хранит структуру конспекта (Extract/Transform), управляет сценариями
+          Retrieve, перемещает карточки по слотам и ведет Error Log.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Контекст и границы</h2>
+      <div class="card">
+        <p><strong>Входит в scope:</strong></p>
+        <ul>
+          <li>регистрация/обновление пользователя;</li>
+          <li>создание и просмотр конспектов;</li>
+          <li>получение конспектов, готовых к повторению;</li>
+          <li>перемещение между слотами по тегам <code>easy</code>/<code>hard</code>/<code>forgot</code>;</li>
+          <li>ведение журнала ошибок;</li>
+          <li>предоставление рекомендованного расписания ETR.</li>
+        </ul>
+        <p><strong>Вне scope (текущая версия):</strong> авторизация, многопользовательские роли, push-уведомления,
+          аналитика прогресса, файловые вложения.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. Архитектурная декомпозиция</h2>
+      <div class="card">
+        <p>Сервис разделен на два домена обработчиков и общий доменный слой:</p>
+        <p>
+          <span class="badge">domains/general/logic_endpoints.py</span>
+          <span class="badge">domains/http/handlers.py</span>
+          <span class="badge">domains/telegram/handlers.py</span>
+        </p>
+        <ul>
+          <li><strong>General endpoints:</strong> переиспользуемая бизнес-логика, независимая от транспорта.</li>
+          <li><strong>HTTP handlers:</strong> FastAPI-адаптер (валидация, OpenAPI, HTTP-коды).</li>
+          <li><strong>Telegram handlers:</strong> Telegram-адаптер (формат команд/ответов).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. Функциональные требования</h2>
+
+      <h3>FR-1. Управление пользователями</h3>
+      <div class="card">
+        <ul>
+          <li>Сервис должен создавать пользователя при первом обращении по <code>telegram_user_id</code>.</li>
+          <li>Сервис должен обновлять <code>username</code>, <code>full_name</code>, <code>timezone</code> при повторной
+            регистрации.</li>
+          <li>Сервис использует внутренний <code>user_id</code> для дальнейших вызовов.</li>
+        </ul>
+      </div>
+
+      <h3>FR-2. Создание конспекта</h3>
+      <div class="card">
+        <ul>
+          <li>Конспект обязан содержать Extract-поля: ключевые слова, вопросы/пробелы, подсказки.</li>
+          <li>Конспект обязан содержать Transform-поля: плотный абзац из 5–7 пунктов.</li>
+          <li>При создании запись должна попадать в слот <code>A</code> и получить <code>next_review_at</code>.</li>
+        </ul>
+      </div>
+
+      <h3>FR-3. Сценарии Retrieve</h3>
+      <div class="card">
+        <ul>
+          <li>Сервис возвращает список конспектов, срок повторения которых наступил (<code>due</code>).</li>
+          <li>Сервис должен обновлять слот по тегу:
+            <ul>
+              <li><code>easy</code> → следующий слот (A→B→C→D);</li>
+              <li><code>hard</code>/<code>forgot</code> → возврат в слот A.</li>
+            </ul>
+          </li>
+          <li>Каждый акт повторения должен логироваться в <code>retrieval_logs</code>.</li>
+        </ul>
+      </div>
+
+      <h3>FR-4. Журнал ошибок</h3>
+      <div class="card">
+        <ul>
+          <li>Сервис должен сохранять: вопрос/ключ, ошибочный ответ, исправленный ответ.</li>
+          <li>Сервис должен возвращать последние N ошибок в порядке от новых к старым.</li>
+        </ul>
+      </div>
+
+      <h3>FR-5. Сводка и расписание</h3>
+      <div class="card">
+        <ul>
+          <li>Сервис должен отдавать распределение активных конспектов по слотам A/B/C/D.</li>
+          <li>Сервис должен предоставлять рекомендованное расписание ETR-сессии.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. Нефункциональные требования</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Категория</th>
+              <th>Требование</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Производительность</td>
+              <td>Типовые API-запросы должны обрабатываться менее чем за 300 мс при локальной БД и малой нагрузке.</td>
+            </tr>
+            <tr>
+              <td>Надежность</td>
+              <td>Операции записи выполняются транзакционно; при ошибке должна быть выполнена rollback-семантика.</td>
+            </tr>
+            <tr>
+              <td>Поддерживаемость</td>
+              <td>Логика транспорта отделена от бизнес-логики; общий слой должен быть переиспользуемым.</td>
+            </tr>
+            <tr>
+              <td>Расширяемость</td>
+              <td>Новые каналы доставки (CLI, gRPC, another bot) добавляются через адаптер без переписывания
+                core-логики.</td>
+            </tr>
+            <tr>
+              <td>Документируемость</td>
+              <td>HTTP-слой обязан публиковать OpenAPI-контракт и человекочитаемые описания эндпоинтов.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>6. Контракты API (обязательно к поддержке)</h2>
+      <div class="card">
+        <p><span class="badge">GET /api/v1/health</span> Проверка доступности сервиса.</p>
+        <p><span class="badge">POST /api/v1/users/register</span> Регистрация или обновление пользователя.</p>
+        <p><span class="badge">POST /api/v1/conspectuses</span> Создание конспекта в слоте A.</p>
+        <p><span class="badge">GET /api/v1/conspectuses/due</span> Получение due-конспектов.</p>
+        <p><span class="badge">GET /api/v1/conspectuses/slots</span> Сводка по слотам.</p>
+        <p><span class="badge">GET /api/v1/conspectuses/{id}</span> Детальная карточка конспекта.</p>
+        <p><span class="badge">POST /api/v1/conspectuses/{id}/review</span> Применение результата повторения.</p>
+        <p><span class="badge">POST /api/v1/errors</span> Добавление ошибки в журнал.</p>
+        <p><span class="badge">GET /api/v1/errors</span> Получение журнала ошибок.</p>
+        <p><span class="badge">GET /api/v1/schedule</span> Получение рекомендованного расписания.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>7. Диаграммы последовательностей</h2>
+
+      <h3>7.1 Создание конспекта</h3>
+      <div class="card">
+        <img class="diagram" src="uml/rendered/create_conspectus_sequence.png"
+          alt="Smart UML sequence: создание конспекта" />
+        <p class="small">Исходник: <code>docs/uml/sequences/create_conspectus_sequence.puml</code></p>
+      </div>
+
+      <h3>7.2 Сценарий повторения (Retrieve)</h3>
+      <div class="card">
+        <img class="diagram" src="uml/rendered/review_retrieve_sequence.png"
+          alt="Smart UML sequence: сценарий повторения retrieve" />
+        <p class="small">Исходник: <code>docs/uml/sequences/review_retrieve_sequence.puml</code></p>
+      </div>
+
+      <h3>7.3 Логирование ошибки</h3>
+      <div class="card">
+        <img class="diagram" src="uml/rendered/error_log_sequence.png"
+          alt="Smart UML sequence: логирование ошибки" />
+        <p class="small">Исходник: <code>docs/uml/sequences/error_log_sequence.puml</code></p>
+      </div>
+
+      <div class="card small">
+        Актуальные UML-исходники находятся в:
+        <code>docs/uml/etr_smart_architecture.puml</code>,
+        <code>docs/uml/etr_review_flow.puml</code>,
+        <code>docs/uml/etr_slot_state_machine.puml</code>,
+        <code>docs/uml/sequences/create_conspectus_sequence.puml</code>,
+        <code>docs/uml/sequences/review_retrieve_sequence.puml</code>,
+        <code>docs/uml/sequences/error_log_sequence.puml</code>.
+      </div>
+    </section>
+
+    <section>
+      <h2>8. Критерии приемки</h2>
+      <div class="card">
+        <ul>
+          <li class="ok">Все обязательные эндпоинты доступны и документированы в OpenAPI.</li>
+          <li class="ok">Логика слотов соответствует правилам: easy -> вперед, hard/forgot -> A.</li>
+          <li class="ok">Создание конспекта валидирует 5–7 bullets.</li>
+          <li class="ok">Error Log сохраняет и возвращает корректные поля.</li>
+          <li class="warn">Авторизация не внедрена, доступ контролируется уровнем окружения/сети.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</body>
+
+</html>

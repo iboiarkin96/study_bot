@@ -1,0 +1,25 @@
+"""FastAPI application entrypoint."""
+
+from __future__ import annotations
+
+from fastapi import FastAPI
+
+from app.api.v1.users import router as users_router
+from app.core.config import get_settings
+
+settings = get_settings()
+
+app = FastAPI(
+    title=settings.app_name,
+    version="1.0.0",
+    description="Study App API. First implemented endpoint: POST /api/v1/users/register",
+)
+
+
+@app.get("/health", tags=["System"], summary="Health check")
+def health() -> dict[str, str]:
+    """Return basic service status."""
+    return {"status": "ok"}
+
+
+app.include_router(users_router, prefix="/api/v1")
