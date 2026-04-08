@@ -43,7 +43,7 @@ def _source_files() -> list[Path]:
 def _output_for(source_path: Path) -> Path:
     """Map source .puml to a stable output filename in rendered/."""
     rel = source_path.relative_to(UML_SRC_DIR)
-    # Keep legacy names for sequence diagrams to avoid breaking docs/index.html.
+    # Keep legacy names for sequence diagrams to avoid breaking docs/system-analysis.html.
     if rel.parts and rel.parts[0] == "sequences":
         safe_name = source_path.stem + ".png"
     else:

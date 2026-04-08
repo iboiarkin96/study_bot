@@ -30,11 +30,7 @@ router = APIRouter(prefix="/user", tags=["User"])
     response_model=UserCreateResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create user",
-    description=(
-        "Creates a new user by `system_user_id`. "
-        "Timezone is validated against IANA timezone names via `zoneinfo`. "
-        "Validation and business errors are returned with stable codes."
-    ),
+    description=("Creates a new user by `system_user_id`. "),
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": ApiErrorResponse,

@@ -43,8 +43,8 @@ class UserService:
             raise HTTPException(
                 status_code=400,
                 detail={
-                    "code": "101",
-                    "key": "USR_CREATE_ALREADY_EXISTS",
+                    "code": "USER_101",
+                    "key": "USER_CREATE_ALREADY_EXISTS",
                     "message": "User with this `system_user_id` already exists.",
                     "source": "business",
                 },

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Runbook: Quality Check Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: Quality Check Failing</h1>
+    <nav class="top-nav" aria-label="Documentation navigation">
+      <a href="../system-analysis.html">System Analysis</a>
+      <a href="../engineering-practices.html">Engineering Practices</a>
+      <a href="../developer/README.html">Developer Docs</a>
+      <a href="../adr/README.html">ADR</a>
+      <a href="./README.html" class="is-active" aria-current="page">Runbooks</a>
+    </nav>
+<h2>Trigger</h2>
+    <ul>
+      <li><code>make quality-check</code> fails locally.</li>
+      <li>CI quality gate fails on lint/type/test/docs sync stage.</li>
+    </ul>
+    <h2>Fast triage</h2>
+    <ol>
+      <li>Run full gate once: <code>make quality-check</code>.</li>
+      <li>Identify failing step: <code>lint-check</code>, <code>type-check</code>, <code>test</code>, <code>sync-docs</code>.</li>
+      <li>Re-run only failing step to shorten feedback loop.</li>
+    </ol>
+    <h2>Most common causes</h2>
+    <ul>
+      <li>Lint/type errors after refactor.</li>
+      <li>Tests expect outdated API contract or DB state.</li>
+      <li>Docs not synchronized after endpoint/config changes.</li>
+      <li>New file not included in expected imports/exports.</li>
+    </ul>
+    <h2>Recovery steps by stage</h2>
+    <h3>1) Lint fails</h3>
+    <ul>
+      <li>Run <code>make lint-fix</code> and <code>make lint-check</code>.</li>
+    </ul>
+    <h3>2) Type-check fails</h3>
+    <ul>
+      <li>Run <code>make type-check</code>.</li>
+      <li>Fix signatures/annotations/import types.</li>
+    </ul>
+    <h3>3) Tests fail</h3>
+    <ul>
+      <li>Run <code>make test</code>.</li>
+      <li>For focused debugging run <code>make test-one path=...</code>.</li>
+      <li>If schema changed, validate migrations/fixtures.</li>
+    </ul>
+    <h3>4) Docs sync fails or changes produced</h3>
+    <ul>
+      <li>Run <code>make sync-docs</code>.</li>
+      <li>Commit generated updates if valid.</li>
+    </ul>
+    <h2>Final recovery sequence</h2>
+    <ol>
+      <li><code>make quality-check</code></li>
+      <li><code>make pre-deploy</code></li>
+    </ol>
+    <h2>Exit criteria</h2>
+    <ul>
+      <li><code>make quality-check</code> passes end-to-end.</li>
+      <li><code>make pre-deploy</code> passes.</li>
+      <li>Diff contains only intentional code/docs changes.</li>
+    </ul>
+    <h2>Follow-up</h2>
+    <ul>
+      <li>If failure source is process/policy ambiguity, update developer docs or runbooks.</li>
+      <li>If it changes architecture/governance, record in ADR.</li>
+    </ul>
+  </main>
+</body>
+</html>

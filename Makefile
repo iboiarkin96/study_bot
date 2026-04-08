@@ -23,7 +23,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements run migrate migration format format-check lint-check lint-fix type-check quality-check pre-commit-install pre-commit-check test test-one test-warnings pre-deploy deploy env-check sync-docs
+.PHONY: help venv install requirements run migrate migration format format-check lint-check lint-fix type-check quality-check pre-commit-install pre-commit-check test test-one test-warnings pre-deploy deploy env-check sync-docs docs-format
 
 # ──────────────────────────────────────────────
 # Help
@@ -74,7 +74,8 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make sync-docs            Auto-update README.md & docs/index.html from code"
+	@echo "  make sync-docs            Auto-update README.md & docs/system-analysis.html from code"
+	@echo "  make docs-format          Apply shared HTML template to docs/*.html"
 	@echo ""
 	@echo "  # Pre-commit Hooks"
 	@echo "  make pre-commit-install   Install git pre-commit hooks"
@@ -316,7 +317,7 @@ deploy:
 # ──────────────────────────────────────────────
 # Sync docs from code
 # ──────────────────────────────────────────────
-# Single docs command: regenerate UML and sync marker-based docs.
+# Single docs command: regenerate UML, sync markers, render HTML companions.
 sync-docs:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
@@ -325,11 +326,24 @@ sync-docs:
 		printf "$(ICON_ERR) %s\n" "scripts/regenerate_docs.py not found."; exit 1; \
 	fi
 	@printf "$(COLOR_CYAN)== DOCS SYNC: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/2] regenerate UML diagrams"
+	@printf "$(ICON_INFO) %s\n" "[1/3] regenerate UML diagrams"
 	@$(PYTHON) scripts/regenerate_docs.py
-	@printf "$(ICON_INFO) %s\n" "[2/2] sync marker-based documentation"
+	@printf "$(ICON_INFO) %s\n" "[2/3] sync marker-based documentation"
 	@$(PYTHON) scripts/sync_docs.py
+	@printf "$(ICON_INFO) %s\n" "[3/4] render docs markdown to html companions"
+	@$(PYTHON) scripts/render_docs_html.py
+	@printf "$(ICON_INFO) %s\n" "[4/4] normalize docs html template"
+	@$(PYTHON) scripts/format_docs_html.py
 	@printf "$(COLOR_GREEN)== DOCS SYNC: SUCCESS ==$(COLOR_RESET)\n"
+
+# Apply shared CSS/nav/container template to all docs html pages.
+docs-format:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Formatting docs HTML files..."
+	@$(PYTHON) scripts/format_docs_html.py
+	@printf "$(ICON_OK) %s\n" "Docs HTML formatting completed"
 
 # ──────────────────────────────────────────────
 # Health check

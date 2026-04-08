@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ADR 0002: Mandatory API Testing Policy</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>ADR 0002: Mandatory API Testing Policy</h1>
+    <nav class="top-nav" aria-label="Documentation navigation">
+      <a href="../system-analysis.html">System Analysis</a>
+      <a href="../engineering-practices.html">Engineering Practices</a>
+      <a href="../developer/README.html">Developer Docs</a>
+      <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+      <a href="../runbooks/README.html">Runbooks</a>
+    </nav>
+<h2>Status</h2>
+    <p>Accepted</p>
+
+    <h2>Context</h2>
+    <p>API surface is expanding and contract regressions become more expensive without automated checks.</p>
+    <p>Manual verification is insufficient for stable delivery and predictable releases.</p>
+
+    <h2>Decision</h2>
+    <p>Adopt mandatory endpoint-level automated testing as a release gate.</p>
+    <ol>
+      <li>Any API change must include tests.</li>
+      <li>Endpoint coverage must include at least:
+        <ul>
+          <li>one success scenario (happy path),</li>
+          <li>one failure scenario (validation or business error).</li>
+        </ul>
+      </li>
+      <li>Changes without tests are considered incomplete.</li>
+      <li>Quality gates must enforce test execution before deployment.</li>
+    </ol>
+
+    <h2>Implementation in this repository</h2>
+    <ul>
+      <li>Test framework: <code>pytest</code></li>
+      <li>Test location: <code>tests/</code></li>
+      <li>API baseline tests:
+        <ul>
+          <li><code>tests/api/v1/test_user_create.py</code></li>
+        </ul>
+      </li>
+      <li>Make targets:
+        <ul>
+          <li><code>make test</code></li>
+          <li><code>make test-one path=...</code></li>
+          <li><code>make pre-deploy</code> (includes tests)</li>
+          <li><code>make deploy DEPLOY_CMD=&quot;...&quot;</code> (always runs pre-deploy first)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Consequences</h2>
+    <h3>Positive</h3>
+    <ul>
+      <li>Early regression detection.</li>
+      <li>Higher confidence in API contract stability.</li>
+      <li>Faster onboarding with executable behavior examples.</li>
+    </ul>
+    <h3>Trade-offs</h3>
+    <ul>
+      <li>Additional implementation effort for each change.</li>
+      <li>Slightly longer pipeline execution time.</li>
+    </ul>
+
+    <h2>Usage</h2>
+    <p>Typical flow:</p>
+    <pre><code>
+make test
+make test-one path=tests/api/v1/test_user_create.py
+make pre-deploy
+</code></pre>
+  </main>
+</body>
+</html>

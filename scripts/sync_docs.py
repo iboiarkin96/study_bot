@@ -1,7 +1,7 @@
 """Auto-generate documentation sections from code sources.
 
 Reads the Makefile help target, FastAPI app routes, and .env.example,
-then patches marker-delimited sections in README.md and docs/index.html.
+then patches marker-delimited sections in README.md and docs/system-analysis.html.
 
 Markers have the form:
     <!-- BEGIN:SECTION_NAME -->
@@ -225,6 +225,8 @@ _DIR_COMMENTS: dict[str, str] = {
     "alembic": "Migration environment",
     "alembic/versions": "Migration scripts",
     "docs": "HTML docs & UML sources",
+    "docs/developer": "Developer guides and onboarding",
+    "docs/runbooks": "Operational troubleshooting guides",
     "docs/uml": "PlantUML diagrams",
     "docs/uml/sequences": "Sequence diagram sources",
     "docs/uml/rendered": "Rendered PNGs",
@@ -314,8 +316,8 @@ def sync(check: bool = False) -> int:
         else:
             _info("README.md already up to date")
 
-    # --- docs/index.html ---
-    html_path = ROOT / "docs" / "index.html"
+    # --- docs/system-analysis.html ---
+    html_path = ROOT / "docs" / "system-analysis.html"
     if html_path.exists():
         html_sections: dict[str, str] = {}
         if routes:
@@ -326,12 +328,12 @@ def sync(check: bool = False) -> int:
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ docs/index.html is out of sync (run make sync-docs)")
+                print("✗ docs/system-analysis.html is out of sync (run make sync-docs)")
             else:
                 html_path.write_text(updated)
-                _ok("docs/index.html updated")
+                _ok("docs/system-analysis.html updated")
         else:
-            _info("docs/index.html already up to date")
+            _info("docs/system-analysis.html already up to date")
     return stale_files
 
 

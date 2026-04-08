@@ -13,7 +13,7 @@ from starlette.responses import Response
 from app.api.v1.user import router as user_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
-from app.errors.validation import build_validation_error_payload
+from app.validation.user import build_validation_error_payload
 
 settings = get_settings()
 log_file_path = configure_logging(settings)

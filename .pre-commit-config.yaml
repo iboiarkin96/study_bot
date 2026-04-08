@@ -1,4 +1,17 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-added-large-files
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.9
     hooks:
@@ -13,4 +26,3 @@ repos:
         additional_dependencies: []
         args: [app, tests, scripts]
         pass_filenames: false
-

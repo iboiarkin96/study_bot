@@ -34,8 +34,8 @@ def test_create_user_duplicate_returns_business_error(client) -> None:
     assert first.status_code == 201
     assert second.status_code == 400
     detail = second.json()["detail"]
-    assert detail["code"] == "101"
-    assert detail["key"] == "USR_CREATE_ALREADY_EXISTS"
+    assert detail["code"] == "USER_101"
+    assert detail["key"] == "USER_CREATE_ALREADY_EXISTS"
     assert detail["source"] == "business"
 
 
@@ -43,7 +43,7 @@ def test_create_user_invalid_timezone_returns_code_based_422(client) -> None:
     payload = {
         "system_user_id": "a1b2c3d4-0001-4000-8000-000000000003",
         "full_name": "Ivan Petrov",
-        "timezone": "Europe/Mscow",
+        "timezone": "Europe/123",
     }
 
     response = client.post("/api/v1/user", json=payload)
@@ -52,6 +52,6 @@ def test_create_user_invalid_timezone_returns_code_based_422(client) -> None:
     body = response.json()
     assert body["error_type"] == "validation_error"
     assert body["endpoint"] == "POST /api/v1/user"
-    assert body["errors"][0]["code"] == "007"
+    assert body["errors"][0]["code"] == "USER_007"
     assert body["errors"][0]["field"] == "timezone"
     assert body["errors"][0]["source"] == "validation"
