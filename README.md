@@ -309,24 +309,6 @@ Current baseline:
   make docs-watch   # watch docs/uml/**/*.puml and regenerate on changes
   ```
 
-### Publish docs to GitHub Pages
-
-Repository includes workflow: `.github/workflows/publish-docs.yml`.
-
-How to enable:
-1. In repository settings open **Pages**.
-2. Set source to **GitHub Actions**.
-3. Push to `main`/`master` (or run workflow manually from Actions tab).
-
-What workflow does:
-- builds docs (`make docs`, `make sync-docs`);
-- verifies docs integrity (`make docs-check`);
-- publishes `docs/` as static site via GitHub Pages.
-
-Result:
-- you get a rendered docs URL from workflow output (`github-pages` environment URL),
-- page opens as full HTML (not raw source), unlike repository file preview.
-
 ---
 
 ## Docs as Code workflow
