@@ -36,7 +36,15 @@ class UserService:
 
         user = self.repository.get_by_system_user_id(su_id)
         if user is not None:
-            raise HTTPException(status_code=400, detail="User already exists")
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "code": "101",
+                    "key": "USR_REG_ALREADY_EXISTS",
+                    "message": "User with this `system_user_id` already exists.",
+                    "source": "business",
+                },
+            )
 
         user = User(
             system_user_id=su_id,

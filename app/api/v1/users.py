@@ -8,34 +8,18 @@ from fastapi import APIRouter, Body, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db_session
+from app.openapi.examples import (
+    REGISTER_REQUIRED_FIELD_ERROR_EXAMPLE,
+    TIMEZONE_VALIDATION_ERROR_EXAMPLE,
+    USER_EXISTS_ERROR_EXAMPLE,
+    USER_REGISTER_REQUEST_EXAMPLES,
+)
 from app.repositories.user_repository import UserRepository
+from app.schemas.errors import ApiErrorResponse, ValidationErrorResponse
 from app.schemas.user import UserRegisterRequest, UserRegisterResponse
 from app.services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
-
-_REGISTER_EXAMPLE = {
-    "default": {
-        "summary": "Basic registration",
-        "value": {
-            "system_user_id": "a1b2c3d4-0001-4000-8000-000000000001",
-            "full_name": "Ivan Petrov",
-            "username": "ipetrov",
-            "timezone": "Europe/Moscow",
-            "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
-            "invalidation_reason_uuid": None,
-            "is_row_invalid": 0,
-        },
-    },
-    "minimal": {
-        "summary": "Only required fields",
-        "value": {
-            "system_user_id": "a1b2c3d4-0001-4000-8000-000000000001",
-            "full_name": "Ivan Petrov",
-        },
-    },
-}
-
 
 @router.post(
     "/register",
@@ -43,13 +27,49 @@ _REGISTER_EXAMPLE = {
     status_code=status.HTTP_201_CREATED,
     summary="Register user",
     description=(
-        "Creates a new user by `system_user_id` "
-        "or raises 400 if already exists. "
-        "All input fields are validated via Pydantic schemas."
+        "Creates a new user by `system_user_id`. "
+        "Timezone is validated against IANA timezone names via `zoneinfo`. "
+        "Validation and business errors are returned with stable codes."
     ),
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ApiErrorResponse,
+            "description": "User with this `system_user_id` already exists.",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "user_exists": {
+                            "summary": "User already exists",
+                            "value": USER_EXISTS_ERROR_EXAMPLE,
+                        }
+                    }
+                }
+            },
+        },
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+            "model": ValidationErrorResponse,
+            "description": (
+                "Request validation error (for example invalid timezone like `Europe/Mscow`)."
+            ),
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "missing_system_user_id": {
+                            "summary": "Missing required field",
+                            "value": REGISTER_REQUIRED_FIELD_ERROR_EXAMPLE,
+                        },
+                        "invalid_timezone": {
+                            "summary": "Invalid timezone name",
+                            "value": TIMEZONE_VALIDATION_ERROR_EXAMPLE,
+                        }
+                    }
+                }
+            },
+        },
+    },
 )
 def register_user(
-    payload: Annotated[UserRegisterRequest, Body(openapi_examples=_REGISTER_EXAMPLE)],
+    payload: Annotated[UserRegisterRequest, Body(openapi_examples=USER_REGISTER_REQUEST_EXAMPLES)],
     session: Annotated[Session, Depends(get_db_session)],
 ) -> UserRegisterResponse:
     """Register user and return stored record."""

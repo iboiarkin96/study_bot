@@ -1,0 +1,32 @@
+name: quality-gate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  pre_deploy_gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup environment
+        run: |
+          make venv
+          make install
+          cp .env.example .env
+
+      - name: Run Docs-as-Code quality gate
+        run: |
+          make pre-deploy

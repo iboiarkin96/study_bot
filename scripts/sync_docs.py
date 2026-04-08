@@ -16,9 +16,28 @@ from __future__ import annotations
 
 import re
 import sys
+import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+COLOR_RESET = "\033[0m"
+COLOR_GREEN = "\033[32m"
+COLOR_CYAN = "\033[36m"
+ICON_OK = f"{COLOR_GREEN}✓{COLOR_RESET}"
+ICON_STEP = f"{COLOR_CYAN}→{COLOR_RESET}"
+ICON_INFO = "·"
+
+
+def _ok(message: str) -> None:
+    print(f"{ICON_OK} {message}")
+
+
+def _step(message: str) -> None:
+    print(f"{ICON_STEP} {message}")
+
+
+def _info(message: str) -> None:
+    print(f"{ICON_INFO} {message}")
 
 # ---------------------------------------------------------------------------
 # Marker replacement engine
@@ -249,10 +268,12 @@ def _build_tree() -> str:
 # ---------------------------------------------------------------------------
 
 
-def sync() -> None:
+def sync(check: bool = False) -> int:
+    _step("Syncing docs from code sources...")
     makefile_entries = _parse_makefile_help()
     routes = _get_fastapi_routes()
     env_entries = _parse_env_example()
+    stale_files = 0
 
     repo_layout = _build_tree()
 
@@ -271,10 +292,14 @@ def sync() -> None:
         original = readme_path.read_text()
         updated = _replace_markers(original, readme_sections)
         if updated != original:
-            readme_path.write_text(updated)
-            print("✓ README.md updated")
+            stale_files += 1
+            if check:
+                print("✗ README.md is out of sync (run make sync-docs)")
+            else:
+                readme_path.write_text(updated)
+                _ok("README.md updated")
         else:
-            print("· README.md already up to date")
+            _info("README.md already up to date")
 
     # --- docs/index.html ---
     html_path = ROOT / "docs" / "index.html"
@@ -286,11 +311,25 @@ def sync() -> None:
         original = html_path.read_text()
         updated = _replace_markers(original, html_sections)
         if updated != original:
-            html_path.write_text(updated)
-            print("✓ docs/index.html updated")
+            stale_files += 1
+            if check:
+                print("✗ docs/index.html is out of sync (run make sync-docs)")
+            else:
+                html_path.write_text(updated)
+                _ok("docs/index.html updated")
         else:
-            print("· docs/index.html already up to date")
+            _info("docs/index.html already up to date")
+    return stale_files
 
 
 if __name__ == "__main__":
-    sync()
+    parser = argparse.ArgumentParser(description="Sync docs from source code.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Check docs are in sync without modifying files.",
+    )
+    args = parser.parse_args()
+    stale = sync(check=args.check)
+    if args.check and stale:
+        raise SystemExit(1)

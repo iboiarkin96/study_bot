@@ -7,6 +7,15 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.openapi.examples import (
+    FULL_NAME_EXAMPLES,
+    INVALIDATION_REASON_UUID_EXAMPLES,
+    IS_ROW_INVALID_EXAMPLES,
+    SYSTEM_USER_ID_EXAMPLES,
+    SYSTEM_UUID_EXAMPLES,
+    TIMEZONE_EXAMPLES,
+    USERNAME_EXAMPLES,
+)
 from app.schemas.enums import TimezoneField
 
 
@@ -16,44 +25,44 @@ class UserRegisterRequest(BaseModel):
     system_user_id: UUID = Field(
         ...,
         description="User ID in the source system (unique identity).",
-        examples=["a1b2c3d4-0001-4000-8000-000000000001"],
+        examples=SYSTEM_USER_ID_EXAMPLES,
     )
     username: str | None = Field(
         default=None,
         max_length=255,
         description="Username or login.",
-        examples=["ipetrov"],
+        examples=USERNAME_EXAMPLES,
     )
     full_name: str = Field(
         ...,
         min_length=1,
         max_length=255,
         description="Full name of the user.",
-        examples=["Ivan Petrov"],
+        examples=FULL_NAME_EXAMPLES,
     )
     timezone: TimezoneField = Field(
         default="UTC",
         min_length=1,
         max_length=64,
         description="IANA timezone name (e.g. 'UTC', 'Europe/Moscow').",
-        examples=["Europe/Moscow", "UTC", "America/New_York"],
+        examples=TIMEZONE_EXAMPLES,
     )
     system_uuid: UUID | None = Field(
         default=None,
         description="UUID of related system.",
-        examples=["b2c3d4e5-0002-4000-8000-000000000002"],
+        examples=SYSTEM_UUID_EXAMPLES,
     )
     invalidation_reason_uuid: UUID | None = Field(
         default=None,
         description="Related invalidation reason UUID.",
-        examples=["c3d4e5f6-0003-4000-8000-000000000003"],
+        examples=INVALIDATION_REASON_UUID_EXAMPLES,
     )
     is_row_invalid: int = Field(
         default=0,
         ge=0,
         le=1,
         description="Invalid row flag (0/1).",
-        examples=[0, 1],
+        examples=IS_ROW_INVALID_EXAMPLES,
     )
 
 

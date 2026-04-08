@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -16,6 +17,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 UML_SRC_DIR = PROJECT_ROOT / "docs" / "uml"
 UML_OUT_DIR = PROJECT_ROOT / "docs" / "uml" / "rendered"
 KROKI_URL = "https://kroki.io/plantuml/png"
+COLOR_RESET = "\033[0m"
+COLOR_GREEN = "\033[32m"
+COLOR_CYAN = "\033[36m"
+ICON_OK = f"{COLOR_GREEN}✓{COLOR_RESET}"
+ICON_STEP = f"{COLOR_CYAN}→{COLOR_RESET}"
+
+
+def _ok(message: str) -> None:
+    print(f"{ICON_OK} {message}")
+
+
+def _step(message: str) -> None:
+    print(f"{ICON_STEP} {message}")
 
 
 def _source_files() -> list[Path]:
@@ -63,19 +77,48 @@ def render_all(verbose: bool = True) -> int:
         out = _output_for(src)
         render_one(src, out)
         if verbose:
-            print(f"rendered: {out.relative_to(PROJECT_ROOT)}")
+            _ok(f"Rendered {out.relative_to(PROJECT_ROOT)}")
     return len(files)
+
+
+def _is_render_up_to_date(source_path: Path, output_path: Path) -> bool:
+    """Render into temp file and compare with current output."""
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        temp_path = Path(tmp.name)
+    try:
+        render_one(source_path, temp_path)
+        if not output_path.exists():
+            return False
+        return temp_path.read_bytes() == output_path.read_bytes()
+    finally:
+        temp_path.unlink(missing_ok=True)
+
+
+def check_all(verbose: bool = True) -> int:
+    """Check if rendered UML outputs are up-to-date; return stale count."""
+    stale = 0
+    files = _source_files()
+    for src in files:
+        out = _output_for(src)
+        if _is_render_up_to_date(src, out):
+            if verbose:
+                _ok(f"Up to date {out.relative_to(PROJECT_ROOT)}")
+        else:
+            stale += 1
+            if verbose:
+                print(f"✗ Stale {out.relative_to(PROJECT_ROOT)}")
+    return stale
 
 
 def watch(interval_sec: float = 1.0) -> None:
     """Watch UML source files and rerender changed ones."""
-    print("watch mode enabled: monitoring docs/uml/**/*.puml")
+    _step("Watch mode enabled: monitoring docs/uml/**/*.puml")
     mtimes: dict[Path, float] = {}
     for src in _source_files():
         mtimes[src] = src.stat().st_mtime
 
     total = render_all(verbose=True)
-    print(f"initial render done: {total} file(s)")
+    _ok(f"Initial render done: {total} file(s)")
 
     while True:
         changed = []
@@ -89,7 +132,7 @@ def watch(interval_sec: float = 1.0) -> None:
         for src in changed:
             out = _output_for(src)
             render_one(src, out)
-            print(f"updated: {out.relative_to(PROJECT_ROOT)}")
+            _ok(f"Updated {out.relative_to(PROJECT_ROOT)}")
 
         removed = [path for path in mtimes if path not in current_files]
         for path in removed:
@@ -97,7 +140,7 @@ def watch(interval_sec: float = 1.0) -> None:
             out = _output_for(path)
             if out.exists():
                 out.unlink()
-                print(f"removed: {out.relative_to(PROJECT_ROOT)}")
+                _step(f"Removed {out.relative_to(PROJECT_ROOT)}")
 
         time.sleep(interval_sec)
 
@@ -107,14 +150,29 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Regenerate UML diagrams for docs.")
     parser.add_argument("--watch", action="store_true", help="Watch source files and rerender on changes.")
     parser.add_argument("--interval", type=float, default=1.0, help="Watch polling interval in seconds.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Check outputs are up-to-date without writing files.",
+    )
     args = parser.parse_args()
 
     if args.watch:
         watch(interval_sec=args.interval)
         return
 
+    if args.check:
+        _step("Checking rendered UML outputs...")
+        stale = check_all(verbose=True)
+        if stale:
+            print(f"✗ UML outputs are stale: {stale} file(s) need regeneration.")
+            raise SystemExit(1)
+        _ok("All rendered UML outputs are up to date")
+        return
+
+    _step("Rendering UML diagrams...")
     total = render_all(verbose=True)
-    print(f"done: rendered {total} file(s)")
+    _ok(f"Done: rendered {total} file(s)")
 
 
 if __name__ == "__main__":
