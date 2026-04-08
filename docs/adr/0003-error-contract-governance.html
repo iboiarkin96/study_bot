@@ -1,97 +1,97 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ADR 0003: Error Contract Governance</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-    <h1>ADR 0003: Error Contract Governance</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="../developer/README.html">Developer Docs</a>
-      <a href="./README.html" class="is-active" aria-current="page">ADR</a>
-      <a href="../runbooks/README.html">Runbooks</a>
-    </nav>
-<h2>Status</h2>
-    <p>Accepted</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0003: Error Contract Governance</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0003: Error Contract Governance</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <h2>Status</h2>
+      <p>Accepted</p>
 
-    <h2>Context</h2>
-    <p>As API endpoints grow, clients require stable and machine-readable error behavior.</p>
-    <p>Unstructured or inconsistent errors increase integration cost and make support/debugging harder.</p>
+      <h2>Context</h2>
+      <p>As API endpoints grow, clients require stable and machine-readable error behavior.</p>
+      <p>Unstructured or inconsistent errors increase integration cost and make support/debugging harder.</p>
 
-    <h2>Decision</h2>
-    <p>Adopt a governed, code-based error contract.</p>
-    <ol>
-      <li>Error payloads are part of public API contract.</li>
-      <li>Use stable numeric <code>code</code> and symbolic <code>key</code>.</li>
-      <li><code>code</code> + <code>key</code> are immutable once published.</li>
-      <li>Contract evolves additively; existing semantics cannot be silently changed.</li>
-      <li>Validation and business errors follow explicit, documented schemas.</li>
-    </ol>
+      <h2>Decision</h2>
+      <p>Adopt a governed, code-based error contract.</p>
+      <ol>
+        <li>Error payloads are part of public API contract.</li>
+        <li>Use stable numeric <code>code</code> and symbolic <code>key</code>.</li>
+        <li><code>code</code> + <code>key</code> are immutable once published.</li>
+        <li>Contract evolves additively; existing semantics cannot be silently changed.</li>
+        <li>Validation and business errors follow explicit, documented schemas.</li>
+      </ol>
 
-    <h2>Contract model</h2>
-    <ul>
-      <li>Business error shape:
-        <ul>
-          <li><code>{&quot;code&quot;:&quot;...&quot;,&quot;key&quot;:&quot;...&quot;,&quot;message&quot;:&quot;...&quot;,&quot;source&quot;:&quot;business&quot;}</code></li>
-        </ul>
-      </li>
-      <li>Validation error shape:
-        <ul>
-          <li><code>{&quot;error_type&quot;:&quot;validation_error&quot;,&quot;endpoint&quot;:&quot;...&quot;,&quot;errors&quot;:[...]}</code></li>
-          <li>each <code>errors[]</code> item: <code>code</code>, <code>key</code>, <code>message</code>, <code>field</code>, <code>source</code>, <code>details</code></li>
-        </ul>
-      </li>
-    </ul>
+      <h2>Contract model</h2>
+      <ul>
+        <li>Business error shape:
+          <ul>
+            <li><code>{&quot;code&quot;:&quot;...&quot;,&quot;key&quot;:&quot;...&quot;,&quot;message&quot;:&quot;...&quot;,&quot;source&quot;:&quot;business&quot;}</code></li>
+          </ul>
+        </li>
+        <li>Validation error shape:
+          <ul>
+            <li><code>{&quot;error_type&quot;:&quot;validation_error&quot;,&quot;endpoint&quot;:&quot;...&quot;,&quot;errors&quot;:[...]}</code></li>
+            <li>each <code>errors[]</code> item: <code>code</code>, <code>key</code>, <code>message</code>, <code>field</code>, <code>source</code>, <code>details</code></li>
+          </ul>
+        </li>
+      </ul>
 
-    <h2>Implementation in this repository</h2>
-    <ul>
-      <li>Validation mapping source:
-        <ul>
-          <li><code>app/validation/user.py</code></li>
-        </ul>
-      </li>
-      <li>Error response schemas:
-        <ul>
-          <li><code>app/schemas/errors.py</code></li>
-        </ul>
-      </li>
-      <li>OpenAPI examples:
-        <ul>
-          <li><code>app/openapi/examples/errors.py</code></li>
-        </ul>
-      </li>
-      <li>Endpoint declarations:
-        <ul>
-          <li>router <code>responses={...}</code> in <code>app/api/v1/*.py</code></li>
-        </ul>
-      </li>
-    </ul>
+      <h2>Implementation in this repository</h2>
+      <ul>
+        <li>Validation mapping source:
+          <ul>
+            <li><code>app/validation/user.py</code></li>
+          </ul>
+        </li>
+        <li>Error response schemas:
+          <ul>
+            <li><code>app/schemas/errors.py</code></li>
+          </ul>
+        </li>
+        <li>OpenAPI examples:
+          <ul>
+            <li><code>app/openapi/examples/errors.py</code></li>
+          </ul>
+        </li>
+        <li>Endpoint declarations:
+          <ul>
+            <li>router <code>responses={...}</code> in <code>app/api/v1/*.py</code></li>
+          </ul>
+        </li>
+      </ul>
 
-    <h2>Consequences</h2>
-    <h3>Positive</h3>
-    <ul>
-      <li>Predictable client integration behavior.</li>
-      <li>Better incident diagnostics and observability.</li>
-      <li>Easier compatibility management across API versions.</li>
-    </ul>
-    <h3>Trade-offs</h3>
-    <ul>
-      <li>Requires governance discipline and documentation updates.</li>
-      <li>Expanding error catalog requires ongoing curation.</li>
-    </ul>
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Predictable client integration behavior.</li>
+        <li>Better incident diagnostics and observability.</li>
+        <li>Easier compatibility management across API versions.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Requires governance discipline and documentation updates.</li>
+        <li>Expanding error catalog requires ongoing curation.</li>
+      </ul>
 
-    <h2>Operating rules</h2>
-    <ol>
-      <li>Add new codes; do not repurpose old ones.</li>
-      <li>Keep fallback validation codes for unmapped errors.</li>
-      <li>Update OpenAPI examples and docs in the same change.</li>
-      <li>Ensure <code>make sync-docs</code> and <code>make pre-deploy</code> pass before release.</li>
-    </ol>
-  </main>
-</body>
+      <h2>Operating rules</h2>
+      <ol>
+        <li>Add new codes; do not repurpose old ones.</li>
+        <li>Keep fallback validation codes for unmapped errors.</li>
+        <li>Update OpenAPI examples and docs in the same change.</li>
+        <li>Ensure <code>make sync-docs</code> and <code>make pre-deploy</code> pass before release.</li>
+      </ol>
+    </main>
+  </body>
 </html>

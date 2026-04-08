@@ -74,7 +74,7 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make sync-docs            Auto-update README.md & docs/system-analysis.html from code"
+	@echo "  make sync-docs            Auto-update code-synced docs: README.md, docs/system-analysis.html, docs/engineering-practices.html"
 	@echo "  make docs-format          Apply shared HTML template to docs/*.html"
 	@echo ""
 	@echo "  # Pre-commit Hooks"
@@ -163,6 +163,10 @@ migration:
 # ──────────────────────────────────────────────
 # Code quality
 # ──────────────────────────────────────────────
+# Auto-format Python codebase.
+format: format-fix docs-format
+	@printf "$(ICON_OK) %s\n" "Code and docs formatting completed"
+
 # Auto-format Python codebase.
 format-fix:
 	@if [ ! -d ".venv" ]; then \

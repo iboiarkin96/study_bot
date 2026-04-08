@@ -1,63 +1,63 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Runbook: Migrations Failing</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-    <h1>Runbook: Migrations Failing</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="../developer/README.html">Developer Docs</a>
-      <a href="../adr/README.html">ADR</a>
-      <a href="./README.html" class="is-active" aria-current="page">Runbooks</a>
-    </nav>
-<h2>Trigger</h2>
-    <ul>
-      <li><code>make migrate</code> fails.</li>
-      <li><code>make migration name=...</code> generates incorrect diff.</li>
-      <li>App startup fails due to DB schema mismatch.</li>
-    </ul>
-    <h2>Fast triage</h2>
-    <ol>
-      <li>Verify env points to expected DB: check <code>.env</code> -> <code>SQLITE_DB_PATH</code>.</li>
-      <li>Run migration command explicitly: <code>make migrate</code>.</li>
-      <li>Inspect current migration heads: <code>.venv/bin/python -m alembic heads</code>.</li>
-    </ol>
-    <h2>Most common causes</h2>
-    <ul>
-      <li>Model changes were made but migration not generated.</li>
-      <li>Migration generated against stale model imports.</li>
-      <li>Wrong DB file/path in <code>.env</code>.</li>
-      <li>Manual DB edits drifted from migration history.</li>
-    </ul>
-    <h2>Recovery steps</h2>
-    <ol>
-      <li>Confirm model import chain includes new/changed model.</li>
-      <li>Generate migration from current models: <code>make migration name=describe_change</code>.</li>
-      <li>Review generated file in <code>alembic/versions/</code>.</li>
-      <li>Apply migration: <code>make migrate</code>.</li>
-      <li>Re-run tests: <code>make test</code>.</li>
-    </ol>
-    <h2>Safe rollback strategy (local)</h2>
-    <ul>
-      <li>If migration is clearly wrong and not shared yet, delete bad migration file and regenerate with corrected models/imports.</li>
-      <li>Never rewrite shared migration history silently in team workflow.</li>
-    </ul>
-    <h2>Exit criteria</h2>
-    <ul>
-      <li><code>make migrate</code> passes.</li>
-      <li>App starts and uses expected schema.</li>
-      <li><code>make test</code> passes.</li>
-    </ul>
-    <h2>Follow-up</h2>
-    <ul>
-      <li>Record non-obvious migration decisions in ADR when they affect long-term schema policy.</li>
-    </ul>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Runbook: Migrations Failing</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Runbook: Migrations Failing</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="../adr/README.html">ADR</a>
+        <a href="./README.html" class="is-active" aria-current="page">Runbooks</a>
+      </nav>
+      <h2>Trigger</h2>
+      <ul>
+        <li><code>make migrate</code> fails.</li>
+        <li><code>make migration name=...</code> generates incorrect diff.</li>
+        <li>App startup fails due to DB schema mismatch.</li>
+      </ul>
+      <h2>Fast triage</h2>
+      <ol>
+        <li>Verify env points to expected DB: check <code>.env</code> -> <code>SQLITE_DB_PATH</code>.</li>
+        <li>Run migration command explicitly: <code>make migrate</code>.</li>
+        <li>Inspect current migration heads: <code>.venv/bin/python -m alembic heads</code>.</li>
+      </ol>
+      <h2>Most common causes</h2>
+      <ul>
+        <li>Model changes were made but migration not generated.</li>
+        <li>Migration generated against stale model imports.</li>
+        <li>Wrong DB file/path in <code>.env</code>.</li>
+        <li>Manual DB edits drifted from migration history.</li>
+      </ul>
+      <h2>Recovery steps</h2>
+      <ol>
+        <li>Confirm model import chain includes new/changed model.</li>
+        <li>Generate migration from current models: <code>make migration name=describe_change</code>.</li>
+        <li>Review generated file in <code>alembic/versions/</code>.</li>
+        <li>Apply migration: <code>make migrate</code>.</li>
+        <li>Re-run tests: <code>make test</code>.</li>
+      </ol>
+      <h2>Safe rollback strategy (local)</h2>
+      <ul>
+        <li>If migration is clearly wrong and not shared yet, delete bad migration file and regenerate with corrected models/imports.</li>
+        <li>Never rewrite shared migration history silently in team workflow.</li>
+      </ul>
+      <h2>Exit criteria</h2>
+      <ul>
+        <li><code>make migrate</code> passes.</li>
+        <li>App starts and uses expected schema.</li>
+        <li><code>make test</code> passes.</li>
+      </ul>
+      <h2>Follow-up</h2>
+      <ul>
+        <li>Record non-obvious migration decisions in ADR when they affect long-term schema policy.</li>
+      </ul>
+    </main>
+  </body>
 </html>

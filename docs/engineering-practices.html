@@ -1,248 +1,417 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ETR Study API — Engineering Practices</title>
-  <link rel="stylesheet" href="./assets/docs.css" />
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ETR Study API — Engineering Practices</title>
+    <link rel="stylesheet" href="./assets/docs.css" />
+  </head>
 
-<body>
-  <main class="container">
-    <h1>ETR Study API — Engineering Practices</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="./system-analysis.html">System Analysis</a>
-      <a href="./engineering-practices.html" class="is-active" aria-current="page">Engineering Practices</a>
-      <a href="./developer/README.html">Developer Docs</a>
-      <a href="./adr/README.html">ADR</a>
-      <a href="./runbooks/README.html">Runbooks</a>
-    </nav>
-<p class="lead">
-      This document contains engineering workflow, delivery rules, policy governance,
-      and operational runbook discipline.
-    </p>
+  <body>
+    <main class="container">
+      <h1>ETR Study API — Engineering Practices</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="./system-analysis.html">System Analysis</a>
+        <a href="./engineering-practices.html" class="is-active" aria-current="page">Engineering Practices</a>
+        <a href="./developer/README.html">Developer Docs</a>
+        <a href="./adr/README.html">ADR</a>
+        <a href="./runbooks/README.html">Runbooks</a>
+      </nav>
+      <p class="lead">
+        This document contains engineering workflow, delivery rules, policy governance,
+        and operational runbook discipline.
+      </p>
 
-    <section>
-      <h2 id="dev-guide">1. Development Guide</h2>
-      <div class="card">
-        <h3>1.1 Project Philosophy</h3>
-        <ul>
-          <li>API contract is the product: request/response/error rules must always match runtime behavior.</li>
-          <li>Documentation evolves with code in the same change set.</li>
-          <li>Centralized source-of-truth files prevent drift as API scales.</li>
-        </ul>
+      <section>
+        <h2 id="dev-guide">1. Development Guide</h2>
+        <div class="card">
+          <h3>1.1 Project Philosophy</h3>
+          <ul>
+            <li>API contract is the product: request/response/error rules must always match runtime behavior.</li>
+            <li>Documentation evolves with code in the same change set.</li>
+            <li>Centralized source-of-truth files prevent drift as API scales.</li>
+          </ul>
 
-        <h3>1.2 Validation Standards (General)</h3>
-        <ul>
-          <li>Validate external input at API boundary (schemas/types/validators).</li>
-          <li>Do not duplicate request-shape validation in service/repository layers.</li>
-          <li>Normalize validation failures into stable error codes and keys.</li>
-          <li>Return consistent machine-readable payloads across endpoints.</li>
-        </ul>
+          <h3>1.2 Validation Standards (General)</h3>
+          <ul>
+            <li>Validate external input at API boundary (schemas/types/validators).</li>
+            <li>Do not duplicate request-shape validation in service/repository layers.</li>
+            <li>Normalize validation failures into stable error codes and keys.</li>
+            <li>Return consistent machine-readable payloads across endpoints.</li>
+          </ul>
 
-        <h3>1.3 Error Governance and Expansion</h3>
-        <ul>
-          <li>Error <code>code</code> + <code>key</code> are immutable public contracts.</li>
-          <li>Add new codes, do not repurpose existing ones.</li>
-          <li>Keep a fallback code path for unmapped validation failures.</li>
-          <li>Every endpoint should declare explicit error responses in Swagger.</li>
-        </ul>
+          <h3>1.3 Error Governance and Expansion</h3>
+          <ul>
+            <li>Error <code>code</code> + <code>key</code> are immutable public contracts.</li>
+            <li>Add new codes, do not repurpose existing ones.</li>
+            <li>Keep a fallback code path for unmapped validation failures.</li>
+            <li>Every endpoint should declare explicit error responses in Swagger.</li>
+          </ul>
 
-        <h3>1.4 Documentation Workflow at Scale</h3>
-        <ul>
-          <li>Maintain source of truth in:
-            <code>app/validation/user.py</code>,
-            <code>app/schemas/errors.py</code>,
-            <code>app/openapi/examples/errors.py</code>,
-            router <code>responses</code>.
-          </li>
-          <li>After API changes run <code>make sync-docs</code>; verify marker blocks only are auto-updated.</li>
-          <li>Keep documentation concise: explain standards and extension path, not full per-code dumps.</li>
-        </ul>
+          <h3>1.4 Documentation Workflow at Scale</h3>
+          <ul>
+            <li>Maintain source of truth in:
+              <code>app/validation/user.py</code>,
+              <code>app/schemas/errors.py</code>,
+              <code>app/openapi/examples/errors.py</code>,
+              router <code>responses</code>.
+            </li>
+            <li>After API changes run <code>make sync-docs</code>; verify marker blocks only are auto-updated.</li>
+            <li>Keep documentation concise: explain standards and extension path, not full per-code dumps.</li>
+          </ul>
 
-        <h3>1.5 Testing Policy (Mandatory)</h3>
-        <ul>
-          <li>API changes without tests are considered incomplete and should not be released.</li>
-          <li>For each endpoint, keep at least one success and one failure-path test.</li>
-          <li>Keep tests deterministic and isolated from mutable local state.</li>
-          <li>Use <code>make test</code> for full run and <code>make test-one path=...</code> for targeted checks.</li>
-        </ul>
+          <h3>1.5 Testing Policy (Mandatory)</h3>
+          <ul>
+            <li>API changes without tests are considered incomplete and should not be released.</li>
+            <li>For each endpoint, keep at least one success and one failure-path test.</li>
+            <li>Keep tests deterministic and isolated from mutable local state.</li>
+            <li>Use <code>make test</code> for full run and <code>make test-one path=...</code> for targeted checks.</li>
+          </ul>
 
-        <h3>1.6 Pre-Deploy Procedure (Mandatory)</h3>
-        <ul>
-          <li>Before deployment, run <code>make pre-deploy</code> as a quality gate.</li>
-          <li>Pipeline includes: <code>make env-check</code>, <code>make quality-check</code>,
-            <code>make sync-docs</code>.
-          </li>
-          <li>Deployment must be blocked if any step fails.</li>
-          <li>Use <code>make deploy DEPLOY_CMD="..."</code> to enforce pre-deploy gate before real deployment command.
-          </li>
-        </ul>
+          <h3>1.6 Pre-Deploy Procedure (Mandatory)</h3>
+          <ul>
+            <li>Before deployment, run <code>make pre-deploy</code> as a quality gate.</li>
+            <li>Pipeline includes: <code>make env-check</code>, <code>make quality-check</code>,
+              <code>make sync-docs</code>.
+            </li>
+            <li>Deployment must be blocked if any step fails.</li>
+            <li>Use <code>make deploy DEPLOY_CMD="..."</code> to enforce pre-deploy gate before real deployment command.
+            </li>
+          </ul>
 
-        <h3>1.7 Code Formatting and Linting</h3>
-        <ul>
-          <li>Use <code>make format</code> to keep code style consistent before review.</li>
-          <li>Use <code>make lint-check</code> and <code>make type-check</code> as mandatory static checks.</li>
-          <li>Use <code>make quality-check</code> for combined lint + typecheck + tests + docs sync.</li>
-          <li>Install hooks once with <code>make pre-commit-install</code> and run with
-            <code>make pre-commit-check</code>.
-          </li>
-        </ul>
+          <h3>1.7 Code Formatting and Linting</h3>
+          <ul>
+            <li>Use <code>make format</code> to keep code style consistent before review.</li>
+            <li>Use <code>make lint-check</code> and <code>make type-check</code> as mandatory static checks.</li>
+            <li>Use <code>make quality-check</code> for combined lint + typecheck + tests + docs sync.</li>
+            <li>Install hooks once with <code>make pre-commit-install</code> and run with
+              <code>make pre-commit-check</code>.
+            </li>
+          </ul>
 
-        <h3>1.8 API Security by Default (Mandatory)</h3>
-        <ul>
-          <li>Every protected route under <code>/api/v1</code> must pass auth, rate-limit, body-limit, and security-header checks.</li>
-          <li>Auth strategy is configured via <code>API_AUTH_STRATEGY</code>; default mode is <code>mock_api_key</code>.</li>
-          <li>Any endpoint contract must explicitly document <code>401</code>, <code>413</code>, and <code>429</code> responses when applicable.</li>
-          <li>Do not bypass CORS allowlist or increase limits without decision record in ADR.</li>
-          <li>Security-related config changes require docs update in the same change set.</li>
-        </ul>
-      </div>
-    </section>
+          <h3>1.8 API Security by Default (Mandatory)</h3>
+          <ul>
+            <li>Every protected route under <code>/api/v1</code> must pass auth, rate-limit, body-limit, and security-header checks.</li>
+            <li>Auth strategy is configured via <code>API_AUTH_STRATEGY</code>; default mode is <code>mock_api_key</code>.</li>
+            <li>Any endpoint contract must explicitly document <code>401</code>, <code>413</code>, and <code>429</code> responses when applicable.</li>
+            <li>Do not bypass CORS allowlist or increase limits without decision record in ADR.</li>
+            <li>Security-related config changes require docs update in the same change set.</li>
+          </ul>
 
-    <section>
-      <h2 id="dev-docs-as-code">2. Docs as Code Workflow</h2>
-      <div class="card">
-        <p>Documentation is treated as production artifact and evolves together with application code.</p>
-        <h3>2.1 Source of Truth</h3>
-        <ul>
-          <li>Service behavior and contracts: <code>app/</code></li>
-          <li>Error mapping: <code>app/validation/user.py</code></li>
-          <li>OpenAPI examples: <code>app/openapi/examples/</code></li>
-          <li>UML sources: <code>docs/uml/**/*.puml</code></li>
-          <li>Generated sections: marker blocks in <code>README.md</code> and <code>docs/system-analysis.html</code>
-          </li>
-        </ul>
+          <h3>1.9 Idempotency for Write Operations (Mandatory)</h3>
+          <ul>
+            <li>Critical write endpoints must support idempotent retries with <code>Idempotency-Key</code>.</li>
+            <li>Reuse of key with same payload must replay original success response.</li>
+            <li>Reuse of key with different payload must fail with explicit conflict response.</li>
+            <li>Idempotency rules and examples must be visible in OpenAPI docs and tests.</li>
+            <li>Policy-level changes are captured in ADR before rollout.</li>
+          </ul>
+        </div>
+      </section>
 
-        <h3>2.2 Required Commands</h3>
-        <ul>
-          <li>During implementation: <code>make format</code>, <code>make lint-check</code>,
-            <code>make type-check</code>, <code>make test</code>.
-          </li>
-          <li>Docs flow: <code>make sync-docs</code> (single command for render + sync + html template normalization).</li>
-          <li>Standalone HTML formatting: <code>make docs-format</code>.</li>
-          <li>Before release: <code>make quality-check</code>, <code>make pre-deploy</code>.</li>
-        </ul>
-      </div>
-    </section>
+      <section>
+        <h2 id="dev-docs-as-code">2. Docs as Code Workflow</h2>
+        <div class="card">
+          <p>Documentation is treated as production artifact and evolves together with application code.</p>
+          <h3>2.1 Source of Truth</h3>
+          <ul>
+            <li>Service behavior and contracts: <code>app/</code></li>
+            <li>Error mapping: <code>app/validation/user.py</code></li>
+            <li>OpenAPI examples: <code>app/openapi/examples/</code></li>
+            <li>UML sources: <code>docs/uml/**/*.puml</code></li>
+            <li>Generated sections: marker blocks in <code>README.md</code> and <code>docs/system-analysis.html</code>
+            </li>
+          </ul>
 
-    <section>
-      <h2 id="dev-versioning">3. API Versioning Policy (Required)</h2>
-      <div class="card">
-        <h3>3.1 Version Model</h3>
-        <ul>
-          <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
-          <li>Current major is backward-compatible by default.</li>
-          <li>Breaking changes are released only in a new major version (for example <code>/api/v2</code>).</li>
-        </ul>
+          <h3>2.2 Required Commands</h3>
+          <ul>
+            <li>During implementation: <code>make format</code>, <code>make lint-check</code>,
+              <code>make type-check</code>, <code>make test</code>.
+            </li>
+            <li>Docs flow: <code>make sync-docs</code> (single command for render + sync + html template normalization).</li>
+            <li>Standalone HTML formatting: <code>make docs-format</code>.</li>
+            <li>Before release: <code>make quality-check</code>, <code>make pre-deploy</code>.</li>
+          </ul>
+          <p class="small">
+            Auto-generated from <code>Makefile</code> help output (source of truth):
+          </p>
+          <!-- BEGIN:MAKEFILE_COMMANDS -->
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>make deploy DEPLOY_CMD=&#x27;…&#x27;</code></td>
+                <td>Run pre-deploy then deploy command</td>
+              </tr>
+              <tr>
+                <td><code>make docs-format</code></td>
+                <td>Apply shared HTML template to docs/*.html</td>
+              </tr>
+              <tr>
+                <td><code>make env-check</code></td>
+                <td>Verify env, deps, and DB connectivity</td>
+              </tr>
+              <tr>
+                <td><code>make format-check</code></td>
+                <td>Verify code formatting (no changes)</td>
+              </tr>
+              <tr>
+                <td><code>make format-fix</code></td>
+                <td>Auto-format Python code</td>
+              </tr>
+              <tr>
+                <td><code>make install</code></td>
+                <td>Install dependencies</td>
+              </tr>
+              <tr>
+                <td><code>make lint-check</code></td>
+                <td>Run Ruff lint checks</td>
+              </tr>
+              <tr>
+                <td><code>make lint-fix</code></td>
+                <td>Run Ruff with auto-fixes</td>
+              </tr>
+              <tr>
+                <td><code>make migrate</code></td>
+                <td>Apply all Alembic migrations</td>
+              </tr>
+              <tr>
+                <td><code>make migration name=…</code></td>
+                <td>Auto-generate new Alembic migration</td>
+              </tr>
+              <tr>
+                <td><code>make pre-commit-check</code></td>
+                <td>Run all pre-commit hooks</td>
+              </tr>
+              <tr>
+                <td><code>make pre-commit-install</code></td>
+                <td>Install git pre-commit hooks</td>
+              </tr>
+              <tr>
+                <td><code>make pre-deploy</code></td>
+                <td>Run full quality gate before deploy</td>
+              </tr>
+              <tr>
+                <td><code>make quality-check</code></td>
+                <td>Run lint-check + type-check + test + sync-docs</td>
+              </tr>
+              <tr>
+                <td><code>make requirements</code></td>
+                <td>Auto-generate requirements.txt from .venv</td>
+              </tr>
+              <tr>
+                <td><code>make run</code></td>
+                <td>Start FastAPI dev server</td>
+              </tr>
+              <tr>
+                <td><code>make sync-docs</code></td>
+                <td>Auto-update code-synced docs: README.md, docs/system-analysis.html, docs/engineering-practices.html</td>
+              </tr>
+              <tr>
+                <td><code>make test</code></td>
+                <td>Run full test suite (pytest)</td>
+              </tr>
+              <tr>
+                <td><code>make test-one path=…</code></td>
+                <td>Run one test file or node</td>
+              </tr>
+              <tr>
+                <td><code>make test-warnings</code></td>
+                <td>Run tests with full warning details</td>
+              </tr>
+              <tr>
+                <td><code>make type-check</code></td>
+                <td>Run mypy type checks</td>
+              </tr>
+              <tr>
+                <td><code>make venv</code></td>
+                <td>Create virtual environment</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- END:MAKEFILE_COMMANDS -->
+        </div>
+      </section>
 
-        <h3>3.2 Breaking Changes (Not Allowed in Same Major)</h3>
-        <ul>
-          <li>Removing or renaming endpoints, fields, or enum values.</li>
-          <li>Changing field type or semantic meaning.</li>
-          <li>Changing requiredness of existing request fields (<code>optional -> required</code>).</li>
-          <li>Repurposing existing error <code>code</code>/<code>key</code> semantics.</li>
-        </ul>
+      <section>
+        <h2 id="dev-versioning">3. API Versioning Policy (Required)</h2>
+        <div class="card">
+          <h3>3.1 Version Model</h3>
+          <ul>
+            <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
+            <li>Current major is backward-compatible by default.</li>
+            <li>Breaking changes are released only in a new major version (for example <code>/api/v2</code>).</li>
+          </ul>
 
-        <h3>3.3 Allowed Non-Breaking Changes</h3>
-        <ul>
-          <li>Adding new endpoints.</li>
-          <li>Adding optional fields in request/response payloads.</li>
-          <li>Adding new error codes without changing existing ones.</li>
-        </ul>
-      </div>
-    </section>
+          <h3>3.2 Breaking Changes (Not Allowed in Same Major)</h3>
+          <ul>
+            <li>Removing or renaming endpoints, fields, or enum values.</li>
+            <li>Changing field type or semantic meaning.</li>
+            <li>Changing requiredness of existing request fields (<code>optional -> required</code>).</li>
+            <li>Repurposing existing error <code>code</code>/<code>key</code> semantics.</li>
+          </ul>
 
-    <section>
-      <h2 id="developer-handbook">4. Developer Handbook (Entry Point)</h2>
-      <div class="card">
-        <p>
-          Entry-point navigation for developers: requirements, contracts, business logic,
-          architecture decisions, and implementation guides.
-        </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Document</th>
-              <th>Description</th>
-              <th>Open</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>System Analysis</td>
-              <td>Analyst document with context, FR/NFR, architecture, API contracts, and diagrams.</td>
-              <td><a href="./system-analysis.html">Open document</a></td>
-            </tr>
-            <tr>
-              <td>Developer Docs Index</td>
-              <td>Entry point for all developer guides.</td>
-              <td><a href="./developer/README.html">Open index</a></td>
-            </tr>
-            <tr>
-              <td>Requirements Guide</td>
-              <td>Developer interpretation of requirements and done criteria.</td>
-              <td><a href="./developer/0001-requirements.html">Open guide</a></td>
-            </tr>
-            <tr>
-              <td>Schemas and Contracts</td>
-              <td>Rules for request/response/error contracts and backward-compatible changes.</td>
-              <td><a href="./developer/0002-schemas-and-contracts.html">Open guide</a></td>
-            </tr>
-            <tr>
-              <td>Business Logic Guide</td>
-              <td>Layer responsibilities and implementation change flow.</td>
-              <td><a href="./developer/0003-business-logic.html">Open guide</a></td>
-            </tr>
-            <tr>
-              <td>Beginner Endpoint Guide</td>
-              <td>Step-by-step guide for adding <code>POST /api/v1/contract</code>.</td>
-              <td><a href="./developer/0004-how-to-add-post-contract.html">Open guide</a></td>
-            </tr>
-            <tr>
-              <td>ADR Index</td>
-              <td>Architecture and policy decisions with rationale and references.</td>
-              <td><a href="./adr/README.html">Open ADR index</a></td>
-            </tr>
-            <tr>
-              <td>ADR Template</td>
-              <td>Template for recording a new architecture decision.</td>
-              <td><a href="./adr/0000-template.html">Open template</a></td>
-            </tr>
-            <tr>
-              <td>ADR 0005 (API Security Defaults)</td>
-              <td>Security-by-default policy for auth, rate-limit, CORS, headers, and body-size limits.</td>
-              <td><a href="./adr/0005-api-security-defaults.html">Open ADR</a></td>
-            </tr>
-            <tr>
-              <td>Runbooks Index</td>
-              <td>Operational incident guides and standardized recovery checklists.</td>
-              <td><a href="./runbooks/README.html">Open runbooks</a></td>
-            </tr>
-            <tr>
-              <td>Runbook Template</td>
-              <td>Template for creating a new runbook with trigger, triage, and recovery steps.</td>
-              <td><a href="./runbooks/0000-template.html">Open template</a></td>
-            </tr>
-            <tr>
-              <td>API Security Runbook</td>
-              <td>Incident recovery for auth failures, rate-limit spikes, CORS issues, and security headers/body limits.</td>
-              <td><a href="./runbooks/0006-api-security-failing.html">Open runbook</a></td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="small">
-          Architecture and policy decisions are documented via ADR. Operational recovery procedures are documented via
-          runbooks.
-        </p>
-        <p class="small">
-          Runbook mini-SLA: temporary incident notes within 30 minutes, finalized runbook updates within 24 hours
-          after resolution.
-        </p>
-      </div>
-    </section>
-  </main>
-</body>
+          <h3>3.3 Allowed Non-Breaking Changes</h3>
+          <ul>
+            <li>Adding new endpoints.</li>
+            <li>Adding optional fields in request/response payloads.</li>
+            <li>Adding new error codes without changing existing ones.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2 id="developer-handbook">4. Developer Handbook (Entry Point)</h2>
+        <div class="card">
+          <p>
+            Entry-point navigation for developers: requirements, contracts, business logic,
+            architecture decisions, and implementation guides.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Description</th>
+                <th>Open</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- BEGIN:HANDBOOK_DOC_ROWS -->
+              <tr>
+                <td>System Analysis</td>
+                <td>Analyst document with context, FR/NFR, architecture, API contracts, and diagrams.</td>
+                <td><a href="./system-analysis.html">Open document</a></td>
+              </tr>
+              <tr>
+                <td>Engineering Practices</td>
+                <td>Engineering workflow, delivery policies, and quality gates.</td>
+                <td><a href="./engineering-practices.html">Open document</a></td>
+              </tr>
+              <tr>
+                <td>Developer Docs Index</td>
+                <td>Entry point for all developer guides.</td>
+                <td><a href="./developer/README.html">Open index</a></td>
+              </tr>
+              <tr>
+                <td>Developer Requirements Guide</td>
+                <td>Developer interpretation of requirements and done criteria.</td>
+                <td><a href="./developer/0001-requirements.html">Open guide</a></td>
+              </tr>
+              <tr>
+                <td>Schemas and Contracts Guide</td>
+                <td>Rules for request/response/error contracts and backward-compatible changes.</td>
+                <td><a href="./developer/0002-schemas-and-contracts.html">Open guide</a></td>
+              </tr>
+              <tr>
+                <td>Business Logic Guide</td>
+                <td>Layer responsibilities and implementation change flow.</td>
+                <td><a href="./developer/0003-business-logic.html">Open guide</a></td>
+              </tr>
+              <tr>
+                <td>Guide For Beginners: Add `POST /api/v1/contract`</td>
+                <td>Step-by-step guide for adding POST /api/v1/contract.</td>
+                <td><a href="./developer/0004-how-to-add-post-contract.html">Open guide</a></td>
+              </tr>
+              <tr>
+                <td>ADR Index</td>
+                <td>Architecture and policy decisions with rationale and references.</td>
+                <td><a href="./adr/README.html">Open index</a></td>
+              </tr>
+              <tr>
+                <td>ADR Template</td>
+                <td>Template for creating a new architecture decision record.</td>
+                <td><a href="./adr/0000-template.html">Open template</a></td>
+              </tr>
+              <tr>
+                <td>ADR 0001: Adopt Docs as Code</td>
+                <td>Project architecture decision record.</td>
+                <td><a href="./adr/0001-docs-as-code.html">Open ADR</a></td>
+              </tr>
+              <tr>
+                <td>ADR 0002: Mandatory API Testing Policy</td>
+                <td>Project architecture decision record.</td>
+                <td><a href="./adr/0002-testing-policy.html">Open ADR</a></td>
+              </tr>
+              <tr>
+                <td>ADR 0003: Error Contract Governance</td>
+                <td>Project architecture decision record.</td>
+                <td><a href="./adr/0003-error-contract-governance.html">Open ADR</a></td>
+              </tr>
+              <tr>
+                <td>ADR 0004: API Versioning Policy</td>
+                <td>Project architecture decision record.</td>
+                <td><a href="./adr/0004-api-versioning-policy.html">Open ADR</a></td>
+              </tr>
+              <tr>
+                <td>ADR 0005: API Security Defaults</td>
+                <td>Security-by-default policy for auth, rate-limit, CORS, headers, and body-size limits.</td>
+                <td><a href="./adr/0005-api-security-defaults.html">Open ADR</a></td>
+              </tr>
+              <tr>
+                <td>ADR 0006: Idempotency For Write Operations</td>
+                <td>Idempotency contract for write operations using Idempotency-Key and dedup behavior.</td>
+                <td><a href="./adr/0006-idempotency-write-operations.html">Open ADR</a></td>
+              </tr>
+              <tr>
+                <td>Runbooks Index</td>
+                <td>Operational incident guides and standardized recovery checklists.</td>
+                <td><a href="./runbooks/README.html">Open index</a></td>
+              </tr>
+              <tr>
+                <td>Runbook Template</td>
+                <td>Template for creating a new operational runbook.</td>
+                <td><a href="./runbooks/0000-template.html">Open template</a></td>
+              </tr>
+              <tr>
+                <td>Runbook: Tests Failing</td>
+                <td>Project operational runbook.</td>
+                <td><a href="./runbooks/0001-tests-failing.html">Open runbook</a></td>
+              </tr>
+              <tr>
+                <td>Runbook: Migrations Failing</td>
+                <td>Project operational runbook.</td>
+                <td><a href="./runbooks/0002-migrations-failing.html">Open runbook</a></td>
+              </tr>
+              <tr>
+                <td>Runbook: Logging Failing</td>
+                <td>Project operational runbook.</td>
+                <td><a href="./runbooks/0003-logging-failing.html">Open runbook</a></td>
+              </tr>
+              <tr>
+                <td>Runbook: Pre-commit Failing</td>
+                <td>Project operational runbook.</td>
+                <td><a href="./runbooks/0004-pre-commit-failing.html">Open runbook</a></td>
+              </tr>
+              <tr>
+                <td>Runbook: Quality Check Failing</td>
+                <td>Project operational runbook.</td>
+                <td><a href="./runbooks/0005-quality-check-failing.html">Open runbook</a></td>
+              </tr>
+              <tr>
+                <td>Runbook: API Security Failing</td>
+                <td>Incident recovery for auth failures, rate-limit spikes, CORS issues, and security headers/body limits.</td>
+                <td><a href="./runbooks/0006-api-security-failing.html">Open runbook</a></td>
+              </tr>
+              <!-- END:HANDBOOK_DOC_ROWS -->
+            </tbody>
+          </table>
+          <p class="small">
+            Architecture and policy decisions are documented via ADR. Operational recovery procedures are documented via
+            runbooks.
+          </p>
+          <p class="small">
+            Runbook mini-SLA: temporary incident notes within 30 minutes, finalized runbook updates within 24 hours
+            after resolution.
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
 
 </html>

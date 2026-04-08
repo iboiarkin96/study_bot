@@ -1,105 +1,105 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Business Logic Guide</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-<h1>Business Logic Guide</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="./README.html" class="is-active" aria-current="page">Developer Docs</a>
-      <a href="../adr/README.html">ADR</a>
-      <a href="../runbooks/README.html">Runbooks</a>
-    </nav>
-<p>This file describes how business logic is structured in the project.</p>
-<h2>1. Layering model</h2>
-<ul>
-<li>API layer: <code>app/api/v1/</code> (transport only)
-</li>
-<li>Service layer: <code>app/services/</code> (business rules)
-</li>
-<li>Repository layer: <code>app/repositories/</code> (DB access)
-</li>
-<li>Models: <code>app/models/</code> (ORM entities)
-</li>
-</ul>
-<p>Rule:</p>
-<ul>
-<li>Router does not implement business rules directly.
-</li>
-<li>Service does not depend on FastAPI request primitives.
-</li>
-<li>Repository does not return HTTP-specific structures.
-</li>
-</ul>
-<h2>2. Responsibility boundaries</h2>
-<p>Router:</p>
-<ul>
-<li>parse/validate request,
-</li>
-<li>call service,
-</li>
-<li>shape response model,
-</li>
-<li>declare OpenAPI responses.
-</li>
-</ul>
-<p>Service:</p>
-<ul>
-<li>enforce domain rules,
-</li>
-<li>orchestrate repositories,
-</li>
-<li>raise domain/business errors.
-</li>
-</ul>
-<p>Repository:</p>
-<ul>
-<li>isolate query/write mechanics,
-</li>
-<li>keep persistence details local.
-</li>
-</ul>
-<h2>3. Transactions and consistency</h2>
-<ul>
-<li>Write operations must be atomic.
-</li>
-<li>Duplicate/conflict checks must be deterministic.
-</li>
-<li>Any failure path must return stable error contract.
-</li>
-</ul>
-<h2>4. Logging and observability</h2>
-<ul>
-<li>Request-level logging: middleware in <code>app/main.py</code>.
-</li>
-<li>Business event logs: service layer.
-</li>
-<li>Log format/config: <code>app/core/logging.py</code>.
-</li>
-</ul>
-<h2>5. Typical change flow</h2>
-<ol>
-<li>Define/adjust schema.
-</li>
-<li>Implement service rule.
-</li>
-<li>Implement repository operation.
-</li>
-<li>Wire router.
-</li>
-<li>Add examples and error mappings.
-</li>
-<li>Add tests.
-</li>
-<li>Run make pipeline.
-</li>
-</ol>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Business Logic Guide</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Business Logic Guide</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="./README.html" class="is-active" aria-current="page">Developer Docs</a>
+        <a href="../adr/README.html">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <p>This file describes how business logic is structured in the project.</p>
+      <h2>1. Layering model</h2>
+      <ul>
+        <li>API layer: <code>app/api/v1/</code> (transport only)
+        </li>
+        <li>Service layer: <code>app/services/</code> (business rules)
+        </li>
+        <li>Repository layer: <code>app/repositories/</code> (DB access)
+        </li>
+        <li>Models: <code>app/models/</code> (ORM entities)
+        </li>
+      </ul>
+      <p>Rule:</p>
+      <ul>
+        <li>Router does not implement business rules directly.
+        </li>
+        <li>Service does not depend on FastAPI request primitives.
+        </li>
+        <li>Repository does not return HTTP-specific structures.
+        </li>
+      </ul>
+      <h2>2. Responsibility boundaries</h2>
+      <p>Router:</p>
+      <ul>
+        <li>parse/validate request,
+        </li>
+        <li>call service,
+        </li>
+        <li>shape response model,
+        </li>
+        <li>declare OpenAPI responses.
+        </li>
+      </ul>
+      <p>Service:</p>
+      <ul>
+        <li>enforce domain rules,
+        </li>
+        <li>orchestrate repositories,
+        </li>
+        <li>raise domain/business errors.
+        </li>
+      </ul>
+      <p>Repository:</p>
+      <ul>
+        <li>isolate query/write mechanics,
+        </li>
+        <li>keep persistence details local.
+        </li>
+      </ul>
+      <h2>3. Transactions and consistency</h2>
+      <ul>
+        <li>Write operations must be atomic.
+        </li>
+        <li>Duplicate/conflict checks must be deterministic.
+        </li>
+        <li>Any failure path must return stable error contract.
+        </li>
+      </ul>
+      <h2>4. Logging and observability</h2>
+      <ul>
+        <li>Request-level logging: middleware in <code>app/main.py</code>.
+        </li>
+        <li>Business event logs: service layer.
+        </li>
+        <li>Log format/config: <code>app/core/logging.py</code>.
+        </li>
+      </ul>
+      <h2>5. Typical change flow</h2>
+      <ol>
+        <li>Define/adjust schema.
+        </li>
+        <li>Implement service rule.
+        </li>
+        <li>Implement repository operation.
+        </li>
+        <li>Wire router.
+        </li>
+        <li>Add examples and error mappings.
+        </li>
+        <li>Add tests.
+        </li>
+        <li>Run make pipeline.
+        </li>
+      </ol>
+    </main>
+  </body>
 </html>

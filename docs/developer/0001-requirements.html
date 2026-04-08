@@ -1,78 +1,82 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Developer Requirements Guide</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-<h1>Developer Requirements Guide</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="./README.html" class="is-active" aria-current="page">Developer Docs</a>
-      <a href="../adr/README.html">ADR</a>
-      <a href="../runbooks/README.html">Runbooks</a>
-    </nav>
-<p>This file is the developer-facing source for requirements.</p>
-<h2>1. Functional requirements</h2>
-<p>Use <code>docs/system-analysis.html</code> section **Functional Requirements** as product-level source.</p>
-<p>Developer interpretation:</p>
-<ul>
-<li>Each endpoint must map to one or more explicit functional requirements.
-</li>
-<li>Behavior must be deterministic and testable.
-</li>
-<li>API contract and persistence behavior must be aligned.
-</li>
-</ul>
-<h2>2. Non-functional requirements (NFR)</h2>
-<p>Primary source:</p>
-<ul>
-<li><code>docs/system-analysis.html#dev-nfr</code>
-</li>
-</ul>
-<p>Engineering checklist:</p>
-<ul>
-<li>Performance: avoid obvious N+1 and excessive serialization.
-</li>
-<li>Reliability: transactional writes, rollback on failure.
-</li>
-<li>Maintainability: strict layering (<code>api -&gt; service -&gt; repository</code>).
-</li>
-<li>Observability: request and business logs are structured and actionable.
-</li>
-<li>Governance: API and error contracts evolve additively.
-</li>
-</ul>
-<h2>3. Requirement-to-implementation mapping</h2>
-<p>When implementing a new endpoint, ensure:</p>
-<ol>
-<li>Requirement is referenced in endpoint description/doc.
-</li>
-<li>Request/response schemas are explicit.
-</li>
-<li>Business rules are implemented in service layer.
-</li>
-<li>Error behavior is explicit in OpenAPI <code>responses</code>.
-</li>
-<li>Tests cover success and failure path.
-</li>
-</ol>
-<h2>4. Done criteria (requirements)</h2>
-<p>Change is complete only if:</p>
-<ul>
-<li>functional behavior is implemented,
-</li>
-<li>NFR impact is considered,
-</li>
-<li>tests pass,
-</li>
-<li>docs are synchronized (<code>make sync-docs</code>).
-</li>
-</ul>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Developer Requirements Guide</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Developer Requirements Guide</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="./README.html" class="is-active" aria-current="page">Developer Docs</a>
+        <a href="../adr/README.html">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <p>This file is the developer-facing source for requirements.</p>
+      <h2>1. Functional requirements</h2>
+      <p>Use <code>docs/system-analysis.html</code> section **Functional Requirements** as product-level source.</p>
+      <p>Developer interpretation:</p>
+      <ul>
+        <li>Each endpoint must map to one or more explicit functional requirements.
+        </li>
+        <li>Behavior must be deterministic and testable.
+        </li>
+        <li>API contract and persistence behavior must be aligned.
+        </li>
+      </ul>
+      <h2>2. Non-functional requirements (NFR)</h2>
+      <p>Primary source:</p>
+      <ul>
+        <li><code>docs/system-analysis.html#dev-nfr</code>
+        </li>
+      </ul>
+      <p>Engineering checklist:</p>
+      <ul>
+        <li>Performance: avoid obvious N+1 and excessive serialization.
+        </li>
+        <li>Reliability: transactional writes, rollback on failure.
+        </li>
+        <li>Maintainability: strict layering (<code>api -&gt; service -&gt; repository</code>).
+        </li>
+        <li>Observability: request and business logs are structured and actionable.
+        </li>
+        <li>Governance: API and error contracts evolve additively.
+        </li>
+        <li>Write idempotency: critical write operations must be safe for retry with deterministic dedup behavior.
+        </li>
+      </ul>
+      <h2>3. Requirement-to-implementation mapping</h2>
+      <p>When implementing a new endpoint, ensure:</p>
+      <ol>
+        <li>Requirement is referenced in endpoint description/doc.
+        </li>
+        <li>Request/response schemas are explicit.
+        </li>
+        <li>Business rules are implemented in service layer.
+        </li>
+        <li>Error behavior is explicit in OpenAPI <code>responses</code>.
+        </li>
+        <li>Tests cover success and failure path.
+        </li>
+        <li>Write endpoints include idempotency contract (<code>Idempotency-Key</code>, replay, conflict semantics).
+        </li>
+      </ol>
+      <h2>4. Done criteria (requirements)</h2>
+      <p>Change is complete only if:</p>
+      <ul>
+        <li>functional behavior is implemented,
+        </li>
+        <li>NFR impact is considered,
+        </li>
+        <li>tests pass,
+        </li>
+        <li>docs are synchronized (<code>make sync-docs</code>).
+        </li>
+      </ul>
+    </main>
+  </body>
 </html>

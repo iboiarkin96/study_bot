@@ -15,7 +15,11 @@ def test_create_user_success(client) -> None:
         "timezone": "UTC",
     }
 
-    response = client.post("/api/v1/user", json=payload)
+    response = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": "create-user-success-1"},
+    )
 
     assert response.status_code == 201
     body = response.json()
@@ -32,8 +36,16 @@ def test_create_user_duplicate_returns_business_error(client) -> None:
         "timezone": "UTC",
     }
 
-    first = client.post("/api/v1/user", json=payload)
-    second = client.post("/api/v1/user", json=payload)
+    first = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": "create-user-dup-1"},
+    )
+    second = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": "create-user-dup-2"},
+    )
 
     assert first.status_code == 201
     assert second.status_code == 400
@@ -50,7 +62,11 @@ def test_create_user_invalid_timezone_returns_code_based_422(client) -> None:
         "timezone": "Europe/123",
     }
 
-    response = client.post("/api/v1/user", json=payload)
+    response = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": "create-user-timezone-1"},
+    )
 
     assert response.status_code == 422
     body = response.json()
@@ -69,10 +85,83 @@ def test_create_user_requires_api_key() -> None:
         "timezone": "UTC",
     }
 
-    response = client.post("/api/v1/user", json=payload)
+    response = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": "create-user-auth-required-1"},
+    )
 
     assert response.status_code == 401
     detail = response.json()["detail"]
     assert detail["code"] == "COMMON_401"
     assert detail["key"] == "SECURITY_AUTH_REQUIRED"
     assert detail["source"] == "security"
+
+
+def test_create_user_idempotent_replay_returns_same_result(client) -> None:
+    payload = {
+        "system_user_id": "a1b2c3d4-0001-4000-8000-000000000004",
+        "full_name": "Ivan Petrov",
+        "timezone": "UTC",
+    }
+    headers = {"Idempotency-Key": "create-user-idempotent-replay-1"}
+
+    first = client.post("/api/v1/user", json=payload, headers=headers)
+    second = client.post("/api/v1/user", json=payload, headers=headers)
+
+    assert first.status_code == 201
+    assert second.status_code == 201
+    assert first.json() == second.json()
+
+
+def test_create_user_idempotency_key_conflict_returns_409(client) -> None:
+    base_headers = {"Idempotency-Key": "create-user-idempotent-conflict-1"}
+    first_payload = {
+        "system_user_id": "a1b2c3d4-0001-4000-8000-000000000005",
+        "full_name": "Ivan Petrov",
+        "timezone": "UTC",
+    }
+    second_payload = {
+        "system_user_id": "a1b2c3d4-0001-4000-8000-000000000006",
+        "full_name": "Petr Ivanov",
+        "timezone": "UTC",
+    }
+
+    first = client.post("/api/v1/user", json=first_payload, headers=base_headers)
+    second = client.post("/api/v1/user", json=second_payload, headers=base_headers)
+
+    assert first.status_code == 201
+    assert second.status_code == 409
+    detail = second.json()["detail"]
+    assert detail["code"] == "COMMON_409"
+    assert detail["key"] == "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD"
+
+
+def test_create_user_requires_idempotency_key(client) -> None:
+    payload = {
+        "system_user_id": "a1b2c3d4-0001-4000-8000-000000000007",
+        "full_name": "Ivan Petrov",
+        "timezone": "UTC",
+    }
+
+    response = client.post("/api/v1/user", json=payload)
+
+    assert response.status_code == 400
+    detail = response.json()["detail"]
+    assert detail["code"] == "COMMON_400"
+    assert detail["key"] == "IDEMPOTENCY_KEY_REQUIRED"
+
+
+def test_create_user_unknown_validation_shape_falls_back_to_common_code(client) -> None:
+    response = client.post(
+        "/api/v1/user",
+        json=[],
+        headers={"Idempotency-Key": "create-user-validation-fallback-1"},
+    )
+
+    assert response.status_code == 422
+    body = response.json()
+    assert body["error_type"] == "validation_error"
+    assert body["endpoint"] == "POST /api/v1/user"
+    assert body["errors"][0]["code"] == "COMMON_000"
+    assert body["errors"][0]["key"] == "COMMON_VALIDATION_ERROR"

@@ -1,63 +1,63 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Runbook: Logging Failing</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Runbook: Logging Failing</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
 
-<body>
-  <main class="container">
-    <h1>Runbook: Logging Failing</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="../developer/README.html">Developer Docs</a>
-      <a href="../adr/README.html">ADR</a>
-      <a href="./README.html" class="is-active" aria-current="page">Runbooks</a>
-    </nav>
-<h2>Trigger</h2>
-    <ul>
-      <li>No new entries in <code>logs/app.log</code>.</li>
-      <li>App crashes on startup with logging-related error.</li>
-      <li>Log file path/permissions issues.</li>
-    </ul>
-    <h2>Fast triage</h2>
-    <ol>
-      <li>Validate logging config in <code>.env</code>: <code>LOG_DIR</code>, <code>LOG_FILE_NAME</code>,
-        <code>LOG_LEVEL</code>.</li>
-      <li>Check directory and file permissions for <code>logs/</code>.</li>
-      <li>Start app and send test request: <code>make run</code>, then call <code>/health</code>.</li>
-    </ol>
-    <h2>Most common causes</h2>
-    <ul>
-      <li>Invalid/unexpected <code>LOG_LEVEL</code> value.</li>
-      <li>Non-writable log directory.</li>
-      <li>Relative path confusion from different working directory.</li>
-      <li>Logging setup changed but not initialized in <code>app/main.py</code>.</li>
-    </ul>
-    <h2>Recovery steps</h2>
-    <ol>
-      <li>Reset to known-good defaults in <code>.env</code>: <code>LOG_DIR=logs</code>,
-        <code>LOG_FILE_NAME=app.log</code>, <code>LOG_LEVEL=INFO</code>.</li>
-      <li>Restart app: stop server and run <code>make run</code> again.</li>
-      <li>Verify request log line appears after calling <code>/health</code>.</li>
-      <li>If still failing, inspect <code>app/core/logging.py</code> path/handler setup.</li>
-    </ol>
-    <h2>Exit criteria</h2>
-    <ul>
-      <li>New requests write lines to <code>logs/app.log</code>.</li>
-      <li>App startup is stable.</li>
-      <li><code>make test</code> still passes.</li>
-    </ul>
-    <h2>Follow-up</h2>
-    <ul>
-      <li>If incident exposed observability policy gap, document decision in ADR.</li>
-      <li>If incident exposed operational gap, update this runbook.</li>
-    </ul>
-  </main>
-</body>
+  <body>
+    <main class="container">
+      <h1>Runbook: Logging Failing</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="../adr/README.html">ADR</a>
+        <a href="./README.html" class="is-active" aria-current="page">Runbooks</a>
+      </nav>
+      <h2>Trigger</h2>
+      <ul>
+        <li>No new entries in <code>logs/app.log</code>.</li>
+        <li>App crashes on startup with logging-related error.</li>
+        <li>Log file path/permissions issues.</li>
+      </ul>
+      <h2>Fast triage</h2>
+      <ol>
+        <li>Validate logging config in <code>.env</code>: <code>LOG_DIR</code>, <code>LOG_FILE_NAME</code>,
+          <code>LOG_LEVEL</code>.</li>
+          <li>Check directory and file permissions for <code>logs/</code>.</li>
+          <li>Start app and send test request: <code>make run</code>, then call <code>/health</code>.</li>
+        </ol>
+        <h2>Most common causes</h2>
+        <ul>
+          <li>Invalid/unexpected <code>LOG_LEVEL</code> value.</li>
+          <li>Non-writable log directory.</li>
+          <li>Relative path confusion from different working directory.</li>
+          <li>Logging setup changed but not initialized in <code>app/main.py</code>.</li>
+        </ul>
+        <h2>Recovery steps</h2>
+        <ol>
+          <li>Reset to known-good defaults in <code>.env</code>: <code>LOG_DIR=logs</code>,
+            <code>LOG_FILE_NAME=app.log</code>, <code>LOG_LEVEL=INFO</code>.</li>
+            <li>Restart app: stop server and run <code>make run</code> again.</li>
+            <li>Verify request log line appears after calling <code>/health</code>.</li>
+            <li>If still failing, inspect <code>app/core/logging.py</code> path/handler setup.</li>
+          </ol>
+          <h2>Exit criteria</h2>
+          <ul>
+            <li>New requests write lines to <code>logs/app.log</code>.</li>
+            <li>App startup is stable.</li>
+            <li><code>make test</code> still passes.</li>
+          </ul>
+          <h2>Follow-up</h2>
+          <ul>
+            <li>If incident exposed observability policy gap, document decision in ADR.</li>
+            <li>If incident exposed operational gap, update this runbook.</li>
+          </ul>
+        </main>
+      </body>
 
-</html>
+    </html>

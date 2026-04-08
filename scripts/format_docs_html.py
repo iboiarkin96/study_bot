@@ -22,6 +22,23 @@ STYLESHEET_TAG_RE = re.compile(r'(?ims)^[ \t]*<link\s+rel="stylesheet"[^>]*>\s*'
 TOP_NAV_RE = re.compile(r'(?ims)^[ \t]*<nav class="top-nav"[^>]*>.*?</nav>\s*')
 MAIN_WITHOUT_CLASS_RE = re.compile(r"(?is)<main(?![^>]*class=)([^>]*)>")
 H1_RE = re.compile(r"(?is)<h1[^>]*>.*?</h1>")
+TAG_NAME_RE = re.compile(r"^</?\s*([a-zA-Z0-9:_-]+)")
+VOID_TAGS = {
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+}
 
 
 def _rel_href(current_file: Path, target_file: Path) -> str:
@@ -87,11 +104,69 @@ def _normalize_newlines(text: str) -> str:
     return text.rstrip() + "\n"
 
 
+def _line_tag_name(stripped_line: str) -> str | None:
+    match = TAG_NAME_RE.match(stripped_line)
+    if not match:
+        return None
+    return match.group(1).lower()
+
+
+def _is_inline_closed_tag(stripped_line: str) -> bool:
+    tag_name = _line_tag_name(stripped_line)
+    if not tag_name:
+        return False
+    return (
+        stripped_line.startswith(f"<{tag_name}")
+        and f"</{tag_name}>" in stripped_line
+        and not stripped_line.startswith("</")
+    )
+
+
+def _normalize_indentation(text: str) -> str:
+    lines = text.split("\n")
+    indent = 0
+    normalized_lines: list[str] = []
+
+    for raw_line in lines:
+        stripped = raw_line.strip()
+        if not stripped:
+            normalized_lines.append("")
+            continue
+
+        is_closing = stripped.startswith("</")
+        if is_closing:
+            indent = max(indent - 1, 0)
+
+        normalized_lines.append(("  " * indent) + stripped)
+
+        if stripped.startswith("<!"):
+            continue
+
+        tag_name = _line_tag_name(stripped)
+        if not tag_name:
+            continue
+
+        is_opening = stripped.startswith("<") and not stripped.startswith("</")
+        if not is_opening:
+            continue
+        if stripped.endswith("/>"):
+            continue
+        if tag_name in VOID_TAGS:
+            continue
+        if _is_inline_closed_tag(stripped):
+            continue
+
+        indent += 1
+
+    return "\n".join(normalized_lines)
+
+
 def format_html_file(path: Path) -> bool:
     original = path.read_text(encoding="utf-8")
     updated = _normalize_stylesheet(original, path)
     updated = _normalize_main(updated)
     updated = _normalize_nav(updated, path)
+    updated = _normalize_indentation(updated)
     updated = _normalize_newlines(updated)
     if updated == original:
         return False

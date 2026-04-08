@@ -20,7 +20,6 @@ make run
 
 Swagger:
 - [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
 ---
 
@@ -34,8 +33,9 @@ Primary sources: `docs/system-analysis.html`, `docs/engineering-practices.html`
 - [Docs process](docs/engineering-practices.html#dev-docs-as-code)
 - [API versioning](docs/engineering-practices.html#dev-versioning)
 - [ADR index](docs/adr/README.html)
+- [ADR idempotency policy](docs/adr/0006-idempotency-write-operations.html)
 - [Developer docs](docs/developer/README.html), [requirements](docs/developer/0001-requirements.html), [schemas](docs/developer/0002-schemas-and-contracts.html), [logic](docs/developer/0003-business-logic.html), [beginner guide](docs/developer/0004-how-to-add-post-contract.html)
-- [Runbooks](docs/runbooks/README.html), [template](docs/runbooks/0000-template.html), [pre-commit](docs/runbooks/0004-pre-commit-failing.html), [quality-check](docs/runbooks/0005-quality-check-failing.html),
+- [Runbooks](docs/runbooks/README.html), [template](docs/runbooks/0000-template.html), [pre-commit](docs/runbooks/0004-pre-commit-failing.html), [quality-check](docs/runbooks/0005-quality-check-failing.html), [api security](docs/runbooks/0006-api-security-failing.html)
 
 Policy:
 - Local operations are executed via `make` targets from `Makefile`.
@@ -117,7 +117,10 @@ Configuration is loaded from `.env` (based on `.env.example`).
 | Method | Path | Description |
 | ------ | ---- | ----------- |
 | `POST` | `/api/v1/user` | Create user |
+| `GET` | `/docs` | Custom Swagger Ui |
+| `GET` | `/favicon.png` | Favicon |
 | `GET` | `/health` | Health check |
+| `GET` | `/redoc` | Custom Redoc |
 <!-- END:HTTP_ENDPOINTS -->
 
 ---

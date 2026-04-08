@@ -1,91 +1,91 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ADR 0004: API Versioning Policy</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-    <h1>ADR 0004: API Versioning Policy</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="../developer/README.html">Developer Docs</a>
-      <a href="./README.html" class="is-active" aria-current="page">ADR</a>
-      <a href="../runbooks/README.html">Runbooks</a>
-    </nav>
-<h2>Status</h2>
-    <p>Accepted</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0004: API Versioning Policy</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0004: API Versioning Policy</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <h2>Status</h2>
+      <p>Accepted</p>
 
-    <h2>Context</h2>
-    <p>The project exposes a public HTTP API contract used by external clients.</p>
-    <p>Without explicit versioning and compatibility governance, contract evolution can introduce regressions, hidden breaking changes, and expensive client migration.</p>
+      <h2>Context</h2>
+      <p>The project exposes a public HTTP API contract used by external clients.</p>
+      <p>Without explicit versioning and compatibility governance, contract evolution can introduce regressions, hidden breaking changes, and expensive client migration.</p>
 
-    <h2>Decision</h2>
-    <p>Adopt path-based major versioning and additive contract evolution by default.</p>
-    <ol>
-      <li>Major API version is encoded in URL prefix (current: <code>/api/v1</code>).</li>
-      <li><code>v1</code> accepts only backward-compatible changes.</li>
-      <li>Breaking changes require a new major version (for example <code>/api/v2</code>).</li>
-      <li>Error contract semantics for existing <code>code</code>/<code>key</code> pairs are immutable.</li>
-      <li>Deprecated contract elements must keep a migration window of at least 90 days (or two release cycles, whichever is longer).</li>
-    </ol>
+      <h2>Decision</h2>
+      <p>Adopt path-based major versioning and additive contract evolution by default.</p>
+      <ol>
+        <li>Major API version is encoded in URL prefix (current: <code>/api/v1</code>).</li>
+        <li><code>v1</code> accepts only backward-compatible changes.</li>
+        <li>Breaking changes require a new major version (for example <code>/api/v2</code>).</li>
+        <li>Error contract semantics for existing <code>code</code>/<code>key</code> pairs are immutable.</li>
+        <li>Deprecated contract elements must keep a migration window of at least 90 days (or two release cycles, whichever is longer).</li>
+      </ol>
 
-    <h2>Compatibility Rules</h2>
-    <h3>Breaking changes (forbidden inside same major)</h3>
-    <ul>
-      <li>Endpoint removal or rename.</li>
-      <li>Field removal, rename, type change, or semantic change.</li>
-      <li>Existing optional field becoming required.</li>
-      <li>Enum value removal or semantic repurposing.</li>
-      <li>Repurposing existing business/validation error <code>code</code> and <code>key</code>.</li>
-    </ul>
-    <h3>Non-breaking changes (allowed inside same major)</h3>
-    <ul>
-      <li>Adding new endpoints.</li>
-      <li>Adding optional fields.</li>
-      <li>Adding new error codes with new keys.</li>
-      <li>Documentation/example improvements without runtime behavior change.</li>
-    </ul>
+      <h2>Compatibility Rules</h2>
+      <h3>Breaking changes (forbidden inside same major)</h3>
+      <ul>
+        <li>Endpoint removal or rename.</li>
+        <li>Field removal, rename, type change, or semantic change.</li>
+        <li>Existing optional field becoming required.</li>
+        <li>Enum value removal or semantic repurposing.</li>
+        <li>Repurposing existing business/validation error <code>code</code> and <code>key</code>.</li>
+      </ul>
+      <h3>Non-breaking changes (allowed inside same major)</h3>
+      <ul>
+        <li>Adding new endpoints.</li>
+        <li>Adding optional fields.</li>
+        <li>Adding new error codes with new keys.</li>
+        <li>Documentation/example improvements without runtime behavior change.</li>
+      </ul>
 
-    <h2>Deprecation Policy</h2>
-    <p>When deprecating behavior, document migration path and timeline in:</p>
-    <ul>
-      <li><code>README.md</code></li>
-      <li><code>docs/system-analysis.html</code></li>
-      <li>ADR notes (if policy-level)</li>
-    </ul>
-    <p>If deprecation headers are enabled, use:</p>
-    <ul>
-      <li><code>Deprecation: true</code></li>
-      <li><code>Sunset: &lt;date&gt;</code></li>
-      <li><code>Link: &lt;migration-guide&gt;; rel=&quot;deprecation&quot;</code></li>
-    </ul>
+      <h2>Deprecation Policy</h2>
+      <p>When deprecating behavior, document migration path and timeline in:</p>
+      <ul>
+        <li><code>README.md</code></li>
+        <li><code>docs/system-analysis.html</code></li>
+        <li>ADR notes (if policy-level)</li>
+      </ul>
+      <p>If deprecation headers are enabled, use:</p>
+      <ul>
+        <li><code>Deprecation: true</code></li>
+        <li><code>Sunset: &lt;date&gt;</code></li>
+        <li><code>Link: &lt;migration-guide&gt;; rel=&quot;deprecation&quot;</code></li>
+      </ul>
 
-    <h2>Implementation Guidance</h2>
-    <p>For contract-related changes:</p>
-    <ol>
-      <li>Update request/response schemas.</li>
-      <li>Update router <code>responses</code> and OpenAPI examples.</li>
-      <li>Add compatibility and regression tests.</li>
-      <li>Run <code>make pre-deploy</code> and <code>make sync-docs</code>.</li>
-      <li>Record policy-level decisions in ADR.</li>
-    </ol>
+      <h2>Implementation Guidance</h2>
+      <p>For contract-related changes:</p>
+      <ol>
+        <li>Update request/response schemas.</li>
+        <li>Update router <code>responses</code> and OpenAPI examples.</li>
+        <li>Add compatibility and regression tests.</li>
+        <li>Run <code>make pre-deploy</code> and <code>make sync-docs</code>.</li>
+        <li>Record policy-level decisions in ADR.</li>
+      </ol>
 
-    <h2>Consequences</h2>
-    <h3>Positive</h3>
-    <ul>
-      <li>Predictable API evolution for clients.</li>
-      <li>Lower risk of accidental contract breaks.</li>
-      <li>Clear migration expectations.</li>
-    </ul>
-    <h3>Trade-offs</h3>
-    <ul>
-      <li>Additional governance overhead for API changes.</li>
-      <li>Longer lifecycle for deprecated behavior support.</li>
-    </ul>
-  </main>
-</body>
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Predictable API evolution for clients.</li>
+        <li>Lower risk of accidental contract breaks.</li>
+        <li>Clear migration expectations.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Additional governance overhead for API changes.</li>
+        <li>Longer lifecycle for deprecated behavior support.</li>
+      </ul>
+    </main>
+  </body>
 </html>

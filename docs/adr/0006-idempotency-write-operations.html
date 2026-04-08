@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0006: Idempotency For Write Operations</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0006: Idempotency For Write Operations</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <h2>Status</h2>
+      <p>Accepted</p>
+
+      <h2>Context</h2>
+      <p>
+        Write operations in distributed systems can be retried by clients, gateways, and job runners.
+        Without idempotency guarantees, duplicate writes may create inconsistent state and conflicting
+        business events.
+      </p>
+
+      <h2>Decision</h2>
+      <ol>
+        <li>All critical write operations must support idempotent retry behavior.</li>
+        <li>Client sends <code>Idempotency-Key</code> for write requests.</li>
+        <li>Server deduplicates by <code>(endpoint, idempotency_key, payload_hash)</code>.</li>
+        <li>Same key + same payload replays original success response.</li>
+        <li>Same key + different payload returns conflict error.</li>
+      </ol>
+
+      <h2>Initial Implementation</h2>
+      <ul>
+        <li><code>POST /api/v1/user</code> requires <code>Idempotency-Key</code>.</li>
+        <li>Missing key returns <code>400 IDEMPOTENCY_KEY_REQUIRED</code>.</li>
+        <li>Key reuse with different payload returns <code>409 IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>.</li>
+        <li>Dedup records are persisted in DB table <code>idempotency_keys</code> to survive service restarts.</li>
+      </ul>
+
+      <h2>Contract Impact</h2>
+      <ul>
+        <li>Write endpoint OpenAPI docs must document idempotency header and conflict behavior.</li>
+        <li>Tests must include replay scenario and key-conflict scenario.</li>
+        <li>Runbooks should cover idempotency key misuse and retry errors.</li>
+      </ul>
+
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Safe retries for transient failures and network timeouts.</li>
+        <li>Reduced risk of duplicate writes in real integrations.</li>
+        <li>Explicit, testable retry contract for client teams.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Additional request discipline for client integrations.</li>
+        <li>Persistent dedup store introduces additional DB writes for write operations.</li>
+      </ul>
+    </main>
+  </body>
+</html>

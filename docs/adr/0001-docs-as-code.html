@@ -1,91 +1,91 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ADR 0001: Adopt Docs as Code</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-    <h1>ADR 0001: Adopt Docs as Code</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="../developer/README.html">Developer Docs</a>
-      <a href="./README.html" class="is-active" aria-current="page">ADR</a>
-      <a href="../runbooks/README.html">Runbooks</a>
-    </nav>
-<h2>Status</h2>
-    <p>Accepted</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0001: Adopt Docs as Code</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0001: Adopt Docs as Code</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <h2>Status</h2>
+      <p>Accepted</p>
 
-    <h2>Context</h2>
-    <p>The API surface is expanding and requires consistent contracts, reliable onboarding, and reproducible documentation updates.</p>
-    <p>Manual documentation updates are error-prone and can drift from runtime behavior.</p>
+      <h2>Context</h2>
+      <p>The API surface is expanding and requires consistent contracts, reliable onboarding, and reproducible documentation updates.</p>
+      <p>Manual documentation updates are error-prone and can drift from runtime behavior.</p>
 
-    <h2>Decision</h2>
-    <p>Adopt Docs as Code as a mandatory engineering practice:</p>
-    <ol>
-      <li>Keep documentation in repository and version it with code.</li>
-      <li>Treat OpenAPI contracts, error schemas, and examples as part of public API contract.</li>
-      <li>Use command-driven generation/synchronization for docs artifacts.</li>
-      <li>Enforce documentation checks in quality gates before deployment.</li>
-    </ol>
+      <h2>Decision</h2>
+      <p>Adopt Docs as Code as a mandatory engineering practice:</p>
+      <ol>
+        <li>Keep documentation in repository and version it with code.</li>
+        <li>Treat OpenAPI contracts, error schemas, and examples as part of public API contract.</li>
+        <li>Use command-driven generation/synchronization for docs artifacts.</li>
+        <li>Enforce documentation checks in quality gates before deployment.</li>
+      </ol>
 
-    <h2>Implementation in this repository</h2>
-    <ul>
-      <li>Human docs:
-        <ul>
-          <li><code>README.md</code></li>
-          <li><code>docs/system-analysis.html</code></li>
-        </ul>
-      </li>
-      <li>Diagram sources:
-        <ul>
-          <li><code>docs/uml/**/*.puml</code></li>
-        </ul>
-      </li>
-      <li>Generated diagrams:
-        <ul>
-          <li><code>docs/uml/rendered/*.png</code></li>
-        </ul>
-      </li>
-      <li>Sync tooling:
-        <ul>
-          <li><code>scripts/regenerate_docs.py</code></li>
-          <li><code>scripts/sync_docs.py</code></li>
-        </ul>
-      </li>
-      <li>Make targets:
-        <ul>
-          <li><code>make sync-docs</code></li>
-          <li><code>make pre-deploy</code></li>
-          <li><code>make deploy DEPLOY_CMD=&quot;...&quot;</code></li>
-        </ul>
-      </li>
-    </ul>
+      <h2>Implementation in this repository</h2>
+      <ul>
+        <li>Human docs:
+          <ul>
+            <li><code>README.md</code></li>
+            <li><code>docs/system-analysis.html</code></li>
+          </ul>
+        </li>
+        <li>Diagram sources:
+          <ul>
+            <li><code>docs/uml/**/*.puml</code></li>
+          </ul>
+        </li>
+        <li>Generated diagrams:
+          <ul>
+            <li><code>docs/uml/rendered/*.png</code></li>
+          </ul>
+        </li>
+        <li>Sync tooling:
+          <ul>
+            <li><code>scripts/regenerate_docs.py</code></li>
+            <li><code>scripts/sync_docs.py</code></li>
+          </ul>
+        </li>
+        <li>Make targets:
+          <ul>
+            <li><code>make sync-docs</code></li>
+            <li><code>make pre-deploy</code></li>
+            <li><code>make deploy DEPLOY_CMD=&quot;...&quot;</code></li>
+          </ul>
+        </li>
+      </ul>
 
-    <h2>Consequences</h2>
-    <h3>Positive</h3>
-    <ul>
-      <li>Documentation remains aligned with runtime behavior.</li>
-      <li>Changes are auditable in PR history.</li>
-      <li>Release process blocks stale docs and missing generated artifacts.</li>
-    </ul>
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Documentation remains aligned with runtime behavior.</li>
+        <li>Changes are auditable in PR history.</li>
+        <li>Release process blocks stale docs and missing generated artifacts.</li>
+      </ul>
 
-    <h3>Trade-offs</h3>
-    <ul>
-      <li>Slightly longer pre-release pipeline.</li>
-      <li>Developers must run docs commands as part of regular workflow.</li>
-    </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Slightly longer pre-release pipeline.</li>
+        <li>Developers must run docs commands as part of regular workflow.</li>
+      </ul>
 
-    <h2>Usage</h2>
-    <p>Typical workflow:</p>
-    <pre><code>
-make test
-make sync-docs
-make pre-deploy
-</code></pre>
-  </main>
-</body>
+      <h2>Usage</h2>
+      <p>Typical workflow:</p>
+      <pre><code>
+        make test
+        make sync-docs
+        make pre-deploy
+      </code></pre>
+    </main>
+  </body>
 </html>

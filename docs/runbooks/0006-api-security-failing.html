@@ -1,85 +1,85 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Runbook: API Security Failing</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-    <h1>Runbook: API Security Failing</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="../developer/README.html">Developer Docs</a>
-      <a href="../adr/README.html">ADR</a>
-      <a href="./README.html" class="is-active" aria-current="page">Runbooks</a>
-    </nav>
-<h2>Trigger</h2>
-    <ul>
-      <li><code>401</code> responses for protected endpoints even with expected credentials.</li>
-      <li><code>429</code> spikes on normal traffic profile.</li>
-      <li><code>413</code> responses after payload changes.</li>
-      <li>CORS errors in browser or missing expected security headers in responses.</li>
-    </ul>
-    <h2>Fast triage</h2>
-    <ol>
-      <li>Check current env values for security settings in <code>.env</code>.</li>
-      <li>Verify request contains auth header configured by <code>API_AUTH_HEADER</code>.</li>
-      <li>Reproduce with one endpoint: <code>POST /api/v1/user</code>.</li>
-      <li>Inspect application logs for security middleware warnings.</li>
-    </ol>
-    <h2>Most common causes</h2>
-    <ul>
-      <li>Wrong <code>API_MOCK_API_KEY</code> or wrong header name.</li>
-      <li>Unexpected aggressive rate-limit settings for local/test load.</li>
-      <li>Payload grew beyond <code>API_BODY_MAX_BYTES</code>.</li>
-      <li>Frontend origin missing in <code>CORS_ALLOW_ORIGINS</code>.</li>
-      <li>Middleware order/behavior changed without ADR + test updates.</li>
-    </ul>
-    <h2>Recovery steps by category</h2>
-    <h3>1) Auth failures (<code>401</code>)</h3>
-    <ul>
-      <li>Validate <code>API_AUTH_STRATEGY</code> is expected (<code>mock_api_key</code> or <code>disabled</code>).</li>
-      <li>Confirm request sends <code>API_AUTH_HEADER</code> with <code>API_MOCK_API_KEY</code> value.</li>
-      <li>Re-run tests: <code>make test-one path=tests/api/v1/test_user_create.py</code>.</li>
-    </ul>
-    <h3>2) Rate-limit overblocking (<code>429</code>)</h3>
-    <ul>
-      <li>Check <code>API_RATE_LIMIT_REQUESTS</code> and <code>API_RATE_LIMIT_WINDOW_SECONDS</code>.</li>
-      <li>Validate client retry/backoff behavior.</li>
-      <li>If policy change is needed, update ADR and docs before increasing limits.</li>
-    </ul>
-    <h3>3) Body limit errors (<code>413</code>)</h3>
-    <ul>
-      <li>Measure actual payload size and compare with <code>API_BODY_MAX_BYTES</code>.</li>
-      <li>Reduce request body or plan dedicated upload flow.</li>
-      <li>If increasing limit, update <code>.env.example</code>, docs, and test coverage.</li>
-    </ul>
-    <h3>4) CORS / security headers</h3>
-    <ul>
-      <li>Ensure frontend origin is explicitly allowlisted.</li>
-      <li>Verify response headers include CSP and frame/content-type protections.</li>
-      <li>Confirm browser preflight (<code>OPTIONS</code>) behavior is not blocked by auth/rate-limit.</li>
-    </ul>
-    <h2>Final recovery sequence</h2>
-    <ol>
-      <li><code>make test</code></li>
-      <li><code>make quality-check</code></li>
-      <li><code>make sync-docs</code></li>
-    </ol>
-    <h2>Exit criteria</h2>
-    <ul>
-      <li>Protected endpoints behave as expected for auth, rate limit, and body size.</li>
-      <li>CORS and security headers are present and validated.</li>
-      <li>All automated checks pass, and docs reflect current policy.</li>
-    </ul>
-    <h2>Follow-up</h2>
-    <ul>
-      <li>Policy-level security changes must be captured in ADR.</li>
-      <li>Update this runbook with new recurring incident patterns.</li>
-    </ul>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Runbook: API Security Failing</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Runbook: API Security Failing</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="../adr/README.html">ADR</a>
+        <a href="./README.html" class="is-active" aria-current="page">Runbooks</a>
+      </nav>
+      <h2>Trigger</h2>
+      <ul>
+        <li><code>401</code> responses for protected endpoints even with expected credentials.</li>
+        <li><code>429</code> spikes on normal traffic profile.</li>
+        <li><code>413</code> responses after payload changes.</li>
+        <li>CORS errors in browser or missing expected security headers in responses.</li>
+      </ul>
+      <h2>Fast triage</h2>
+      <ol>
+        <li>Check current env values for security settings in <code>.env</code>.</li>
+        <li>Verify request contains auth header configured by <code>API_AUTH_HEADER</code>.</li>
+        <li>Reproduce with one endpoint: <code>POST /api/v1/user</code>.</li>
+        <li>Inspect application logs for security middleware warnings.</li>
+      </ol>
+      <h2>Most common causes</h2>
+      <ul>
+        <li>Wrong <code>API_MOCK_API_KEY</code> or wrong header name.</li>
+        <li>Unexpected aggressive rate-limit settings for local/test load.</li>
+        <li>Payload grew beyond <code>API_BODY_MAX_BYTES</code>.</li>
+        <li>Frontend origin missing in <code>CORS_ALLOW_ORIGINS</code>.</li>
+        <li>Middleware order/behavior changed without ADR + test updates.</li>
+      </ul>
+      <h2>Recovery steps by category</h2>
+      <h3>1) Auth failures (<code>401</code>)</h3>
+      <ul>
+        <li>Validate <code>API_AUTH_STRATEGY</code> is expected (<code>mock_api_key</code> or <code>disabled</code>).</li>
+        <li>Confirm request sends <code>API_AUTH_HEADER</code> with <code>API_MOCK_API_KEY</code> value.</li>
+        <li>Re-run tests: <code>make test-one path=tests/api/v1/test_user_create.py</code>.</li>
+      </ul>
+      <h3>2) Rate-limit overblocking (<code>429</code>)</h3>
+      <ul>
+        <li>Check <code>API_RATE_LIMIT_REQUESTS</code> and <code>API_RATE_LIMIT_WINDOW_SECONDS</code>.</li>
+        <li>Validate client retry/backoff behavior.</li>
+        <li>If policy change is needed, update ADR and docs before increasing limits.</li>
+      </ul>
+      <h3>3) Body limit errors (<code>413</code>)</h3>
+      <ul>
+        <li>Measure actual payload size and compare with <code>API_BODY_MAX_BYTES</code>.</li>
+        <li>Reduce request body or plan dedicated upload flow.</li>
+        <li>If increasing limit, update <code>.env.example</code>, docs, and test coverage.</li>
+      </ul>
+      <h3>4) CORS / security headers</h3>
+      <ul>
+        <li>Ensure frontend origin is explicitly allowlisted.</li>
+        <li>Verify response headers include CSP and frame/content-type protections.</li>
+        <li>Confirm browser preflight (<code>OPTIONS</code>) behavior is not blocked by auth/rate-limit.</li>
+      </ul>
+      <h2>Final recovery sequence</h2>
+      <ol>
+        <li><code>make test</code></li>
+        <li><code>make quality-check</code></li>
+        <li><code>make sync-docs</code></li>
+      </ol>
+      <h2>Exit criteria</h2>
+      <ul>
+        <li>Protected endpoints behave as expected for auth, rate limit, and body size.</li>
+        <li>CORS and security headers are present and validated.</li>
+        <li>All automated checks pass, and docs reflect current policy.</li>
+      </ul>
+      <h2>Follow-up</h2>
+      <ul>
+        <li>Policy-level security changes must be captured in ADR.</li>
+        <li>Update this runbook with new recurring incident patterns.</li>
+      </ul>
+    </main>
+  </body>
 </html>

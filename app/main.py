@@ -179,8 +179,9 @@ def favicon() -> Response:
 @app.get("/docs", include_in_schema=False)
 def custom_swagger_ui() -> Response:
     """Serve Swagger UI with local favicon."""
+    openapi_url = app.openapi_url or "/openapi.json"
     return get_swagger_ui_html(
-        openapi_url=app.openapi_url,
+        openapi_url=openapi_url,
         title=f"{app.title} - Swagger UI",
         swagger_favicon_url="/favicon.png",
     )
@@ -189,8 +190,9 @@ def custom_swagger_ui() -> Response:
 @app.get("/redoc", include_in_schema=False)
 def custom_redoc() -> Response:
     """Serve ReDoc with local favicon."""
+    openapi_url = app.openapi_url or "/openapi.json"
     return get_redoc_html(
-        openapi_url=app.openapi_url,
+        openapi_url=openapi_url,
         title=f"{app.title} - ReDoc",
         redoc_favicon_url="/favicon.png",
     )

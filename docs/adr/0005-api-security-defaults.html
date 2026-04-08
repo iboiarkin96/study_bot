@@ -1,76 +1,76 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ADR 0005: API Security Defaults</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-    <h1>ADR 0005: API Security Defaults</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="../developer/README.html">Developer Docs</a>
-      <a href="./README.html" class="is-active" aria-current="page">ADR</a>
-      <a href="../runbooks/README.html">Runbooks</a>
-    </nav>
-<h2>Status</h2>
-    <p>Accepted</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0005: API Security Defaults</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0005: API Security Defaults</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <h2>Status</h2>
+      <p>Accepted</p>
 
-    <h2>Context</h2>
-    <p>
-      Public API endpoints are currently easy to call in local/dev mode but do not enforce
-      a minimal security baseline by default. This increases risk of inconsistent behavior
-      between environments and weakens integration discipline.
-    </p>
+      <h2>Context</h2>
+      <p>
+        Public API endpoints are currently easy to call in local/dev mode but do not enforce
+        a minimal security baseline by default. This increases risk of inconsistent behavior
+        between environments and weakens integration discipline.
+      </p>
 
-    <h2>Decision</h2>
-    <p>Adopt a mandatory API security baseline for all protected endpoints (<code>/api/v1/*</code>):</p>
-    <ol>
-      <li>Per-client rate limiting is enabled by default.</li>
-      <li>CORS is allowlist-based and configured from environment.</li>
-      <li>Security headers are attached to every response.</li>
-      <li>Request body size is capped via configurable global limit.</li>
-      <li>Basic auth strategy is required in all environments; current default is mock API-key auth.</li>
-    </ol>
+      <h2>Decision</h2>
+      <p>Adopt a mandatory API security baseline for all protected endpoints (<code>/api/v1/*</code>):</p>
+      <ol>
+        <li>Per-client rate limiting is enabled by default.</li>
+        <li>CORS is allowlist-based and configured from environment.</li>
+        <li>Security headers are attached to every response.</li>
+        <li>Request body size is capped via configurable global limit.</li>
+        <li>Basic auth strategy is required in all environments; current default is mock API-key auth.</li>
+      </ol>
 
-    <h2>Configuration</h2>
-    <ul>
-      <li><code>API_RATE_LIMIT_REQUESTS</code>, <code>API_RATE_LIMIT_WINDOW_SECONDS</code></li>
-      <li><code>API_BODY_MAX_BYTES</code></li>
-      <li><code>CORS_ALLOW_ORIGINS</code>, <code>CORS_ALLOW_METHODS</code>, <code>CORS_ALLOW_HEADERS</code>, <code>CORS_ALLOW_CREDENTIALS</code></li>
-      <li><code>API_AUTH_STRATEGY</code>, <code>API_MOCK_API_KEY</code>, <code>API_AUTH_HEADER</code>, <code>API_PROTECTED_PREFIX</code></li>
-    </ul>
+      <h2>Configuration</h2>
+      <ul>
+        <li><code>API_RATE_LIMIT_REQUESTS</code>, <code>API_RATE_LIMIT_WINDOW_SECONDS</code></li>
+        <li><code>API_BODY_MAX_BYTES</code></li>
+        <li><code>CORS_ALLOW_ORIGINS</code>, <code>CORS_ALLOW_METHODS</code>, <code>CORS_ALLOW_HEADERS</code>, <code>CORS_ALLOW_CREDENTIALS</code></li>
+        <li><code>API_AUTH_STRATEGY</code>, <code>API_MOCK_API_KEY</code>, <code>API_AUTH_HEADER</code>, <code>API_PROTECTED_PREFIX</code></li>
+      </ul>
 
-    <h2>Contract impact</h2>
-    <ul>
-      <li>Unauthorized requests return <code>401</code> with stable security error payload.</li>
-      <li>Body overflow returns <code>413</code>.</li>
-      <li>Rate-limit overflow returns <code>429</code> and <code>Retry-After</code> header.</li>
-      <li>Protected endpoint docs must include these responses in OpenAPI.</li>
-    </ul>
+      <h2>Contract impact</h2>
+      <ul>
+        <li>Unauthorized requests return <code>401</code> with stable security error payload.</li>
+        <li>Body overflow returns <code>413</code>.</li>
+        <li>Rate-limit overflow returns <code>429</code> and <code>Retry-After</code> header.</li>
+        <li>Protected endpoint docs must include these responses in OpenAPI.</li>
+      </ul>
 
-    <h2>Consequences</h2>
-    <h3>Positive</h3>
-    <ul>
-      <li>Security constraints are explicit and testable from day one.</li>
-      <li>Client teams know non-functional contract limits early.</li>
-      <li>Future migration to production auth can replace mock strategy without policy rewrite.</li>
-    </ul>
-    <h3>Trade-offs</h3>
-    <ul>
-      <li>Additional configuration and local setup overhead.</li>
-      <li>In-memory rate-limit is process-local and not distributed (acceptable for current stage).</li>
-    </ul>
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Security constraints are explicit and testable from day one.</li>
+        <li>Client teams know non-functional contract limits early.</li>
+        <li>Future migration to production auth can replace mock strategy without policy rewrite.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Additional configuration and local setup overhead.</li>
+        <li>In-memory rate-limit is process-local and not distributed (acceptable for current stage).</li>
+      </ul>
 
-    <h2>Implementation Notes</h2>
-    <ul>
-      <li>Security middleware is part of application startup defaults.</li>
-      <li>Analyst-facing constraints are documented in <code>docs/system-analysis.html</code>.</li>
-      <li>Developer checklist is documented in <code>docs/engineering-practices.html</code>.</li>
-    </ul>
-  </main>
-</body>
+      <h2>Implementation Notes</h2>
+      <ul>
+        <li>Security middleware is part of application startup defaults.</li>
+        <li>Analyst-facing constraints are documented in <code>docs/system-analysis.html</code>.</li>
+        <li>Developer checklist is documented in <code>docs/engineering-practices.html</code>.</li>
+      </ul>
+    </main>
+  </body>
 </html>

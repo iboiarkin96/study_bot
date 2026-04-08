@@ -74,3 +74,17 @@ SECURITY_BODY_TOO_LARGE_ERROR_EXAMPLE: Final[dict[str, object]] = {
     "message": "Request body exceeds configured maximum size.",
     "source": "security",
 }
+
+IDEMPOTENCY_KEY_REQUIRED_ERROR_EXAMPLE: Final[dict[str, object]] = {
+    "code": "COMMON_400",
+    "key": "IDEMPOTENCY_KEY_REQUIRED",
+    "message": "Missing required `Idempotency-Key` header for write operation.",
+    "source": "business",
+}
+
+IDEMPOTENCY_KEY_CONFLICT_ERROR_EXAMPLE: Final[dict[str, object]] = {
+    "code": "COMMON_409",
+    "key": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
+    "message": "Idempotency key was already used with another payload.",
+    "source": "business",
+}

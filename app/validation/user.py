@@ -24,11 +24,6 @@ CREATE_USER_VALIDATION_RULES: dict[tuple[str, str], ValidationCodeRule] = {
         key="USER_CREATE_SYSTEM_USER_ID_REQUIRED",
         message="Field `system_user_id` is required.",
     ),
-    ("system_user_id", "uuid_parsing"): ValidationCodeRule(
-        code="USER_002",
-        key="USER_CREATE_SYSTEM_USER_ID_INVALID",
-        message="Field `system_user_id` must be a valid UUID.",
-    ),
     ("full_name", "missing"): ValidationCodeRule(
         code="USER_003",
         key="USER_CREATE_FULL_NAME_REQUIRED",
@@ -86,12 +81,6 @@ CREATE_USER_VALIDATION_RULES: dict[tuple[str, str], ValidationCodeRule] = {
     ),
 }
 
-DEFAULT_CREATE_USER_VALIDATION_RULE = ValidationCodeRule(
-    code="USER_099",
-    key="USER_CREATE_VALIDATION_ERROR",
-    message="Request validation failed for `POST /api/v1/user`.",
-)
-
 
 def _json_safe(value: Any) -> Any:
     """Convert arbitrary values into JSON-serializable primitives."""
@@ -113,7 +102,11 @@ def _field_from_loc(loc: list[Any]) -> str | None:
 def _resolve_create_user_rule(field: str | None, error_type: str) -> ValidationCodeRule:
     if field is not None and (field, error_type) in CREATE_USER_VALIDATION_RULES:
         return CREATE_USER_VALIDATION_RULES[(field, error_type)]
-    return DEFAULT_CREATE_USER_VALIDATION_RULE
+    return ValidationCodeRule(
+        code="COMMON_000",
+        key="COMMON_VALIDATION_ERROR",
+        message="Request validation failed.",
+    )
 
 
 def build_validation_error_payload(request: Request, exc: RequestValidationError) -> dict[str, Any]:

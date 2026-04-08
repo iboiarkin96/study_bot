@@ -1,84 +1,99 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Schemas and Contracts Guide</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-</head>
-<body>
-  <main class="container">
-<h1>Schemas and Contracts Guide</h1>
-    <nav class="top-nav" aria-label="Documentation navigation">
-      <a href="../system-analysis.html">System Analysis</a>
-      <a href="../engineering-practices.html">Engineering Practices</a>
-      <a href="./README.html" class="is-active" aria-current="page">Developer Docs</a>
-      <a href="../adr/README.html">ADR</a>
-      <a href="../runbooks/README.html">Runbooks</a>
-    </nav>
-<p>This file describes where API schemas/contracts live and how to evolve them safely.</p>
-<h2>1. Where schemas live</h2>
-<ul>
-<li>Request/response schemas: <code>app/schemas/</code>
-</li>
-<li>Error schemas: <code>app/schemas/errors.py</code>
-</li>
-<li>OpenAPI examples: <code>app/openapi/examples/</code>
-</li>
-<li>Router contract (<code>responses</code>, summary, description): <code>app/api/v1/</code>
-</li>
-</ul>
-<h2>2. Contract rules</h2>
-<ul>
-<li>API contract is public interface.
-</li>
-<li>Existing fields and semantics are backward-compatible within same major.
-</li>
-<li>Error <code>code</code> and <code>key</code> semantics are immutable.
-</li>
-<li>Changes are additive by default.
-</li>
-</ul>
-<h2>3. Error contract</h2>
-<p>Business error shape:</p>
-<ul>
-<li><code>{&quot;code&quot;:&quot;...&quot;,&quot;key&quot;:&quot;...&quot;,&quot;message&quot;:&quot;...&quot;,&quot;source&quot;:&quot;business&quot;}</code>
-</li>
-</ul>
-<p>Validation error shape:</p>
-<ul>
-<li><code>{&quot;error_type&quot;:&quot;validation_error&quot;,&quot;endpoint&quot;:&quot;...&quot;,&quot;errors&quot;:[...]}</code>
-</li>
-</ul>
-<p>Validation rules source:</p>
-<ul>
-<li><code>app/validation/</code>
-</li>
-</ul>
-<h2>4. How to evolve schemas</h2>
-<ol>
-<li>Update schema classes in <code>app/schemas/</code>.
-</li>
-<li>Update endpoint declaration in <code>app/api/v1/...</code>.
-</li>
-<li>Update examples in <code>app/openapi/examples/...</code>.
-</li>
-<li>Update validation mapping in <code>app/validation/...</code> if needed.
-</li>
-<li>Add/update tests.
-</li>
-<li>Run <code>make quality-check</code> and <code>make sync-docs</code>.
-</li>
-</ol>
-<h2>5. Anti-patterns</h2>
-<ul>
-<li>Inline hardcoded examples in routers/schemas duplicated in many files.
-</li>
-<li>Reusing existing error code for new meaning.
-</li>
-<li>Silent breaking change without versioning/migration notes.
-</li>
-</ul>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Schemas and Contracts Guide</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Schemas and Contracts Guide</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="./README.html" class="is-active" aria-current="page">Developer Docs</a>
+        <a href="../adr/README.html">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <p>This file describes where API schemas/contracts live and how to evolve them safely.</p>
+      <h2>1. Where schemas live</h2>
+      <ul>
+        <li>Request/response schemas: <code>app/schemas/</code>
+        </li>
+        <li>Error schemas: <code>app/schemas/errors.py</code>
+        </li>
+        <li>OpenAPI examples: <code>app/openapi/examples/</code>
+        </li>
+        <li>Router contract (<code>responses</code>, summary, description): <code>app/api/v1/</code>
+        </li>
+      </ul>
+      <h2>2. Contract rules</h2>
+      <ul>
+        <li>API contract is public interface.
+        </li>
+        <li>Existing fields and semantics are backward-compatible within same major.
+        </li>
+        <li>Error <code>code</code> and <code>key</code> semantics are immutable.
+        </li>
+        <li>Changes are additive by default.
+        </li>
+        <li>Critical write endpoints define idempotency contract via <code>Idempotency-Key</code> header.
+        </li>
+      </ul>
+      <h2>3. Idempotency contract for writes</h2>
+      <ul>
+        <li>Same key + same payload -&gt; replay original success response.
+        </li>
+        <li>Same key + different payload -&gt; explicit conflict response.
+        </li>
+        <li>Missing key (for required write endpoint) -&gt; explicit business validation error.
+        </li>
+      </ul>
+      <h2>4. Error contract</h2>
+      <p>Business error shape:</p>
+      <ul>
+        <li><code>{&quot;code&quot;:&quot;...&quot;,&quot;key&quot;:&quot;...&quot;,&quot;message&quot;:&quot;...&quot;,&quot;source&quot;:&quot;business&quot;}</code>
+        </li>
+      </ul>
+      <p>Validation error shape:</p>
+      <ul>
+        <li><code>{&quot;error_type&quot;:&quot;validation_error&quot;,&quot;endpoint&quot;:&quot;...&quot;,&quot;errors&quot;:[...]}</code>
+        </li>
+      </ul>
+      <p>Validation rules source:</p>
+      <ul>
+        <li><code>app/validation/</code>
+        </li>
+      </ul>
+      <h2>5. How to evolve schemas</h2>
+      <ol>
+        <li>Update schema classes in <code>app/schemas/</code>.
+        </li>
+        <li>Update endpoint declaration in <code>app/api/v1/...</code>.
+        </li>
+        <li>For write routes, update header contract and idempotency behavior docs.
+        </li>
+        <li>Update examples in <code>app/openapi/examples/...</code>.
+        </li>
+        <li>Update validation mapping in <code>app/validation/...</code> if needed.
+        </li>
+        <li>Add/update tests.
+        </li>
+        <li>Run <code>make quality-check</code> and <code>make sync-docs</code>.
+        </li>
+      </ol>
+      <h2>6. Anti-patterns</h2>
+      <ul>
+        <li>Inline hardcoded examples in routers/schemas duplicated in many files.
+        </li>
+        <li>Reusing existing error code for new meaning.
+        </li>
+        <li>Silent breaking change without versioning/migration notes.
+        </li>
+        <li>Accepting retried write requests without idempotency contract.
+        </li>
+      </ul>
+    </main>
+  </body>
 </html>

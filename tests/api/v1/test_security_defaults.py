@@ -40,13 +40,18 @@ def test_rate_limit_returns_429(client) -> None:
             "full_name": "Rate Limit User",
             "timezone": "UTC",
         }
-        first = client.post("/api/v1/user", json=payload)
+        first = client.post(
+            "/api/v1/user",
+            json=payload,
+            headers={"Idempotency-Key": "security-rate-limit-1"},
+        )
         second = client.post(
             "/api/v1/user",
             json={
                 **payload,
                 "system_user_id": "a1b2c3d4-0001-4000-8000-000000000052",
             },
+            headers={"Idempotency-Key": "security-rate-limit-2"},
         )
     finally:
         app_main.rate_limiter = original_limiter

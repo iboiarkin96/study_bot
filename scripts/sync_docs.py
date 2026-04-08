@@ -1,7 +1,8 @@
 """Auto-generate documentation sections from code sources.
 
 Reads the Makefile help target, FastAPI app routes, and .env.example,
-then patches marker-delimited sections in README.md and docs/system-analysis.html.
+then patches marker-delimited sections in README.md, docs/system-analysis.html,
+and docs/engineering-practices.html.
 
 Markers have the form:
     <!-- BEGIN:SECTION_NAME -->
@@ -15,6 +16,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import html
 import os
 import re
 import sys
@@ -79,7 +81,7 @@ def _parse_makefile_help() -> list[tuple[str, str]]:
     if not makefile.exists():
         return []
 
-    entries: list[tuple[str, str]] = []
+    entries_by_command: dict[str, str] = {}
     for line in makefile.read_text().splitlines():
         stripped = line.strip()
         if not stripped.startswith('@echo "  make '):
@@ -88,8 +90,13 @@ def _parse_makefile_help() -> list[tuple[str, str]]:
         inner = stripped.removeprefix('@echo "').removesuffix('"').strip()
         m = _HELP_LINE_RE.match(inner)
         if m:
-            entries.append((m.group(1), m.group(2)))
-    return entries
+            command = m.group(1)
+            description = m.group(2).strip()
+            if description.startswith("#"):
+                description = description.lstrip("#").strip()
+            # Keep the most complete/authoritative description in case of duplicates.
+            entries_by_command[command] = description
+    return sorted(entries_by_command.items(), key=lambda item: item[0])
 
 
 def _render_makefile_table(entries: list[tuple[str, str]]) -> str:
@@ -138,6 +145,192 @@ def _render_endpoints_html(routes: list[tuple[str, str, str]]) -> str:
     for method, path, summary in routes:
         lines.append(f'        <p><span class="badge">{method} {path}</span> {summary}</p>')
     lines.append("      </div>")
+    return "\n".join(lines)
+
+
+def _render_makefile_html(entries: list[tuple[str, str]]) -> str:
+    lines = [
+        "          <table>",
+        "            <thead>",
+        "              <tr>",
+        "                <th>Command</th>",
+        "                <th>Purpose</th>",
+        "              </tr>",
+        "            </thead>",
+        "            <tbody>",
+    ]
+    for command, description in entries:
+        escaped_cmd = html.escape(f"make {command}")
+        escaped_desc = html.escape(description)
+        lines.extend(
+            [
+                "              <tr>",
+                f"                <td><code>{escaped_cmd}</code></td>",
+                f"                <td>{escaped_desc}</td>",
+                "              </tr>",
+            ]
+        )
+    lines.extend(["            </tbody>", "          </table>"])
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Documentation catalog for handbook table
+# ---------------------------------------------------------------------------
+
+
+def _extract_html_title(path: Path) -> str:
+    text = path.read_text()
+    m = re.search(r"<title>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
+    if not m:
+        return path.stem
+    title = re.sub(r"\s+", " ", m.group(1)).strip()
+    if title.startswith("ETR Study API — "):
+        return title.removeprefix("ETR Study API — ").strip()
+    return title
+
+
+def _doc_sort_key(path: Path) -> tuple[int, str]:
+    name = path.name
+    if name == "README.html":
+        return (0, "")
+    if name.startswith("0000-"):
+        return (1, name)
+    return (2, name)
+
+
+_HANDBOOK_EXCLUDE_PREFIXES: tuple[str, ...] = ("draft-",)
+_HANDBOOK_EXCLUDE_SUBSTRINGS: tuple[str, ...] = ("-draft-", "_draft", ".draft.")
+
+
+def _should_include_handbook_doc(path: Path) -> bool:
+    name = path.name.lower()
+    stem = path.stem.lower()
+    if any(name.startswith(prefix) for prefix in _HANDBOOK_EXCLUDE_PREFIXES):
+        return False
+    if any(token in name for token in _HANDBOOK_EXCLUDE_SUBSTRINGS):
+        return False
+    if stem.endswith("-draft") or stem.endswith("_draft"):
+        return False
+    return True
+
+
+_HANDBOOK_DESCRIPTION_OVERRIDES: dict[str, str] = {
+    "system-analysis.html": "Analyst document with context, FR/NFR, architecture, API contracts, and diagrams.",
+    "engineering-practices.html": "Engineering workflow, delivery policies, and quality gates.",
+    "developer/0001-requirements.html": "Developer interpretation of requirements and done criteria.",
+    "developer/0002-schemas-and-contracts.html": (
+        "Rules for request/response/error contracts and backward-compatible changes."
+    ),
+    "developer/0003-business-logic.html": "Layer responsibilities and implementation change flow.",
+    "developer/0004-how-to-add-post-contract.html": (
+        "Step-by-step guide for adding POST /api/v1/contract."
+    ),
+    "adr/0005-api-security-defaults.html": (
+        "Security-by-default policy for auth, rate-limit, CORS, headers, and body-size limits."
+    ),
+    "adr/0006-idempotency-write-operations.html": (
+        "Idempotency contract for write operations using Idempotency-Key and dedup behavior."
+    ),
+    "runbooks/0006-api-security-failing.html": (
+        "Incident recovery for auth failures, rate-limit spikes, CORS issues, and "
+        "security headers/body limits."
+    ),
+}
+
+
+def _handbook_doc_entries() -> list[tuple[str, str, str, str]]:
+    docs = ROOT / "docs"
+    entries: list[tuple[str, str, str, str]] = []
+
+    fixed_root = [
+        docs / "system-analysis.html",
+        docs / "engineering-practices.html",
+    ]
+    for path in fixed_root:
+        if not path.exists():
+            continue
+        title = _extract_html_title(path)
+        rel_key = path.relative_to(docs).as_posix()
+        desc = _HANDBOOK_DESCRIPTION_OVERRIDES.get(
+            rel_key, "Project-level architecture and governance document."
+        )
+        open_label = "Open document"
+        entries.append((title, desc, f"./{path.name}", open_label))
+
+    grouped_dirs = [
+        (
+            "Developer Docs",
+            docs / "developer",
+            "developer guide",
+            "Open guide",
+            "Developer Docs Template",
+            "Entry point for all developer guides.",
+        ),
+        (
+            "ADR",
+            docs / "adr",
+            "architecture decision record",
+            "Open ADR",
+            "ADR Template",
+            "Architecture and policy decisions with rationale and references.",
+        ),
+        (
+            "Runbooks",
+            docs / "runbooks",
+            "operational runbook",
+            "Open runbook",
+            "Runbook Template",
+            "Operational incident guides and standardized recovery checklists.",
+        ),
+    ]
+    for (
+        group_name,
+        directory,
+        generic_kind,
+        open_label,
+        template_title,
+        index_description,
+    ) in grouped_dirs:
+        if not directory.exists():
+            continue
+        html_files = sorted(
+            (path for path in directory.glob("*.html") if _should_include_handbook_doc(path)),
+            key=_doc_sort_key,
+        )
+        for path in html_files:
+            rel = f"./{path.relative_to(docs).as_posix()}"
+            rel_key = path.relative_to(docs).as_posix()
+            if path.name == "README.html":
+                title = f"{group_name} Index"
+                desc = index_description
+                entries.append((title, desc, rel, "Open index"))
+                continue
+            if path.name.startswith("0000-"):
+                title = template_title
+                desc = f"Template for creating a new {generic_kind}."
+                entries.append((title, desc, rel, "Open template"))
+                continue
+
+            title = _extract_html_title(path)
+            desc = _HANDBOOK_DESCRIPTION_OVERRIDES.get(rel_key, f"Project {generic_kind}.")
+            entries.append((title, desc, rel, open_label))
+
+    return entries
+
+
+def _render_handbook_rows_html(entries: list[tuple[str, str, str, str]]) -> str:
+    lines: list[str] = []
+    for title, description, href, open_label in entries:
+        lines.extend(
+            [
+                "              <tr>",
+                f"                <td>{html.escape(title)}</td>",
+                f"                <td>{html.escape(description)}</td>",
+                f'                <td><a href="{html.escape(href)}">{html.escape(open_label)}</a></td>',
+                "              </tr>",
+            ]
+        )
     return "\n".join(lines)
 
 
@@ -348,6 +541,28 @@ def sync(check: bool = False) -> int:
                 _ok("docs/system-analysis.html updated")
         else:
             _info("docs/system-analysis.html already up to date")
+
+    # --- docs/engineering-practices.html ---
+    eng_path = ROOT / "docs" / "engineering-practices.html"
+    if eng_path.exists():
+        eng_sections: dict[str, str] = {}
+        if makefile_entries:
+            eng_sections["MAKEFILE_COMMANDS"] = _render_makefile_html(makefile_entries)
+        handbook_entries = _handbook_doc_entries()
+        if handbook_entries:
+            eng_sections["HANDBOOK_DOC_ROWS"] = _render_handbook_rows_html(handbook_entries)
+
+        original = eng_path.read_text()
+        updated = _replace_markers(original, eng_sections)
+        if updated != original:
+            stale_files += 1
+            if check:
+                print("✗ docs/engineering-practices.html is out of sync (run make sync-docs)")
+            else:
+                eng_path.write_text(updated)
+                _ok("docs/engineering-practices.html updated")
+        else:
+            _info("docs/engineering-practices.html already up to date")
     return stale_files
 
 
