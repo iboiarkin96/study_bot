@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 import difflib
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +16,16 @@ BASELINE_PATH = ROOT / "docs" / "openapi" / "openapi-baseline.json"
 HTTP_METHODS = {"get", "post", "put", "patch", "delete", "options", "head", "trace"}
 
 
+def _ensure_minimal_env_for_app_import() -> None:
+    """Allow importing the FastAPI app when env profiles are absent (e.g. CI)."""
+    if os.environ.get("SQLITE_DB_PATH", "").strip():
+        return
+    tmp_db = Path(tempfile.gettempdir()) / "study_app_openapi_governance.sqlite"
+    os.environ["SQLITE_DB_PATH"] = str(tmp_db)
+
+
 def _load_current_openapi() -> dict[str, Any]:
+    _ensure_minimal_env_for_app_import()
     sys.path.insert(0, str(ROOT))
     from app.main import app  # noqa: WPS433
 
