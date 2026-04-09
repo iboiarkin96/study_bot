@@ -23,7 +23,7 @@ def _load_current_openapi() -> dict[str, Any]:
 def _load_baseline() -> dict[str, Any]:
     if not BASELINE_PATH.exists():
         raise FileNotFoundError(
-            f"Baseline not found: {BASELINE_PATH}. Run: make openapi-baseline-update"
+            f"Baseline not found: {BASELINE_PATH}. Run: make openapi-accept-changes"
         )
     return json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
 

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0008: Make Command Taxonomy and Workflow Entrypoints</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0008: Make Command Taxonomy and Workflow Entrypoints</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <h2>Status</h2>
+      <p>Accepted</p>
+
+      <h2>Context</h2>
+      <p>
+        The project already has many Make targets that are technically grouped, but daily usage still requires
+        remembering which commands are atomic and which commands represent full multi-step workflows.
+      </p>
+      <p>
+        This creates cognitive overhead for contributors, especially during repetitive flows such as local fixing
+        and release preparation.
+      </p>
+
+      <h2>Decision</h2>
+      <p>Adopt a two-level Make command model:</p>
+      <ol>
+        <li><strong>Atomic commands</strong> remain source-of-truth building blocks (format/lint/test/docs/etc.).</li>
+        <li><strong>Scenario entrypoints</strong> provide memorable, high-level workflows.</li>
+      </ol>
+      <p>Scenario entrypoints introduced:</p>
+      <ul>
+        <li><code>make fix</code> - canonical fix workflow.</li>
+        <li><code>make verify</code> - canonical local quality gate.</li>
+        <li><code>make release-check</code> - canonical pre-release gate.</li>
+        <li><code>make release DEPLOY_CMD='...'</code> - canonical release execution flow.</li>
+      </ul>
+
+      <h2>Command taxonomy</h2>
+      <h3>Atomic commands</h3>
+      <ul>
+        <li>Environment: <code>venv</code>, <code>install</code>, <code>requirements</code>, <code>env-check</code>.</li>
+        <li>Code quality: <code>format-fix</code>, <code>format-check</code>, <code>lint-fix</code>, <code>lint-check</code>, <code>type-check</code>.</li>
+        <li>Contracts: <code>openapi-check</code>, <code>openapi-accept-changes</code>.</li>
+        <li>Tests: <code>test</code>, <code>test-one</code>, <code>test-warnings</code>.</li>
+        <li>Docs: <code>docs-fix</code>, <code>docs-check</code>.</li>
+        <li>Deploy primitive: external deployment command passed via <code>DEPLOY_CMD</code>.</li>
+      </ul>
+
+      <h3>Scenario entrypoints</h3>
+      <ul>
+        <li>Fix loop: <code>make fix</code>.</li>
+        <li>Local verification: <code>make verify</code>.</li>
+        <li>Release gate: <code>make release-check</code>.</li>
+        <li>Release execution: <code>make release DEPLOY_CMD='...'</code>.</li>
+      </ul>
+
+      <h2>Implementation rules</h2>
+      <ol>
+        <li>Keep one canonical command per workflow; avoid duplicate aliases with identical behavior.</li>
+        <li>When adding a new atomic target, update <code>make help</code> under Atomic commands.</li>
+        <li>When adding a new multi-step process, expose it as scenario entrypoint in <code>make help</code>.</li>
+        <li>Keep release flow explicit and parameterized via <code>DEPLOY_CMD</code>.</li>
+      </ol>
+
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Lower onboarding and day-to-day cognitive load.</li>
+        <li>Clear separation between reusable primitives and operational workflows.</li>
+        <li>More consistent local and CI usage patterns.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Existing local habits may require migration to new canonical command names.</li>
+        <li>Help text must stay curated when targets evolve.</li>
+      </ul>
+    </main>
+  </body>
+</html>

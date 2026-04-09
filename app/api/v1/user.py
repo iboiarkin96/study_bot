@@ -12,15 +12,16 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db_session
 from app.core.idempotency import build_payload_hash
 from app.openapi.examples import (
-    IDEMPOTENCY_KEY_CONFLICT_ERROR_EXAMPLE,
-    IDEMPOTENCY_KEY_REQUIRED_ERROR_EXAMPLE,
-    SECURITY_AUTH_REQUIRED_ERROR_EXAMPLE,
-    SECURITY_BODY_TOO_LARGE_ERROR_EXAMPLE,
-    SECURITY_RATE_LIMIT_EXCEEDED_ERROR_EXAMPLE,
     USER_CREATE_REQUEST_EXAMPLES,
     USER_CREATE_VALIDATION_ERROR_EXAMPLES,
     USER_EXISTS_ERROR_EXAMPLE,
     USER_NOT_FOUND_ERROR_EXAMPLE,
+)
+from app.openapi.responses import (
+    COMMON_BODY_TOO_LARGE_413_RESPONSE,
+    COMMON_IDEMPOTENCY_CONFLICT_409_RESPONSE,
+    build_common_business_400_response,
+    common_protected_route_responses,
 )
 from app.repositories.idempotency_repository import IdempotencyRepository
 from app.repositories.user_repository import UserRepository
@@ -57,99 +58,22 @@ router = APIRouter(prefix="/user", tags=["User"])
         status.HTTP_201_CREATED: {
             "description": "User created successfully.",
         },
-        status.HTTP_400_BAD_REQUEST: {
-            "model": ApiErrorResponse,
-            "description": "Business validation failure.",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "user_exists": {
-                            "summary": "User already exists",
-                            "value": USER_EXISTS_ERROR_EXAMPLE,
-                        },
-                        "idempotency_key_missing": {
-                            "summary": "Missing Idempotency-Key header",
-                            "value": IDEMPOTENCY_KEY_REQUIRED_ERROR_EXAMPLE,
-                        },
-                    }
+        status.HTTP_400_BAD_REQUEST: build_common_business_400_response(
+            extra_examples={
+                "user_exists": {
+                    "summary": "User already exists",
+                    "value": USER_EXISTS_ERROR_EXAMPLE,
                 }
-            },
-        },
-        status.HTTP_409_CONFLICT: {
-            "model": ApiErrorResponse,
-            "description": "Idempotency key was reused with different payload.",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "idempotency_conflict": {
-                            "summary": "Idempotency key conflict",
-                            "value": IDEMPOTENCY_KEY_CONFLICT_ERROR_EXAMPLE,
-                        }
-                    }
-                }
-            },
-        },
+            }
+        ),
+        status.HTTP_409_CONFLICT: COMMON_IDEMPOTENCY_CONFLICT_409_RESPONSE,
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
             "model": ValidationErrorResponse,
             "description": "Request validation errors for all supported user create field rules.",
             "content": {"application/json": {"examples": USER_CREATE_VALIDATION_ERROR_EXAMPLES}},
         },
-        status.HTTP_401_UNAUTHORIZED: {
-            "model": ApiErrorResponse,
-            "description": "Missing or invalid API key header.",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "auth_required": {
-                            "summary": "Auth header required",
-                            "value": SECURITY_AUTH_REQUIRED_ERROR_EXAMPLE,
-                        }
-                    }
-                }
-            },
-        },
-        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE: {
-            "model": ApiErrorResponse,
-            "description": "Request body exceeds configured maximum size.",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "body_too_large": {
-                            "summary": "Body size limit exceeded",
-                            "value": SECURITY_BODY_TOO_LARGE_ERROR_EXAMPLE,
-                        }
-                    }
-                }
-            },
-        },
-        status.HTTP_429_TOO_MANY_REQUESTS: {
-            "model": ApiErrorResponse,
-            "description": "Per-client request rate limit exceeded.",
-            "headers": {
-                "Retry-After": {
-                    "description": "Seconds until request can be retried.",
-                    "schema": {"type": "string"},
-                },
-                "X-RateLimit-Limit": {
-                    "description": "Rate-limit ceiling for current window.",
-                    "schema": {"type": "string"},
-                },
-                "X-RateLimit-Remaining": {
-                    "description": "Remaining requests in current window.",
-                    "schema": {"type": "string"},
-                },
-            },
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "rate_limit_exceeded": {
-                            "summary": "Too many requests",
-                            "value": SECURITY_RATE_LIMIT_EXCEEDED_ERROR_EXAMPLE,
-                        }
-                    }
-                }
-            },
-        },
+        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE: COMMON_BODY_TOO_LARGE_413_RESPONSE,
+        **common_protected_route_responses(),
     },
 )
 def create_user(
@@ -251,7 +175,8 @@ def create_user(
                     }
                 }
             },
-        }
+        },
+        **common_protected_route_responses(),
     },
 )
 def get_user(

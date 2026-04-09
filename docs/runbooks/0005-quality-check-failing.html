@@ -18,13 +18,13 @@
       </nav>
       <h2>Trigger</h2>
       <ul>
-        <li><code>make quality-check</code> fails locally.</li>
+        <li><code>make verify</code> fails locally.</li>
         <li>CI quality gate fails on lint/type/test/docs sync stage.</li>
       </ul>
       <h2>Fast triage</h2>
       <ol>
-        <li>Run full gate once: <code>make quality-check</code>.</li>
-        <li>Identify failing step: <code>lint-check</code>, <code>type-check</code>, <code>test</code>, <code>sync-docs</code>.</li>
+        <li>Run full gate once: <code>make verify</code>.</li>
+        <li>Identify failing step: <code>lint-check</code>, <code>type-check</code>, <code>test</code>, <code>docs-fix</code>.</li>
         <li>Re-run only failing step to shorten feedback loop.</li>
       </ol>
       <h2>Most common causes</h2>
@@ -52,18 +52,18 @@
       </ul>
       <h3>4) Docs sync fails or changes produced</h3>
       <ul>
-        <li>Run <code>make sync-docs</code>.</li>
+        <li>Run <code>make docs-fix</code>.</li>
         <li>Commit generated updates if valid.</li>
       </ul>
       <h2>Final recovery sequence</h2>
       <ol>
-        <li><code>make quality-check</code></li>
-        <li><code>make pre-deploy</code></li>
+        <li><code>make verify</code></li>
+        <li><code>make release-check</code></li>
       </ol>
       <h2>Exit criteria</h2>
       <ul>
-        <li><code>make quality-check</code> passes end-to-end.</li>
-        <li><code>make pre-deploy</code> passes.</li>
+        <li><code>make verify</code> passes end-to-end.</li>
+        <li><code>make release-check</code> passes.</li>
         <li>Diff contains only intentional code/docs changes.</li>
       </ul>
       <h2>Follow-up</h2>

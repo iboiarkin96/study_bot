@@ -23,7 +23,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements run migrate migration format format-check lint-check lint-fix type-check openapi-check openapi-accept-changes openapi-baseline-update quality-fix quality-check pre-commit-install pre-commit-check test test-one test-warnings pre-deploy deploy env-check sync-docs docs-format
+.PHONY: help venv install requirements run migrate migration format-fix format-check lint-check lint-fix type-check openapi-check openapi-accept-changes fix verify release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check
 
 # ──────────────────────────────────────────────
 # Help
@@ -33,11 +33,13 @@ help:
 	@echo "  Study App — available commands"
 	@echo "  ------------------------------------------------"
 	@echo ""
-	@echo "  Quick workflows"
-	@echo "  make quality-check          # local quality gate"
-	@echo "  make sync-docs              # single docs pipeline (render + sync)"
-	@echo "  make pre-deploy             # release gate before deploy"
-	@echo "  make deploy DEPLOY_CMD='…'  # run deploy after gate"
+	@echo "  Scenario flows (recommended entry points)"
+	@echo "  make fix                    # apply auto-fixes before local run"
+	@echo "  make verify                 # run local quality gate"
+	@echo "  make release-check          # run full release gate"
+	@echo "  make release DEPLOY_CMD='…' # release gate + deploy command"
+	@echo ""
+	@echo "  Atomic commands"
 	@echo ""
 	@echo "  # Environment"
 	@echo "  make venv                 Create virtual environment"
@@ -65,14 +67,13 @@ help:
 	@echo "  # OpenAPI Contract Governance"
 	@echo "  make openapi-check        Run OpenAPI lint + breaking-change guard"
 	@echo "  make openapi-accept-changes Accept intentional OpenAPI changes (update baseline)"
-	@echo "  make openapi-baseline-update Alias to openapi-accept-changes (deprecated)"
 	@echo ""
 	@echo "  # Environment Health"
 	@echo "  make env-check            Verify env, deps, and DB connectivity"
 	@echo ""
 	@echo "  # Quality Gates"
-	@echo "  make quality-fix          Run auto-fixes (format + lint-fix + docs-format)"
-	@echo "  make quality-check        Run lint-check + type-check + openapi-check + test + sync-docs"
+	@echo "  make fix                  Run auto-fixes (format-fix + lint-fix + docs-fix)"
+	@echo "  make verify               Run lint-check + type-check + openapi-check + test + docs-fix"
 	@echo ""
 	@echo "  # Tests"
 	@echo "  make test                 Run full test suite (pytest)"
@@ -80,16 +81,16 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make sync-docs            Auto-update code-synced docs: README.md, docs/system-analysis.html, docs/engineering-practices.html"
-	@echo "  make docs-format          Apply shared HTML template to docs/*.html"
+	@echo "  make docs-fix             Auto-update docs (UML + marker sync + html render + html format)"
+	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
 	@echo ""
 	@echo "  # Pre-commit Hooks"
 	@echo "  make pre-commit-install   Install git pre-commit hooks"
 	@echo "  make pre-commit-check     Run all pre-commit hooks"
 	@echo ""
 	@echo "  # Deployment"
-	@echo "  make pre-deploy           Run full quality gate before deploy"
-	@echo "  make deploy DEPLOY_CMD='…' Run pre-deploy then deploy command"
+	@echo "  make release-check        Run env-check + verify before deploy"
+	@echo "  make release DEPLOY_CMD='…' Run release-check then deploy command"
 	@echo ""
 
 # ──────────────────────────────────────────────
@@ -170,10 +171,6 @@ migration:
 # Code quality
 # ──────────────────────────────────────────────
 # Auto-format Python codebase.
-format: format-fix docs-format
-	@printf "$(ICON_OK) %s\n" "Code and docs formatting completed"
-
-# Auto-format Python codebase.
 format-fix:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
@@ -242,23 +239,20 @@ openapi-accept-changes:
 	@$(PYTHON) scripts/openapi_governance.py update-baseline
 	@printf "$(ICON_OK) %s\n" "OpenAPI baseline updated"
 
-# Backward-compatible alias for old target name.
-openapi-baseline-update: openapi-accept-changes
-
-# Run local auto-fix pipeline before quality-check.
-quality-fix:
-	@printf "$(COLOR_CYAN)== QUALITY-FIX: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/3] format"
-	@$(MAKE) format
+# Run local auto-fix pipeline.
+fix:
+	@printf "$(COLOR_CYAN)== FIX: START ==$(COLOR_RESET)\n"
+	@printf "$(ICON_INFO) %s\n" "[1/3] format-fix"
+	@$(MAKE) format-fix
 	@printf "$(ICON_INFO) %s\n" "[2/3] lint-fix"
 	@$(MAKE) lint-fix
-	@printf "$(ICON_INFO) %s\n" "[3/3] docs-format"
-	@$(MAKE) docs-format
-	@printf "$(COLOR_GREEN)== QUALITY-FIX: SUCCESS ==$(COLOR_RESET)\n"
+	@printf "$(ICON_INFO) %s\n" "[3/3] docs-fix"
+	@$(MAKE) docs-fix
+	@printf "$(COLOR_GREEN)== FIX: SUCCESS ==$(COLOR_RESET)\n"
 
 # Run full local quality gate (lint, types, openapi, tests, docs sync).
-quality-check:
-	@printf "$(COLOR_CYAN)== QUALITY-CHECK: START ==$(COLOR_RESET)\n"
+verify:
+	@printf "$(COLOR_CYAN)== VERIFY: START ==$(COLOR_RESET)\n"
 	@printf "$(ICON_INFO) %s\n" "[1/5] lint-check"
 	@$(MAKE) lint-check
 	@printf "$(ICON_INFO) %s\n" "[2/5] type-check"
@@ -267,9 +261,9 @@ quality-check:
 	@$(MAKE) openapi-check
 	@printf "$(ICON_INFO) %s\n" "[4/5] test"
 	@$(MAKE) test
-	@printf "$(ICON_INFO) %s\n" "[5/5] sync-docs"
-	@$(MAKE) sync-docs
-	@printf "$(COLOR_GREEN)== QUALITY-CHECK: SUCCESS ==$(COLOR_RESET)\n"
+	@printf "$(ICON_INFO) %s\n" "[5/5] docs-fix"
+	@$(MAKE) docs-fix
+	@printf "$(COLOR_GREEN)== VERIFY: SUCCESS ==$(COLOR_RESET)\n"
 
 # Install git pre-commit hooks for local checks.
 pre-commit-install:
@@ -331,47 +325,47 @@ test-warnings:
 	@$(PYTHON) -m pytest -q -rA
 	@printf "$(COLOR_GREEN)== TEST-WARNINGS: SUCCESS ==$(COLOR_RESET)\n"
 
-# Run mandatory pre-deploy gate (env-check + quality-check).
-pre-deploy:
+# Run mandatory release gate (env-check + verify).
+release-check:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
-	@printf "$(COLOR_CYAN)== PRE-DEPLOY: START ==$(COLOR_RESET)\n"
+	@printf "$(COLOR_CYAN)== RELEASE-CHECK: START ==$(COLOR_RESET)\n"
 	@printf "$(ICON_INFO) %s\n" "[1/2] env-check"
 	@$(MAKE) env-check
-	@printf "$(ICON_INFO) %s\n" "[2/2] quality-check"
-	@$(MAKE) quality-check
-	@printf "$(COLOR_GREEN)== PRE-DEPLOY: SUCCESS ==$(COLOR_RESET)\n"
+	@printf "$(ICON_INFO) %s\n" "[2/2] verify"
+	@$(MAKE) verify
+	@printf "$(COLOR_GREEN)== RELEASE-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
-# Run deploy command after successful pre-deploy gate.
-deploy:
+# Run deploy command after successful release-check gate.
+release:
 	@if [ -z "$(DEPLOY_CMD)" ]; then \
 		echo ""; \
 		printf "$(ICON_ERR) %s\n" "Missing DEPLOY_CMD."; \
 		echo ""; \
 		echo "  Usage:"; \
-		echo "    make deploy DEPLOY_CMD='echo Deploying to staging'"; \
+		echo "    make release DEPLOY_CMD='echo Deploying to staging'"; \
 		echo ""; \
 		exit 1; \
 	fi
-	@printf "$(COLOR_CYAN)== DEPLOY: START ==$(COLOR_RESET)\n"
-	@$(MAKE) pre-deploy
+	@printf "$(COLOR_CYAN)== RELEASE: START ==$(COLOR_RESET)\n"
+	@$(MAKE) release-check
 	@printf "$(ICON_STEP) %s\n" "Running deploy command: $(DEPLOY_CMD)"
 	@sh -c "$(DEPLOY_CMD)"
-	@printf "$(COLOR_GREEN)== DEPLOY: SUCCESS ==$(COLOR_RESET)\n"
+	@printf "$(COLOR_GREEN)== RELEASE: SUCCESS ==$(COLOR_RESET)\n"
 
 # ──────────────────────────────────────────────
-# Sync docs from code
+# Docs
 # ──────────────────────────────────────────────
-# Single docs command: regenerate UML, sync markers, render HTML companions.
-sync-docs:
+# Regenerate docs artifacts and normalize docs HTML.
+docs-fix:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
 	@if [ ! -f "scripts/regenerate_docs.py" ]; then \
 		printf "$(ICON_ERR) %s\n" "scripts/regenerate_docs.py not found."; exit 1; \
 	fi
-	@printf "$(COLOR_CYAN)== DOCS SYNC: START ==$(COLOR_RESET)\n"
+	@printf "$(COLOR_CYAN)== DOCS-FIX: START ==$(COLOR_RESET)\n"
 	@printf "$(ICON_INFO) %s\n" "[1/3] regenerate UML diagrams"
 	@$(PYTHON) scripts/regenerate_docs.py
 	@printf "$(ICON_INFO) %s\n" "[2/3] sync marker-based documentation"
@@ -380,16 +374,25 @@ sync-docs:
 	@$(PYTHON) scripts/render_docs_html.py
 	@printf "$(ICON_INFO) %s\n" "[4/4] normalize docs html template"
 	@$(PYTHON) scripts/format_docs_html.py
-	@printf "$(COLOR_GREEN)== DOCS SYNC: SUCCESS ==$(COLOR_RESET)\n"
+	@printf "$(COLOR_GREEN)== DOCS-FIX: SUCCESS ==$(COLOR_RESET)\n"
 
-# Apply shared CSS/nav/container template to all docs html pages.
-docs-format:
+# Verify docs are already synchronized (no drift allowed).
+docs-check:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
-	@printf "$(ICON_STEP) %s\n" "Formatting docs HTML files..."
-	@$(PYTHON) scripts/format_docs_html.py
-	@printf "$(ICON_OK) %s\n" "Docs HTML formatting completed"
+	@tmp_before=$$(mktemp); tmp_after=$$(mktemp); \
+	git diff -- README.md docs/system-analysis.html docs/engineering-practices.html > "$$tmp_before"; \
+	$(MAKE) docs-fix; \
+	git diff -- README.md docs/system-analysis.html docs/engineering-practices.html > "$$tmp_after"; \
+	if cmp -s "$$tmp_before" "$$tmp_after"; then \
+		printf "$(ICON_OK) %s\n" "Docs check passed (no drift)"; \
+	else \
+		printf "$(ICON_ERR) %s\n" "Docs drift detected in synchronized docs. Run 'make docs-fix' and commit updated files."; \
+		rm -f "$$tmp_before" "$$tmp_after"; \
+		exit 1; \
+	fi; \
+	rm -f "$$tmp_before" "$$tmp_after"
 
 # ──────────────────────────────────────────────
 # Health check

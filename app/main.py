@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from base64 import b64decode
 from time import perf_counter
 
 from fastapi import FastAPI, Request
@@ -177,16 +176,6 @@ def health() -> HealthResponse:
     """Return basic service status."""
     logger.debug("health_check_called")
     return HealthResponse(status="ok")
-
-
-@app.get("/favicon.png", include_in_schema=False)
-def favicon() -> Response:
-    """Serve local favicon to avoid external DNS dependency in docs UI."""
-    # 1x1 transparent PNG
-    png_bytes = b64decode(
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7+3XQAAAAASUVORK5CYII="
-    )
-    return Response(content=png_bytes, media_type="image/png")
 
 
 @app.get("/docs", include_in_schema=False)

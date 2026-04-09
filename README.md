@@ -39,9 +39,12 @@ Primary sources: `docs/system-analysis.html`, `docs/engineering-practices.html`
 
 Policy:
 - Local operations are executed via `make` targets from `Makefile`.
-- Docs HTML template normalization: `make docs-format` (included in `make sync-docs`).
+- Use scenario entrypoints for daily work: `make fix`, `make verify`, `make release-check`, `make release DEPLOY_CMD='...'`.
+- Atomic targets remain available for granular control (`format-*`, `lint-*`, `type-check`, `test*`, `docs-*`, `openapi-*`).
+- Docs synchronization and HTML normalization: `make docs-fix`.
+- Docs drift validation (no updates expected): `make docs-check`.
 - Before commit: `make pre-commit-check`
-- Before PR/deploy: `make quality-check` and `make pre-deploy`
+- Before PR/deploy: `make verify` and `make release-check`
 
 ---
 
@@ -120,7 +123,6 @@ Configuration is loaded from `.env` (based on `.env.example`).
 | `POST` | `/api/v1/user` | Create user |
 | `GET` | `/api/v1/user/{system_user_id}` | Get user by system_user_id |
 | `GET` | `/docs` | Custom Swagger Ui |
-| `GET` | `/favicon.png` | Favicon |
 | `GET` | `/health` | Health check |
 <!-- END:HTTP_ENDPOINTS -->
 

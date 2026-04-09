@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Error Matrix By Status</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Error Matrix By Status</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="./README.html" class="is-active" aria-current="page">Developer Docs</a>
+        <a href="../adr/README.html">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <p>
+        This guide explains how to split error responses into a shared <code>COMMON_*</code> pool and
+        entity-specific matrices (for example <code>USER_*</code>), and how to review endpoint contracts by
+        HTTP status.
+      </p>
+
+      <h2>1. Rule of thumb</h2>
+      <ul>
+        <li>Reuse <code>COMMON_*</code> when error semantics are cross-cutting and identical across endpoints.</li>
+        <li>Use entity-prefixed codes (<code>USER_*</code>, future <code>CONTRACT_*</code>, etc.) for domain behavior.</li>
+        <li>Do not change meaning of published <code>code</code> + <code>key</code> pairs.</li>
+        <li>Document all declared responses in OpenAPI examples and tests.</li>
+      </ul>
+
+      <h2>2. Where to define reusable responses</h2>
+      <ul>
+        <li><code>app/openapi/responses.py</code> - shared response blocks for routers.</li>
+        <li><code>app/openapi/examples/errors.py</code> - canonical example payload values.</li>
+        <li><code>app/api/v1/*.py</code> - endpoint-level assembly of common + entity responses.</li>
+      </ul>
+
+      <h2>3. Service-wide common pool (recommended baseline)</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>HTTP status</th>
+              <th>Code(s)</th>
+              <th>Key(s)</th>
+              <th>Reuse scope</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>401</code></td>
+              <td><code>COMMON_401</code></td>
+              <td><code>SECURITY_AUTH_REQUIRED</code></td>
+              <td>All protected endpoints.</td>
+            </tr>
+            <tr>
+              <td><code>413</code></td>
+              <td><code>COMMON_413</code></td>
+              <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+              <td>Endpoints that can receive oversized body.</td>
+            </tr>
+            <tr>
+              <td><code>429</code></td>
+              <td><code>COMMON_429</code></td>
+              <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+              <td>All endpoints behind rate limiting.</td>
+            </tr>
+            <tr>
+              <td><code>409</code></td>
+              <td><code>COMMON_409</code></td>
+              <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+              <td>Write endpoints with idempotency semantics.</td>
+            </tr>
+            <tr>
+              <td><code>400</code></td>
+              <td><code>COMMON_400</code></td>
+              <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+              <td>Write endpoints where idempotency key is required.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>4. Entity matrix example: user</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Endpoint</th>
+              <th>HTTP status</th>
+              <th>Class</th>
+              <th>Code prefix</th>
+              <th>Current examples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>POST /api/v1/user</code></td>
+              <td><code>400</code></td>
+              <td>Mixed: COMMON + entity</td>
+              <td><code>COMMON_*</code> + <code>USER_*</code></td>
+              <td><code>IDEMPOTENCY_KEY_REQUIRED</code>, <code>USER_CREATE_ALREADY_EXISTS</code></td>
+            </tr>
+            <tr>
+              <td><code>POST /api/v1/user</code></td>
+              <td><code>422</code></td>
+              <td>Entity validation matrix</td>
+              <td><code>USER_00x</code></td>
+              <td><code>USER_001...USER_013</code></td>
+            </tr>
+            <tr>
+              <td><code>GET /api/v1/user/{system_user_id}</code></td>
+              <td><code>404</code></td>
+              <td>Entity business</td>
+              <td><code>USER_*</code></td>
+              <td><code>USER_NOT_FOUND</code> (<code>USER_404</code>)</td>
+            </tr>
+            <tr>
+              <td><code>GET /api/v1/user/{system_user_id}</code></td>
+              <td><code>401</code>, <code>429</code></td>
+              <td>COMMON reusable</td>
+              <td><code>COMMON_*</code></td>
+              <td>Auth and rate-limit responses reused from shared pool</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>5. Router review checklist (status-first)</h2>
+      <ol>
+        <li>List all response statuses declared in router <code>responses={...}</code>.</li>
+        <li>Mark each status as <strong>COMMON</strong> or <strong>ENTITY</strong>.</li>
+        <li>Ensure COMMON statuses come from <code>app/openapi/responses.py</code>.</li>
+        <li>Ensure ENTITY statuses use entity-prefixed code space and mapped examples.</li>
+        <li>Validate with tests and <code>make verify</code>.</li>
+      </ol>
+
+      <h2>6. Related governance docs</h2>
+      <ul>
+        <li><a href="../adr/0003-error-contract-governance.html">ADR 0003: Error Contract Governance</a></li>
+        <li><a href="./0002-schemas-and-contracts.html">Schemas and Contracts Guide</a></li>
+      </ul>
+    </main>
+  </body>
+</html>

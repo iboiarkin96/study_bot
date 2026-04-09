@@ -516,7 +516,7 @@ def sync(check: bool = False) -> int:
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ README.md is out of sync (run make sync-docs)")
+                print("✗ README.md is out of sync (run make docs-fix)")
             else:
                 readme_path.write_text(updated)
                 _ok("README.md updated")
@@ -535,7 +535,7 @@ def sync(check: bool = False) -> int:
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ docs/system-analysis.html is out of sync (run make sync-docs)")
+                print("✗ docs/system-analysis.html is out of sync (run make docs-fix)")
             else:
                 html_path.write_text(updated)
                 _ok("docs/system-analysis.html updated")
@@ -557,7 +557,7 @@ def sync(check: bool = False) -> int:
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ docs/engineering-practices.html is out of sync (run make sync-docs)")
+                print("✗ docs/engineering-practices.html is out of sync (run make docs-fix)")
             else:
                 eng_path.write_text(updated)
                 _ok("docs/engineering-practices.html updated")

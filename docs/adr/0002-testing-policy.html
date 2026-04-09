@@ -50,8 +50,8 @@
           <ul>
             <li><code>make test</code></li>
             <li><code>make test-one path=...</code></li>
-            <li><code>make pre-deploy</code> (includes tests)</li>
-            <li><code>make deploy DEPLOY_CMD=&quot;...&quot;</code> (always runs pre-deploy first)</li>
+            <li><code>make release-check</code> (includes tests via <code>make verify</code>)</li>
+            <li><code>make release DEPLOY_CMD=&quot;...&quot;</code> (always runs release-check first)</li>
           </ul>
         </li>
       </ul>
@@ -74,7 +74,7 @@
       <pre><code>
         make test
         make test-one path=tests/api/v1/test_user_create.py
-        make pre-deploy
+        make release-check
       </code></pre>
     </main>
   </body>

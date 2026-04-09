@@ -31,6 +31,12 @@
         <li><code>code</code> + <code>key</code> are immutable once published.</li>
         <li>Contract evolves additively; existing semantics cannot be silently changed.</li>
         <li>Validation and business errors follow explicit, documented schemas.</li>
+        <li>Error catalog is split into:
+          <ul>
+            <li><strong>COMMON</strong> pool for service-wide reusable errors (security/rate-limit/idempotency/core transport).</li>
+            <li><strong>Entity</strong> matrices for domain-specific errors (for example <code>USER_*</code>).</li>
+          </ul>
+        </li>
       </ol>
 
       <h2>Contract model</h2>
@@ -48,8 +54,30 @@
         </li>
       </ul>
 
+      <h2>Error catalog structure</h2>
+      <h3>1) Common reusable pool (service-wide)</h3>
+      <p>Use <code>COMMON_*</code> for errors that should be reused consistently across all endpoints.</p>
+      <ul>
+        <li>Examples: auth required, rate-limit exceeded, body too large, idempotency key conflicts.</li>
+        <li>Implementation: reusable OpenAPI response blocks in <code>app/openapi/responses.py</code>.</li>
+        <li>Rule: do not duplicate these responses inline in routers unless behavior differs.</li>
+      </ul>
+
+      <h3>2) Entity matrices (domain-specific)</h3>
+      <p>Use entity-prefixed codes for business/validation rules specific to one domain.</p>
+      <ul>
+        <li>Example: <code>USER_001...USER_013</code> validation matrix and <code>USER_101</code>, <code>USER_404</code>.</li>
+        <li>Rule: entity code meaning is immutable once released.</li>
+        <li>Rule: each entity matrix must be reflected in OpenAPI examples and tests.</li>
+      </ul>
+
       <h2>Implementation in this repository</h2>
       <ul>
+        <li>Shared OpenAPI response blocks:
+          <ul>
+            <li><code>app/openapi/responses.py</code></li>
+          </ul>
+        </li>
         <li>Validation mapping source:
           <ul>
             <li><code>app/validation/user.py</code></li>
@@ -89,8 +117,10 @@
       <ol>
         <li>Add new codes; do not repurpose old ones.</li>
         <li>Keep fallback validation codes for unmapped errors.</li>
+        <li>Prefer shared <code>COMMON</code> response blocks for cross-cutting errors.</li>
+        <li>Entity routers must keep their own matrix for domain-only errors.</li>
         <li>Update OpenAPI examples and docs in the same change.</li>
-        <li>Ensure <code>make sync-docs</code> and <code>make pre-deploy</code> pass before release.</li>
+        <li>Ensure <code>make docs-fix</code> and <code>make release-check</code> pass before release.</li>
       </ol>
     </main>
   </body>
