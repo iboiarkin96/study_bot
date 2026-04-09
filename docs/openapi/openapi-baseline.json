@@ -43,19 +43,70 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
-      "HealthResponse": {
-        "description": "Response payload for health check endpoint.",
+      "LiveResponse": {
+        "description": "Response payload for liveness endpoint.",
         "properties": {
-          "status": {
-            "default": "ok",
+          "app_env": {
+            "description": "Logical deployment profile from APP_ENV (dev, qa, prod).",
             "examples": [
-              "ok"
+              "dev",
+              "qa",
+              "prod"
+            ],
+            "title": "App Env",
+            "type": "string"
+          },
+          "status": {
+            "default": "alive",
+            "examples": [
+              "alive"
             ],
             "title": "Status",
             "type": "string"
           }
         },
-        "title": "HealthResponse",
+        "required": [
+          "app_env"
+        ],
+        "title": "LiveResponse",
+        "type": "object"
+      },
+      "ReadyResponse": {
+        "description": "Response payload for readiness endpoint.",
+        "properties": {
+          "checks": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Checks",
+            "type": "object"
+          },
+          "db_latency_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "examples": [
+              1.42,
+              null
+            ],
+            "title": "Db Latency Ms"
+          },
+          "status": {
+            "default": "ready",
+            "examples": [
+              "ready",
+              "not_ready"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "ReadyResponse",
         "type": "object"
       },
       "UserCreateRequest": {
@@ -948,7 +999,7 @@
     },
     "/api/v1/user/{system_user_id}": {
       "get": {
-        "description": "Returns user profile by external `system_user_id`.\n\n### Example request (curl)\n```bash\ncurl -X GET 'http://127.0.0.1:8000/api/v1/user/2' \\\n  -H 'accept: application/json' \\\n  -H 'X-API-Key: local-dev-key'\n```",
+        "description": "Returns user profile by external `system_user_id`.\n\n### Example request (curl)\n```bash\ncurl -X GET 'http://127.0.0.1:8000/api/v1/user/2' \\\n  -H 'accept: application/json' \\\n  -H 'X-API-Key: ....'\n```",
         "operationId": "getUserBySystemUserId",
         "parameters": [
           {
@@ -973,6 +1024,27 @@
               }
             },
             "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "auth_required": {
+                    "summary": "Auth header required",
+                    "value": {
+                      "code": "COMMON_401",
+                      "key": "SECURITY_AUTH_REQUIRED",
+                      "message": "Missing or invalid API key in header `X-API-Key`.",
+                      "source": "security"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid API key header."
           },
           "404": {
             "content": {
@@ -1004,6 +1076,47 @@
               }
             },
             "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "rate_limit_exceeded": {
+                    "summary": "Too many requests",
+                    "value": {
+                      "code": "COMMON_429",
+                      "key": "SECURITY_RATE_LIMIT_EXCEEDED",
+                      "message": "Too many requests. Retry later.",
+                      "source": "security"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Per-client request rate limit exceeded.",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds until request can be retried.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Limit": {
+                "description": "Rate-limit ceiling for current window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in current window.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1017,23 +1130,45 @@
         ]
       }
     },
-    "/health": {
+    "/live": {
       "get": {
-        "description": "Return basic service status.",
-        "operationId": "health_health_get",
+        "description": "Return process liveness status.",
+        "operationId": "getLiveProbe",
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
+                  "$ref": "#/components/schemas/LiveResponse"
                 }
               }
             },
             "description": "Successful Response"
           }
         },
-        "summary": "Health check",
+        "summary": "Liveness probe",
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "description": "Return readiness status including DB dependency probe.",
+        "operationId": "getReadyProbe",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Readiness probe",
         "tags": [
           "System"
         ]
@@ -1042,7 +1177,7 @@
   },
   "tags": [
     {
-      "description": "Operational service endpoints (health/readiness and platform metadata).",
+      "description": "Operational endpoints (live/ready/metrics and platform metadata).",
       "name": "System"
     },
     {

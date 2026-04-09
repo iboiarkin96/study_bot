@@ -23,7 +23,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements run migrate migration format-fix format-check lint-check lint-fix type-check openapi-check contract-test openapi-accept-changes fix verify release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check
+.PHONY: help venv install requirements env-init run migrate migration format-fix format-check lint-check lint-fix type-check openapi-check contract-test openapi-accept-changes fix verify release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check observability-up observability-down observability-smoke
 
 # ──────────────────────────────────────────────
 # Help
@@ -45,6 +45,7 @@ help:
 	@echo "  make venv                 Create virtual environment"
 	@echo "  make install              Install dependencies"
 	@echo "  make requirements         Auto-generate requirements.txt from .venv"
+	@echo "  make env-init             Create .env from env/example (once per machine)"
 	@echo ""
 	@echo "  # Application"
 	@echo "  make run                  Start FastAPI dev server"
@@ -84,6 +85,11 @@ help:
 	@echo "  # Documentation"
 	@echo "  make docs-fix             Auto-update docs (UML + marker sync + html render + html format)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
+	@echo ""
+	@echo "  # Observability (Prometheus + Grafana)"
+	@echo "  make observability-up     Start Prometheus/Grafana stack with Docker Compose"
+	@echo "  make observability-down   Stop Prometheus/Grafana stack"
+	@echo "  make observability-smoke  Check observability links return HTTP 200"
 	@echo ""
 	@echo "  # Pre-commit Hooks"
 	@echo "  make pre-commit-install   Install git pre-commit hooks"
@@ -126,13 +132,20 @@ requirements:
 	@$(PIP) freeze | LC_ALL=C sort > requirements.txt
 	@printf "$(ICON_OK) %s\n" "requirements.txt updated"
 
+# Create root .env from the single tracked template (env/example).
+env-init:
+	@if [ -f ".env" ]; then \
+		printf "$(ICON_ERR) %s\n" ".env already exists — remove or rename it first."; exit 1; \
+	fi
+	@cp env/example .env && printf "$(ICON_OK) %s\n" ".env created from env/example — edit APP_ENV and secrets"
+
 # ──────────────────────────────────────────────
 # Run
 # ──────────────────────────────────────────────
 # Start FastAPI app with values from .env.
 run:
 	@if [ ! -f "$(ENV)" ]; then \
-		printf "$(ICON_ERR) %s\n" "$(ENV) not found. Copy .env.example → .env and configure it."; exit 1; \
+		printf "$(ICON_ERR) %s\n" "$(ENV) not found. Run 'make env-init' (or cp env/example .env)."; exit 1; \
 	fi
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
@@ -408,6 +421,25 @@ docs-check:
 	fi; \
 	rm -f "$$tmp_before" "$$tmp_after"
 
+# Start local Prometheus + Grafana observability stack.
+observability-up:
+	@printf "$(ICON_STEP) %s\n" "Starting observability stack..."
+	@$(PYTHON) scripts/render_prometheus_config.py
+	@docker compose -f docker-compose.observability.yml up -d
+	@printf "$(ICON_OK) %s\n" "Observability stack is up (Prometheus:9090, Grafana:3001)"
+
+# Stop local Prometheus + Grafana observability stack.
+observability-down:
+	@printf "$(ICON_STEP) %s\n" "Stopping observability stack..."
+	@docker compose -f docker-compose.observability.yml down
+	@printf "$(ICON_OK) %s\n" "Observability stack stopped"
+
+# Smoke-check that key observability links are reachable locally.
+observability-smoke:
+	@printf "$(ICON_STEP) %s\n" "Checking observability links..."
+	@$(PYTHON) scripts/check_observability_links.py
+	@printf "$(ICON_OK) %s\n" "Observability links are reachable"
+
 # ──────────────────────────────────────────────
 # Health check
 # ──────────────────────────────────────────────
@@ -417,6 +449,8 @@ env-check:
 	@if [ ! -d ".venv" ]; then printf "  $(ICON_ERR) %s\n" ".venv missing"; else printf "  $(ICON_OK) %s\n" ".venv exists"; fi
 	@if [ ! -f "$(ENV)" ]; then printf "  $(ICON_ERR) %s\n" ".env missing"; else printf "  $(ICON_OK) %s\n" ".env exists"; fi
 	@if [ ! -f "requirements.txt" ]; then printf "  $(ICON_ERR) %s\n" "requirements.txt missing"; else printf "  $(ICON_OK) %s\n" "requirements.txt exists"; fi
+	@printf "  $(ICON_INFO) APP_ENV=%s\n" "$${APP_ENV:-<not set>}"
+	@printf "  $(ICON_INFO) ENV_FILE=%s\n" "$${ENV_FILE:-<not set>}"
 	@if [ -d ".venv" ] && [ -f "$(ENV)" ]; then \
 		$(PYTHON) -c "from app.core.config import get_settings; s=get_settings(); print('  $(ICON_OK) Config OK - DB:', s.sqlite_db_path)" 2>/dev/null \
 		|| printf "  $(ICON_ERR) %s\n" "Config load failed (check .env values)"; \

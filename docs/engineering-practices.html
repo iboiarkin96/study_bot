@@ -108,6 +108,26 @@
                 <li>Policy-level changes are captured in ADR before rollout.</li>
               </ul>
 
+              <h3>1.10 Observability and Readiness (Mandatory)</h3>
+              <ul>
+                <li>Service must expose <code>/live</code> and <code>/ready</code> probes.</li>
+                <li><code>/live</code> reflects process liveness only; dependency checks belong to <code>/ready</code>.</li>
+                <li><code>/metrics</code> must expose Prometheus metrics for API latency, error rate, and DB latency.</li>
+                <li>Use low-cardinality metric labels only (method, route template, status class/code, operation type).</li>
+                <li>Run <code>make contract-test</code> and <code>make verify</code> before release to protect API contract.</li>
+              </ul>
+
+              <h3>1.11 Environment Profiles and Config Governance (Mandatory)</h3>
+              <ul>
+                <li>Use explicit app profiles: <code>APP_ENV=dev|qa|prod</code>. Automated tests run under <code>qa</code> rules.</li>
+                <li>Single committed template: <code>env/example</code> → copy to <code>.env</code> once (<code>make env-init</code>).</li>
+                <li>Base config is loaded from <code>.env</code>; profile overrides are loaded from <code>env/&lt;APP_ENV&gt;</code> (e.g. <code>env/dev</code>).</li>
+                <li>Optional <code>ENV_FILE</code> applies last for deployment-specific secrets/config.</li>
+                <li><code>GET /live</code> must expose effective <code>app_env</code> for operators to verify the running profile.</li>
+                <li>In <code>qa/prod</code>, insecure defaults are blocked (disabled auth, default API key, metrics disabled).</li>
+                <li>In <code>prod</code>, localhost CORS and <code>LOG_LEVEL=DEBUG</code> are blocked by startup validation.</li>
+              </ul>
+
               <section>
                 <h2 id="dev-docs-as-code">2. Docs as Code Workflow</h2>
                 <div class="card">
@@ -236,6 +256,10 @@
                     <td>Verify env, deps, and DB connectivity</td>
                   </tr>
                   <tr>
+                    <td><code>make env-init</code></td>
+                    <td>Create .env from env/example (once per machine)</td>
+                  </tr>
+                  <tr>
                     <td><code>make fix</code></td>
                     <td>Run auto-fixes (format-fix + lint-fix + docs-fix)</td>
                   </tr>
@@ -266,6 +290,18 @@
                   <tr>
                     <td><code>make migration name=…</code></td>
                     <td>Auto-generate new Alembic migration</td>
+                  </tr>
+                  <tr>
+                    <td><code>make observability-down</code></td>
+                    <td>Stop Prometheus/Grafana stack</td>
+                  </tr>
+                  <tr>
+                    <td><code>make observability-smoke</code></td>
+                    <td>Check observability links return HTTP 200</td>
+                  </tr>
+                  <tr>
+                    <td><code>make observability-up</code></td>
+                    <td>Start Prometheus/Grafana stack with Docker Compose</td>
                   </tr>
                   <tr>
                     <td><code>make openapi-accept-changes</code></td>

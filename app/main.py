@@ -10,11 +10,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
 from starlette.responses import Response
 
 from app.api.v1.user import router as user_router
 from app.core.config import get_settings
+from app.core.database import SessionLocal, engine
 from app.core.logging import configure_logging
+from app.core.metrics import MetricsCollector, install_sqlalchemy_metrics, metrics_content_type
 from app.core.security import (
     InMemoryRateLimiter,
     apply_security_headers,
@@ -23,7 +26,7 @@ from app.core.security import (
     extract_client_id,
     is_protected_api_request,
 )
-from app.schemas.system import HealthResponse
+from app.schemas.system import LiveResponse, ReadyResponse
 from app.validation.user import build_validation_error_payload
 
 settings = get_settings()
@@ -33,7 +36,7 @@ logger = logging.getLogger(__name__)
 OPENAPI_TAGS = [
     {
         "name": "System",
-        "description": "Operational service endpoints (health/readiness and platform metadata).",
+        "description": "Operational endpoints (live/ready/metrics and platform metadata).",
     },
     {
         "name": "User",
@@ -53,6 +56,13 @@ rate_limiter = InMemoryRateLimiter(
     limit=settings.api_rate_limit_requests,
     window_seconds=settings.api_rate_limit_window_seconds,
 )
+metrics = MetricsCollector(
+    enabled=settings.metrics_enabled,
+    metrics_path=settings.metrics_path,
+    http_buckets=settings.metrics_buckets_http,
+    db_buckets=settings.metrics_buckets_db,
+)
+install_sqlalchemy_metrics(engine=engine, metrics=metrics)
 
 app.add_middleware(
     CORSMiddleware,
@@ -66,11 +76,17 @@ app.add_middleware(
 @app.middleware("http")
 async def request_logging_middleware(request: Request, call_next) -> Response:
     """Write one structured log line for each incoming request."""
+    metrics_started_at = metrics.on_request_start(request)
     started_at = perf_counter()
     try:
         response = await call_next(request)
     except Exception:
         elapsed_ms = (perf_counter() - started_at) * 1000
+        metrics.on_request_complete(
+            request=request,
+            status_code=500,
+            started_at=metrics_started_at,
+        )
         logger.exception(
             "request_failed method=%s path=%s elapsed_ms=%.2f",
             request.method,
@@ -86,6 +102,11 @@ async def request_logging_middleware(request: Request, call_next) -> Response:
         request.url.path,
         response.status_code,
         elapsed_ms,
+    )
+    metrics.on_request_complete(
+        request=request,
+        status_code=response.status_code,
+        started_at=metrics_started_at,
     )
     return response
 
@@ -171,11 +192,76 @@ async def validation_exception_handler(
     )
 
 
-@app.get("/health", tags=["System"], summary="Health check", response_model=HealthResponse)
-def health() -> HealthResponse:
-    """Return basic service status."""
-    logger.debug("health_check_called")
-    return HealthResponse(status="ok")
+def _readiness_probe(timeout_ms: int) -> tuple[bool, float | None, str]:
+    started_at = perf_counter()
+    try:
+        with SessionLocal() as session:
+            session.execute(text("SELECT 1"))
+    except Exception:
+        logger.exception("ready_check_failed")
+        return False, None, "db_error"
+
+    elapsed_ms = (perf_counter() - started_at) * 1000
+    metrics.observe_db_duration(operation="health_check", elapsed_seconds=elapsed_ms / 1000)
+    if elapsed_ms > timeout_ms:
+        logger.warning(
+            "ready_check_timeout elapsed_ms=%.2f timeout_ms=%s",
+            elapsed_ms,
+            timeout_ms,
+        )
+        return False, elapsed_ms, "timeout"
+    return True, elapsed_ms, "ok"
+
+
+# Assign as variable to simplify monkeypatching in tests.
+readiness_probe = _readiness_probe
+
+
+@app.get(
+    "/live",
+    tags=["System"],
+    summary="Liveness probe",
+    operation_id="getLiveProbe",
+    response_model=LiveResponse,
+)
+def live() -> LiveResponse:
+    """Return process liveness status."""
+    return LiveResponse(status="alive", app_env=settings.app_env)
+
+
+@app.get(
+    "/ready",
+    tags=["System"],
+    summary="Readiness probe",
+    operation_id="getReadyProbe",
+    response_model=ReadyResponse,
+)
+def ready() -> ReadyResponse | JSONResponse:
+    """Return readiness status including DB dependency probe."""
+    is_ready, db_latency_ms, db_state = readiness_probe(settings.readiness_db_timeout_ms)
+    payload = ReadyResponse(
+        status="ready" if is_ready else "not_ready",
+        checks={"database": db_state},
+        db_latency_ms=db_latency_ms,
+    )
+    if not is_ready:
+        return JSONResponse(status_code=503, content=payload.model_dump(mode="json"))
+    return payload
+
+
+def metrics_endpoint() -> Response:
+    """Expose Prometheus metrics in text format."""
+    if not settings.metrics_enabled:
+        return JSONResponse(status_code=404, content={"detail": "Metrics are disabled."})
+    return Response(content=metrics.render(), media_type=metrics_content_type())
+
+
+app.add_api_route(
+    settings.metrics_path,
+    metrics_endpoint,
+    methods=["GET"],
+    include_in_schema=False,
+)
 
 
 @app.get("/docs", include_in_schema=False)

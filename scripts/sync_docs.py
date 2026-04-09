@@ -1,6 +1,6 @@
 """Auto-generate documentation sections from code sources.
 
-Reads the Makefile help target, FastAPI app routes, and .env.example,
+Reads the Makefile help target, FastAPI app routes, and env/example,
 then patches marker-delimited sections in README.md, docs/system-analysis.html,
 and docs/engineering-practices.html.
 
@@ -335,15 +335,15 @@ def _render_handbook_rows_html(entries: list[tuple[str, str, str, str]]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# .env.example parser
+# env/example parser
 # ---------------------------------------------------------------------------
 
 _ENV_LINE_RE = re.compile(r"^([A-Z_]+)=(.*)$")
 
 
 def _parse_env_example() -> list[tuple[str, str]]:
-    """Return (variable, example_value) pairs from .env.example."""
-    path = ROOT / ".env.example"
+    """Return (variable, example_value) pairs from env/example."""
+    path = ROOT / "env" / "example"
     if not path.exists():
         return []
     entries: list[tuple[str, str]] = []

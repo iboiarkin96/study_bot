@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0009: Health, Readiness, and Prometheus Observability</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0009: Health, Readiness, and Prometheus Observability</h1>
+      <div id="docs-top-nav"></div>
+      <h2>Status</h2>
+      <p>Accepted</p>
+
+      <h2>Context</h2>
+      <p>
+        The service had a basic <code>/health</code> endpoint but no explicit readiness probe and no standardized
+        metrics export for latency/error-rate/DB latency in staging and production.
+      </p>
+
+      <h2>Decision</h2>
+      <ul>
+        <li>Introduce <code>/live</code> for process liveness checks.</li>
+        <li>Introduce <code>/ready</code> for dependency readiness checks (including DB probe).</li>
+        <li>Expose Prometheus metrics via <code>/metrics</code>.</li>
+        <li>Collect API latency, HTTP status counters, and DB operation latency with low-cardinality labels.</li>
+        <li>Adopt OpenAPI snapshot contract tests (<code>make contract-test</code>) in the quality gate.</li>
+      </ul>
+
+      <h2>Implementation</h2>
+      <ul>
+        <li>Health/readiness endpoints in <code>app/main.py</code> and schemas in <code>app/schemas/system.py</code>.</li>
+        <li>Metrics collector and SQLAlchemy hooks in <code>app/core/metrics.py</code>.</li>
+        <li>Config toggles and thresholds in <code>app/core/config.py</code> and <code>env/example</code>.</li>
+        <li>Operational commands in <code>Makefile</code> and observability stack in <code>docker-compose.observability.yml</code>.</li>
+      </ul>
+
+      <h2>Operational Model</h2>
+      <ul>
+        <li>Prometheus uses pull-based scraping from <code>/metrics</code>.</li>
+        <li>Dockerized Prometheus + Grafana is the default local/staging bootstrap path.</li>
+        <li>Production deployment may run the same stack outside Docker (VM/Kubernetes) with the same endpoint contract.</li>
+      </ul>
+
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Faster diagnosis of incidents via explicit readiness and standardized metrics.</li>
+        <li>Reduced risk of accidental contract drift through snapshot tests.</li>
+        <li>Consistent observability baseline from local to staging/production.</li>
+      </ul>
+
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Additional maintenance for metrics and dashboards.</li>
+        <li>Need to enforce low-cardinality labels and avoid exposing sensitive dimensions.</li>
+      </ul>
+    </main>
+  </body>
+</html>

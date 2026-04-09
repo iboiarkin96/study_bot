@@ -14,7 +14,7 @@ from sqlalchemy import text
 TEST_DB_PATH = Path(__file__).resolve().parent / "test_app.sqlite3"
 os.environ["SQLITE_DB_PATH"] = str(TEST_DB_PATH)
 os.environ.setdefault("APP_NAME", "Study App API (tests)")
-os.environ.setdefault("APP_ENV", "test")
+os.environ["APP_ENV"] = "qa"
 os.environ.setdefault("APP_HOST", "127.0.0.1")
 os.environ.setdefault("APP_PORT", "8001")
 os.environ.setdefault("API_AUTH_STRATEGY", "mock_api_key")
