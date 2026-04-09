@@ -39,11 +39,24 @@ function currentDocsRelPath() {
   if (idx >= 0) {
     return path.slice(idx + marker.length);
   }
-  const parts = path.split("/");
-  return parts[parts.length - 1] || "system-analysis.html";
+  // GitHub Pages project site: /{repo}/... maps to files at the published docs/ root (no /docs/ in URL).
+  const ghPages = path.match(/^\/[^/]+\/(.*)$/);
+  if (ghPages) {
+    const rel = ghPages[1];
+    return rel && rel.length > 0 ? rel : "index.html";
+  }
+  const parts = path.split("/").filter(Boolean);
+  const last = parts[parts.length - 1];
+  if (!last) {
+    return "index.html";
+  }
+  return last;
 }
 
 function activeTarget(relPath) {
+  if (relPath === "index.html" || relPath.endsWith("/index.html")) {
+    return "index.html";
+  }
   if (relPath.startsWith("adr/")) {
     return "adr/README.html";
   }
@@ -72,6 +85,7 @@ function renderTopNav() {
   const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
   const active = activeTarget(relPath);
   const items = [
+    { label: "Home", target: "index.html" },
     { label: "System Analysis", target: "system-analysis.html" },
     { label: "Engineering Practices", target: "engineering-practices.html" },
     { label: "Developer Docs", target: "developer/README.html" },
