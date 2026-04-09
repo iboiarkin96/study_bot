@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0007: OpenAPI Governance and Usability Standard</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>ADR 0007: OpenAPI Governance and Usability Standard</h1>
+      <nav class="top-nav" aria-label="Documentation navigation">
+        <a href="../system-analysis.html">System Analysis</a>
+        <a href="../engineering-practices.html">Engineering Practices</a>
+        <a href="../developer/README.html">Developer Docs</a>
+        <a href="./README.html" class="is-active" aria-current="page">ADR</a>
+        <a href="../runbooks/README.html">Runbooks</a>
+      </nav>
+      <h2>Status</h2>
+      <p>Accepted</p>
+      <h2>Context</h2>
+      <p>
+        API consumers use Swagger/OpenAPI as the primary integration contract. Existing docs were functional but had
+        discoverability gaps: partial 422 examples, missing response links, weak operation workflow hints, and no
+        explicit governance baseline for long-term quality.
+      </p>
+      <h2>Decision</h2>
+      <p>
+        Adopt an OpenAPI governance standard that combines contract strictness, example completeness, and CI quality
+        controls. The standard aligns with high-maturity engineering practices used in large-scale product teams.
+      </p>
+      <h2>Scope</h2>
+      <ul>
+        <li>In scope: OpenAPI schema quality, endpoint docs usability, examples, links, response contracts, CI checks.
+        </li>
+        <li>Out of scope: Public API monetization policies, external developer portal platform migration.
+        </li>
+      </ul>
+      <h2>Alternatives considered</h2>
+      <ol>
+        <li>Keep current docs and improve ad-hoc.
+          <ul>
+            <li>Pros: no process overhead.
+            </li>
+            <li>Cons: quality drifts over time; no consistent consumer experience.
+            </li>
+          </ul>
+        </li>
+        <li>Adopt strict OpenAPI governance baseline (selected).
+          <ul>
+            <li>Pros: predictable contracts, safer integrations, easier onboarding, scalable docs maintenance.
+            </li>
+            <li>Cons: requires discipline and CI investment.
+            </li>
+          </ul>
+        </li>
+      </ol>
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Swagger becomes actionable: clear workflows, realistic examples, and stable response semantics.
+        </li>
+        <li>Higher confidence for integrators and lower support load.
+        </li>
+        <li>Breaking changes become detectable early via contract checks.
+        </li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>More up-front effort per endpoint (examples, links, operation metadata).
+        </li>
+        <li>Need to keep CI checks and governance rules current.
+        </li>
+      </ul>
+      <h2>Standard requirements</h2>
+      <ul>
+        <li>Every operation has stable <code>operationId</code>, clear summary, and response model.
+        </li>
+        <li>Validation errors use stable code/key envelopes with complete examples for all mapped rules.
+        </li>
+        <li>Write operations document idempotency behavior and conflict semantics.
+        </li>
+        <li>Where workflow exists, response <code>links</code> guide client to the next operation.
+        </li>
+        <li>Key operations include code samples (curl minimum; optional additional languages).
+        </li>
+        <li>Error responses include documented headers when relevant (for example rate-limit headers).
+        </li>
+        <li>Deprecation must use explicit OpenAPI markers and migration guidance.
+        </li>
+      </ul>
+      <h2>Implementation plan</h2>
+      <ol>
+        <li>Phase 1 (implemented): improve user endpoints with complete 422 examples, links, operation IDs, code
+          samples, and read-after-write flow.
+        </li>
+        <li>Phase 2: add shared <code>components.responses</code> and reusable error definitions across routers.
+        </li>
+        <li>Phase 3: enforce OpenAPI linting (Spectral) and contract diff checks in CI/pre-deploy gates.
+        </li>
+        <li>Phase 4: expand code samples and external docs links for operational recovery/runbooks.
+        </li>
+      </ol>
+      <h2>Validation</h2>
+      <ul>
+        <li>Technical checks: <code>make type-check</code>, <code>make test</code>, <code>make sync-docs</code>.
+        </li>
+        <li>Operational checks: manual Swagger walkthrough for create/get workflow, 4xx/422/429 examples and links.
+        </li>
+        <li>Documentation updates: ADR index and generated handbook table via docs sync pipeline.
+        </li>
+      </ul>
+      <h2>References</h2>
+      <ul>
+        <li>
+          Related ADRs:<br />
+          <a href="../adr/0003-error-contract-governance.html"><code>0003-error-contract-governance</code></a><br />
+          <a href="../adr/0004-api-versioning-policy.html"><code>0004-api-versioning-policy</code></a><br />
+          <a href="../adr/0005-api-security-defaults.html"><code>0005-api-security-defaults</code></a><br />
+          <a href="../adr/0006-idempotency-write-operations.html"><code>0006-idempotency-write-operations</code></a>
+        </li>
+        <li>
+          Related runbooks:<br />
+          <a href="../runbooks/0006-api-security-failing.html"><code>0006-api-security-failing</code></a>
+        </li>
+      </ul>
+    </main>
+  </body>
+
+</html>

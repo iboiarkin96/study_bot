@@ -24,6 +24,11 @@ CREATE_USER_VALIDATION_RULES: dict[tuple[str, str], ValidationCodeRule] = {
         key="USER_CREATE_SYSTEM_USER_ID_REQUIRED",
         message="Field `system_user_id` is required.",
     ),
+    ("system_user_id", "string_too_short"): ValidationCodeRule(
+        code="USER_002",
+        key="USER_CREATE_SYSTEM_USER_ID_INVALID",
+        message="Field `system_user_id` must not be empty.",
+    ),
     ("full_name", "missing"): ValidationCodeRule(
         code="USER_003",
         key="USER_CREATE_FULL_NAME_REQUIRED",

@@ -186,6 +186,18 @@
                 <td>Auto-generate new Alembic migration</td>
               </tr>
               <tr>
+                <td><code>make openapi-accept-changes</code></td>
+                <td>Accept intentional OpenAPI changes (update baseline)</td>
+              </tr>
+              <tr>
+                <td><code>make openapi-baseline-update</code></td>
+                <td>Alias to openapi-accept-changes (deprecated)</td>
+              </tr>
+              <tr>
+                <td><code>make openapi-check</code></td>
+                <td>Run OpenAPI lint + breaking-change guard</td>
+              </tr>
+              <tr>
                 <td><code>make pre-commit-check</code></td>
                 <td>Run all pre-commit hooks</td>
               </tr>
@@ -199,7 +211,11 @@
               </tr>
               <tr>
                 <td><code>make quality-check</code></td>
-                <td>Run lint-check + type-check + test + sync-docs</td>
+                <td>Run lint-check + type-check + openapi-check + test + sync-docs</td>
+              </tr>
+              <tr>
+                <td><code>make quality-fix</code></td>
+                <td>Run auto-fixes (format + lint-fix + docs-format)</td>
               </tr>
               <tr>
                 <td><code>make requirements</code></td>
@@ -357,6 +373,11 @@
                 <td>ADR 0006: Idempotency For Write Operations</td>
                 <td>Idempotency contract for write operations using Idempotency-Key and dedup behavior.</td>
                 <td><a href="./adr/0006-idempotency-write-operations.html">Open ADR</a></td>
+              </tr>
+              <tr>
+                <td>ADR 0007: OpenAPI Governance and Usability Standard</td>
+                <td>Project architecture decision record.</td>
+                <td><a href="./adr/0007-openapi-governance-and-usability-standard.html">Open ADR</a></td>
               </tr>
               <tr>
                 <td>Runbooks Index</td>

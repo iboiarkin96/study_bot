@@ -9,7 +9,7 @@ from time import perf_counter
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
+from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from starlette.responses import Response
 
@@ -24,11 +24,23 @@ from app.core.security import (
     extract_client_id,
     is_protected_api_request,
 )
+from app.schemas.system import HealthResponse
 from app.validation.user import build_validation_error_payload
 
 settings = get_settings()
 log_file_path = configure_logging(settings)
 logger = logging.getLogger(__name__)
+
+OPENAPI_TAGS = [
+    {
+        "name": "System",
+        "description": "Operational service endpoints (health/readiness and platform metadata).",
+    },
+    {
+        "name": "User",
+        "description": "User identity lifecycle endpoints with idempotency and contract-driven errors.",
+    },
+]
 
 app = FastAPI(
     title=settings.app_name,
@@ -36,6 +48,7 @@ app = FastAPI(
     description="Study App API",
     docs_url=None,
     redoc_url=None,
+    openapi_tags=OPENAPI_TAGS,
 )
 rate_limiter = InMemoryRateLimiter(
     limit=settings.api_rate_limit_requests,
@@ -159,11 +172,11 @@ async def validation_exception_handler(
     )
 
 
-@app.get("/health", tags=["System"], summary="Health check")
-def health() -> dict[str, str]:
+@app.get("/health", tags=["System"], summary="Health check", response_model=HealthResponse)
+def health() -> HealthResponse:
     """Return basic service status."""
     logger.debug("health_check_called")
-    return {"status": "ok"}
+    return HealthResponse(status="ok")
 
 
 @app.get("/favicon.png", include_in_schema=False)
@@ -184,17 +197,6 @@ def custom_swagger_ui() -> Response:
         openapi_url=openapi_url,
         title=f"{app.title} - Swagger UI",
         swagger_favicon_url="/favicon.png",
-    )
-
-
-@app.get("/redoc", include_in_schema=False)
-def custom_redoc() -> Response:
-    """Serve ReDoc with local favicon."""
-    openapi_url = app.openapi_url or "/openapi.json"
-    return get_redoc_html(
-        openapi_url=openapi_url,
-        title=f"{app.title} - ReDoc",
-        redoc_favicon_url="/favicon.png",
     )
 
 

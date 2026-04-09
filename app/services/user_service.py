@@ -66,3 +66,19 @@ class UserService:
             persisted_user.client_uuid,
         )
         return persisted_user
+
+    def get_or_404(self, system_user_id: str) -> User:
+        """Fetch user by system id or raise business 404."""
+        user = self.repository.get_by_system_user_id(system_user_id)
+        if user is None:
+            logger.warning("get_user_not_found system_user_id=%s", system_user_id)
+            raise HTTPException(
+                status_code=404,
+                detail={
+                    "code": "USER_404",
+                    "key": "USER_NOT_FOUND",
+                    "message": "User with this `system_user_id` was not found.",
+                    "source": "business",
+                },
+            )
+        return user

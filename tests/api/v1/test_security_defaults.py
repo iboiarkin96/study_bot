@@ -10,6 +10,7 @@ def test_health_response_contains_security_headers(client) -> None:
     response = client.get("/health")
 
     assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["x-frame-options"] == "DENY"
     assert "content-security-policy" in response.headers

@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, Header, HTTPException, Security, status
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Path, Security, status
 from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.orm import Session
 
@@ -17,10 +17,10 @@ from app.openapi.examples import (
     SECURITY_AUTH_REQUIRED_ERROR_EXAMPLE,
     SECURITY_BODY_TOO_LARGE_ERROR_EXAMPLE,
     SECURITY_RATE_LIMIT_EXCEEDED_ERROR_EXAMPLE,
-    TIMEZONE_VALIDATION_ERROR_EXAMPLE,
     USER_CREATE_REQUEST_EXAMPLES,
-    USER_CREATE_REQUIRED_FIELD_ERROR_EXAMPLE,
+    USER_CREATE_VALIDATION_ERROR_EXAMPLES,
     USER_EXISTS_ERROR_EXAMPLE,
+    USER_NOT_FOUND_ERROR_EXAMPLE,
 )
 from app.repositories.idempotency_repository import IdempotencyRepository
 from app.repositories.user_repository import UserRepository
@@ -38,12 +38,25 @@ router = APIRouter(prefix="/user", tags=["User"])
     "",
     response_model=UserCreateResponse,
     status_code=status.HTTP_201_CREATED,
+    operation_id="createUser",
     summary="Create user",
     description=(
         "Creates a new user by `system_user_id`. "
-        "Requires `Idempotency-Key` header for safe retry semantics."
+        "Requires `Idempotency-Key` header for safe retry semantics.\n\n"
+        "### Example request (curl)\n"
+        "```bash\n"
+        "curl -X POST 'http://127.0.0.1:8000/api/v1/user' \\\n"
+        "  -H 'accept: application/json' \\\n"
+        "  -H 'Content-Type: application/json' \\\n"
+        "  -H 'X-API-Key: ....' \\\n"
+        "  -H 'Idempotency-Key: create-user-sample-1' \\\n"
+        '  -d \'{"system_user_id":"2","full_name":"Ivan Petrov"}\'\n'
+        "```\n"
     ),
     responses={
+        status.HTTP_201_CREATED: {
+            "description": "User created successfully.",
+        },
         status.HTTP_400_BAD_REQUEST: {
             "model": ApiErrorResponse,
             "description": "Business validation failure.",
@@ -78,23 +91,8 @@ router = APIRouter(prefix="/user", tags=["User"])
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
             "model": ValidationErrorResponse,
-            "description": (
-                "Request validation error (for example invalid timezone like `Europe/Mscow`)."
-            ),
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "missing_system_user_id": {
-                            "summary": "Missing required field",
-                            "value": USER_CREATE_REQUIRED_FIELD_ERROR_EXAMPLE,
-                        },
-                        "invalid_timezone": {
-                            "summary": "Invalid timezone name",
-                            "value": TIMEZONE_VALIDATION_ERROR_EXAMPLE,
-                        },
-                    }
-                }
-            },
+            "description": "Request validation errors for all supported user create field rules.",
+            "content": {"application/json": {"examples": USER_CREATE_VALIDATION_ERROR_EXAMPLES}},
         },
         status.HTTP_401_UNAUTHORIZED: {
             "model": ApiErrorResponse,
@@ -127,6 +125,20 @@ router = APIRouter(prefix="/user", tags=["User"])
         status.HTTP_429_TOO_MANY_REQUESTS: {
             "model": ApiErrorResponse,
             "description": "Per-client request rate limit exceeded.",
+            "headers": {
+                "Retry-After": {
+                    "description": "Seconds until request can be retried.",
+                    "schema": {"type": "string"},
+                },
+                "X-RateLimit-Limit": {
+                    "description": "Rate-limit ceiling for current window.",
+                    "schema": {"type": "string"},
+                },
+                "X-RateLimit-Remaining": {
+                    "description": "Remaining requests in current window.",
+                    "schema": {"type": "string"},
+                },
+            },
             "content": {
                 "application/json": {
                     "examples": {
@@ -143,7 +155,19 @@ router = APIRouter(prefix="/user", tags=["User"])
 def create_user(
     payload: Annotated[UserCreateRequest, Body(openapi_examples=USER_CREATE_REQUEST_EXAMPLES)],
     session: Annotated[Session, Depends(get_db_session)],
-    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    idempotency_key: Annotated[
+        str,
+        Header(
+            alias="Idempotency-Key",
+            min_length=1,
+            max_length=128,
+            pattern=r"^[ -~]+$",
+            description=(
+                "Required idempotency key for write deduplication. "
+                "Use printable ASCII only (no Cyrillic/Unicode)."
+            ),
+        ),
+    ],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
     """Create user and return stored record."""
@@ -183,17 +207,60 @@ def create_user(
     logger.info("create_user_requested system_user_id=%s", payload.system_user_id)
     service = UserService(UserRepository(session))
     user = service.create(payload)
-    response = UserCreateResponse.model_validate(user)
+    response_model = UserCreateResponse.model_validate(user)
     idempotency_repository.save(
         endpoint_path=endpoint_path,
         idempotency_key=idempotency_key,
         payload_hash=payload_hash,
         status_code=status.HTTP_201_CREATED,
-        response_body=response.model_dump(mode="json"),
+        response_body=response_model.model_dump(mode="json"),
     )
     logger.info(
         "create_user_succeeded system_user_id=%s client_uuid=%s",
         user.system_user_id,
         user.client_uuid,
     )
-    return response
+    return response_model
+
+
+@router.get(
+    "/{system_user_id}",
+    response_model=UserCreateResponse,
+    operation_id="getUserBySystemUserId",
+    summary="Get user by system_user_id",
+    description=(
+        "Returns user profile by external `system_user_id`.\n\n"
+        "### Example request (curl)\n"
+        "```bash\n"
+        "curl -X GET 'http://127.0.0.1:8000/api/v1/user/2' \\\n"
+        "  -H 'accept: application/json' \\\n"
+        "  -H 'X-API-Key: ....'\n"
+        "```\n"
+    ),
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ApiErrorResponse,
+            "description": "User not found.",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "user_not_found": {
+                            "summary": "No user with given system_user_id",
+                            "value": USER_NOT_FOUND_ERROR_EXAMPLE,
+                        }
+                    }
+                }
+            },
+        }
+    },
+)
+def get_user(
+    system_user_id: Annotated[str, Path(min_length=1, max_length=36)],
+    session: Annotated[Session, Depends(get_db_session)],
+    api_key: Annotated[str | None, Security(api_key_security)] = None,
+) -> UserCreateResponse:
+    """Fetch user by external system identifier."""
+    _ = api_key  # represented in OpenAPI; runtime validation is handled by middleware
+    service = UserService(UserRepository(session))
+    user = service.get_or_404(system_user_id=system_user_id)
+    return UserCreateResponse.model_validate(user)

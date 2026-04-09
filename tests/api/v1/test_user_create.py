@@ -77,6 +77,24 @@ def test_create_user_invalid_timezone_returns_code_based_422(client) -> None:
     assert body["errors"][0]["source"] == "validation"
 
 
+def test_create_user_short_system_user_id_is_valid(client) -> None:
+    payload = {
+        "system_user_id": "1",
+        "full_name": "Ivan Petrov",
+        "timezone": "UTC",
+    }
+
+    response = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": "create-user-system-user-id-short-valid-1"},
+    )
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["system_user_id"] == payload["system_user_id"]
+
+
 def test_create_user_requires_api_key() -> None:
     client = TestClient(app)
     payload = {
@@ -137,7 +155,7 @@ def test_create_user_idempotency_key_conflict_returns_409(client) -> None:
     assert detail["key"] == "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD"
 
 
-def test_create_user_requires_idempotency_key(client) -> None:
+def test_create_user_without_idempotency_key_returns_422(client) -> None:
     payload = {
         "system_user_id": "a1b2c3d4-0001-4000-8000-000000000007",
         "full_name": "Ivan Petrov",
@@ -146,10 +164,54 @@ def test_create_user_requires_idempotency_key(client) -> None:
 
     response = client.post("/api/v1/user", json=payload)
 
-    assert response.status_code == 400
+    assert response.status_code == 422
+
+
+def test_create_user_with_empty_idempotency_key_returns_422(client) -> None:
+    payload = {
+        "system_user_id": "a1b2c3d4-0001-4000-8000-000000000008",
+        "full_name": "Ivan Petrov",
+        "timezone": "UTC",
+    }
+
+    response = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": ""},
+    )
+
+    assert response.status_code == 422
+
+
+def test_get_user_by_system_user_id_success(client) -> None:
+    payload = {
+        "system_user_id": "42",
+        "full_name": "Ivan Petrov",
+        "timezone": "UTC",
+    }
+    create = client.post(
+        "/api/v1/user",
+        json=payload,
+        headers={"Idempotency-Key": "get-user-success-seed-1"},
+    )
+    assert create.status_code == 201
+
+    response = client.get("/api/v1/user/42")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["system_user_id"] == "42"
+    assert body["full_name"] == "Ivan Petrov"
+
+
+def test_get_user_by_system_user_id_not_found_returns_404(client) -> None:
+    response = client.get("/api/v1/user/not-existing")
+
+    assert response.status_code == 404
     detail = response.json()["detail"]
-    assert detail["code"] == "COMMON_400"
-    assert detail["key"] == "IDEMPOTENCY_KEY_REQUIRED"
+    assert detail["code"] == "USER_404"
+    assert detail["key"] == "USER_NOT_FOUND"
+    assert detail["source"] == "business"
 
 
 def test_create_user_unknown_validation_shape_falls_back_to_common_code(client) -> None:

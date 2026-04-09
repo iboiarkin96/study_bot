@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Final
 
-SYSTEM_USER_ID_EXAMPLES: Final[list[str]] = ["a1b2c3d4-0001-4000-8000-000000000001"]
+SYSTEM_USER_ID_EXAMPLES: Final[list[str]] = ["134tg"]
 USERNAME_EXAMPLES: Final[list[str]] = ["ipetrov"]
 FULL_NAME_EXAMPLES: Final[list[str]] = ["Ivan Petrov"]
 TIMEZONE_EXAMPLES: Final[list[str]] = ["Europe/Moscow", "UTC", "America/New_York"]

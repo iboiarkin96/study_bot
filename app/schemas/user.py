@@ -22,9 +22,11 @@ from app.schemas.enums import TimezoneField
 class UserCreateRequest(BaseModel):
     """Incoming payload for creating/updating user."""
 
-    system_user_id: UUID = Field(
+    system_user_id: str = Field(
         ...,
-        description="User ID in the source system (unique identity).",
+        min_length=1,
+        max_length=36,
+        description="User ID in the source system (unique external identity).",
         examples=SYSTEM_USER_ID_EXAMPLES,
     )
     username: str | None = Field(

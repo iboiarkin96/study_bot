@@ -23,7 +23,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements run migrate migration format format-check lint-check lint-fix type-check quality-check pre-commit-install pre-commit-check test test-one test-warnings pre-deploy deploy env-check sync-docs docs-format
+.PHONY: help venv install requirements run migrate migration format format-check lint-check lint-fix type-check openapi-check openapi-accept-changes openapi-baseline-update quality-fix quality-check pre-commit-install pre-commit-check test test-one test-warnings pre-deploy deploy env-check sync-docs docs-format
 
 # ──────────────────────────────────────────────
 # Help
@@ -62,11 +62,17 @@ help:
 	@echo "  # Type Checking"
 	@echo "  make type-check           Run mypy type checks"
 	@echo ""
+	@echo "  # OpenAPI Contract Governance"
+	@echo "  make openapi-check        Run OpenAPI lint + breaking-change guard"
+	@echo "  make openapi-accept-changes Accept intentional OpenAPI changes (update baseline)"
+	@echo "  make openapi-baseline-update Alias to openapi-accept-changes (deprecated)"
+	@echo ""
 	@echo "  # Environment Health"
 	@echo "  make env-check            Verify env, deps, and DB connectivity"
 	@echo ""
 	@echo "  # Quality Gates"
-	@echo "  make quality-check        Run lint-check + type-check + test + sync-docs"
+	@echo "  make quality-fix          Run auto-fixes (format + lint-fix + docs-format)"
+	@echo "  make quality-check        Run lint-check + type-check + openapi-check + test + sync-docs"
 	@echo ""
 	@echo "  # Tests"
 	@echo "  make test                 Run full test suite (pytest)"
@@ -216,16 +222,52 @@ type-check:
 	@printf "$(ICON_OK) %s\n" "Type checks passed"
 	@printf "$(COLOR_GREEN)== TYPE-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
-# Run full local quality gate (lint, types, tests, docs sync).
+# Run OpenAPI lint and backward-compatibility checks against baseline.
+openapi-check:
+	@printf "$(COLOR_CYAN)== OPENAPI-CHECK: START ==$(COLOR_RESET)\n"
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Running OpenAPI governance checks..."
+	@$(PYTHON) scripts/openapi_governance.py check
+	@printf "$(ICON_OK) %s\n" "OpenAPI checks passed"
+	@printf "$(COLOR_GREEN)== OPENAPI-CHECK: SUCCESS ==$(COLOR_RESET)\n"
+
+# Accept intentional OpenAPI changes by refreshing baseline snapshot.
+openapi-accept-changes:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Accepting OpenAPI changes (updating baseline)..."
+	@$(PYTHON) scripts/openapi_governance.py update-baseline
+	@printf "$(ICON_OK) %s\n" "OpenAPI baseline updated"
+
+# Backward-compatible alias for old target name.
+openapi-baseline-update: openapi-accept-changes
+
+# Run local auto-fix pipeline before quality-check.
+quality-fix:
+	@printf "$(COLOR_CYAN)== QUALITY-FIX: START ==$(COLOR_RESET)\n"
+	@printf "$(ICON_INFO) %s\n" "[1/3] format"
+	@$(MAKE) format
+	@printf "$(ICON_INFO) %s\n" "[2/3] lint-fix"
+	@$(MAKE) lint-fix
+	@printf "$(ICON_INFO) %s\n" "[3/3] docs-format"
+	@$(MAKE) docs-format
+	@printf "$(COLOR_GREEN)== QUALITY-FIX: SUCCESS ==$(COLOR_RESET)\n"
+
+# Run full local quality gate (lint, types, openapi, tests, docs sync).
 quality-check:
 	@printf "$(COLOR_CYAN)== QUALITY-CHECK: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/4] lint-check"
+	@printf "$(ICON_INFO) %s\n" "[1/5] lint-check"
 	@$(MAKE) lint-check
-	@printf "$(ICON_INFO) %s\n" "[2/4] type-check"
+	@printf "$(ICON_INFO) %s\n" "[2/5] type-check"
 	@$(MAKE) type-check
-	@printf "$(ICON_INFO) %s\n" "[3/4] test"
+	@printf "$(ICON_INFO) %s\n" "[3/5] openapi-check"
+	@$(MAKE) openapi-check
+	@printf "$(ICON_INFO) %s\n" "[4/5] test"
 	@$(MAKE) test
-	@printf "$(ICON_INFO) %s\n" "[4/4] sync-docs"
+	@printf "$(ICON_INFO) %s\n" "[5/5] sync-docs"
 	@$(MAKE) sync-docs
 	@printf "$(COLOR_GREEN)== QUALITY-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 

@@ -70,6 +70,7 @@ study_app/
 │   ├── adr/
 │   ├── assets/
 │   ├── developer/  # Developer guides and onboarding
+│   ├── openapi/
 │   ├── runbooks/  # Operational troubleshooting guides
 │   └── uml/  # PlantUML diagrams
 │       ├── architecture/
@@ -117,10 +118,10 @@ Configuration is loaded from `.env` (based on `.env.example`).
 | Method | Path | Description |
 | ------ | ---- | ----------- |
 | `POST` | `/api/v1/user` | Create user |
+| `GET` | `/api/v1/user/{system_user_id}` | Get user by system_user_id |
 | `GET` | `/docs` | Custom Swagger Ui |
 | `GET` | `/favicon.png` | Favicon |
 | `GET` | `/health` | Health check |
-| `GET` | `/redoc` | Custom Redoc |
 <!-- END:HTTP_ENDPOINTS -->
 
 ---
