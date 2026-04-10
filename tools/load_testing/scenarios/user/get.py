@@ -1,4 +1,4 @@
-"""GET /api/v1/user/{system_user_id} — only when real ids exist in the DB.
+"""GET /api/v1/user/{system_uuid}/{system_user_id} — only when real ids exist in the DB.
 
 If ROTATE_SYSTEM_USER_IDS is empty, this module does not participate in load (empty MIX).
 """
@@ -6,6 +6,7 @@ If ROTATE_SYSTEM_USER_IDS is empty, this module does not participate in load (em
 from __future__ import annotations
 
 from app.api.v1.user import USER_HTTP_BASE_PATH
+from app.openapi.examples.users import SYSTEM_UUID_EXAMPLES
 from tools.load_testing.request import BuiltRequest, RunContext
 
 GROUP = "user"
@@ -34,7 +35,7 @@ def _get_user(ctx: RunContext) -> BuiltRequest:
     sid = ROTATE_SYSTEM_USER_IDS[ctx.run_in_scenario % len(ROTATE_SYSTEM_USER_IDS)]
     return BuiltRequest(
         method="GET",
-        path=f"{USER_HTTP_BASE_PATH}/{sid}",
+        path=f"{USER_HTTP_BASE_PATH}/{SYSTEM_UUID_EXAMPLES[0]}/{sid}",
         headers={},
         json=None,
         params=None,

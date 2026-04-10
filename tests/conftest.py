@@ -27,15 +27,44 @@ os.environ.setdefault("API_BODY_MAX_BYTES", "1048576")
 from app.core.database import SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import Base  # noqa: E402
+from tests.api.v1.user_test_utils import (  # noqa: E402
+    TEST_INVALIDATION_REASON_UUID,
+    TEST_SYSTEM_UUID,
+    TEST_SYSTEM_UUID_ALT,
+)
 
 
 def _seed_reference_data() -> None:
-    """Insert minimal ``timezones`` rows required by user create FK constraints.
+    """Insert minimal ``timezones``, ``systems``, and ``invalidation_reasons`` for user FKs.
 
     Replaces existing rows so tests start from a known reference set.
     """
     with SessionLocal() as session:
         session.execute(text("DELETE FROM timezones"))
+        session.execute(text("DELETE FROM systems"))
+        session.execute(text("DELETE FROM invalidation_reasons"))
+        session.execute(
+            text(
+                "INSERT INTO systems (system_uuid, code, name) VALUES "
+                "(:uuid, 'test-system', 'Test system')"
+            ),
+            {"uuid": TEST_SYSTEM_UUID},
+        )
+        session.execute(
+            text(
+                "INSERT INTO systems (system_uuid, code, name) VALUES "
+                "(:uuid, 'test-system-alt', 'Test system alt')"
+            ),
+            {"uuid": TEST_SYSTEM_UUID_ALT},
+        )
+        session.execute(
+            text(
+                "INSERT INTO invalidation_reasons "
+                "(invalidation_reason_uuid, code, description) VALUES "
+                "(:uuid, 'test-ir', 'Test invalidation')"
+            ),
+            {"uuid": TEST_INVALIDATION_REASON_UUID},
+        )
         session.execute(
             text(
                 "INSERT INTO timezones (code, utc_offset) VALUES "

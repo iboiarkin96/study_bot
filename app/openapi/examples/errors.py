@@ -7,14 +7,14 @@ from typing import Final, cast
 USER_EXISTS_ERROR_EXAMPLE: Final[dict[str, object]] = {
     "code": "USER_101",
     "key": "USER_CREATE_ALREADY_EXISTS",
-    "message": "User with this `system_user_id` already exists.",
+    "message": "User with this `system_user_id` and `system_uuid` already exists.",
     "source": "business",
 }
 
 USER_NOT_FOUND_ERROR_EXAMPLE: Final[dict[str, object]] = {
     "code": "USER_404",
     "key": "USER_NOT_FOUND",
-    "message": "User with this `system_user_id` was not found.",
+    "message": "User with this `system_user_id` and `system_uuid` was not found.",
     "source": "business",
 }
 
@@ -111,7 +111,24 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
             field="full_name",
             error_type="missing",
             loc=["body", "full_name"],
-            input_value={"system_user_id": "1", "timezone": "UTC"},
+            input_value={
+                "system_user_id": "1",
+                "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                "timezone": "UTC",
+            },
+            ctx=None,
+        ),
+    },
+    "missing_system_uuid": {
+        "summary": "Missing required field system_uuid",
+        "value": _validation_error_example(
+            code="USER_025",
+            key="USER_CREATE_SYSTEM_UUID_REQUIRED",
+            message="Field `system_uuid` is required.",
+            field="system_uuid",
+            error_type="missing",
+            loc=["body", "system_uuid"],
+            input_value={"system_user_id": "1", "full_name": "Ivan Petrov", "timezone": "UTC"},
             ctx=None,
         ),
     },
@@ -251,8 +268,9 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     },
 }
 
-_USER_UPDATE_EP = "PUT /api/v1/user/134tg"
-_USER_PATCH_EP = "PATCH /api/v1/user/134tg"
+_USER_PATH_EXAMPLE = "/api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/134tg"
+_USER_UPDATE_EP = f"PUT {_USER_PATH_EXAMPLE}"
+_USER_PATCH_EP = f"PATCH {_USER_PATH_EXAMPLE}"
 
 USER_UPDATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "missing_full_name": {

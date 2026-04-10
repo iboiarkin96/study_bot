@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from sqlalchemy import Integer, String
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -18,8 +18,7 @@ class InvalidationReason(Base):
     """Lookup table for why a user row may be marked invalid.
 
     Attributes:
-        id: Surrogate primary key.
-        invalidation_reason_uuid: External UUID identifier.
+        invalidation_reason_uuid: UUID identifier.
         code: Short stable code (unique).
         description: Human-readable reason text.
         users: Reverse relation to :class:`~app.models.core.user.User`.
@@ -27,15 +26,13 @@ class InvalidationReason(Base):
 
     __tablename__ = "invalidation_reasons"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     invalidation_reason_uuid: Mapped[str] = mapped_column(
         String(36),
         nullable=False,
-        unique=True,
-        index=True,
+        primary_key=True,
         default=lambda: str(uuid4()),
     )
-    code: Mapped[str] = mapped_column(String(64), unique=True, nullable=False, index=True)
+    code: Mapped[str] = mapped_column(String(64), nullable=False, index=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
 
     users: Mapped[list[User]] = relationship(back_populates="invalidation_reason")

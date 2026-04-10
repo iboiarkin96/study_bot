@@ -247,7 +247,7 @@
                 <tbody>
                   <tr>
                     <td><code>make contract-test</code></td>
-                    <td>Run OpenAPI snapshot contract test (baseline diff)</td>
+                    <td>Stricter: generated OpenAPI must equal baseline JSON exactly</td>
                   </tr>
                   <tr>
                     <td><code>make docs-check</code></td>
@@ -311,11 +311,11 @@
                   </tr>
                   <tr>
                     <td><code>make openapi-accept-changes</code></td>
-                    <td>Accept intentional OpenAPI changes (update baseline)</td>
+                    <td>Overwrite baseline with current app.openapi() (commit the file)</td>
                   </tr>
                   <tr>
                     <td><code>make openapi-check</code></td>
-                    <td>Run OpenAPI lint + breaking-change guard</td>
+                    <td>Lint (operationId, summary, write+422 examples) + breaking-change</td>
                   </tr>
                   <tr>
                     <td><code>make pre-commit-check</code></td>

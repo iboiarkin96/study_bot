@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from sqlalchemy import Integer, String
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -18,21 +18,17 @@ class System(Base):
     """Catalog of upstream systems that own user identities.
 
     Attributes:
-        id: Surrogate primary key.
         system_uuid: Stable UUID string for API references.
-        code: Short stable code (unique).
+        code: Short code
         name: Display name.
         users: Reverse relation to :class:`~app.models.core.user.User`.
     """
 
     __tablename__ = "systems"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     system_uuid: Mapped[str] = mapped_column(
         String(36),
-        nullable=False,
-        unique=True,
-        index=True,
+        primary_key=True,
         default=lambda: str(uuid4()),
     )
     code: Mapped[str] = mapped_column(String(64), unique=True, nullable=False, index=True)

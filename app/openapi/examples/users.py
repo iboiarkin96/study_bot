@@ -66,6 +66,7 @@ USER_CREATE_REQUEST_EXAMPLES: Final[dict[str, dict[str, object]]] = {
         "summary": "Only required fields",
         "value": {
             "system_user_id": SYSTEM_USER_ID_EXAMPLES[0],
+            "system_uuid": SYSTEM_UUID_EXAMPLES[0],
             "full_name": FULL_NAME_EXAMPLES[0],
         },
     },

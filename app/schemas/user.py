@@ -22,6 +22,7 @@ from app.schemas.enums import TimezoneField
 class UserCreateRequest(BaseModel):
     """JSON body for ``POST /api/v1/user`` (validated before idempotency and service layer).
 
+    ``system_user_id`` and ``system_uuid`` form the composite natural key (DB unique constraint).
     Field-level rules, OpenAPI examples, and timezone validation live on the ``Field``
     definitions and :data:`app.schemas.enums.TimezoneField`.
     """
@@ -30,7 +31,7 @@ class UserCreateRequest(BaseModel):
         ...,
         min_length=1,
         max_length=36,
-        description="User ID in the source system (unique external identity).",
+        description="User ID in the source system; unique together with `system_uuid`.",
         examples=SYSTEM_USER_ID_EXAMPLES,
     )
     username: str | None = Field(
@@ -53,9 +54,9 @@ class UserCreateRequest(BaseModel):
         description="IANA timezone name (e.g. 'UTC', 'Europe/Moscow').",
         examples=TIMEZONE_EXAMPLES,
     )
-    system_uuid: UUID | None = Field(
-        default=None,
-        description="UUID of related system.",
+    system_uuid: UUID = Field(
+        ...,
+        description="UUID of the source system (`systems.system_uuid`); composite key with `system_user_id`.",
         examples=SYSTEM_UUID_EXAMPLES,
     )
     invalidation_reason_uuid: UUID | None = Field(
@@ -73,7 +74,7 @@ class UserCreateRequest(BaseModel):
 
 
 class UserPatchRequest(BaseModel):
-    """JSON body for ``PATCH /api/v1/user/{system_user_id}`` — partial update; omit fields to leave unchanged."""
+    """JSON body for ``PATCH /api/v1/user/{system_uuid}/{system_user_id}`` — partial update; omit fields to leave unchanged."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -115,7 +116,7 @@ class UserPatchRequest(BaseModel):
 
 
 class UserUpdateRequest(BaseModel):
-    """JSON body for ``PUT /api/v1/user/{system_user_id}`` — full replacement of mutable profile fields."""
+    """JSON body for ``PUT /api/v1/user/{system_uuid}/{system_user_id}`` — full replacement of mutable profile fields."""
 
     username: str | None = Field(
         default=None,

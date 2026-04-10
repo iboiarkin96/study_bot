@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, Header, HTTPException, Path, Security, status
 from fastapi.security.api_key import APIKeyHeader
@@ -57,7 +58,7 @@ USER_HTTP_BASE_PATH = "/api/v1/user"
     operation_id="createUser",
     summary="Create user",
     description=(
-        "Creates a new user by `system_user_id`. "
+        "Creates a new user; uniqueness is `(system_user_id, system_uuid)`. "
         "Requires `Idempotency-Key` header for safe retry semantics.\n\n"
         "### Example request (curl)\n"
         "```bash\n"
@@ -66,7 +67,8 @@ USER_HTTP_BASE_PATH = "/api/v1/user"
         "  -H 'Content-Type: application/json' \\\n"
         "  -H 'X-API-Key: ....' \\\n"
         "  -H 'Idempotency-Key: create-user-sample-1' \\\n"
-        '  -d \'{"system_user_id":"2","full_name":"Ivan Petrov"}\'\n'
+        '  -d \'{"system_user_id":"2","system_uuid":"b2c3d4e5-0002-4000-8000-000000000002",'
+        '"full_name":"Ivan Petrov"}\'\n'
         "```\n"
     ),
     responses={
@@ -156,7 +158,11 @@ def create_user(
         logger.info("create_user_idempotent_replay key=%s", idempotency_key)
         return UserCreateResponse.model_validate(record.response_body)
 
-    logger.info("create_user_requested system_user_id=%s", payload.system_user_id)
+    logger.info(
+        "create_user_requested system_user_id=%s system_uuid=%s",
+        payload.system_user_id,
+        payload.system_uuid,
+    )
     service = UserService(UserRepository(session))
     user = service.create(payload)
     response_model = UserCreateResponse.model_validate(user)
@@ -176,15 +182,15 @@ def create_user(
 
 
 @router.get(
-    "/{system_user_id}",
+    "/{system_uuid}/{system_user_id}",
     response_model=UserCreateResponse,
     operation_id="getUserBySystemUserId",
-    summary="Get user by system_user_id",
+    summary="Get user by system_uuid and system_user_id",
     description=(
-        "Returns user profile by external `system_user_id`.\n\n"
+        "Returns user profile by composite key `(system_uuid, system_user_id)`.\n\n"
         "### Example request (curl)\n"
         "```bash\n"
-        "curl -X GET 'http://127.0.0.1:8000/api/v1/user/2' \\\n"
+        "curl -X GET 'http://127.0.0.1:8000/api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/2' \\\n"
         "  -H 'accept: application/json' \\\n"
         "  -H 'X-API-Key: ....'\n"
         "```\n"
@@ -208,40 +214,32 @@ def create_user(
     },
 )
 def get_user(
+    system_uuid: Annotated[UUID, Path(description="Source system UUID (`systems.system_uuid`).")],
     system_user_id: Annotated[str, Path(min_length=1, max_length=36)],
     session: Annotated[Session, Depends(get_db_session)],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Return a user by ``system_user_id`` path parameter.
-
-    Args:
-        system_user_id: External user id (1–36 chars).
-        session: Database session.
-        api_key: Declared for OpenAPI; auth is enforced by middleware.
-
-    Returns:
-        User representation matching :class:`~app.schemas.user.UserCreateResponse`.
-
-    Raises:
-        fastapi.HTTPException: Propagated from :meth:`UserService.get_or_404` (404).
-    """
+    """Return a user by ``system_uuid`` and ``system_user_id`` path parameters."""
     _ = api_key  # represented in OpenAPI; runtime validation is handled by middleware
     service = UserService(UserRepository(session))
-    user = service.get_or_404(system_user_id=system_user_id)
+    user = service.get_or_404(
+        system_user_id=system_user_id,
+        system_uuid=str(system_uuid),
+    )
     return UserCreateResponse.model_validate(user)
 
 
 @router.put(
-    "/{system_user_id}",
+    "/{system_uuid}/{system_user_id}",
     response_model=UserCreateResponse,
     operation_id="updateUserBySystemUserId",
-    summary="Update user by system_user_id",
+    summary="Update user by system_uuid and system_user_id",
     description=(
         "Updates mutable profile fields for an existing user. "
         "Requires `Idempotency-Key` for safe retry semantics.\n\n"
         "### Example request (curl)\n"
         "```bash\n"
-        "curl -X PUT 'http://127.0.0.1:8000/api/v1/user/2' \\\n"
+        "curl -X PUT 'http://127.0.0.1:8000/api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/2' \\\n"
         "  -H 'accept: application/json' \\\n"
         "  -H 'Content-Type: application/json' \\\n"
         "  -H 'X-API-Key: ....' \\\n"
@@ -278,6 +276,7 @@ def get_user(
     },
 )
 def update_user(
+    system_uuid: Annotated[UUID, Path(description="Source system UUID (`systems.system_uuid`).")],
     system_user_id: Annotated[str, Path(min_length=1, max_length=36)],
     payload: Annotated[UserUpdateRequest, Body(openapi_examples=USER_UPDATE_REQUEST_EXAMPLES)],
     session: Annotated[Session, Depends(get_db_session)],
@@ -296,7 +295,7 @@ def update_user(
     ],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Handle ``PUT /api/v1/user/{system_user_id}`` with idempotent replay semantics."""
+    """Handle ``PUT /api/v1/user/{system_uuid}/{system_user_id}`` with idempotent replay semantics."""
     _ = api_key
     if not idempotency_key:
         raise HTTPException(
@@ -312,7 +311,8 @@ def update_user(
     payload_dump = payload.model_dump(mode="json")
     payload_hash = build_payload_hash(payload_dump)
     idempotency_repository = IdempotencyRepository(session)
-    endpoint_path = f"/api/v1/user/{system_user_id}"
+    su_str = str(system_uuid)
+    endpoint_path = f"/api/v1/user/{su_str}/{system_user_id}"
     record = idempotency_repository.get(
         endpoint_path=endpoint_path, idempotency_key=idempotency_key
     )
@@ -330,9 +330,17 @@ def update_user(
         logger.info("update_user_idempotent_replay key=%s", idempotency_key)
         return UserCreateResponse.model_validate(record.response_body)
 
-    logger.info("update_user_requested system_user_id=%s", system_user_id)
+    logger.info(
+        "update_user_requested system_user_id=%s system_uuid=%s",
+        system_user_id,
+        su_str,
+    )
     service = UserService(UserRepository(session))
-    user = service.update(system_user_id=system_user_id, payload=payload)
+    user = service.update(
+        system_user_id=system_user_id,
+        system_uuid=su_str,
+        payload=payload,
+    )
     response_model = UserCreateResponse.model_validate(user)
     idempotency_repository.save(
         endpoint_path=endpoint_path,
@@ -345,16 +353,16 @@ def update_user(
 
 
 @router.patch(
-    "/{system_user_id}",
+    "/{system_uuid}/{system_user_id}",
     response_model=UserCreateResponse,
     operation_id="patchUserBySystemUserId",
-    summary="Partially update user by system_user_id",
+    summary="Partially update user by system_uuid and system_user_id",
     description=(
         "Updates only the fields present in the JSON body; omitted fields stay unchanged. "
         "Requires `Idempotency-Key`. Use `PUT` for a full replacement of mutable fields.\n\n"
         "### Example request (curl)\n"
         "```bash\n"
-        "curl -X PATCH 'http://127.0.0.1:8000/api/v1/user/2' \\\n"
+        "curl -X PATCH 'http://127.0.0.1:8000/api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/2' \\\n"
         "  -H 'accept: application/json' \\\n"
         "  -H 'Content-Type: application/json' \\\n"
         "  -H 'X-API-Key: ....' \\\n"
@@ -399,6 +407,7 @@ def update_user(
     },
 )
 def patch_user(
+    system_uuid: Annotated[UUID, Path(description="Source system UUID (`systems.system_uuid`).")],
     system_user_id: Annotated[str, Path(min_length=1, max_length=36)],
     payload: Annotated[UserPatchRequest, Body(openapi_examples=USER_PATCH_REQUEST_EXAMPLES)],
     session: Annotated[Session, Depends(get_db_session)],
@@ -417,7 +426,7 @@ def patch_user(
     ],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Handle ``PATCH /api/v1/user/{system_user_id}`` with idempotent replay semantics."""
+    """Handle ``PATCH /api/v1/user/{system_uuid}/{system_user_id}`` with idempotent replay semantics."""
     _ = api_key
     if not idempotency_key:
         raise HTTPException(
@@ -433,7 +442,8 @@ def patch_user(
     payload_dump = payload.model_dump(mode="json", exclude_unset=True)
     payload_hash = build_payload_hash(payload_dump)
     idempotency_repository = IdempotencyRepository(session)
-    endpoint_path = f"PATCH {USER_HTTP_BASE_PATH}/{system_user_id}"
+    su_str = str(system_uuid)
+    endpoint_path = f"PATCH {USER_HTTP_BASE_PATH}/{su_str}/{system_user_id}"
     record = idempotency_repository.get(
         endpoint_path=endpoint_path, idempotency_key=idempotency_key
     )
@@ -451,9 +461,17 @@ def patch_user(
         logger.info("patch_user_idempotent_replay key=%s", idempotency_key)
         return UserCreateResponse.model_validate(record.response_body)
 
-    logger.info("patch_user_requested system_user_id=%s", system_user_id)
+    logger.info(
+        "patch_user_requested system_user_id=%s system_uuid=%s",
+        system_user_id,
+        su_str,
+    )
     service = UserService(UserRepository(session))
-    user = service.patch(system_user_id=system_user_id, payload=payload)
+    user = service.patch(
+        system_user_id=system_user_id,
+        system_uuid=su_str,
+        payload=payload,
+    )
     response_model = UserCreateResponse.model_validate(user)
     idempotency_repository.save(
         endpoint_path=endpoint_path,

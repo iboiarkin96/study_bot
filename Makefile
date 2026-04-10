@@ -70,9 +70,12 @@ help:
 	@echo "  make type-check           Run mypy type checks"
 	@echo ""
 	@echo "  # OpenAPI Contract Governance"
-	@echo "  make openapi-check        Run OpenAPI lint + breaking-change guard"
-	@echo "  make contract-test        Run OpenAPI snapshot contract test (baseline diff)"
-	@echo "  make openapi-accept-changes Accept intentional OpenAPI changes (update baseline)"
+	@echo "  make openapi-check        Lint (operationId, summary, write+422 examples) + breaking-change"
+	@echo "                            guard vs docs/openapi/openapi-baseline.json (semantic: catches"
+	@echo "                            removals and new required bits; additive compatible changes may pass)"
+	@echo "  make contract-test        Stricter: generated OpenAPI must equal baseline JSON exactly"
+	@echo "                            (any drift fails; use openapi-accept-changes after review)"
+	@echo "  make openapi-accept-changes  Overwrite baseline with current app.openapi() (commit the file)"
 	@echo ""
 	@echo "  # Environment Health"
 	@echo "  make env-check            Verify env, deps, and DB connectivity"
@@ -276,7 +279,8 @@ type-check:
 	@printf "$(ICON_OK) %s\n" "Type checks passed"
 	@printf "$(COLOR_GREEN)== TYPE-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
-# Run OpenAPI lint and backward-compatibility checks against baseline.
+# Lint current spec + compare to baseline for backward-incompatible API changes only
+# (see scripts/openapi_governance.py: run_lint, run_breaking_check).
 openapi-check:
 	@printf "$(COLOR_CYAN)== OPENAPI-CHECK: START ==$(COLOR_RESET)\n"
 	@if [ ! -d ".venv" ]; then \
@@ -287,7 +291,8 @@ openapi-check:
 	@printf "$(ICON_OK) %s\n" "OpenAPI checks passed"
 	@printf "$(COLOR_GREEN)== OPENAPI-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
-# Run strict OpenAPI snapshot contract test against accepted baseline.
+# Full-document equality: app.openapi() must match parsed baseline JSON (any diff fails)
+# (see scripts/openapi_governance.py: run_snapshot_check).
 contract-test:
 	@printf "$(COLOR_CYAN)== CONTRACT-TEST: START ==$(COLOR_RESET)\n"
 	@if [ ! -d ".venv" ]; then \

@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -34,14 +34,18 @@ class User(Base):
     """
 
     __tablename__ = "users"
-    __table_args__: tuple = ()
+    __table_args__ = (
+        UniqueConstraint(
+            "system_user_id",
+            "system_uuid",
+            name="uq_users_system_user_id_system_uuid",
+        ),
+    )
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     client_uuid: Mapped[str] = mapped_column(
         String(36),
         nullable=False,
-        unique=True,
-        index=True,
+        primary_key=True,
         default=lambda: str(uuid4()),
     )
     created_at: Mapped[datetime] = mapped_column(
@@ -65,10 +69,10 @@ class User(Base):
         nullable=True,
         index=True,
     )
-    system_user_id: Mapped[str] = mapped_column(String(36), nullable=True, unique=True, index=True)
+    system_user_id: Mapped[str] = mapped_column(String(36), nullable=False)
     system_uuid: Mapped[str] = mapped_column(
         ForeignKey("systems.system_uuid"),
-        nullable=True,
+        nullable=False,
         index=True,
     )
     username: Mapped[str] = mapped_column(String(255), nullable=True)
@@ -81,6 +85,6 @@ class User(Base):
     )
 
     system: Mapped[System] = relationship(back_populates="users")
-    invalidation_reason: Mapped[InvalidationReason] = relationship(
+    invalidation_reason: Mapped[InvalidationReason | None] = relationship(
         back_populates="users",
     )

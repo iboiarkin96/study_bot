@@ -12,23 +12,31 @@ class UserRepository:
     """Persistence layer for :class:`~app.models.core.user.User` entities."""
 
     def __init__(self, session: Session) -> None:
-        """Create a repository bound to one ORM session.
+        """Create a repository bound to one SQLAlchemy session.
 
         Args:
             session: Active SQLAlchemy session (caller owns transaction boundaries).
         """
         self.session = session
 
-    def get_by_system_user_id(self, system_user_id: str) -> User | None:
-        """Load a user by external ``system_user_id`` if present.
+    def get_by_system_user_id_and_system_uuid(
+        self,
+        system_user_id: str,
+        system_uuid: str,
+    ) -> User | None:
+        """Load a user by composite key ``(system_user_id, system_uuid)`` if present.
 
         Args:
-            system_user_id: Unique external identifier from the source system.
+            system_user_id: External id from the source system.
+            system_uuid: Source system UUID (``systems.system_uuid``).
 
         Returns:
             ORM entity or ``None``.
         """
-        stmt = select(User).where(User.system_user_id == system_user_id)
+        stmt = select(User).where(
+            User.system_user_id == system_user_id,
+            User.system_uuid == system_uuid,
+        )
         return self.session.execute(stmt).scalar_one_or_none()
 
     def save(self, user: User) -> User:

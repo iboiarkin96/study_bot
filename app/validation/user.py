@@ -9,7 +9,7 @@ from typing import Any
 from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 
-PUT_USER_BY_SYSTEM_ID_PATH = re.compile(r"^/api/v1/user/[^/]+$")
+PUT_PATCH_USER_BY_COMPOSITE_PATH = re.compile(r"^/api/v1/user/[^/]+/[^/]+$")
 
 
 @dataclass(frozen=True)
@@ -92,6 +92,11 @@ CREATE_USER_VALIDATION_RULES: dict[tuple[str, str], ValidationCodeRule] = {
         code="USER_013",
         key="USER_CREATE_IS_ROW_INVALID_MAX",
         message="Field `is_row_invalid` must be <= 1.",
+    ),
+    ("system_uuid", "missing"): ValidationCodeRule(
+        code="USER_025",
+        key="USER_CREATE_SYSTEM_UUID_REQUIRED",
+        message="Field `system_uuid` is required.",
     ),
 }
 
@@ -187,7 +192,7 @@ def _field_from_loc(loc: list[Any]) -> str | None:
 
 
 def _resolve_update_user_rule(field: str | None, error_type: str) -> ValidationCodeRule:
-    """Map ``(field, error_type)`` for ``PUT``/``PATCH`` ``/api/v1/user/{system_user_id}`` body validation."""
+    """Map ``(field, error_type)`` for PUT/PATCH ``/api/v1/user/{system_uuid}/{system_user_id}`` body."""
     if field is not None and (field, error_type) in UPDATE_USER_VALIDATION_RULES:
         return UPDATE_USER_VALIDATION_RULES[(field, error_type)]
     return ValidationCodeRule(
@@ -237,7 +242,7 @@ def build_validation_error_payload(request: Request, exc: RequestValidationError
 
         if endpoint == "POST /api/v1/user":
             rule = _resolve_create_user_rule(field, error_type)
-        elif request.method in ("PUT", "PATCH") and PUT_USER_BY_SYSTEM_ID_PATH.match(
+        elif request.method in ("PUT", "PATCH") and PUT_PATCH_USER_BY_COMPOSITE_PATH.match(
             request.url.path
         ):
             rule = _resolve_update_user_rule(field, error_type)

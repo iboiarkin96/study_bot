@@ -1,4 +1,4 @@
-"""Tests for POST /api/v1/user and GET/PUT/PATCH /api/v1/user/{system_user_id}."""
+"""Tests for POST /api/v1/user and GET/PUT/PATCH /api/v1/user/{system_uuid}/{system_user_id}."""
 
 from __future__ import annotations
 
@@ -6,6 +6,9 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from tests.api.v1.user_test_utils import (
+    TEST_INVALIDATION_REASON_UUID,
+    TEST_SYSTEM_UUID,
+    TEST_SYSTEM_UUID_ALT,
     USER_CREATE_OPERATION,
     USER_HTTP_BASE_PATH,
     user_create_body,
@@ -30,6 +33,7 @@ def test_create_user_success(client) -> None:
     assert response.status_code == 201
     body = response.json()
     assert body["system_user_id"] == payload["system_user_id"]
+    assert body["system_uuid"] == str(payload["system_uuid"])
     assert body["full_name"] == payload["full_name"]
     assert body["timezone"] == payload["timezone"]
     assert "client_uuid" in body
@@ -88,6 +92,7 @@ def test_create_user_short_system_user_id_is_valid(client) -> None:
     assert response.status_code == 201
     body = response.json()
     assert body["system_user_id"] == payload["system_user_id"]
+    assert body["system_uuid"] == TEST_SYSTEM_UUID
 
 
 def test_create_user_requires_api_key() -> None:
@@ -442,3 +447,76 @@ def test_create_user_unknown_validation_shape_falls_back_to_common_code(client) 
     assert body["endpoint"] == USER_CREATE_OPERATION
     assert body["errors"][0]["code"] == "COMMON_000"
     assert body["errors"][0]["key"] == "COMMON_VALIDATION_ERROR"
+
+
+def test_create_user_persists_invalidation_reason_uuid(client) -> None:
+    payload = user_create_body(
+        "user-with-ir-1",
+        invalidation_reason_uuid=TEST_INVALIDATION_REASON_UUID,
+    )
+    response = client.post(
+        USER_HTTP_BASE_PATH,
+        json=payload,
+        headers={"Idempotency-Key": "create-user-ir-1"},
+    )
+    assert response.status_code == 201
+    assert response.json()["invalidation_reason_uuid"] == TEST_INVALIDATION_REASON_UUID
+
+
+def test_patch_user_updates_username(client) -> None:
+    sid = "patch-username-1"
+    assert (
+        client.post(
+            USER_HTTP_BASE_PATH,
+            json=user_create_body(sid),
+            headers={"Idempotency-Key": "patch-username-seed"},
+        ).status_code
+        == 201
+    )
+    response = client.patch(
+        user_resource_path(sid),
+        json={"username": "new_username"},
+        headers={"Idempotency-Key": "patch-username-1"},
+    )
+    assert response.status_code == 200
+    assert response.json()["username"] == "new_username"
+
+
+def test_put_user_body_may_set_system_uuid(client) -> None:
+    sid = "put-body-sysuuid-1"
+    assert (
+        client.post(
+            USER_HTTP_BASE_PATH,
+            json=user_create_body(sid),
+            headers={"Idempotency-Key": "put-body-sysuuid-seed"},
+        ).status_code
+        == 201
+    )
+    body = user_update_body(full_name="Name", timezone="UTC")
+    body["system_uuid"] = TEST_SYSTEM_UUID
+    response = client.put(
+        user_resource_path(sid),
+        json=body,
+        headers={"Idempotency-Key": "put-body-sysuuid-1"},
+    )
+    assert response.status_code == 200
+    assert response.json()["system_uuid"] == TEST_SYSTEM_UUID
+
+
+def test_patch_user_may_change_system_uuid(client) -> None:
+    sid = "patch-sysuuid-1"
+    assert (
+        client.post(
+            USER_HTTP_BASE_PATH,
+            json=user_create_body(sid),
+            headers={"Idempotency-Key": "patch-sysuuid-seed"},
+        ).status_code
+        == 201
+    )
+    response = client.patch(
+        user_resource_path(sid),
+        json={"system_uuid": TEST_SYSTEM_UUID_ALT},
+        headers={"Idempotency-Key": "patch-sysuuid-1"},
+    )
+    assert response.status_code == 200
+    assert response.json()["system_uuid"] == TEST_SYSTEM_UUID_ALT

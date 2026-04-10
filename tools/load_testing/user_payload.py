@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import copy
 from typing import Any
+from uuid import UUID
 
+from app.openapi.examples.users import SYSTEM_UUID_EXAMPLES
 from app.schemas.user import UserCreateRequest
 
 # Field names always match the API schema
@@ -27,6 +29,7 @@ def base_user_create(system_user_id: str) -> dict[str, Any]:
     """
     return UserCreateRequest(
         system_user_id=system_user_id,
+        system_uuid=UUID(SYSTEM_UUID_EXAMPLES[0]),
         full_name="Load Test User",
         timezone="UTC",
     ).model_dump(mode="json")

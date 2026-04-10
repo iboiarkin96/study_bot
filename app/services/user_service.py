@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import uuid
 from typing import Any, cast
 
 from fastapi import HTTPException
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class UserService:
-    """Domain logic for user create, update, and lookup by ``system_user_id``."""
+    """Domain logic for user create, update, and lookup by ``(system_user_id, system_uuid)``."""
 
     def __init__(self, repository: UserRepository) -> None:
         """Create a service that uses ``repository`` for persistence.
@@ -40,62 +39,56 @@ class UserService:
             return None
         return str(value)
 
-    @staticmethod
-    def _uuid_generation() -> str:
-        """Return a new random UUID4 string for internal surrogate keys.
-
-        Returns:
-            Lowercase hex UUID string.
-        """
-        return str(uuid.uuid4())
-
     def create(self, payload: UserCreateRequest) -> User:
-        """Persist a new user or signal a duplicate ``system_user_id``.
-
-        Args:
-            payload: Validated create request body.
-
-        Returns:
-            Saved :class:`~app.models.core.user.User` entity.
-
-        Raises:
-            fastapi.HTTPException: 400 with ``USER_101`` when the user already exists.
-        """
+        """Persist a new user or signal a duplicate composite key."""
         su_id = str(payload.system_user_id)
+        sys_uuid = str(payload.system_uuid)
 
-        user = self.repository.get_by_system_user_id(su_id)
-        if user is not None:
-            logger.warning("create_user_duplicate system_user_id=%s", su_id)
+        if self.repository.get_by_system_user_id_and_system_uuid(su_id, sys_uuid) is not None:
+            logger.warning(
+                "create_user_duplicate system_user_id=%s system_uuid=%s",
+                su_id,
+                sys_uuid,
+            )
             raise HTTPException(
                 status_code=400,
                 detail={
                     "code": "USER_101",
                     "key": "USER_CREATE_ALREADY_EXISTS",
-                    "message": "User with this `system_user_id` already exists.",
+                    "message": (
+                        "User with this `system_user_id` and `system_uuid` already exists."
+                    ),
                     "source": "business",
                 },
             )
 
         user = User(
             system_user_id=su_id,
+            system_uuid=sys_uuid,
             username=payload.username,
             full_name=payload.full_name,
             timezone=payload.timezone,
-            system_uuid=self._uuid_generation(),
             invalidation_reason_uuid=self._uuid_to_str(payload.invalidation_reason_uuid),
             is_row_invalid=payload.is_row_invalid,
         )
         persisted_user = self.repository.save(user)
         logger.info(
-            "create_user_persisted system_user_id=%s client_uuid=%s",
+            "create_user_persisted system_user_id=%s system_uuid=%s client_uuid=%s",
             persisted_user.system_user_id,
+            persisted_user.system_uuid,
             persisted_user.client_uuid,
         )
         return persisted_user
 
-    def update(self, system_user_id: str, payload: UserUpdateRequest) -> User:
-        """Apply full ``payload`` to the user identified by ``system_user_id``."""
-        user = self.get_or_404(system_user_id)
+    def update(
+        self,
+        *,
+        system_user_id: str,
+        system_uuid: str,
+        payload: UserUpdateRequest,
+    ) -> User:
+        """Apply full ``payload`` to the user identified by the composite key."""
+        user = self.get_or_404(system_user_id=system_user_id, system_uuid=system_uuid)
         user.username = cast(Any, payload.username)
         user.full_name = payload.full_name
         user.timezone = payload.timezone
@@ -103,15 +96,26 @@ class UserService:
             Any, self._uuid_to_str(payload.invalidation_reason_uuid)
         )
         user.is_row_invalid = payload.is_row_invalid
-        user.system_uuid = cast(Any, self._uuid_to_str(payload.system_uuid))
+        if payload.system_uuid is not None:
+            user.system_uuid = cast(Any, self._uuid_to_str(payload.system_uuid))
         return self.repository.save(user)
 
-    def patch(self, system_user_id: str, payload: UserPatchRequest) -> User:
-        """Merge non-omitted fields from ``payload`` into the user for ``system_user_id``."""
-        user = self.get_or_404(system_user_id)
+    def patch(
+        self,
+        *,
+        system_user_id: str,
+        system_uuid: str,
+        payload: UserPatchRequest,
+    ) -> User:
+        """Merge non-omitted fields from ``payload`` into the user for the composite key."""
+        user = self.get_or_404(system_user_id=system_user_id, system_uuid=system_uuid)
         data = payload.model_dump(exclude_unset=True)
         if not data:
-            logger.warning("patch_user_empty_body system_user_id=%s", system_user_id)
+            logger.warning(
+                "patch_user_empty_body system_user_id=%s system_uuid=%s",
+                system_user_id,
+                system_uuid,
+            )
             raise HTTPException(
                 status_code=400,
                 detail={
@@ -134,30 +138,29 @@ class UserService:
         if "is_row_invalid" in data and data["is_row_invalid"] is not None:
             user.is_row_invalid = data["is_row_invalid"]
         if "system_uuid" in data:
-            user.system_uuid = cast(Any, self._uuid_to_str(data["system_uuid"]))
+            su = self._uuid_to_str(data["system_uuid"])
+            if su is not None:
+                user.system_uuid = cast(Any, su)
         return self.repository.save(user)
 
-    def get_or_404(self, system_user_id: str) -> User:
-        """Return the user for ``system_user_id`` or raise a business 404.
-
-        Args:
-            system_user_id: External identifier from the source system.
-
-        Returns:
-            Matching :class:`~app.models.core.user.User`.
-
-        Raises:
-            fastapi.HTTPException: 404 with ``USER_404`` when not found.
-        """
-        user = self.repository.get_by_system_user_id(system_user_id)
+    def get_or_404(self, *, system_user_id: str, system_uuid: str) -> User:
+        """Return the user for the composite key or raise a business 404."""
+        user = self.repository.get_by_system_user_id_and_system_uuid(
+            system_user_id,
+            system_uuid,
+        )
         if user is None:
-            logger.warning("get_user_not_found system_user_id=%s", system_user_id)
+            logger.warning(
+                "get_user_not_found system_user_id=%s system_uuid=%s",
+                system_user_id,
+                system_uuid,
+            )
             raise HTTPException(
                 status_code=404,
                 detail={
                     "code": "USER_404",
                     "key": "USER_NOT_FOUND",
-                    "message": "User with this `system_user_id` was not found.",
+                    "message": ("User with this `system_user_id` and `system_uuid` was not found."),
                     "source": "business",
                 },
             )

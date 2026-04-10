@@ -28,20 +28,19 @@
         <dt style="text-align: left; font-weight: bold; margin-bottom: .5em;">Work item states</dt>
         <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.75em;">
           <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--todo" style="min-width: 70px; text-align:left;">To do</span>
+            <span class="status-pill status-pill--todo">To do</span>
             <span style="text-align:left;">— queued; not started</span>
           </div>
           <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--in-progress" style="min-width: 70px; text-align:left;">In
-              progress</span>
+            <span class="status-pill status-pill--in-progress">In progress</span>
             <span style="text-align:left;">— actively in progress</span>
           </div>
           <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--done" style="min-width: 70px; text-align:left;">Done</span>
+            <span class="status-pill status-pill--done">Done</span>
             <span style="text-align:left;">— completed and accepted</span>
           </div>
           <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--blocked" style="min-width: 70px; text-align:left;">Blocked</span>
+            <span class="status-pill status-pill--blocked">Blocked</span>
             <span style="text-align:left;">— waiting on external dependency or decision</span>
           </div>
         </div>
@@ -80,7 +79,8 @@
         </dd>
         <dt>3) Delivered (to date)</dt>
         <dd>
-          <code>README.html</code>, <code>backlog.css</code> (status color variables), navigation from the developer docs
+          <code>README.html</code>, <code>backlog.css</code> (status color variables), navigation from the developer
+          docs
           index, and the status model described in the legend above (see ADR 0001 for the <code>README.html</code>
           convention).
         </dd>
@@ -216,8 +216,14 @@
             <div class="time-cell"><strong>1 h/day</strong> ~10 days</div>
           </div>
         </dd>
-        <dt>5) Status</dt>
-        <dd><span class="status-pill status-pill--todo">To do</span></dd>
+        <dt>5) Delivered (to date)</dt>
+        <dd>
+          Alembic/SQLAlchemy unique indexes and constraints on natural keys (e.g. systems, timezones, users,
+          <code>idempotency_keys</code> composite uniqueness per ADR 0006); HTTP/error contract for conflicts and
+          idempotency replay; ADR 0006 plus developer docs and error matrix for retry and idempotency semantics.
+        </dd>
+        <dt>6) Status</dt>
+        <dd><span class="status-pill status-pill--done">Done</span></dd>
       </dl>
     </article>
 
@@ -259,30 +265,30 @@
     <article class="backlog-item" id="item-5">
       <h2>
         <span class="priority-tag">P1</span>
-        Integration tests against PostgreSQL in Docker (CI)
+        Integration tests against the database (CI)
       </h2>
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Add an integration test tier that runs against a real PostgreSQL instance (migrations applied, repositories
-          exercised) in CI via Docker Compose—complementing unit tests that may use SQLite or mocks.
+          Add an integration test layer that runs against a real PostgreSQL instance (with migrations applied and
+          repositories exercised) in CI using Docker Compose—complementing unit tests, which may use SQLite or mocks.
         </dd>
-        <dt>2) Problem &amp; value</dt>
+        <dt>2) Problem &amp; Value</dt>
         <dd>
-          <strong>Problem:</strong> Dev SQLite and production Postgres differ in types, locking, and edge cases; load
-          surfaces latent bugs.<br />
-          <strong>Value:</strong> Test pyramid: fast unit tests plus fewer, high-signal integration tests—common pattern
-          for data-heavy APIs.
+          <strong>Problem:</strong> Developer SQLite and production PostgreSQL differ in datatypes, locking logic, and
+          edge cases; higher load can reveal latent bugs.<br />
+          <strong>Value:</strong> Test pyramid: fast unit tests plus a smaller set of high-signal integration tests—an
+          essential approach for data-heavy APIs.
         </dd>
-        <dt>3) Scope &amp; deliverables</dt>
+        <dt>3) Scope &amp; Deliverables</dt>
         <dd>
-          Compose service for Postgres in CI; Pytest marker <code>integration</code>; DB fixtures/teardown; migrations
-          before test run; documented local command to match CI.
+          Docker Compose service for PostgreSQL in CI; <code>integration</code> Pytest marker; database fixtures and
+          teardown; migrations executed before tests; well-documented local command matching the CI process.
         </dd>
         <dt>4) Rough estimate (calendar days)</dt>
         <dd>
           <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~5 days (~16 h)</div>
+            <div class="time-cell"><strong>3 h/day</strong> ~5 days (~16 hours)</div>
             <div class="time-cell"><strong>2 h/day</strong> ~8 days</div>
             <div class="time-cell"><strong>1 h/day</strong> ~16 days</div>
           </div>
@@ -503,8 +509,14 @@
             <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
           </div>
         </dd>
-        <dt>5) Status</dt>
-        <dd><span class="status-pill status-pill--todo">To do</span></dd>
+        <dt>5) Delivered (to date)</dt>
+        <dd>
+          Python runner and scenarios under <code>tools/load_testing/</code>; Makefile targets
+          <code>run-loadtest-api</code> and <code>run-loadtest-api-serve</code> for local runs against a live API;
+          scenario docs in-repo. Scheduled CI load thresholds remain optional.
+        </dd>
+        <dt>6) Status</dt>
+        <dd><span class="status-pill status-pill--done">Done</span></dd>
       </dl>
     </article>
 
@@ -648,8 +660,14 @@
             <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
           </div>
         </dd>
-        <dt>5) Status</dt>
-        <dd><span class="status-pill status-pill--todo">To do</span></dd>
+        <dt>5) Delivered (to date)</dt>
+        <dd>
+          <code>CHANGELOG.md</code> (Keep a Changelog); ADR 0013; <code>scripts/changelog_gate.py</code> and optional
+          <code>scripts/changelog_draft.py</code>; CI workflow runs the gate on PR/push to <code>main</code> /
+          <code>master</code> (see <code>.github/workflows/ci.yml</code>).
+        </dd>
+        <dt>6) Status</dt>
+        <dd><span class="status-pill status-pill--done">Done</span></dd>
       </dl>
     </article>
 

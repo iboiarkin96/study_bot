@@ -110,7 +110,7 @@
         "type": "object"
       },
       "UserCreateRequest": {
-        "description": "JSON body for ``POST /api/v1/user`` (validated before idempotency and service layer).\n\nField-level rules, OpenAPI examples, and timezone validation live on the ``Field``\ndefinitions and :data:`app.schemas.enums.TimezoneField`.",
+        "description": "JSON body for ``POST /api/v1/user`` (validated before idempotency and service layer).\n\n``system_user_id`` and ``system_uuid`` form the composite natural key (DB unique constraint).\nField-level rules, OpenAPI examples, and timezone validation live on the ``Field``\ndefinitions and :data:`app.schemas.enums.TimezoneField`.",
         "properties": {
           "full_name": {
             "description": "Full name of the user.",
@@ -151,7 +151,7 @@
             "type": "integer"
           },
           "system_user_id": {
-            "description": "User ID in the source system (unique external identity).",
+            "description": "User ID in the source system; unique together with `system_uuid`.",
             "examples": [
               "134tg"
             ],
@@ -161,20 +161,13 @@
             "type": "string"
           },
           "system_uuid": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "UUID of related system.",
+            "description": "UUID of the source system (`systems.system_uuid`); composite key with `system_user_id`.",
             "examples": [
               "b2c3d4e5-0002-4000-8000-000000000002"
             ],
-            "title": "System Uuid"
+            "format": "uuid",
+            "title": "System Uuid",
+            "type": "string"
           },
           "timezone": {
             "default": "UTC",
@@ -208,7 +201,8 @@
         },
         "required": [
           "system_user_id",
-          "full_name"
+          "full_name",
+          "system_uuid"
         ],
         "title": "UserCreateRequest",
         "type": "object"
@@ -304,7 +298,7 @@
       },
       "UserPatchRequest": {
         "additionalProperties": false,
-        "description": "JSON body for ``PATCH /api/v1/user/{system_user_id}`` \u2014 partial update; omit fields to leave unchanged.",
+        "description": "JSON body for ``PATCH /api/v1/user/{system_uuid}/{system_user_id}`` \u2014 partial update; omit fields to leave unchanged.",
         "properties": {
           "full_name": {
             "anyOf": [
@@ -411,7 +405,7 @@
         "type": "object"
       },
       "UserUpdateRequest": {
-        "description": "JSON body for ``PUT /api/v1/user/{system_user_id}`` \u2014 full replacement of mutable profile fields.",
+        "description": "JSON body for ``PUT /api/v1/user/{system_uuid}/{system_user_id}`` \u2014 full replacement of mutable profile fields.",
         "properties": {
           "full_name": {
             "description": "Full name of the user.",
@@ -633,7 +627,7 @@
   "paths": {
     "/api/v1/user": {
       "post": {
-        "description": "Creates a new user by `system_user_id`. Requires `Idempotency-Key` header for safe retry semantics.\n\n### Example request (curl)\n```bash\ncurl -X POST 'http://127.0.0.1:8000/api/v1/user' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -H 'X-API-Key: ....' \\\n  -H 'Idempotency-Key: create-user-sample-1' \\\n  -d '{\"system_user_id\":\"2\",\"full_name\":\"Ivan Petrov\"}'\n```",
+        "description": "Creates a new user; uniqueness is `(system_user_id, system_uuid)`. Requires `Idempotency-Key` header for safe retry semantics.\n\n### Example request (curl)\n```bash\ncurl -X POST 'http://127.0.0.1:8000/api/v1/user' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -H 'X-API-Key: ....' \\\n  -H 'Idempotency-Key: create-user-sample-1' \\\n  -d '{\"system_user_id\":\"2\",\"system_uuid\":\"b2c3d4e5-0002-4000-8000-000000000002\",\"full_name\":\"Ivan Petrov\"}'\n```",
         "operationId": "createUser",
         "parameters": [
           {
@@ -670,7 +664,8 @@
                   "summary": "Only required fields",
                   "value": {
                     "full_name": "Ivan Petrov",
-                    "system_user_id": "134tg"
+                    "system_user_id": "134tg",
+                    "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002"
                   }
                 }
               },
@@ -710,7 +705,7 @@
                     "value": {
                       "code": "USER_101",
                       "key": "USER_CREATE_ALREADY_EXISTS",
-                      "message": "User with this `system_user_id` already exists.",
+                      "message": "User with this `system_user_id` and `system_uuid` already exists.",
                       "source": "business"
                     }
                   }
@@ -1040,6 +1035,7 @@
                           "details": {
                             "input": {
                               "system_user_id": "1",
+                              "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
                               "timezone": "UTC"
                             },
                             "loc": [
@@ -1078,6 +1074,34 @@
                           "field": "system_user_id",
                           "key": "USER_CREATE_SYSTEM_USER_ID_REQUIRED",
                           "message": "Field `system_user_id` is required.",
+                          "source": "validation"
+                        }
+                      ]
+                    }
+                  },
+                  "missing_system_uuid": {
+                    "summary": "Missing required field system_uuid",
+                    "value": {
+                      "endpoint": "POST /api/v1/user",
+                      "error_type": "validation_error",
+                      "errors": [
+                        {
+                          "code": "USER_025",
+                          "details": {
+                            "input": {
+                              "full_name": "Ivan Petrov",
+                              "system_user_id": "1",
+                              "timezone": "UTC"
+                            },
+                            "loc": [
+                              "body",
+                              "system_uuid"
+                            ],
+                            "type": "missing"
+                          },
+                          "field": "system_uuid",
+                          "key": "USER_CREATE_SYSTEM_UUID_REQUIRED",
+                          "message": "Field `system_uuid` is required.",
                           "source": "validation"
                         }
                       ]
@@ -1198,11 +1222,23 @@
         ]
       }
     },
-    "/api/v1/user/{system_user_id}": {
+    "/api/v1/user/{system_uuid}/{system_user_id}": {
       "get": {
-        "description": "Returns user profile by external `system_user_id`.\n\n### Example request (curl)\n```bash\ncurl -X GET 'http://127.0.0.1:8000/api/v1/user/2' \\\n  -H 'accept: application/json' \\\n  -H 'X-API-Key: ....'\n```",
+        "description": "Returns user profile by composite key `(system_uuid, system_user_id)`.\n\n### Example request (curl)\n```bash\ncurl -X GET 'http://127.0.0.1:8000/api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/2' \\\n  -H 'accept: application/json' \\\n  -H 'X-API-Key: ....'\n```",
         "operationId": "getUserBySystemUserId",
         "parameters": [
+          {
+            "description": "Source system UUID (`systems.system_uuid`).",
+            "in": "path",
+            "name": "system_uuid",
+            "required": true,
+            "schema": {
+              "description": "Source system UUID (`systems.system_uuid`).",
+              "format": "uuid",
+              "title": "System Uuid",
+              "type": "string"
+            }
+          },
           {
             "in": "path",
             "name": "system_user_id",
@@ -1256,7 +1292,7 @@
                     "value": {
                       "code": "USER_404",
                       "key": "USER_NOT_FOUND",
-                      "message": "User with this `system_user_id` was not found.",
+                      "message": "User with this `system_user_id` and `system_uuid` was not found.",
                       "source": "business"
                     }
                   }
@@ -1325,15 +1361,27 @@
             "APIKeyHeader": []
           }
         ],
-        "summary": "Get user by system_user_id",
+        "summary": "Get user by system_uuid and system_user_id",
         "tags": [
           "User"
         ]
       },
       "patch": {
-        "description": "Updates only the fields present in the JSON body; omitted fields stay unchanged. Requires `Idempotency-Key`. Use `PUT` for a full replacement of mutable fields.\n\n### Example request (curl)\n```bash\ncurl -X PATCH 'http://127.0.0.1:8000/api/v1/user/2' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -H 'X-API-Key: ....' \\\n  -H 'Idempotency-Key: patch-user-sample-1' \\\n  -d '{\"full_name\":\"Maria Petrova\"}'\n```",
+        "description": "Updates only the fields present in the JSON body; omitted fields stay unchanged. Requires `Idempotency-Key`. Use `PUT` for a full replacement of mutable fields.\n\n### Example request (curl)\n```bash\ncurl -X PATCH 'http://127.0.0.1:8000/api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/2' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -H 'X-API-Key: ....' \\\n  -H 'Idempotency-Key: patch-user-sample-1' \\\n  -d '{\"full_name\":\"Maria Petrova\"}'\n```",
         "operationId": "patchUserBySystemUserId",
         "parameters": [
+          {
+            "description": "Source system UUID (`systems.system_uuid`).",
+            "in": "path",
+            "name": "system_uuid",
+            "required": true,
+            "schema": {
+              "description": "Source system UUID (`systems.system_uuid`).",
+              "format": "uuid",
+              "title": "System Uuid",
+              "type": "string"
+            }
+          },
           {
             "in": "path",
             "name": "system_user_id",
@@ -1455,7 +1503,7 @@
                     "value": {
                       "code": "USER_404",
                       "key": "USER_NOT_FOUND",
-                      "message": "User with this `system_user_id` was not found.",
+                      "message": "User with this `system_user_id` and `system_uuid` was not found.",
                       "source": "business"
                     }
                   }
@@ -1516,7 +1564,7 @@
                   "invalid_timezone": {
                     "summary": "Invalid timezone name (patch)",
                     "value": {
-                      "endpoint": "PATCH /api/v1/user/134tg",
+                      "endpoint": "PATCH /api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/134tg",
                       "error_type": "validation_error",
                       "errors": [
                         {
@@ -1595,15 +1643,27 @@
             "APIKeyHeader": []
           }
         ],
-        "summary": "Partially update user by system_user_id",
+        "summary": "Partially update user by system_uuid and system_user_id",
         "tags": [
           "User"
         ]
       },
       "put": {
-        "description": "Updates mutable profile fields for an existing user. Requires `Idempotency-Key` for safe retry semantics.\n\n### Example request (curl)\n```bash\ncurl -X PUT 'http://127.0.0.1:8000/api/v1/user/2' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -H 'X-API-Key: ....' \\\n  -H 'Idempotency-Key: update-user-sample-1' \\\n  -d '{\"full_name\":\"Ivan Petrov\",\"timezone\":\"Europe/Moscow\",\"is_row_invalid\":0}'\n```",
+        "description": "Updates mutable profile fields for an existing user. Requires `Idempotency-Key` for safe retry semantics.\n\n### Example request (curl)\n```bash\ncurl -X PUT 'http://127.0.0.1:8000/api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/2' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -H 'X-API-Key: ....' \\\n  -H 'Idempotency-Key: update-user-sample-1' \\\n  -d '{\"full_name\":\"Ivan Petrov\",\"timezone\":\"Europe/Moscow\",\"is_row_invalid\":0}'\n```",
         "operationId": "updateUserBySystemUserId",
         "parameters": [
+          {
+            "description": "Source system UUID (`systems.system_uuid`).",
+            "in": "path",
+            "name": "system_uuid",
+            "required": true,
+            "schema": {
+              "description": "Source system UUID (`systems.system_uuid`).",
+              "format": "uuid",
+              "title": "System Uuid",
+              "type": "string"
+            }
+          },
           {
             "in": "path",
             "name": "system_user_id",
@@ -1701,7 +1761,7 @@
                     "value": {
                       "code": "USER_404",
                       "key": "USER_NOT_FOUND",
-                      "message": "User with this `system_user_id` was not found.",
+                      "message": "User with this `system_user_id` and `system_uuid` was not found.",
                       "source": "business"
                     }
                   }
@@ -1762,7 +1822,7 @@
                   "invalid_timezone": {
                     "summary": "Invalid timezone name (update)",
                     "value": {
-                      "endpoint": "PUT /api/v1/user/134tg",
+                      "endpoint": "PUT /api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/134tg",
                       "error_type": "validation_error",
                       "errors": [
                         {
@@ -1789,7 +1849,7 @@
                   "missing_full_name": {
                     "summary": "Missing required field full_name (update)",
                     "value": {
-                      "endpoint": "PUT /api/v1/user/134tg",
+                      "endpoint": "PUT /api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/134tg",
                       "error_type": "validation_error",
                       "errors": [
                         {
@@ -1868,7 +1928,7 @@
             "APIKeyHeader": []
           }
         ],
-        "summary": "Update user by system_user_id",
+        "summary": "Update user by system_uuid and system_user_id",
         "tags": [
           "User"
         ]

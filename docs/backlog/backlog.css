@@ -15,6 +15,9 @@
   --status-blocked-bg: #f3e8ff;
   --status-blocked-border: #a855f7;
   --status-blocked-text: #581c87;
+
+  /* Widest single-line label: "In progress" — adjust if labels change */
+  --status-pill-min-width: 11.5rem;
 }
 
 .backlog-legend {
@@ -42,14 +45,18 @@
 }
 
 .status-pill {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  min-width: var(--status-pill-min-width);
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
   border: 2px solid transparent;
+  white-space: nowrap;
 }
 
 .status-pill--todo {
