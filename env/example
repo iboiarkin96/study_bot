@@ -33,11 +33,19 @@
 #
 # =============================================================================
 #
-# Optional — changelog LLM draft (scripts/changelog_draft.py only; not used by the API)
+# Optional — changelog LLM draft + scripts/llm_ping.py (not used by the API)
 # -----------------------------------------------------------------------------
-# OPENAI_API_KEY=sk-...           # OpenAI or compatible provider; never commit real keys.
-# OPENAI_BASE_URL=https://api.openai.com/v1   # Override for OpenAI-compatible proxies.
-# OPENAI_MODEL=gpt-4o-mini        # Model id for chat completions.
+# OpenAI:
+# OPENAI_API_KEY=sk-...
+# OPENAI_BASE_URL=https://api.openai.com/v1
+# OPENAI_MODEL=gpt-4o-mini
+#
+# OpenRouter (default model if OPENAI_MODEL unset: openrouter/free — see OpenRouter docs):
+# OPENROUTER_API_KEY=sk-or-v1-...
+# # OPENAI_BASE_URL=https://openrouter.ai/api/v1   # implied when only OPENROUTER_API_KEY is set
+# OPENAI_MODEL=deepseek/deepseek-chat
+# OPENROUTER_HTTP_REFERER=http://127.0.0.1:3000
+# OPENROUTER_APP_TITLE=study_app
 #
 # =============================================================================
 

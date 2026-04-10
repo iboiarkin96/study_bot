@@ -34,9 +34,11 @@
 
 ## Changelog
 
-- User-facing edits under `app/`, `docs/openapi/`, or the root `README.md` should include an update under `[Unreleased]` in [CHANGELOG.md](CHANGELOG.md) in the same pull request. Add a new dated `[x.y.z]` section only when you cut a release—do not stack multiple version sections for the same unpublished work, and avoid editing the log twice for one uncommitted batch.
-- To skip the changelog requirement for mechanical changes, put `[skip changelog]` or `skip-changelog` in the PR title (or in commit messages on pushes to `main`/`master`). Policy and CI details: [ADR 0013](docs/adr/0013-changelog-and-release-notes.html).
-- Optional: run `python scripts/changelog_draft.py --print-log` to inspect git input, or set `OPENAI_API_KEY` (and optionally `OPENAI_BASE_URL`) for a draft printed to stdout—still reviewed by humans before merge.
+- If your change affects users (anything in `app/`, `docs/openapi/`, or the main `README.md`), add an entry to the `[Unreleased]` section of [CHANGELOG.md](CHANGELOG.md) in the same pull request.
+- Only create a new `[x.y.z]` section when you are making a real release.
+- Don’t add multiple version sections for the same unreleased changes, and don’t update the changelog more than once for the same batch of work.
+- For purely technical or mechanical changes (that do not affect users), you can skip the changelog update by writing `[skip changelog]` or `skip-changelog` in the PR title or commit message. More details in [ADR 0013](docs/adr/0013-changelog-and-release-notes.html).
+- **LLM draft (optional):** `make changelog-draft` writes `changelog-llm-draft.md` (gitignored); copy bullets into `CHANGELOG.md` under `[Unreleased]`. `make llm-ping` checks the API key. Override refs: `make changelog-draft CHANGELOG_HEAD=feature/foo`. Commits only (no staged/unstaged stat): `make changelog-draft CHANGELOG_DRAFT_FLAGS=`. Offline prompt preview: `python scripts/changelog_draft.py --print-log`. Details: [ADR 0013 — Local workflow](docs/adr/0013-changelog-and-release-notes.html#llm-draft-workflow).
 
 ## Further reading
 
