@@ -15,7 +15,15 @@ if TYPE_CHECKING:
 
 
 class System(Base):
-    """External/source system reference."""
+    """Catalog of upstream systems that own user identities.
+
+    Attributes:
+        id: Surrogate primary key.
+        system_uuid: Stable UUID string for API references.
+        code: Short stable code (unique).
+        name: Display name.
+        users: Reverse relation to :class:`~app.models.core.user.User`.
+    """
 
     __tablename__ = "systems"
 

@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Нагрузочное тестирование (load_testing)</title>
+    <title>Load testing (load_testing)</title>
     <link rel="stylesheet" href="../../docs/assets/docs.css" />
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
@@ -14,23 +14,23 @@
   </head>
   <body>
     <main class="container">
-      <h1>Нагрузочное тестирование (<code>tools/load_testing</code>)</h1>
+      <h1>Load testing (<code>tools/load_testing</code>)</h1>
       <p class="lead">
-        Реальные HTTP-запросы, в том числе с записью в БД. Подробный сценарий политики:
+        Real HTTP requests, including writes to the database. Policy and scenarios:
         <a href="../../docs/developer/0006-api-load-testing.html">Developer: API load testing</a>,
         <a href="../../docs/adr/0012-testing-strategy-and-load-testing.html">ADR 0012</a>.
       </p>
       <p>
-        Раннер не вызывает Python-функцию обработчика напрямую (это был бы другой вид теста): запросы идут по сети, как с
-        <strong>curl</strong>, чтобы в метрики попадали те же middleware и статусы. Чтобы не дублировать контракт ручки,
-        тела для user строятся через <code>UserCreateRequest</code> из <code>app.schemas.user</code>, путь —
-        <code>USER_HTTP_BASE_PATH</code> в <code>app.api.v1.user</code>.
+        The runner does not call the Python handler directly (that would be a different kind of test): requests go over
+        the network like <strong>curl</strong> so metrics capture the same middleware and status codes. To avoid duplicating
+        the endpoint contract, user bodies are built via <code>UserCreateRequest</code> from <code>app.schemas.user</code>;
+        the path comes from <code>USER_HTTP_BASE_PATH</code> in <code>app.api.v1.user</code>.
       </p>
 
-      <h2>Архитектура (обзор)</h2>
+      <h2>Architecture (overview)</h2>
       <p>
-        Раннер подхватывает Python-модули из <code>scenarios/</code>, строит план по весам и отправляет запросы. Цепочка
-        совпадает с идеей планирования нагрузки:
+        The runner loads Python modules from <code>scenarios/</code>, builds a plan from weights, and sends requests. The
+        chain matches the load-planning idea:
       </p>
       <pre class="mermaid">
 flowchart LR
@@ -46,8 +46,8 @@ flowchart LR
   API --> DB[(database)]
       </pre>
 
-      <h2>Расчёт доли сценария</h2>
-      <p>Итоговый вес одного именованного сценария:</p>
+      <h2>Scenario weight formula</h2>
+      <p>Final weight of one named scenario:</p>
       <pre class="mermaid">
 flowchart TD
   GW["GROUP_WEIGHTS[group]"]
@@ -59,70 +59,70 @@ flowchart TD
   MX --> F
       </pre>
       <p>
-        В каждом файле сценариев <code>MIX</code> суммируется в ~1.0; по всем файлам одной группы сумма
-        <code>SHARE_OF_GROUP</code> = ~1.0; <code>GROUP_WEIGHTS</code> в <code>weights.py</code> в сумме ~1.0.
+        In each scenario file <code>MIX</code> sums to ~1.0; across files in one group <code>SHARE_OF_GROUP</code> sums
+        to ~1.0; <code>GROUP_WEIGHTS</code> in <code>weights.py</code> sums to ~1.0 overall.
       </p>
 
-      <h2>Запуск</h2>
-      <p>Из корня репозитория (виртуальное окружение активировано):</p>
+      <h2>Running</h2>
+      <p>From the repository root (virtualenv activated):</p>
       <pre><code>python -m tools.load_testing.runner --dry-run
 python -m tools.load_testing.runner --total-requests 200
 python -m tools.load_testing.runner --total-requests 200 -q
 LOAD_TEST_BASE_URL=http://127.0.0.1:8000 python -m tools.load_testing.runner --delay-ms 0</code></pre>
       <p>
-        Во время реального прогона в терминал пишутся строка «Старт» и периодический прогресс
-        <code>[N/total] сценарий → HTTP код</code>; без этого вывод был бы только в конце (долгие паузы из‑за
-        <code>--delay-ms</code>). Флаг <code>-q</code> / <code>--quiet</code> отключает этот прогресс.
+        During a real run the terminal prints a &quot;Start&quot; line and periodic progress
+        <code>[N/total] scenario → HTTP code</code>; without it output would only appear at the end (long gaps due to
+        <code>--delay-ms</code>). The <code>-q</code> / <code>--quiet</code> flag disables this progress.
       </p>
       <p>
-        Переменные окружения: <code>LOAD_TEST_BASE_URL</code>, <code>LOAD_TEST_API_KEY</code>,
-        <code>LOAD_TEST_DELAY_MS</code> (по умолчанию ~1 с между запросами, чтобы не упираться в лимит API),
-        <code>LOAD_TEST_VERBOSE=1</code> или флаг <code>-v</code> / <code>--verbose</code> — показать, какие модули
-        пропущены из‑за нулевого веса группы (например <code>observability_5xx</code>).
+        Environment variables: <code>LOAD_TEST_BASE_URL</code>, <code>LOAD_TEST_API_KEY</code>,
+        <code>LOAD_TEST_DELAY_MS</code> (default ~1 s between requests to avoid hitting the API limit),
+        <code>LOAD_TEST_VERBOSE=1</code> or <code>-v</code> / <code>--verbose</code> — log which modules were skipped
+        because the group weight is zero (e.g. <code>observability_5xx</code>).
       </p>
-      <h3>Если в логе «несовпадения» и 404 / 429</h3>
+      <h3>If the log shows mismatches and 404 / 429</h3>
       <p>
-        Это обычно не ошибка в коде раннера. <strong>404</strong> на <code>/__loadtest/http500</code> — маршрут есть
-        только при <code>LOADTEST_HTTP_500=true</code> на сервере; по умолчанию вес группы
-        <code>observability_5xx</code> в <code>scenarios/weights.py</code> равен 0, сценарий не гоняется.
-        <strong>429</strong> — сработал rate limit. Варианты: увеличить <code>--delay-ms</code>; для нагрузки только на
-        своей машине поднять лимит на стороне API — <code>make run-loadtest-api</code> (поднимает API с высоким лимитом,
-        ждёт <code>/ready</code>, запускает <code>python -m tools.load_testing.runner</code>, останавливает API; см.
-        <code>tools/load_testing/run_with_local_api.sh</code> (перед стартом — предупреждение и вопрос
-        «продолжить?»; отмена без прогона; для CI: <code>LOADTEST_SKIP_CONFIRM=1</code>). Лимит для прогонов по умолчанию
-        <code>1000000000</code> запросов за окно (переменная <code>API_RATE_LIMIT_REQUESTS_LOADTEST</code>). Долгоживущий
-        сервер с тем же лимитом — <code>make run-loadtest-api-serve</code>. Либо временно увеличить
-        <code>API_RATE_LIMIT_REQUESTS</code> / <code>API_RATE_LIMIT_WINDOW_SECONDS</code> в <code>.env</code> (не для prod).
+        This is usually not a runner bug. <strong>404</strong> on <code>/__loadtest/http500</code> — the route exists
+        only when <code>LOADTEST_HTTP_500=true</code> on the server; by default group weight
+        <code>observability_5xx</code> in <code>scenarios/weights.py</code> is 0, so that scenario does not run.
+        <strong>429</strong> — rate limit. Options: increase <code>--delay-ms</code>; for local-only load raise the limit
+        on the API side — <code>make run-loadtest-api</code> (starts API with a high limit, waits for <code>/ready</code>,
+        runs <code>python -m tools.load_testing.runner</code>, stops API; see
+        <code>tools/load_testing/run_with_local_api.sh</code> (warning and &quot;continue?&quot; prompt before start;
+        cancel skips the run; for CI set <code>LOADTEST_SKIP_CONFIRM=1</code>). Default limit for runs is
+        <code>1000000000</code> requests per window (<code>API_RATE_LIMIT_REQUESTS_LOADTEST</code>). Long-lived server
+        with the same limit — <code>make run-loadtest-api-serve</code>. Or temporarily raise
+        <code>API_RATE_LIMIT_REQUESTS</code> / <code>API_RATE_LIMIT_WINDOW_SECONDS</code> in <code>.env</code> (not for prod).
       </p>
 
-      <h2>Структура каталога</h2>
+      <h2>Directory layout</h2>
       <ul>
-        <li><code>scenarios/weights.py</code> — <code>GROUP_WEIGHTS</code> (доли групп: <code>user</code>, <code>observability_5xx</code>, …)</li>
+        <li><code>scenarios/weights.py</code> — <code>GROUP_WEIGHTS</code> (group shares: <code>user</code>, <code>observability_5xx</code>, …)</li>
         <li><code>scenarios/user/create.py</code> — <code>POST /api/v1/user</code>, <code>MIX</code>, <code>SCENARIOS</code>, <code>SHARE_OF_GROUP</code></li>
-        <li><code>scenarios/observability/http500.py</code> — <code>GET /__loadtest/http500</code> (нужен <code>LOADTEST_HTTP_500=true</code>)</li>
-        <li><code>scenarios/conspectus/</code> — заготовка под новые ручки (<code>README.txt</code> внутри каталога)</li>
+        <li><code>scenarios/observability/http500.py</code> — <code>GET /__loadtest/http500</code> (requires <code>LOADTEST_HTTP_500=true</code>)</li>
+        <li><code>scenarios/conspectus/</code> — placeholder for new endpoints (<code>README.txt</code> inside)</li>
       </ul>
 
-      <h2>Как добавить ручку</h2>
+      <h2>How to add an endpoint</h2>
       <ol>
-        <li>Создай файл <code>tools/load_testing/scenarios/&lt;сущность&gt;/&lt;имя&gt;.py</code>.</li>
+        <li>Create <code>tools/load_testing/scenarios/&lt;entity&gt;/&lt;name&gt;.py</code>.</li>
         <li>
-          Задай <code>GROUP</code> (ключ из <code>weights.py</code>), <code>SHARE_OF_GROUP</code>, <code>MIX</code> (сумма ~1.0),
-          <code>SCENARIOS</code> (ключ → <code>callable(ctx) -&gt; BuiltRequest</code>).
+          Set <code>GROUP</code> (key from <code>weights.py</code>), <code>SHARE_OF_GROUP</code>, <code>MIX</code> (sums to ~1.0),
+          <code>SCENARIOS</code> (key → <code>callable(ctx) -&gt; BuiltRequest</code>).
         </li>
-        <li>При новой сущности добавь долю группы в <code>GROUP_WEIGHTS</code>.</li>
-        <li>Ключи сценариев глобально уникальны (например <code>conspectus.create.ok</code>).</li>
+        <li>For a new entity, add the group share in <code>GROUP_WEIGHTS</code>.</li>
+        <li>Scenario keys are globally unique (e.g. <code>conspectus.create.ok</code>).</li>
       </ol>
 
-      <h2>Несколько файлов в одной группе</h2>
+      <h2>Multiple files in one group</h2>
       <p>
-        Например <code>user/create.py</code> и <code>user/get.py</code>: сумма <code>SHARE_OF_GROUP</code> по этим файлам
-        должна быть ~1.0; в каждом файле <code>MIX</code> суммируется в ~1.0.
+        For example <code>user/create.py</code> and <code>user/get.py</code>: <code>SHARE_OF_GROUP</code> across those
+        files should sum to ~1.0; in each file <code>MIX</code> sums to ~1.0.
       </p>
 
-      <h2>422 при создании пользователя</h2>
+      <h2>422 on user create</h2>
       <p>
-        См. <code>user_payload.apply_break_field</code> и поля в <code>scenarios/user/create.py</code>.
+        See <code>user_payload.apply_break_field</code> and fields in <code>scenarios/user/create.py</code>.
       </p>
     </main>
   </body>

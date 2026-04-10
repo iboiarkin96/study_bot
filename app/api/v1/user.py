@@ -34,8 +34,8 @@ api_key_security = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 router = APIRouter(prefix="/user", tags=["User"])
 
-# Публичный путь этого роутера: в main — include_router(..., prefix="/api/v1").
-# Используй в клиентах и load-тестах, чтобы не дублировать строку "/api/v1/user".
+# Public path for this router: in main, include_router(..., prefix="/api/v1").
+# Use in clients and load tests to avoid duplicating the "/api/v1/user" string.
 USER_HTTP_BASE_PATH = "/api/v1/user"
 
 
@@ -98,7 +98,20 @@ def create_user(
     ],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Create user and return stored record."""
+    """Handle POST ``/api/v1/user`` with idempotent replay semantics.
+
+    Args:
+        payload: Validated JSON body.
+        session: Database session from :func:`app.core.database.get_db_session`.
+        idempotency_key: Dedup token from ``Idempotency-Key`` header.
+        api_key: Declared for OpenAPI; auth is enforced by middleware.
+
+    Returns:
+        Created user payload, or replayed body from a prior successful call.
+
+    Raises:
+        fastapi.HTTPException: 400 if idempotency header is missing, 409 on key/body mismatch.
+    """
     _ = api_key  # represented in OpenAPI; runtime validation is handled by middleware
     if not idempotency_key:
         raise HTTPException(
@@ -188,7 +201,19 @@ def get_user(
     session: Annotated[Session, Depends(get_db_session)],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Fetch user by external system identifier."""
+    """Return a user by ``system_user_id`` path parameter.
+
+    Args:
+        system_user_id: External user id (1–36 chars).
+        session: Database session.
+        api_key: Declared for OpenAPI; auth is enforced by middleware.
+
+    Returns:
+        User representation matching :class:`~app.schemas.user.UserCreateResponse`.
+
+    Raises:
+        fastapi.HTTPException: Propagated from :meth:`UserService.get_or_404` (404).
+    """
     _ = api_key  # represented in OpenAPI; runtime validation is handled by middleware
     service = UserService(UserRepository(session))
     user = service.get_or_404(system_user_id=system_user_id)

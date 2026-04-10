@@ -2,7 +2,7 @@
   "components": {
     "schemas": {
       "ApiErrorResponse": {
-        "description": "Business error payload with stable code.",
+        "description": "Standard error ``detail`` object for 4xx/5xx business and security failures.\n\nAttributes:\n    code: Project-wide stable error code.\n    key: Machine-readable key for clients.\n    message: Human-readable English message.\n    source: Origin layer (e.g. ``business``, ``security``).",
         "properties": {
           "code": {
             "title": "Code",
@@ -44,7 +44,7 @@
         "type": "object"
       },
       "LiveResponse": {
-        "description": "Response payload for liveness endpoint.",
+        "description": "``GET /live`` \u2014 process up signal without dependency checks.\n\nAttributes:\n    status: Fixed literal ``alive`` for a healthy process.\n    app_env: Active ``APP_ENV`` profile (``dev``, ``qa``, ``prod``).",
         "properties": {
           "app_env": {
             "description": "Logical deployment profile from APP_ENV (dev, qa, prod).",
@@ -72,7 +72,7 @@
         "type": "object"
       },
       "ReadyResponse": {
-        "description": "Response payload for readiness endpoint.",
+        "description": "``GET /ready`` \u2014 dependency checks (used with HTTP 200 or 503).\n\nAttributes:\n    status: ``ready`` or ``not_ready`` depending on checks.\n    checks: Map of check name to short state string (e.g. ``database``).\n    db_latency_ms: Observed database round-trip in milliseconds, if measured.",
         "properties": {
           "checks": {
             "additionalProperties": {
@@ -110,7 +110,7 @@
         "type": "object"
       },
       "UserCreateRequest": {
-        "description": "Incoming payload for creating/updating user.",
+        "description": "JSON body for ``POST /api/v1/user`` (validated before idempotency and service layer).\n\nField-level rules, OpenAPI examples, and timezone validation live on the ``Field``\ndefinitions and :data:`app.schemas.enums.TimezoneField`.",
         "properties": {
           "full_name": {
             "description": "Full name of the user.",
@@ -214,7 +214,7 @@
         "type": "object"
       },
       "UserCreateResponse": {
-        "description": "Outgoing payload with persisted user data.",
+        "description": "User resource returned by create (201) and get (200); maps ORM :class:`~app.models.core.user.User`.\n\nAttributes:\n    client_uuid: Internal client identifier (UUID string).\n    created_at: Row creation timestamp (timezone-aware).\n    updated_at: Last update timestamp (timezone-aware).\n    is_row_invalid: Soft-invalidation flag (0 or 1).\n    invalidation_reason_uuid: FK to invalidation reason, if set.\n    system_user_id: External system user id when present.\n    system_uuid: Related system UUID when present.\n    username: Optional display username.\n    full_name: Required full name.\n    timezone: IANA timezone string stored for the user.",
         "properties": {
           "client_uuid": {
             "title": "Client Uuid",
@@ -336,7 +336,7 @@
         "type": "object"
       },
       "ValidationErrorItem": {
-        "description": "Normalized validation error with stable code and details.",
+        "description": "Single entry in the ``errors`` array of a 422 response.\n\nAttributes:\n    code: Stable validation error code (e.g. ``USER_001``).\n    key: Machine-readable key.\n    message: Human-readable message for this failure.\n    field: JSON field name when applicable.\n    source: Always ``validation`` for this model.\n    details: Raw Pydantic context (``loc``, ``type``, ``input``, etc.).",
         "properties": {
           "code": {
             "title": "Code",
@@ -388,7 +388,7 @@
         "type": "object"
       },
       "ValidationErrorResponse": {
-        "description": "Validation error envelope used by 422 responses.",
+        "description": "Top-level body for HTTP 422 validation failures.\n\nAttributes:\n    error_type: Fixed discriminator (e.g. ``validation_error``).\n    endpoint: ``METHOD path`` string for the failing request.\n    errors: List of :class:`ValidationErrorItem` entries.",
         "properties": {
           "endpoint": {
             "title": "Endpoint",
@@ -1132,7 +1132,7 @@
     },
     "/live": {
       "get": {
-        "description": "Return process liveness status.",
+        "description": "Kubernetes-style liveness: process is up (no dependency checks).\n\nReturns:\n    Payload with ``status=\"alive\"`` and current ``app_env``.",
         "operationId": "getLiveProbe",
         "responses": {
           "200": {
@@ -1154,7 +1154,7 @@
     },
     "/ready": {
       "get": {
-        "description": "Return readiness status including DB dependency probe.",
+        "description": "Readiness probe including database connectivity and latency budget.\n\nReturns:\n    ``ReadyResponse`` with HTTP 200 when ready, or HTTP 503 with the same schema\n    when the DB check fails or exceeds the timeout.",
         "operationId": "getReadyProbe",
         "responses": {
           "200": {

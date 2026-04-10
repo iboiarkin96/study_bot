@@ -13,7 +13,11 @@ from app.models.base import Base
 
 
 def _utc_now() -> datetime:
-    """Timezone-aware UTC instant for column defaults."""
+    """Return current UTC time with tzinfo for :class:`~datetime.datetime` columns.
+
+    Returns:
+        Timezone-aware ``datetime`` in UTC.
+    """
     return datetime.now(UTC)
 
 
@@ -23,7 +27,11 @@ if TYPE_CHECKING:
 
 
 class User(Base):
-    """Application user mapped from Telegram identity."""
+    """End-user row keyed by external ``system_user_id`` and internal ``client_uuid``.
+
+    Relationships: :attr:`system`, :attr:`invalidation_reason`. Timezone must exist
+    in the ``timezones`` reference table.
+    """
 
     __tablename__ = "users"
     __table_args__: tuple = ()

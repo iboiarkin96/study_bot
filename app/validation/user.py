@@ -11,7 +11,13 @@ from fastapi.exceptions import RequestValidationError
 
 @dataclass(frozen=True)
 class ValidationCodeRule:
-    """Rule that maps one validation failure to a business-facing code."""
+    """Stable API error identity for one Pydantic validation failure kind.
+
+    Attributes:
+        code: Short numeric or symbolic code (e.g. ``USER_001``).
+        key: Machine-readable key for clients and i18n.
+        message: Default English message for this rule.
+    """
 
     code: str
     key: str
@@ -88,7 +94,14 @@ CREATE_USER_VALIDATION_RULES: dict[tuple[str, str], ValidationCodeRule] = {
 
 
 def _json_safe(value: Any) -> Any:
-    """Convert arbitrary values into JSON-serializable primitives."""
+    """Recursively coerce values for inclusion in JSON error ``details``.
+
+    Args:
+        value: Arbitrary object from Pydantic error context.
+
+    Returns:
+        JSON-compatible structure; non-JSON types become ``str(value)``.
+    """
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
     if isinstance(value, dict):
@@ -99,12 +112,30 @@ def _json_safe(value: Any) -> Any:
 
 
 def _field_from_loc(loc: list[Any]) -> str | None:
+    """Extract JSON body field name from a Pydantic ``loc`` tuple when applicable.
+
+    Args:
+        loc: Location path from :meth:`RequestValidationError.errors`.
+
+    Returns:
+        Body field name, or ``None`` if not a simple body field error.
+    """
     if len(loc) >= 2 and loc[0] == "body" and isinstance(loc[1], str):
         return loc[1]
     return None
 
 
 def _resolve_create_user_rule(field: str | None, error_type: str) -> ValidationCodeRule:
+    """Map ``(field, error_type)`` to a rule or fall back to a generic validation code.
+
+    Args:
+        field: Body field name from :func:`_field_from_loc`, or ``None``.
+        error_type: Pydantic error type string (e.g. ``missing``, ``string_too_short``).
+
+    Returns:
+        Matching :class:`ValidationCodeRule` from :data:`CREATE_USER_VALIDATION_RULES`
+        or a default ``COMMON_000`` rule.
+    """
     if field is not None and (field, error_type) in CREATE_USER_VALIDATION_RULES:
         return CREATE_USER_VALIDATION_RULES[(field, error_type)]
     return ValidationCodeRule(
@@ -115,7 +146,15 @@ def _resolve_create_user_rule(field: str | None, error_type: str) -> ValidationC
 
 
 def build_validation_error_payload(request: Request, exc: RequestValidationError) -> dict[str, Any]:
-    """Build a stable, code-driven 422 payload."""
+    """Normalize FastAPI/Pydantic validation errors into the API 422 contract.
+
+    Args:
+        request: Failed request (method/path select specialized rules).
+        exc: Validation exception from FastAPI.
+
+    Returns:
+        Dict with ``error_type``, ``endpoint``, and ``errors`` list suitable for JSON encoding.
+    """
     errors: list[dict[str, Any]] = []
     endpoint = f"{request.method} {request.url.path}"
 

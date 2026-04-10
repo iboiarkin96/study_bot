@@ -38,11 +38,29 @@ VOID_TAGS = {
 
 
 def _rel_href(current_file: Path, target_file: Path) -> str:
+    """Relative URL from ``current_file``'s directory to ``target_file``.
+
+    Args:
+        current_file: HTML file being edited.
+        target_file: Asset or link target under the repo.
+
+    Returns:
+        POSIX-style relative path, prefixed with ``./`` when it does not start with ``.``.
+    """
     rel = os.path.relpath(target_file, start=current_file.parent).replace("\\", "/")
     return rel if rel.startswith(".") else f"./{rel}"
 
 
 def _normalize_stylesheet(text: str, current_file: Path) -> str:
+    """Remove inline ``<style>`` blocks and enforce a single ``docs.css`` link in ``<head>``.
+
+    Args:
+        text: Full HTML document text.
+        current_file: Path to the file (for relative href to :data:`DOCS_ROOT`).
+
+    Returns:
+        Updated HTML string.
+    """
     normalized = STYLE_BLOCK_RE.sub("\n", text)
     href = _rel_href(current_file, DOCS_ROOT / "assets" / "docs.css")
     link_line = f'  <link rel="stylesheet" href="{href}" />'
@@ -54,10 +72,27 @@ def _normalize_stylesheet(text: str, current_file: Path) -> str:
 
 
 def _normalize_main(text: str) -> str:
+    """Ensure ``<main>`` has ``class="container"`` when missing.
+
+    Args:
+        text: HTML source.
+
+    Returns:
+        Text with main tag normalized.
+    """
     return MAIN_WITHOUT_CLASS_RE.sub(r'<main class="container"\1>', text)
 
 
 def _normalize_nav_script(text: str, current_file: Path) -> str:
+    """Ensure ``docs-nav.js`` is loaded once from the correct relative path.
+
+    Args:
+        text: HTML source.
+        current_file: File path for relative script URL resolution.
+
+    Returns:
+        Updated HTML.
+    """
     script_src = _rel_href(current_file, DOCS_ROOT / "assets" / "docs-nav.js")
     script_line = f'  <script defer src="{script_src}"></script>'
     if NAV_SCRIPT_TAG_RE.search(text):
@@ -68,6 +103,14 @@ def _normalize_nav_script(text: str, current_file: Path) -> str:
 
 
 def _normalize_nav(text: str) -> str:
+    """Replace legacy top nav markup with the ``docs-top-nav`` host div.
+
+    Args:
+        text: HTML after stylesheet/script normalization.
+
+    Returns:
+        HTML suitable for client-side nav injection.
+    """
     nav_host = '    <div id="docs-top-nav"></div>'
     without_nav = TOP_NAV_RE.sub("", text, count=1)
 
@@ -82,12 +125,28 @@ def _normalize_nav(text: str) -> str:
 
 
 def _normalize_newlines(text: str) -> str:
+    """Normalize line endings and collapse excessive blank lines; ensure trailing newline.
+
+    Args:
+        text: Raw HTML.
+
+    Returns:
+        Normalized text.
+    """
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.rstrip() + "\n"
 
 
 def _line_tag_name(stripped_line: str) -> str | None:
+    """Return lowercased HTML tag name for an opening or closing line, if any.
+
+    Args:
+        stripped_line: Single line without surrounding whitespace.
+
+    Returns:
+        Tag name, or ``None`` if the line does not start like a tag.
+    """
     match = TAG_NAME_RE.match(stripped_line)
     if not match:
         return None
@@ -95,6 +154,14 @@ def _line_tag_name(stripped_line: str) -> str | None:
 
 
 def _is_inline_closed_tag(stripped_line: str) -> bool:
+    """Return True if ``stripped_line`` contains both open and close of the same tag.
+
+    Args:
+        stripped_line: One line of HTML.
+
+    Returns:
+        Whether the line is a self-contained inline element (e.g. ``<p>...</p>``).
+    """
     tag_name = _line_tag_name(stripped_line)
     if not tag_name:
         return False
@@ -106,6 +173,14 @@ def _is_inline_closed_tag(stripped_line: str) -> bool:
 
 
 def _normalize_indentation(text: str) -> str:
+    """Re-indent HTML with two spaces per nesting level (skip void and inline-closed tags).
+
+    Args:
+        text: HTML with arbitrary indentation.
+
+    Returns:
+        Pretty-printed HTML lines.
+    """
     lines = text.split("\n")
     indent = 0
     normalized_lines: list[str] = []
@@ -145,6 +220,14 @@ def _normalize_indentation(text: str) -> str:
 
 
 def format_html_file(path: Path) -> bool:
+    """Apply all normalizations to one HTML file; write only if content changed.
+
+    Args:
+        path: HTML file under :data:`DOCS_ROOT`.
+
+    Returns:
+        ``True`` if the file was modified, else ``False``.
+    """
     original = path.read_text(encoding="utf-8")
     updated = _normalize_stylesheet(original, path)
     updated = _normalize_nav_script(updated, path)
@@ -159,6 +242,10 @@ def format_html_file(path: Path) -> bool:
 
 
 def main() -> None:
+    """Walk all ``docs/**/*.html`` (except ``docs/backlog/**``) and normalize in place.
+
+    Prints the count of updated files.
+    """
     updated_count = 0
     for html_path in sorted(DOCS_ROOT.glob("**/*.html")):
         try:

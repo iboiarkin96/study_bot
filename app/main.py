@@ -76,7 +76,15 @@ app.add_middleware(
 
 @app.middleware("http")
 async def request_logging_middleware(request: Request, call_next) -> Response:
-    """Write one structured log line for each incoming request."""
+    """Log request duration, status, and update Prometheus HTTP metrics.
+
+    Args:
+        request: Incoming ASGI request.
+        call_next: Next middleware or route handler in the stack.
+
+    Returns:
+        Downstream response, or re-raises exceptions after logging a failure line.
+    """
     metrics_started_at = metrics.on_request_start(request)
     started_at = perf_counter()
     try:
@@ -114,7 +122,15 @@ async def request_logging_middleware(request: Request, call_next) -> Response:
 
 @app.middleware("http")
 async def request_body_limit_middleware(request: Request, call_next) -> Response:
-    """Reject requests with payload larger than configured API limit."""
+    """Return 413 when the raw body exceeds ``settings.api_body_max_bytes``.
+
+    Args:
+        request: Incoming request (body is read fully).
+        call_next: Next handler; invoked only when under the size limit.
+
+    Returns:
+        Error JSON with ``COMMON_413`` or the downstream response.
+    """
     raw = await request.body()
     if len(raw) > settings.api_body_max_bytes:
         logger.warning(
@@ -138,7 +154,15 @@ async def request_body_limit_middleware(request: Request, call_next) -> Response
 
 @app.middleware("http")
 async def auth_and_rate_limit_middleware(request: Request, call_next) -> Response:
-    """Apply mock auth and per-client rate limiting for protected API routes."""
+    """Enforce API key auth and sliding-window rate limits on protected prefixes.
+
+    Args:
+        request: Incoming request.
+        call_next: Next handler.
+
+    Returns:
+        401/429 JSON, or downstream response with optional rate-limit headers.
+    """
     if is_protected_api_request(request, settings):
         auth_error = authenticate_request(request, settings)
         if auth_error is not None:
@@ -175,7 +199,15 @@ async def auth_and_rate_limit_middleware(request: Request, call_next) -> Respons
 
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next) -> Response:
-    """Attach baseline security headers to all responses."""
+    """Add CSP and related headers via :func:`app.core.security.apply_security_headers`.
+
+    Args:
+        request: Incoming request (path selects CSP variant).
+        call_next: Next handler.
+
+    Returns:
+        Response with security headers applied.
+    """
     response = await call_next(request)
     apply_security_headers(response, request.url.path)
     return response
@@ -185,7 +217,15 @@ async def security_headers_middleware(request: Request, call_next) -> Response:
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
-    """Return stable, code-based payload for all request validation errors."""
+    """Map Pydantic validation failures to the project's 422 envelope format.
+
+    Args:
+        request: Request that failed validation.
+        exc: FastAPI validation exception with ``errors()`` detail list.
+
+    Returns:
+        JSON response with status 422 and a stable ``error_type`` / ``errors`` body.
+    """
     logger.warning("validation_error method=%s path=%s", request.method, request.url.path)
     return JSONResponse(
         status_code=422,
@@ -194,6 +234,15 @@ async def validation_exception_handler(
 
 
 def _readiness_probe(timeout_ms: int) -> tuple[bool, float | None, str]:
+    """Execute ``SELECT 1`` against the app database and classify readiness.
+
+    Args:
+        timeout_ms: If DB latency exceeds this, the probe is treated as not ready.
+
+    Returns:
+        Tuple ``(is_ready, db_latency_ms_or_none, state)`` where ``state`` is
+        ``ok``, ``timeout``, or ``db_error``.
+    """
     started_at = perf_counter()
     try:
         with SessionLocal() as session:
@@ -226,7 +275,11 @@ readiness_probe = _readiness_probe
     response_model=LiveResponse,
 )
 def live() -> LiveResponse:
-    """Return process liveness status."""
+    """Kubernetes-style liveness: process is up (no dependency checks).
+
+    Returns:
+        Payload with ``status="alive"`` and current ``app_env``.
+    """
     return LiveResponse(status="alive", app_env=settings.app_env)
 
 
@@ -238,7 +291,12 @@ def live() -> LiveResponse:
     response_model=ReadyResponse,
 )
 def ready() -> ReadyResponse | JSONResponse:
-    """Return readiness status including DB dependency probe."""
+    """Readiness probe including database connectivity and latency budget.
+
+    Returns:
+        ``ReadyResponse`` with HTTP 200 when ready, or HTTP 503 with the same schema
+        when the DB check fails or exceeds the timeout.
+    """
     is_ready, db_latency_ms, db_state = readiness_probe(settings.readiness_db_timeout_ms)
     payload = ReadyResponse(
         status="ready" if is_ready else "not_ready",
@@ -251,7 +309,11 @@ def ready() -> ReadyResponse | JSONResponse:
 
 
 def metrics_endpoint() -> Response:
-    """Expose Prometheus metrics in text format."""
+    """Prometheus scrape endpoint (disabled returns 404 when metrics are off).
+
+    Returns:
+        Plain-text exposition or a JSON error when metrics are disabled.
+    """
     if not settings.metrics_enabled:
         return JSONResponse(status_code=404, content={"detail": "Metrics are disabled."})
     return Response(content=metrics.render(), media_type=metrics_content_type())
@@ -267,7 +329,11 @@ app.add_api_route(
 
 @app.get("/docs", include_in_schema=False)
 def custom_swagger_ui() -> Response:
-    """Serve Swagger UI with local favicon."""
+    """Serve Swagger UI (hidden from OpenAPI schema; uses ``/favicon.png``).
+
+    Returns:
+        HTML page loading the interactive API docs.
+    """
     openapi_url = app.openapi_url or "/openapi.json"
     return get_swagger_ui_html(
         openapi_url=openapi_url,
@@ -283,7 +349,14 @@ if os.getenv("LOADTEST_HTTP_500", "").lower() in ("1", "true", "yes"):
 
     @app.get("/__loadtest/http500", include_in_schema=False)
     def loadtest_http500() -> JSONResponse:
-        """Explicit HTTP 500 for traffic/load scripts; enable only via LOADTEST_HTTP_500."""
+        """Return HTTP 500 for synthetic error-rate testing (guarded by env flag).
+
+        Returns:
+            Fixed JSON error body for observability drills.
+
+        Note:
+            Route is registered only when ``LOADTEST_HTTP_500`` is truthy.
+        """
         return JSONResponse(status_code=500, content={"detail": "loadtest_http500"})
 
 

@@ -30,6 +30,21 @@ def _validation_error_example(
     input_value: object,
     ctx: object,
 ) -> dict[str, object]:
+    """Build one documented 422 example body for OpenAPI ``examples`` maps.
+
+    Args:
+        code: Stable validation error code.
+        key: Machine-readable error key.
+        message: Human-readable message.
+        field: Affected body field name, if any.
+        error_type: Pydantic error type string.
+        loc: ``loc`` path from the validation error.
+        input_value: Invalid input snippet for documentation.
+        ctx: Extra context from Pydantic, if any.
+
+    Returns:
+        Full JSON object matching :class:`~app.schemas.errors.ValidationErrorResponse` shape.
+    """
     return {
         "error_type": "validation_error",
         "endpoint": "POST /api/v1/user",

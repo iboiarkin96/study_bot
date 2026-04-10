@@ -33,14 +33,29 @@ ICON_INFO = "·"
 
 
 def _ok(message: str) -> None:
+    """Print a green success line to stdout.
+
+    Args:
+        message: Text after the checkmark icon.
+    """
     print(f"{ICON_OK} {message}")
 
 
 def _step(message: str) -> None:
+    """Print a cyan progress line to stdout.
+
+    Args:
+        message: Text after the arrow icon.
+    """
     print(f"{ICON_STEP} {message}")
 
 
 def _info(message: str) -> None:
+    """Print a neutral bullet line to stdout.
+
+    Args:
+        message: Informational text.
+    """
     print(f"{ICON_INFO} {message}")
 
 
@@ -55,9 +70,18 @@ _MARKER_RE = re.compile(
 
 
 def _replace_markers(text: str, sections: dict[str, str]) -> str:
-    """Replace content between BEGIN/END markers with generated text."""
+    """Replace content between ``<!-- BEGIN:name -->`` / ``END`` pairs when ``name`` is in ``sections``.
+
+    Args:
+        text: Full file text containing marker pairs.
+        sections: Map of marker name to replacement inner content (without markers).
+
+    Returns:
+        Text with matching sections substituted; unknown markers left unchanged.
+    """
 
     def _sub(m: re.Match) -> str:
+        """Substitute one regex match if the marker name exists in ``sections``."""
         name = m.group(2)
         if name in sections:
             return f"{m.group(1)}\n{sections[name]}\n{m.group(3)}"
@@ -76,7 +100,11 @@ _HELP_LINE_RE = re.compile(
 
 
 def _parse_makefile_help() -> list[tuple[str, str]]:
-    """Extract (command, description) pairs from the help target echo lines."""
+    """Parse ``make help``-style echo lines from the root Makefile.
+
+    Returns:
+        Sorted list of ``(make_target, description)`` tuples; empty if Makefile missing.
+    """
     makefile = ROOT / "Makefile"
     if not makefile.exists():
         return []
@@ -100,6 +128,14 @@ def _parse_makefile_help() -> list[tuple[str, str]]:
 
 
 def _render_makefile_table(entries: list[tuple[str, str]]) -> str:
+    """Build a GitHub-flavored markdown table of make commands.
+
+    Args:
+        entries: Rows from :func:`_parse_makefile_help`.
+
+    Returns:
+        Markdown string for README embedding.
+    """
     rows = ["| Command | Purpose |", "| ------- | ------- |"]
     for cmd, desc in entries:
         rows.append(f"| `make {cmd}` | {desc} |")
@@ -112,7 +148,11 @@ def _render_makefile_table(entries: list[tuple[str, str]]) -> str:
 
 
 def _get_fastapi_routes() -> list[tuple[str, str, str]]:
-    """Return (method, path, summary) for every route registered on the app."""
+    """Introspect registered :class:`fastapi.routing.APIRoute` entries on the app.
+
+    Returns:
+        Sorted list of ``(HTTP method, path, summary)``; empty if import fails.
+    """
     sys.path.insert(0, str(ROOT))
     try:
         from app.main import app  # noqa: WPS433
@@ -134,6 +174,14 @@ def _get_fastapi_routes() -> list[tuple[str, str, str]]:
 
 
 def _render_endpoints_md(routes: list[tuple[str, str, str]]) -> str:
+    """Render route list as a markdown table for README markers.
+
+    Args:
+        routes: Output of :func:`_get_fastapi_routes`.
+
+    Returns:
+        Markdown table string.
+    """
     rows = ["| Method | Path | Description |", "| ------ | ---- | ----------- |"]
     for method, path, summary in routes:
         rows.append(f"| `{method}` | `{path}` | {summary} |")
@@ -141,6 +189,14 @@ def _render_endpoints_md(routes: list[tuple[str, str, str]]) -> str:
 
 
 def _render_endpoints_html(routes: list[tuple[str, str, str]]) -> str:
+    """Render route list as HTML snippet for ``system-analysis.html`` markers.
+
+    Args:
+        routes: Output of :func:`_get_fastapi_routes`.
+
+    Returns:
+        Indented HTML fragment.
+    """
     lines = ['      <div class="card">']
     for method, path, summary in routes:
         lines.append(f'        <p><span class="badge">{method} {path}</span> {summary}</p>')
@@ -149,6 +205,14 @@ def _render_endpoints_html(routes: list[tuple[str, str, str]]) -> str:
 
 
 def _render_makefile_html(entries: list[tuple[str, str]]) -> str:
+    """Build an HTML ``<table>`` of make commands for engineering practices page.
+
+    Args:
+        entries: Rows from :func:`_parse_makefile_help`.
+
+    Returns:
+        HTML table markup with escaped cells.
+    """
     lines = [
         "          <table>",
         "            <thead>",
@@ -180,6 +244,14 @@ def _render_makefile_html(entries: list[tuple[str, str]]) -> str:
 
 
 def _extract_html_title(path: Path) -> str:
+    """Read ``<title>`` from an HTML file, with light normalization and prefix stripping.
+
+    Args:
+        path: HTML document path.
+
+    Returns:
+        Title text, or stem of filename if no title tag.
+    """
     text = path.read_text()
     m = re.search(r"<title>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
     if not m:
@@ -191,6 +263,14 @@ def _extract_html_title(path: Path) -> str:
 
 
 def _doc_sort_key(path: Path) -> tuple[int, str]:
+    """Sort key: README first, then ``0000-*`` templates, then others alphabetically.
+
+    Args:
+        path: HTML file in a handbook directory.
+
+    Returns:
+        Tuple used with ``sorted(..., key=)``.
+    """
     name = path.name
     if name == "README.html":
         return (0, "")
@@ -204,6 +284,14 @@ _HANDBOOK_EXCLUDE_SUBSTRINGS: tuple[str, ...] = ("-draft-", "_draft", ".draft.")
 
 
 def _should_include_handbook_doc(path: Path) -> bool:
+    """Return False for draft or excluded handbook pages.
+
+    Args:
+        path: Candidate HTML file under ``docs/``.
+
+    Returns:
+        Whether the file should appear in the handbook table of contents.
+    """
     name = path.name.lower()
     stem = path.stem.lower()
     if any(name.startswith(prefix) for prefix in _HANDBOOK_EXCLUDE_PREFIXES):
@@ -243,6 +331,11 @@ _HANDBOOK_DESCRIPTION_OVERRIDES: dict[str, str] = {
 
 
 def _handbook_doc_entries() -> list[tuple[str, str, str, str]]:
+    """Build rows for the handbook documentation table (title, desc, href, link label).
+
+    Returns:
+        List of tuples for :func:`_render_handbook_rows_html`.
+    """
     docs = ROOT / "docs"
     entries: list[tuple[str, str, str, str]] = []
 
@@ -323,6 +416,14 @@ def _handbook_doc_entries() -> list[tuple[str, str, str, str]]:
 
 
 def _render_handbook_rows_html(entries: list[tuple[str, str, str, str]]) -> str:
+    """Render handbook rows as ``<tr>`` elements with escaped text.
+
+    Args:
+        entries: Rows from :func:`_handbook_doc_entries`.
+
+    Returns:
+        Concatenated HTML table rows.
+    """
     lines: list[str] = []
     for title, description, href, open_label in entries:
         lines.extend(
@@ -391,11 +492,23 @@ _DIR_COMMENTS: dict[str, str] = {
 
 
 def _build_tree() -> str:
-    """Render a concise architecture tree with directories only."""
+    """Build a fenced code block showing a small directory tree of key project folders.
+
+    Returns:
+        Markdown code block string for the ``REPO_LAYOUT`` marker.
+    """
 
     lines: list[str] = [f"{ROOT.name}/"]
 
     def _walk(directory: Path, prefix: str, rel: str, max_depth: int) -> None:
+        """Recursively append directory lines up to ``max_depth`` relative to ``rel``.
+
+        Args:
+            directory: Current directory to list.
+            prefix: ASCII tree prefix for this depth.
+            rel: POSIX path relative to repo root for comment lookup.
+            max_depth: Maximum number of path segments below root to show.
+        """
         current_depth = len(rel.split("/")) if rel else 0
         if current_depth >= max_depth:
             return
@@ -440,6 +553,14 @@ def _build_tree() -> str:
 
 
 def sync(check: bool = False) -> int:
+    """Regenerate marker-delimited sections in README and HTML docs from live sources.
+
+    Args:
+        check: If True, do not write files; only count how many would change.
+
+    Returns:
+        Number of files that would be or were updated (stale count).
+    """
     _step("Syncing docs from code sources...")
     makefile_entries = _parse_makefile_help()
     routes = _get_fastapi_routes()
@@ -512,7 +633,8 @@ def sync(check: bool = False) -> int:
     return stale_files
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """CLI: run :func:`sync` with optional ``--check`` (exit 1 if stale in check mode)."""
     parser = argparse.ArgumentParser(description="Sync docs from source code.")
     parser.add_argument(
         "--check",
@@ -523,3 +645,7 @@ if __name__ == "__main__":
     stale = sync(check=args.check)
     if args.check and stale:
         raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()

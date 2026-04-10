@@ -16,25 +16,51 @@ logger = logging.getLogger(__name__)
 
 
 class UserService:
-    """Service that handles all behaviors related to user."""
+    """Domain logic for user creation and lookup by ``system_user_id``."""
 
     def __init__(self, repository: UserRepository) -> None:
+        """Create a service that uses ``repository`` for persistence.
+
+        Args:
+            repository: User data access instance.
+        """
         self.repository = repository
 
     @staticmethod
     def _uuid_to_str(value: Any) -> str | None:
-        """Convert UUID-like values to string for ORM assignment."""
+        """Normalize optional UUID inputs to plain strings for the ORM.
+
+        Args:
+            value: UUID object or string, or ``None``.
+
+        Returns:
+            String form, or ``None`` if input was ``None``.
+        """
         if value is None:
             return None
         return str(value)
 
     @staticmethod
     def _uuid_generation() -> str:
-        """Generate a robust, random, unique UUID4 string."""
+        """Return a new random UUID4 string for internal surrogate keys.
+
+        Returns:
+            Lowercase hex UUID string.
+        """
         return str(uuid.uuid4())
 
     def create(self, payload: UserCreateRequest) -> User:
-        """Create new user or raise if already exists."""
+        """Persist a new user or signal a duplicate ``system_user_id``.
+
+        Args:
+            payload: Validated create request body.
+
+        Returns:
+            Saved :class:`~app.models.core.user.User` entity.
+
+        Raises:
+            fastapi.HTTPException: 400 with ``USER_101`` when the user already exists.
+        """
         su_id = str(payload.system_user_id)
 
         user = self.repository.get_by_system_user_id(su_id)
@@ -68,7 +94,17 @@ class UserService:
         return persisted_user
 
     def get_or_404(self, system_user_id: str) -> User:
-        """Fetch user by system id or raise business 404."""
+        """Return the user for ``system_user_id`` or raise a business 404.
+
+        Args:
+            system_user_id: External identifier from the source system.
+
+        Returns:
+            Matching :class:`~app.models.core.user.User`.
+
+        Raises:
+            fastapi.HTTPException: 404 with ``USER_404`` when not found.
+        """
         user = self.repository.get_by_system_user_id(system_user_id)
         if user is None:
             logger.warning("get_user_not_found system_user_id=%s", system_user_id)

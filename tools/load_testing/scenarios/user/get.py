@@ -1,6 +1,6 @@
-"""GET /api/v1/user/{system_user_id} — только если заданы реальные id в БД.
+"""GET /api/v1/user/{system_user_id} — only when real ids exist in the DB.
 
-Если ROTATE_SYSTEM_USER_IDS пуст, модуль не участвует в нагрузке (MIX пустой).
+If ROTATE_SYSTEM_USER_IDS is empty, this module does not participate in load (empty MIX).
 """
 
 from __future__ import annotations
@@ -10,16 +10,27 @@ from tools.load_testing.request import BuiltRequest, RunContext
 
 GROUP = "user"
 
-# Доля этого файла в GROUP_WEIGHTS["user"] (вместе с create.py должно давать 1.0).
+# This file's share of GROUP_WEIGHTS["user"] (with create.py must sum to 1.0).
 SHARE_OF_GROUP = 0.15
 
-# Подставь сюда system_user_id существующих пользователей (из своей БД).
+# Fill with system_user_id values of existing users (from your DB).
 ROTATE_SYSTEM_USER_IDS: list[str] = []
 
 
 def _get_user(ctx: RunContext) -> BuiltRequest:
+    """GET existing user by rotating through :data:`ROTATE_SYSTEM_USER_IDS`.
+
+    Args:
+        ctx: Load context; ``run_in_scenario`` picks the id index.
+
+    Returns:
+        Built GET request expecting 200.
+
+    Raises:
+        RuntimeError: If ``ROTATE_SYSTEM_USER_IDS`` is empty (scenario misconfigured).
+    """
     if not ROTATE_SYSTEM_USER_IDS:
-        raise RuntimeError("ROTATE_SYSTEM_USER_IDS пуст — заполни tools/.../user/get.py")
+        raise RuntimeError("ROTATE_SYSTEM_USER_IDS is empty — fill tools/.../user/get.py")
     sid = ROTATE_SYSTEM_USER_IDS[ctx.run_in_scenario % len(ROTATE_SYSTEM_USER_IDS)]
     return BuiltRequest(
         method="GET",
@@ -39,7 +50,7 @@ if ROTATE_SYSTEM_USER_IDS:
         "user.get.ok": _get_user,
     }
 else:
-    # Не участвуем в нагрузке; SHARE_OF_GROUP у create.py остаётся 1.0
+    # Does not participate in load; create.py keeps SHARE_OF_GROUP at 1.0
     SHARE_OF_GROUP = 0.0
     MIX = {}
     SCENARIOS = {}

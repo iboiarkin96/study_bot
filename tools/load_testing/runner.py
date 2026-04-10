@@ -1,15 +1,15 @@
 """
-Нагрузочный раннер: собирает сценарии из tools/load_testing/scenarios/**/*.py.
+Load-testing runner: collects scenarios from ``tools/load_testing/scenarios/**/*.py``.
 
   python -m tools.load_testing.runner --dry-run
   python -m tools.load_testing.runner --total-requests 200
 
-Переменные окружения (опционально):
-  LOAD_TEST_BASE_URL   (по умолчанию http://127.0.0.1:8000)
-  LOAD_TEST_API_KEY    (по умолчанию local-dev-key)
-  LOAD_TEST_VERBOSE=1  — печатать пропуск сценариев с нулевым весом группы (как --verbose)
+Optional environment:
+  LOAD_TEST_BASE_URL   (default http://127.0.0.1:8000)
+  LOAD_TEST_API_KEY    (default local-dev-key)
+  LOAD_TEST_VERBOSE=1  — log skipped modules when group weight is zero (same as --verbose)
 
-Документация: tools/load_testing/README.html
+Docs: tools/load_testing/README.html
 """
 
 from __future__ import annotations
@@ -35,6 +35,11 @@ DELAY_MS = 10
 
 
 def _scenario_modules() -> Iterator[str]:
+    """Yield import paths for each ``scenarios/**/*.py`` module except helpers.
+
+    Yields:
+        Dotted module names such as ``tools.load_testing.scenarios.user.create``.
+    """
     root = Path(__file__).resolve().parent / "scenarios"
     for path in sorted(root.rglob("*.py")):
         if path.name == "__init__.py" or path.name == "weights.py" or path.name.startswith("_"):
@@ -44,10 +49,26 @@ def _scenario_modules() -> Iterator[str]:
 
 
 def _load_module(name: str):
+    """Import a package module by dotted path (used for scenarios and weights).
+
+    Args:
+        name: Fully qualified module name.
+
+    Returns:
+        Loaded module object.
+    """
     return importlib.import_module(name)
 
 
 def _abs_sum(weights: dict[str, float]) -> float:
+    """Sum weight values (must be ~1.0 for normalized mixture dicts).
+
+    Args:
+        weights: Mapping of scenario or group name to non-negative weight.
+
+    Returns:
+        Sum of all values.
+    """
     return sum(weights.values())
 
 
@@ -58,17 +79,23 @@ def collect(
     dict[str, SCENARIO_BUILD],
     dict[str, str],
 ]:
-    """Итоговые веса сценария, билдеры, модуль-источник (для ошибок).
+    """Discover scenario modules, validate weights, and build the global mixture.
 
-    verbose: выводить в stderr строки о пропуске модулей с GROUP_WEIGHTS[group]==0.
+    Args:
+        verbose: If True, log to stderr when a group weight is zero and modules are skipped.
+
+    Returns:
+        Tuple of ``(scenario_weights, scenario_builders, scenario_source_module)`` where
+        weights sum to ~1.0 and keys are unique across all files.
+
+    Raises:
+        SystemExit: On invalid ``GROUP_WEIGHTS``, ``MIX``, ``SHARE_OF_GROUP``, or duplicate keys.
     """
     wmod = _load_module("tools.load_testing.scenarios.weights")
     group_weights: dict[str, float] = dict(wmod.GROUP_WEIGHTS)
 
     if abs(_abs_sum(group_weights) - 1.0) > 0.02:
-        raise SystemExit(
-            f"GROUP_WEIGHTS должны суммироваться в ~1.0, сейчас {_abs_sum(group_weights)}"
-        )
+        raise SystemExit(f"GROUP_WEIGHTS must sum to ~1.0, got {_abs_sum(group_weights)}")
 
     final: dict[str, float] = {}
     builders: dict[str, SCENARIO_BUILD] = {}
@@ -82,17 +109,19 @@ def collect(
         if not mix or not scenarios:
             continue
         if abs(_abs_sum(mix) - 1.0) > 0.02:
-            raise SystemExit(f"{mod_name}: MIX должен суммироваться в ~1.0, сейчас {_abs_sum(mix)}")
+            raise SystemExit(f"{mod_name}: MIX must sum to ~1.0, got {_abs_sum(mix)}")
 
         group = getattr(mod, "GROUP", None)
         if not group or group not in group_weights:
-            raise SystemExit(f"{mod_name}: задай GROUP из GROUP_WEIGHTS: {sorted(group_weights)}")
+            raise SystemExit(
+                f"{mod_name}: set GROUP to one of GROUP_WEIGHTS: {sorted(group_weights)}"
+            )
 
         gw = float(group_weights[group])
         if gw <= 0.0:
             if verbose:
                 print(
-                    f"Пропуск {mod_name}: вес группы {group!r} в GROUP_WEIGHTS равен 0 (сценарии отключены).",
+                    f"Skip {mod_name}: group weight {group!r} in GROUP_WEIGHTS is 0 (scenarios disabled).",
                     file=sys.stderr,
                 )
             continue
@@ -102,13 +131,13 @@ def collect(
         for key, frac in mix.items():
             if key in final:
                 raise SystemExit(
-                    f"Дублируется ключ сценария {key!r} ({mod_name} и {sources.get(key)})"
+                    f"Duplicate scenario key {key!r} ({mod_name} vs {sources.get(key)})"
                 )
             if key not in scenarios:
-                raise SystemExit(f"{mod_name}: ключ {key!r} есть в MIX, нет в SCENARIOS")
+                raise SystemExit(f"{mod_name}: key {key!r} in MIX but missing in SCENARIOS")
             fn = scenarios[key]
             if not callable(fn):
-                raise SystemExit(f"{mod_name}: SCENARIOS[{key!r}] должен быть callable")
+                raise SystemExit(f"{mod_name}: SCENARIOS[{key!r}] must be callable")
             w = gw * share * float(frac)
             final[key] = w
             builders[key] = fn  # type: ignore[assignment]
@@ -118,19 +147,29 @@ def collect(
         s = sum(sh for _, sh in shares)
         if abs(s - 1.0) > 0.02:
             raise SystemExit(
-                f"Группа {group!r}: сумма SHARE_OF_GROUP по файлам должна быть ~1.0, сейчас {s}. "
-                f"Файлы: {shares}"
+                f"Group {group!r}: SHARE_OF_GROUP across files must sum to ~1.0, got {s}. "
+                f"Files: {shares}"
             )
 
     if abs(_abs_sum(final) - 1.0) > 0.02:
-        raise SystemExit(
-            f"Итоговые веса сценариев должны суммироваться в ~1.0, сейчас {_abs_sum(final)}"
-        )
+        raise SystemExit(f"Final scenario weights must sum to ~1.0, got {_abs_sum(final)}")
 
     return final, builders, sources
 
 
 def split_counts(total: int, weights: dict[str, float]) -> dict[str, int]:
+    """Split ``total`` into integer counts per key using largest-remainder allocation.
+
+    Args:
+        total: Number of requests to distribute (must be >= 1).
+        weights: Non-negative weights (typically sum to 1.0).
+
+    Returns:
+        Mapping of scenario name to integer count; values sum to ``total``.
+
+    Raises:
+        ValueError: If ``total`` is less than 1.
+    """
     if total < 1:
         raise ValueError("total_requests >= 1")
     keys = list(weights.keys())
@@ -146,10 +185,27 @@ def split_counts(total: int, weights: dict[str, float]) -> dict[str, int]:
 
 
 def join_url(base: str, path: str) -> str:
+    """Join base URL and path with exactly one slash between them.
+
+    Args:
+        base: Origin without trailing slash (e.g. ``http://127.0.0.1:8000``).
+        path: Absolute path starting with ``/``.
+
+    Returns:
+        Full URL string.
+    """
     return base.rstrip("/") + "/" + path.lstrip("/")
 
 
 def _mask_api_key(value: str) -> str:
+    """Redact API key for logs (keep last four characters when long enough).
+
+    Args:
+        value: Raw header value.
+
+    Returns:
+        Masked string safe to print.
+    """
     if len(value) <= 4:
         return "***"
     return f"***{value[-4:]}"
@@ -163,7 +219,18 @@ def format_request_for_log(
     json_body: object | None,
     params: dict[str, str] | None,
 ) -> str:
-    """Текст для stderr: полный запрос (X-API-Key частично маскируется)."""
+    """Format a multi-line representation of an HTTP request for stderr logging.
+
+    Args:
+        method: HTTP method.
+        url: Full URL including query string if applicable.
+        headers: Request headers (``X-API-Key`` is masked).
+        json_body: Parsed JSON body or ``None``.
+        params: Query parameters if sent separately from URL.
+
+    Returns:
+        Human-readable block suitable for ``print(..., file=sys.stderr)``.
+    """
     lines: list[str] = [f"{method} {url}"]
     if params:
         lines.append(f"query_string: {params!r}")
@@ -182,8 +249,16 @@ def format_request_for_log(
 
 
 def main(argv: list[str] | None = None) -> int:
+    """CLI entry: parse args, build scenario plan, execute HTTP requests or dry-run.
+
+    Args:
+        argv: Argument list; defaults to :data:`sys.argv` when ``None``.
+
+    Returns:
+        Process exit code (0 on success, non-zero on usage or request failures).
+    """
     p = argparse.ArgumentParser(
-        description="Нагрузка по сценариям из tools/load_testing/scenarios/"
+        description="Load test via scenarios under tools/load_testing/scenarios/"
     )
     p.add_argument("--total-requests", type=int, default=100)
     p.add_argument("--dry-run", action="store_true")
@@ -191,21 +266,21 @@ def main(argv: list[str] | None = None) -> int:
         "--delay-ms",
         type=float,
         default=None,
-        help="Пауза между запросами (мс). По умолчанию из LOAD_TEST_DELAY_MS или ~1 с — иначе при лимите "
-        "~60 запросов / 60 с на клиента часто получите 429. Для стресс-теста без паузы: --delay-ms 0.",
+        help="Delay between requests (ms). Default from LOAD_TEST_DELAY_MS or ~1s — with ~60 req/60s per client "
+        "you often get 429. For stress without delay: --delay-ms 0.",
     )
-    p.add_argument("--seed", type=int, default=None, help="Seed для воспроизводимого перемешивания")
+    p.add_argument("--seed", type=int, default=None, help="RNG seed for reproducible shuffle")
     p.add_argument(
         "-v",
         "--verbose",
         action="store_true",
-        help="Показывать пропуск модулей с нулевым весом группы (или LOAD_TEST_VERBOSE=1).",
+        help="Log modules skipped due to zero group weight (or set LOAD_TEST_VERBOSE=1).",
     )
     p.add_argument(
         "-q",
         "--quiet",
         action="store_true",
-        help="Не выводить прогресс в stdout во время прогона (итог в конце всё равно печатается).",
+        help="Do not print progress to stdout during the run (summary still prints at the end).",
     )
     args = p.parse_args(argv)
 
@@ -234,8 +309,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(f"base_url={base_url}")
         print(f"total_requests={args.total_requests}")
-        print(f"по сценариям (шт.): {counts}")
-        print(f"слотов в плане: {len(plan)}")
+        print(f"per_scenario_counts: {counts}")
+        print(f"plan_slots: {len(plan)}")
         return 0
 
     default_headers = {
@@ -251,7 +326,7 @@ def main(argv: list[str] | None = None) -> int:
     progress_every = max(1, min(50, total // 20))
     if not args.quiet:
         print(
-            f"Старт: {total} запросов → {base_url}, пауза {float(args.delay_ms):g} мс между запросами",
+            f"Start: {total} requests → {base_url}, delay {float(args.delay_ms):g} ms between requests",
             flush=True,
         )
 
@@ -273,9 +348,9 @@ def main(argv: list[str] | None = None) -> int:
                 elif built.method == "POST":
                     r = client.post(url, headers=hdrs, json=built.json, params=built.params)
                 else:
-                    raise RuntimeError(f"Неподдерживаемый method {built.method}")
+                    raise RuntimeError(f"Unsupported HTTP method {built.method}")
             except httpx.HTTPError as e:
-                print(f"[{seq + 1}/{args.total_requests}] {key}: сеть: {e}", file=sys.stderr)
+                print(f"[{seq + 1}/{args.total_requests}] {key}: network: {e}", file=sys.stderr)
                 stats[-1] += 1
                 continue
 
@@ -288,10 +363,10 @@ def main(argv: list[str] | None = None) -> int:
                     and r.status_code == 404
                     and "/__loadtest/http500" in url
                 ):
-                    hint = " (нужен LOADTEST_HTTP_500=true на сервере)"
+                    hint = " (set LOADTEST_HTTP_500=true on the server)"
                 print(
-                    f"[{seq + 1}/{args.total_requests}] {key}: ожидали HTTP {built.expect_status}, "
-                    f"получили {r.status_code}{hint}",
+                    f"[{seq + 1}/{args.total_requests}] {key}: expected HTTP {built.expect_status}, "
+                    f"got {r.status_code}{hint}",
                     file=sys.stderr,
                 )
                 if r.status_code == 429:
@@ -309,44 +384,44 @@ def main(argv: list[str] | None = None) -> int:
                         detail = r.json()
                     except Exception:
                         detail = r.text
-                    print(f"ответ сервера (429): {detail!r}", file=sys.stderr)
+                    print(f"server response (429): {detail!r}", file=sys.stderr)
                     print("---", file=sys.stderr)
 
             if not args.quiet:
                 done = seq + 1
                 if done in (1, total) or (total > 1 and done % progress_every == 0):
-                    print(f"[{done}/{total}] {key} → HTTP {r.status_code}", flush=True)
+                    print(f"[{done}/{total}] {key} -> HTTP {r.status_code}", flush=True)
 
             if delay:
                 time.sleep(delay)
 
     print("---")
-    print(f"Готово, запросов: {args.total_requests}")
+    print(f"Done, requests: {args.total_requests}")
     net_errors = int(stats.get(-1, 0))
     if net_errors:
-        # -1 зарезервирован в Counter для сбоев до HTTP-ответа (см. except ниже по циклу).
+        # -1 reserved in Counter for failures before any HTTP response (see except in loop).
         stats_for_print = Counter(stats)
         del stats_for_print[-1]
-        print(f"HTTP статусы: {dict(sorted(stats_for_print.items()))}")
-        print(f"Сетевые сбои (нет ответа HTTP): {net_errors}", file=sys.stderr)
+        print(f"HTTP status counts: {dict(sorted(stats_for_print.items()))}")
+        print(f"Network failures (no HTTP response): {net_errors}", file=sys.stderr)
     else:
-        print(f"HTTP статусы: {dict(sorted(stats.items()))}")
+        print(f"HTTP status counts: {dict(sorted(stats.items()))}")
 
     if wrong:
-        print(f"Несовпадений с expect_status: {wrong}", file=sys.stderr)
+        print(f"Mismatches vs expect_status: {wrong}", file=sys.stderr)
         if stats.get(429, 0) > 0:
             print(
-                "Подсказка: ответы 429 — rate limit API (~60 запросов за окно на клиента по умолчанию). "
-                "Варианты: увеличь --delay-ms; для локальной нагрузки запусти API через «make run-loadtest-api» "
-                "(см. Makefile) или подними API_RATE_LIMIT_REQUESTS в .env только на время прогона.",
+                "Hint: 429 responses mean API rate limit (~60 requests per window per client by default). "
+                "Options: increase --delay-ms; for local load use `make run-loadtest-api` (see Makefile) "
+                "or raise API_RATE_LIMIT_REQUESTS in .env only for the run.",
                 file=sys.stderr,
             )
         return 2
     if net_errors:
         print(
-            "Подсказка: «Connection refused» / сетевые ошибки — на base_url никто не слушает или процесс API "
-            "уже остановился/упал до конца прогона. Проверь, что сервер запущен на LOAD_TEST_BASE_URL, "
-            "логи uvicorn и что порт свободен; при длинном прогоне смотри, не завершился ли отдельный терминал с API.",
+            "Hint: Connection refused / network errors mean nothing is listening on base_url or the API "
+            "process exited before the run finished. Ensure the server is up on LOAD_TEST_BASE_URL, check "
+            "uvicorn logs and the port; on long runs verify the API terminal did not exit.",
             file=sys.stderr,
         )
         return 2

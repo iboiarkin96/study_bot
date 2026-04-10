@@ -1,1 +1,1 @@
-"""Сценарии без записи в БД (метрики / SLO)."""
+"""Scenarios without DB writes (metrics / SLO)."""

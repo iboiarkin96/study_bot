@@ -14,7 +14,16 @@ from app.core.config import Settings
 
 
 def build_security_error_payload(code: str, key: str, message: str) -> dict[str, str]:
-    """Build stable machine-readable payload for security failures."""
+    """Build the ``detail`` object for security-related HTTP error responses.
+
+    Args:
+        code: Stable HTTP-layer error code (e.g. ``COMMON_401``).
+        key: Machine-readable identifier for clients and logs.
+        message: Human-readable explanation.
+
+    Returns:
+        Dict with keys ``code``, ``key``, ``message``, and fixed ``source="security"``.
+    """
     return {
         "code": code,
         "key": key,
@@ -25,7 +34,13 @@ def build_security_error_payload(code: str, key: str, message: str) -> dict[str,
 
 @dataclass(frozen=True)
 class RateLimitResult:
-    """Rate-limit decision with metadata for response headers."""
+    """Outcome of a rate-limit check for one logical bucket.
+
+    Attributes:
+        allowed: Whether the current request may proceed.
+        remaining: Estimated remaining quota in the current window (best-effort).
+        retry_after_seconds: Suggested ``Retry-After`` when ``allowed`` is False.
+    """
 
     allowed: bool
     remaining: int
@@ -33,16 +48,29 @@ class RateLimitResult:
 
 
 class InMemoryRateLimiter:
-    """Simple process-local fixed-window limiter."""
+    """Process-local fixed-window rate limiter (not shared across workers)."""
 
     def __init__(self, limit: int, window_seconds: int) -> None:
+        """Initialize limiter state.
+
+        Args:
+            limit: Maximum number of allowed hits per ``bucket`` within one window.
+            window_seconds: Rolling window length in seconds (monotonic clock).
+        """
         self._limit = limit
         self._window_seconds = window_seconds
         self._hits: dict[str, deque[float]] = defaultdict(deque)
         self._lock = Lock()
 
     def check(self, bucket: str) -> RateLimitResult:
-        """Evaluate whether request in bucket can continue."""
+        """Record one hit for ``bucket`` and return whether the limit is exceeded.
+
+        Args:
+            bucket: Arbitrary key (e.g. ``client_id:path``).
+
+        Returns:
+            Allow/deny decision with optional retry hint.
+        """
         now = monotonic()
         window_start = now - self._window_seconds
         with self._lock:
@@ -68,7 +96,12 @@ class InMemoryRateLimiter:
 
 
 def apply_security_headers(response: Response, request_path: str) -> None:
-    """Attach common hardening headers to every response."""
+    """Set baseline security headers; relax CSP slightly for Swagger UI paths.
+
+    Args:
+        response: Outgoing Starlette/FastAPI response (mutated in place).
+        request_path: URL path, used to choose Content-Security-Policy for ``/docs``.
+    """
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "no-referrer"
@@ -94,7 +127,14 @@ def apply_security_headers(response: Response, request_path: str) -> None:
 
 
 def extract_client_id(request: Request) -> str:
-    """Resolve client id from proxy-aware headers or socket address."""
+    """Derive a stable client identifier for rate limiting and logging.
+
+    Args:
+        request: Incoming ASGI request.
+
+    Returns:
+        First address from ``X-Forwarded-For``, else ``request.client.host``, else a fallback string.
+    """
     forwarded = request.headers.get("x-forwarded-for")
     if forwarded:
         return forwarded.split(",")[0].strip()
@@ -104,14 +144,32 @@ def extract_client_id(request: Request) -> str:
 
 
 def is_protected_api_request(request: Request, settings: Settings) -> bool:
-    """Return True when request should pass auth/rate-limit checks."""
+    """Return whether the request must go through auth and rate-limit middleware.
+
+    Args:
+        request: Incoming ASGI request.
+        settings: Application settings (path prefix, etc.).
+
+    Returns:
+        ``False`` for ``OPTIONS``; otherwise ``True`` if the path starts with
+        ``settings.api_protected_prefix``.
+    """
     if request.method.upper() == "OPTIONS":
         return False
     return request.url.path.startswith(settings.api_protected_prefix)
 
 
 def authenticate_request(request: Request, settings: Settings) -> JSONResponse | None:
-    """Apply basic auth strategy and return error response when unauthorized."""
+    """Validate credentials according to ``settings.api_auth_strategy``.
+
+    Args:
+        request: Incoming ASGI request (headers inspected).
+        settings: Auth strategy and secret configuration.
+
+    Returns:
+        ``None`` if the request is allowed, otherwise a ready-to-send error
+        :class:`~starlette.responses.JSONResponse` (401 or 500).
+    """
     strategy = settings.api_auth_strategy.strip().lower()
     if strategy in {"disabled", "none", "off"}:
         return None

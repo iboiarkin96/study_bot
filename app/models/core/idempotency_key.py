@@ -11,12 +11,16 @@ from app.models.base import Base
 
 
 def _utc_now() -> datetime:
-    """Timezone-aware UTC instant for column defaults."""
+    """UTC "now" for :class:`~datetime.datetime` column defaults.
+
+    Returns:
+        Timezone-aware UTC timestamp.
+    """
     return datetime.now(UTC)
 
 
 class IdempotencyKeyRecord(Base):
-    """Stored result for one idempotent write request key."""
+    """DB row holding replay data for ``(endpoint_path, idempotency_key)`` uniqueness."""
 
     __tablename__ = "idempotency_keys"
     __table_args__ = (

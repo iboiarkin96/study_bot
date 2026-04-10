@@ -1,1 +1,1 @@
-"""Нагрузочные сценарии: каталог scenarios/ + runner. См. README.html в этом каталоге."""
+"""Load-testing scenarios: ``scenarios/`` directory plus runner. See README.html in this package."""

@@ -1,8 +1,8 @@
-"""Тела POST создания пользователя и поломки полей под 422.
+"""User POST bodies and field corruption for expected 422 responses.
 
-Валидное тело строится через Pydantic-модель из приложения (`UserCreateRequest`), чтобы при
-смене полей в API не править дублирующий dict вручную. Нагрузочный раннер по-прежнему ходит по
-HTTP (как curl), а не вызывает Python-обработчик напрямую — так же считаются метрики и middleware.
+Valid bodies are built via the app Pydantic model (`UserCreateRequest`) so API field changes do
+not require maintaining a parallel dict. The load runner still uses HTTP (like curl), not direct
+handler calls, so metrics and middleware match real traffic.
 """
 
 from __future__ import annotations
@@ -12,12 +12,19 @@ from typing import Any
 
 from app.schemas.user import UserCreateRequest
 
-# Имена полей всегда совпадают со схемой API
+# Field names always match the API schema
 BREAKABLE_FIELDS: frozenset[str] = frozenset(UserCreateRequest.model_fields.keys())
 
 
 def base_user_create(system_user_id: str) -> dict[str, Any]:
-    """Минимально валидное JSON-тело такое же, как у принятого UserCreateRequest."""
+    """Build a minimal valid user-create JSON dict via :class:`~app.schemas.user.UserCreateRequest`.
+
+    Args:
+        system_user_id: External id used for load-test uniqueness.
+
+    Returns:
+        ``model_dump(mode="json")`` suitable as an HTTP JSON body.
+    """
     return UserCreateRequest(
         system_user_id=system_user_id,
         full_name="Load Test User",
@@ -26,11 +33,20 @@ def base_user_create(system_user_id: str) -> dict[str, Any]:
 
 
 def apply_break_field(body: dict[str, Any], field: str) -> dict[str, Any]:
-    """Копия тела с заведомо невалидным значением для поля (ожидается 422)."""
+    """Return a deep copy of ``body`` with a single invalid value for ``field`` (expect 422).
+
+    Args:
+        body: Valid request body dict.
+        field: Key in :data:`BREAKABLE_FIELDS` to corrupt.
+
+    Returns:
+        New dict with one field set to a value that fails Pydantic validation.
+
+    Raises:
+        ValueError: If ``field`` is not a known model field name.
+    """
     if field not in BREAKABLE_FIELDS:
-        raise ValueError(
-            f"Неизвестное поле для поломки: {field!r}. Допустимо: {sorted(BREAKABLE_FIELDS)}"
-        )
+        raise ValueError(f"Unknown field to break: {field!r}. Allowed: {sorted(BREAKABLE_FIELDS)}")
 
     out = copy.deepcopy(body)
 

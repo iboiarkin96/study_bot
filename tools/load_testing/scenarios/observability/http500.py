@@ -1,4 +1,4 @@
-"""GET /__loadtest/http500 — только при LOADTEST_HTTP_500=true на сервере."""
+"""GET /__loadtest/http500 — only when LOADTEST_HTTP_500=true on the server."""
 
 from __future__ import annotations
 
@@ -14,6 +14,14 @@ MIX: dict[str, float] = {
 
 
 def _http500(ctx: RunContext) -> BuiltRequest:
+    """Request optional ``/__loadtest/http500`` endpoint (server must enable ``LOADTEST_HTTP_500``).
+
+    Args:
+        ctx: Load context (unused; signature fixed for scenario protocol).
+
+    Returns:
+        Built GET expecting HTTP 500 for error-rate drills.
+    """
     return BuiltRequest(
         method="GET",
         path="/__loadtest/http500",

@@ -30,6 +30,10 @@ from app.models import Base  # noqa: E402
 
 
 def _seed_reference_data() -> None:
+    """Insert minimal ``timezones`` rows required by user create FK constraints.
+
+    Replaces existing rows so tests start from a known reference set.
+    """
     with SessionLocal() as session:
         session.execute(text("DELETE FROM timezones"))
         session.execute(
@@ -43,7 +47,11 @@ def _seed_reference_data() -> None:
 
 @pytest.fixture(scope="session", autouse=True)
 def prepare_database() -> Iterator[None]:
-    """Create clean schema for the test session."""
+    """Session-scoped: drop/create schema, seed reference data, tear down file DB.
+
+    Yields:
+        Control after setup; on teardown drops tables and removes the SQLite file.
+    """
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     _seed_reference_data()
@@ -55,7 +63,10 @@ def prepare_database() -> Iterator[None]:
 
 @pytest.fixture(autouse=True)
 def clean_users_table() -> None:
-    """Isolate tests by truncating users table before each test."""
+    """Autouse: delete all rows from ``users`` before each test function.
+
+    Ensures idempotency and user tests do not leak state across cases.
+    """
     with SessionLocal() as session:
         session.execute(text("DELETE FROM users"))
         session.commit()
@@ -63,5 +74,9 @@ def clean_users_table() -> None:
 
 @pytest.fixture()
 def client() -> TestClient:
-    """FastAPI test client fixture."""
+    """ASGI test client with the same mock API key as ``API_MOCK_API_KEY`` in this module.
+
+    Returns:
+        :class:`fastapi.testclient.TestClient` bound to :data:`app.main.app`.
+    """
     return TestClient(app, headers={"X-API-Key": "test-api-key"})

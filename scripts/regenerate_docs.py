@@ -27,21 +27,42 @@ ICON_STEP = f"{COLOR_CYAN}→{COLOR_RESET}"
 
 
 def _ok(message: str) -> None:
+    """Print a green checkmark prefixed line to stdout.
+
+    Args:
+        message: Status text after the icon.
+    """
     print(f"{ICON_OK} {message}")
 
 
 def _step(message: str) -> None:
+    """Print a cyan arrow prefixed line to stdout.
+
+    Args:
+        message: Progress or informational text.
+    """
     print(f"{ICON_STEP} {message}")
 
 
 def _source_files() -> list[Path]:
-    """Return all PlantUML source files under docs/uml, excluding rendered."""
+    """Collect every ``*.puml`` under ``docs/uml`` except files inside ``rendered/``.
+
+    Returns:
+        Sorted list of source paths.
+    """
     files = sorted(UML_SRC_DIR.rglob("*.puml"))
     return [f for f in files if "rendered" not in f.parts]
 
 
 def _output_for(source_path: Path) -> Path:
-    """Map source .puml to a stable output filename in rendered/."""
+    """Map a ``.puml`` path to the PNG path under ``docs/uml/rendered``.
+
+    Args:
+        source_path: Absolute path to a PlantUML file.
+
+    Returns:
+        Destination PNG path (sequence diagrams keep stem-only names).
+    """
     rel = source_path.relative_to(UML_SRC_DIR)
     # Keep legacy names for sequence diagrams to avoid breaking docs/system-analysis.html.
     if rel.parts and rel.parts[0] == "sequences":
@@ -53,7 +74,15 @@ def _output_for(source_path: Path) -> Path:
 
 
 def render_one(source_path: Path, output_path: Path) -> None:
-    """Render one PlantUML file to PNG using Kroki via curl."""
+    """Render one PlantUML file to PNG via POST to :data:`KROKI_URL` using ``curl``.
+
+    Args:
+        source_path: Input ``.puml`` file.
+        output_path: Target ``.png`` path (parent dirs created).
+
+    Raises:
+        subprocess.CalledProcessError: If ``curl`` exits non-zero.
+    """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     cmd = [
         "curl",
@@ -73,7 +102,14 @@ def render_one(source_path: Path, output_path: Path) -> None:
 
 
 def render_all(verbose: bool = True) -> int:
-    """Render all UML diagrams and return number of files."""
+    """Render every discovered PlantUML source to its PNG under ``rendered/``.
+
+    Args:
+        verbose: When True, print one success line per file via :func:`_ok`.
+
+    Returns:
+        Count of source files processed.
+    """
     files = _source_files()
     for src in files:
         out = _output_for(src)
@@ -84,7 +120,15 @@ def render_all(verbose: bool = True) -> int:
 
 
 def _is_render_up_to_date(source_path: Path, output_path: Path) -> bool:
-    """Render into temp file and compare with current output."""
+    """Return True if re-rendering ``source_path`` yields byte-identical ``output_path``.
+
+    Args:
+        source_path: PlantUML input.
+        output_path: Existing PNG to compare.
+
+    Returns:
+        Whether the on-disk PNG matches a fresh Kroki render.
+    """
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
         temp_path = Path(tmp.name)
     try:
@@ -97,7 +141,14 @@ def _is_render_up_to_date(source_path: Path, output_path: Path) -> bool:
 
 
 def check_all(verbose: bool = True) -> int:
-    """Check if rendered UML outputs are up-to-date; return stale count."""
+    """Compare each source PNG pair without writing to the final path (except temp).
+
+    Args:
+        verbose: Print per-file status lines.
+
+    Returns:
+        Number of diagrams whose output is missing or differs from a fresh render.
+    """
     stale = 0
     files = _source_files()
     for src in files:
@@ -113,7 +164,14 @@ def check_all(verbose: bool = True) -> int:
 
 
 def watch(interval_sec: float = 1.0) -> None:
-    """Watch UML source files and rerender changed ones."""
+    """Poll ``*.puml`` files on an interval; rerender and delete outputs when sources change.
+
+    Args:
+        interval_sec: Sleep between polling loops (seconds).
+
+    Note:
+        Runs until the process is interrupted; performs an initial full render first.
+    """
     _step("Watch mode enabled: monitoring docs/uml/**/*.puml")
     mtimes: dict[Path, float] = {}
     for src in _source_files():
@@ -148,7 +206,7 @@ def watch(interval_sec: float = 1.0) -> None:
 
 
 def main() -> None:
-    """CLI entrypoint."""
+    """Parse CLI flags and either render all diagrams, check freshness, or watch sources."""
     parser = argparse.ArgumentParser(description="Regenerate UML diagrams for docs.")
     parser.add_argument(
         "--watch", action="store_true", help="Watch source files and rerender on changes."

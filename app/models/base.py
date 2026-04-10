@@ -4,4 +4,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 
 class Base(DeclarativeBase):
-    """Base class for all ORM models."""
+    """SQLAlchemy declarative registry base for all application tables.
+
+    Subclasses declare ``__tablename__`` and :class:`~sqlalchemy.orm.Mapped` columns.
+    """

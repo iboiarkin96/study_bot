@@ -1,4 +1,10 @@
-"""Database engine and session configuration."""
+"""Database engine and session configuration.
+
+Attributes:
+    engine: Shared SQLAlchemy :class:`~sqlalchemy.engine.Engine` for SQLite
+        (``check_same_thread=False`` for use with FastAPI/async).
+    SessionLocal: Session factory bound to ``engine`` for request-scoped work.
+"""
 
 from __future__ import annotations
 
@@ -20,7 +26,14 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, clas
 
 
 def get_db_session() -> Generator[Session, None, None]:
-    """Yield database session for request lifecycle."""
+    """Provide a SQLAlchemy :class:`~sqlalchemy.orm.Session` for one request scope.
+
+    Yields:
+        Open ORM session.
+
+    Note:
+        The session is always closed after the consumer finishes (success or error).
+    """
     session = SessionLocal()
     try:
         yield session

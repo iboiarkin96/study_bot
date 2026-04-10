@@ -9,7 +9,13 @@ from app.models.base import Base
 
 
 class Timezone(Base):
-    """IANA timezone reference entry (seeded from ``zoneinfo``)."""
+    """Reference row: IANA zone name and UTC offset in minutes for FK from users.
+
+    Attributes:
+        id: Surrogate primary key.
+        code: IANA string (e.g. ``Europe/Moscow``), unique.
+        utc_offset: Offset from UTC in minutes.
+    """
 
     __tablename__ = "timezones"
 

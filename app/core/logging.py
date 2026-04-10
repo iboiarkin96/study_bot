@@ -13,7 +13,14 @@ DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def _resolve_log_path(settings: Settings) -> Path:
-    """Build absolute path for the configured log file."""
+    """Resolve and ensure the directory for the rotating log file exists.
+
+    Args:
+        settings: Configuration providing ``log_dir`` and ``log_file_name``.
+
+    Returns:
+        Absolute path to the log file (parent directories created as needed).
+    """
     log_dir = Path(settings.log_dir).expanduser()
     if not log_dir.is_absolute():
         log_dir = Path.cwd() / log_dir
@@ -22,7 +29,14 @@ def _resolve_log_path(settings: Settings) -> Path:
 
 
 def configure_logging(settings: Settings) -> Path:
-    """Configure root logger and return the active log file path."""
+    """Reset root logging to a single timed rotating file and propagate framework logs.
+
+    Args:
+        settings: Log level, directory, and file name.
+
+    Returns:
+        Absolute path of the active log file.
+    """
     log_path = _resolve_log_path(settings)
     level = getattr(logging, settings.log_level, logging.INFO)
 

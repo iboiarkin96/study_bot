@@ -10,6 +10,15 @@ import urllib.request
 
 
 def _probe(url: str, timeout_seconds: float) -> tuple[bool, str]:
+    """Perform a GET request and classify success (HTTP 200 only).
+
+    Args:
+        url: Fully qualified HTTP URL.
+        timeout_seconds: Socket read timeout.
+
+    Returns:
+        Tuple ``(ok, message)`` where ``ok`` is True only for status 200.
+    """
     try:
         request = urllib.request.Request(url, method="GET")
         with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
@@ -26,12 +35,25 @@ def _probe(url: str, timeout_seconds: float) -> tuple[bool, str]:
 
 
 def _validate_url(url: str) -> None:
+    """Ensure ``url`` has a scheme and network location.
+
+    Args:
+        url: Candidate URL string.
+
+    Raises:
+        ValueError: If scheme or netloc is missing.
+    """
     parsed = urllib.parse.urlparse(url)
     if not parsed.scheme or not parsed.netloc:
         raise ValueError(f"Invalid URL: {url}")
 
 
 def _build_default_urls() -> list[str]:
+    """Build the default probe list from ``OBS_*`` / ``APP_PORT`` environment variables.
+
+    Returns:
+        URLs covering API liveness/readiness/metrics, Prometheus pages, and Grafana health.
+    """
     api_host = os.getenv("OBS_API_HOST", "127.0.0.1").strip() or "127.0.0.1"
     api_port = int(os.getenv("OBS_API_PORT", os.getenv("APP_PORT", "8000")))
     prom_host = os.getenv("OBS_PROM_HOST", "127.0.0.1").strip() or "127.0.0.1"
@@ -59,6 +81,11 @@ def _build_default_urls() -> list[str]:
 
 
 def main() -> int:
+    """CLI: probe default and extra URLs; exit non-zero if any fail.
+
+    Returns:
+        ``0`` if all probes succeed, ``1`` otherwise.
+    """
     parser = argparse.ArgumentParser(description="Smoke-check observability links.")
     parser.add_argument(
         "--timeout",

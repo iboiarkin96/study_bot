@@ -1,1 +1,1 @@
-"""Сценарии User API."""
+"""User API scenarios."""

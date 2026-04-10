@@ -1,1 +1,1 @@
-"""Модули сценариев подгружаются раннером (кроме weights.py)."""
+"""Scenario modules are loaded by the runner (except weights.py)."""

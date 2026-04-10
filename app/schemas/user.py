@@ -20,7 +20,11 @@ from app.schemas.enums import TimezoneField
 
 
 class UserCreateRequest(BaseModel):
-    """Incoming payload for creating/updating user."""
+    """JSON body for ``POST /api/v1/user`` (validated before idempotency and service layer).
+
+    Field-level rules, OpenAPI examples, and timezone validation live on the ``Field``
+    definitions and :data:`app.schemas.enums.TimezoneField`.
+    """
 
     system_user_id: str = Field(
         ...,
@@ -69,7 +73,20 @@ class UserCreateRequest(BaseModel):
 
 
 class UserCreateResponse(BaseModel):
-    """Outgoing payload with persisted user data."""
+    """User resource returned by create (201) and get (200); maps ORM :class:`~app.models.core.user.User`.
+
+    Attributes:
+        client_uuid: Internal client identifier (UUID string).
+        created_at: Row creation timestamp (timezone-aware).
+        updated_at: Last update timestamp (timezone-aware).
+        is_row_invalid: Soft-invalidation flag (0 or 1).
+        invalidation_reason_uuid: FK to invalidation reason, if set.
+        system_user_id: External system user id when present.
+        system_uuid: Related system UUID when present.
+        username: Optional display username.
+        full_name: Required full name.
+        timezone: IANA timezone string stored for the user.
+    """
 
     model_config = ConfigDict(from_attributes=True)
 

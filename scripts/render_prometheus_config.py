@@ -11,6 +11,18 @@ OUTPUT_PATH = ROOT / "ops" / "prometheus" / "prometheus.yml"
 
 
 def main() -> int:
+    """Read ``prometheus.tpl.yml``, substitute env-driven placeholders, write ``prometheus.yml``.
+
+    Environment:
+        PROMETHEUS_SCRAPE_TARGET: Scrape host:port for the API (default ``host.docker.internal:8000``).
+        PROMETHEUS_READY_PROBE_URL: Full URL for the readiness probe used in config.
+
+    Returns:
+        Exit code ``0`` on success.
+
+    Raises:
+        ValueError: If required env values resolve to empty strings.
+    """
     scrape_target = os.getenv("PROMETHEUS_SCRAPE_TARGET", "host.docker.internal:8000").strip()
     if not scrape_target:
         raise ValueError("PROMETHEUS_SCRAPE_TARGET must not be empty.")

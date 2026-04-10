@@ -1,1 +1,1 @@
-# Вспомогательные скрипты. Нагрузка: tools/load_testing/README.html
+# Helper scripts. Load testing: tools/load_testing/README.html

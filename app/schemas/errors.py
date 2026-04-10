@@ -8,7 +8,14 @@ from pydantic import BaseModel
 
 
 class ApiErrorResponse(BaseModel):
-    """Business error payload with stable code."""
+    """Standard error ``detail`` object for 4xx/5xx business and security failures.
+
+    Attributes:
+        code: Project-wide stable error code.
+        key: Machine-readable key for clients.
+        message: Human-readable English message.
+        source: Origin layer (e.g. ``business``, ``security``).
+    """
 
     code: str
     key: str
@@ -17,7 +24,16 @@ class ApiErrorResponse(BaseModel):
 
 
 class ValidationErrorItem(BaseModel):
-    """Normalized validation error with stable code and details."""
+    """Single entry in the ``errors`` array of a 422 response.
+
+    Attributes:
+        code: Stable validation error code (e.g. ``USER_001``).
+        key: Machine-readable key.
+        message: Human-readable message for this failure.
+        field: JSON field name when applicable.
+        source: Always ``validation`` for this model.
+        details: Raw Pydantic context (``loc``, ``type``, ``input``, etc.).
+    """
 
     code: str
     key: str
@@ -28,7 +44,13 @@ class ValidationErrorItem(BaseModel):
 
 
 class ValidationErrorResponse(BaseModel):
-    """Validation error envelope used by 422 responses."""
+    """Top-level body for HTTP 422 validation failures.
+
+    Attributes:
+        error_type: Fixed discriminator (e.g. ``validation_error``).
+        endpoint: ``METHOD path`` string for the failing request.
+        errors: List of :class:`ValidationErrorItem` entries.
+    """
 
     error_type: str
     endpoint: str
@@ -36,7 +58,15 @@ class ValidationErrorResponse(BaseModel):
 
 
 class LegacyValidationErrorItem(BaseModel):
-    """Legacy shape left for transitional docs and reference."""
+    """Pydantic v1-style error item kept for documentation compatibility only.
+
+    Attributes:
+        type: Pydantic error type string.
+        loc: Location path segments.
+        msg: Original message string.
+        input: Submitted value that failed validation.
+        ctx: Optional extra context from Pydantic.
+    """
 
     type: str
     loc: list[str | int]

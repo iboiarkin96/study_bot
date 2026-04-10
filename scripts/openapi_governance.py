@@ -17,7 +17,11 @@ HTTP_METHODS = {"get", "post", "put", "patch", "delete", "options", "head", "tra
 
 
 def _ensure_minimal_env_for_app_import() -> None:
-    """Allow importing the FastAPI app when env profiles are absent (e.g. CI)."""
+    """Set ``SQLITE_DB_PATH`` to a temp SQLite file if unset so ``app.main`` can import.
+
+    Side effects:
+        Mutates ``os.environ`` when ``SQLITE_DB_PATH`` is empty.
+    """
     if os.environ.get("SQLITE_DB_PATH", "").strip():
         return
     tmp_db = Path(tempfile.gettempdir()) / "study_app_openapi_governance.sqlite"
@@ -25,6 +29,14 @@ def _ensure_minimal_env_for_app_import() -> None:
 
 
 def _load_current_openapi() -> dict[str, Any]:
+    """Import the FastAPI app and return its live OpenAPI schema dict.
+
+    Returns:
+        JSON-serializable OpenAPI document from :meth:`fastapi.FastAPI.openapi`.
+
+    Note:
+        Inserts :data:`ROOT` at the front of ``sys.path`` temporarily.
+    """
     _ensure_minimal_env_for_app_import()
     sys.path.insert(0, str(ROOT))
     from app.main import app  # noqa: WPS433
@@ -33,6 +45,14 @@ def _load_current_openapi() -> dict[str, Any]:
 
 
 def _load_baseline() -> dict[str, Any]:
+    """Read the committed OpenAPI baseline JSON from disk.
+
+    Returns:
+        Parsed baseline document.
+
+    Raises:
+        FileNotFoundError: If :data:`BASELINE_PATH` does not exist.
+    """
     if not BASELINE_PATH.exists():
         raise FileNotFoundError(
             f"Baseline not found: {BASELINE_PATH}. Run: make openapi-accept-changes"
@@ -41,6 +61,11 @@ def _load_baseline() -> dict[str, Any]:
 
 
 def _write_baseline(spec: dict[str, Any]) -> None:
+    """Write ``spec`` to :data:`BASELINE_PATH` with stable JSON formatting.
+
+    Args:
+        spec: Full OpenAPI document to persist.
+    """
     BASELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
     BASELINE_PATH.write_text(
         json.dumps(spec, ensure_ascii=True, indent=2, sort_keys=True) + "\n",
@@ -49,6 +74,14 @@ def _write_baseline(spec: dict[str, Any]) -> None:
 
 
 def _iter_operations(spec: dict[str, Any]):
+    """Yield ``(path, method, operation_dict)`` for each HTTP operation in ``spec``.
+
+    Args:
+        spec: OpenAPI document containing a ``paths`` object.
+
+    Yields:
+        Path string, lowercased method name, and operation object.
+    """
     for path, path_item in spec.get("paths", {}).items():
         if not isinstance(path_item, dict):
             continue
@@ -59,6 +92,15 @@ def _iter_operations(spec: dict[str, Any]):
 
 
 def _resolve_schema(schema: dict[str, Any] | None, spec: dict[str, Any]) -> dict[str, Any]:
+    """Inline ``$ref`` and merge simple ``allOf`` fragments into one schema dict.
+
+    Args:
+        schema: Possibly partial schema object from OpenAPI.
+        spec: Full root document for resolving internal ``#/`` references.
+
+    Returns:
+        Resolved schema dict, or empty dict if resolution fails.
+    """
     if not isinstance(schema, dict):
         return {}
     resolved = dict(schema)
@@ -91,6 +133,15 @@ def _resolve_schema(schema: dict[str, Any] | None, spec: dict[str, Any]) -> dict
 
 
 def _json_request_schema(operation: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
+    """Resolve ``application/json`` request body schema for an operation.
+
+    Args:
+        operation: OpenAPI operation object.
+        spec: Full document for ``$ref`` resolution.
+
+    Returns:
+        Resolved JSON Schema object, or empty dict if none.
+    """
     body = operation.get("requestBody")
     if not isinstance(body, dict):
         return {}
@@ -106,6 +157,16 @@ def _json_request_schema(operation: dict[str, Any], spec: dict[str, Any]) -> dic
 def _json_response_schema(
     operation: dict[str, Any], status: str, spec: dict[str, Any]
 ) -> dict[str, Any]:
+    """Resolve ``application/json`` response schema for a given HTTP status code.
+
+    Args:
+        operation: OpenAPI operation object.
+        status: Response key (e.g. ``"200"``, ``"422"``).
+        spec: Full document for ``$ref`` resolution.
+
+    Returns:
+        Resolved JSON Schema for the response body, or empty dict.
+    """
     responses = operation.get("responses", {})
     if not isinstance(responses, dict):
         return {}
@@ -122,6 +183,14 @@ def _json_response_schema(
 
 
 def _required_fields(schema: dict[str, Any]) -> set[str]:
+    """Return the set of required property names declared on a JSON Schema object.
+
+    Args:
+        schema: Object schema with optional ``required`` list.
+
+    Returns:
+        Set of field names; empty if ``required`` is missing or invalid.
+    """
     required = schema.get("required", [])
     if not isinstance(required, list):
         return set()
@@ -129,6 +198,14 @@ def _required_fields(schema: dict[str, Any]) -> set[str]:
 
 
 def run_lint(spec: dict[str, Any]) -> list[str]:
+    """Validate OpenAPI conventions: unique ``operationId``, summaries, 422 examples for writes.
+
+    Args:
+        spec: OpenAPI document to lint.
+
+    Returns:
+        Human-readable issue strings (empty if no problems).
+    """
     issues: list[str] = []
     operation_ids: set[str] = set()
     for path, method, operation in _iter_operations(spec):
@@ -165,10 +242,26 @@ def run_lint(spec: dict[str, Any]) -> list[str]:
 
 
 def _param_key(parameter: dict[str, Any]) -> tuple[str, str]:
+    """Stable tuple identity for an OpenAPI parameter (name + location).
+
+    Args:
+        parameter: Parameter object from ``operation["parameters"]``.
+
+    Returns:
+        ``(name, location)`` strings.
+    """
     return str(parameter.get("name", "")), str(parameter.get("in", ""))
 
 
 def _required_parameters(operation: dict[str, Any]) -> dict[tuple[str, str], bool]:
+    """Map each parameter (name, in) to whether it is required.
+
+    Args:
+        operation: OpenAPI operation object.
+
+    Returns:
+        Dict keyed by :func:`_param_key` with boolean required flags.
+    """
     result: dict[tuple[str, str], bool] = {}
     params = operation.get("parameters", [])
     if not isinstance(params, list):
@@ -181,6 +274,15 @@ def _required_parameters(operation: dict[str, Any]) -> dict[tuple[str, str], boo
 
 
 def run_breaking_check(baseline: dict[str, Any], current: dict[str, Any]) -> list[str]:
+    """Detect backward-incompatible changes between two OpenAPI documents.
+
+    Args:
+        baseline: Previously accepted API description.
+        current: Newly generated API description.
+
+    Returns:
+        List of issue strings describing removals or new requirements; empty if safe.
+    """
     issues: list[str] = []
 
     base_paths = baseline.get("paths", {})
@@ -258,7 +360,15 @@ def run_breaking_check(baseline: dict[str, Any], current: dict[str, Any]) -> lis
 
 
 def run_snapshot_check(baseline: dict[str, Any], current: dict[str, Any]) -> list[str]:
-    """Ensure current OpenAPI equals accepted baseline snapshot."""
+    """Return issues when ``current`` is not byte-identical to ``baseline`` (sorted JSON diff).
+
+    Args:
+        baseline: Accepted snapshot document.
+        current: Live document from the app.
+
+    Returns:
+        Empty list if equal; otherwise headers plus a truncated unified diff.
+    """
     if baseline == current:
         return []
 
@@ -286,6 +396,12 @@ def run_snapshot_check(baseline: dict[str, Any], current: dict[str, Any]) -> lis
 
 
 def _print_issues(title: str, issues: list[str]) -> None:
+    """Print a pass/fail summary and bullet list of issues to stdout.
+
+    Args:
+        title: Short name of the check (e.g. ``OpenAPI lint``).
+        issues: Non-empty to print failures; empty prints a checkmark line.
+    """
     if not issues:
         print(f"✓ {title}: passed")
         return
@@ -295,6 +411,11 @@ def _print_issues(title: str, issues: list[str]) -> None:
 
 
 def command_check() -> int:
+    """Run lint + breaking-change checks against the stored baseline.
+
+    Returns:
+        ``0`` if both pass, ``1`` if either reports issues.
+    """
     current = _load_current_openapi()
     baseline = _load_baseline()
 
@@ -308,6 +429,11 @@ def command_check() -> int:
 
 
 def command_contract_test() -> int:
+    """Run full JSON snapshot equality check (stricter than breaking-only guard).
+
+    Returns:
+        ``0`` if current matches baseline exactly, else ``1``.
+    """
     current = _load_current_openapi()
     baseline = _load_baseline()
     snapshot_issues = run_snapshot_check(baseline, current)
@@ -316,6 +442,11 @@ def command_contract_test() -> int:
 
 
 def command_update_baseline() -> int:
+    """Overwrite the baseline file with the current app OpenAPI JSON.
+
+    Returns:
+        Always ``0`` after a successful write.
+    """
     current = _load_current_openapi()
     _write_baseline(current)
     print(f"✓ OpenAPI baseline updated: {BASELINE_PATH}")
@@ -323,6 +454,7 @@ def command_update_baseline() -> int:
 
 
 def main() -> None:
+    """Dispatch ``check``, ``contract-test``, or ``update-baseline`` subcommands."""
     parser = argparse.ArgumentParser(description="OpenAPI governance checks and baseline update.")
     parser.add_argument(
         "command",

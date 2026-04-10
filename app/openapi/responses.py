@@ -18,7 +18,14 @@ from app.schemas.errors import ApiErrorResponse
 def build_common_business_400_response(
     *, extra_examples: dict[str, dict[str, object]] | None = None
 ) -> dict[str, Any]:
-    """Build common 400 response with optional domain-specific examples."""
+    """OpenAPI fragment for HTTP 400 business-rule failures with optional examples.
+
+    Args:
+        extra_examples: Additional named example payloads merged into ``content``.
+
+    Returns:
+        Dict suitable for a ``responses[400]`` entry in FastAPI route decorators.
+    """
     examples: dict[str, dict[str, object]] = {
         "idempotency_key_missing": {
             "summary": "Missing Idempotency-Key header",
@@ -110,7 +117,11 @@ COMMON_RATE_LIMIT_429_RESPONSE: dict[str, Any] = {
 
 
 def common_protected_route_responses() -> dict[int | str, dict[str, Any]]:
-    """Return shared responses for protected API routes."""
+    """401 and 429 response blocks copied for injection into route ``responses`` maps.
+
+    Returns:
+        Mapping of status code to OpenAPI response dict (deep copies for safe mutation).
+    """
     return {
         401: deepcopy(COMMON_AUTH_REQUIRED_401_RESPONSE),
         429: deepcopy(COMMON_RATE_LIMIT_429_RESPONSE),

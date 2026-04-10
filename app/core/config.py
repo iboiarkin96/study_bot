@@ -22,6 +22,17 @@ _APP_ENV_ALIASES = {
 
 
 def _normalize_app_env(raw: str) -> str:
+    """Map ``APP_ENV`` aliases to canonical values and validate allowed names.
+
+    Args:
+        raw: Raw value from ``APP_ENV`` (may include aliases like ``staging`` → ``qa``).
+
+    Returns:
+        Canonical environment name: ``dev``, ``qa``, or ``prod``.
+
+    Raises:
+        ValueError: If the value is not allowed after alias resolution.
+    """
     normalized = raw.strip().lower()
     normalized = _APP_ENV_ALIASES.get(normalized, normalized)
     if normalized not in _ALLOWED_APP_ENVS:
@@ -30,9 +41,9 @@ def _normalize_app_env(raw: str) -> str:
     return normalized
 
 
-# Переменные, уже заданные в окружении до импорта (например `export` перед uvicorn),
-# не должны затираться профилем `env/<APP_ENV>` — иначе `make run-loadtest-api` теряет
-# API_RATE_LIMIT_REQUESTS_LOADTEST, когда env/dev снова выставляет 60.
+# Variables already set in the environment before import (e.g. `export` before uvicorn)
+# must not be overwritten by `env/<APP_ENV>` — otherwise `make run-loadtest-api` loses
+# API_RATE_LIMIT_REQUESTS_LOADTEST when env/dev sets 60 again.
 _PARENT_WINS_KEYS = (
     "API_RATE_LIMIT_REQUESTS",
     "API_RATE_LIMIT_WINDOW_SECONDS",
@@ -40,6 +51,14 @@ _PARENT_WINS_KEYS = (
 
 
 def _load_env_files() -> None:
+    """Load dotenv files in order: root ``.env``, ``env/<APP_ENV>``, optional ``ENV_FILE``.
+
+    Preserves rate-limit overrides from the parent environment for keys in
+    ``_PARENT_WINS_KEYS`` when profile files are applied.
+
+    Raises:
+        ValueError: If ``ENV_FILE`` is set but the path does not exist.
+    """
     parent_wins = {k: os.environ[k] for k in _PARENT_WINS_KEYS if k in os.environ}
 
     base_env = ROOT / ".env"
@@ -73,7 +92,34 @@ _load_env_files()
 
 @dataclass(frozen=True)
 class Settings:
-    """Runtime configuration for API and database."""
+    """Immutable API and infrastructure settings sourced from environment variables.
+
+    Attributes:
+        app_name: Human-readable service title.
+        app_env: Deployment profile: ``dev``, ``qa``, or ``prod``.
+        app_host: Bind address for the HTTP server.
+        app_port: Bind port for the HTTP server.
+        sqlite_db_path: Path to the SQLite database file (relative or absolute).
+        log_dir: Directory for rotating application log files.
+        log_file_name: Log file basename inside ``log_dir``.
+        log_level: Root logging level (e.g. ``INFO``, ``DEBUG``).
+        cors_allow_origins: Allowed CORS origin URLs.
+        cors_allow_methods: Allowed CORS HTTP methods (or ``*``).
+        cors_allow_headers: Allowed CORS request header names.
+        cors_allow_credentials: Whether browsers may send credentials on CORS requests.
+        api_body_max_bytes: Maximum accepted HTTP request body size in bytes.
+        api_rate_limit_requests: Request cap per client identifier per window for protected routes.
+        api_rate_limit_window_seconds: Duration of the rate-limit window in seconds.
+        api_auth_strategy: Authentication strategy identifier (e.g. ``mock_api_key``).
+        api_mock_api_key: Expected secret when using the mock API key strategy.
+        api_auth_header: HTTP header name that carries the API key.
+        api_protected_prefix: URL path prefix that requires authentication and rate limiting.
+        metrics_enabled: Whether Prometheus metrics collection and ``/metrics`` are enabled.
+        metrics_path: HTTP path exposing Prometheus text exposition.
+        readiness_db_timeout_ms: Maximum acceptable database ping duration for readiness.
+        metrics_buckets_http: Histogram bucket upper bounds (seconds) for HTTP latency.
+        metrics_buckets_db: Histogram bucket upper bounds (seconds) for DB operation latency.
+    """
 
     app_name: str
     app_env: str
@@ -102,7 +148,11 @@ class Settings:
 
     @property
     def sqlite_url(self) -> str:
-        """Build SQLAlchemy URL for SQLite from configured file path."""
+        """SQLAlchemy connection URL for the configured SQLite file.
+
+        Returns:
+            URL string of the form ``sqlite:///...`` with absolute or cwd-relative path.
+        """
         db_path = Path(self.sqlite_db_path).expanduser()
         if db_path.is_absolute():
             return f"sqlite:///{db_path}"
@@ -110,23 +160,59 @@ class Settings:
 
 
 def get_settings() -> Settings:
-    """Load validated settings from .env/environment."""
+    """Build a validated :class:`Settings` instance from the current process environment.
+
+    Returns:
+        Frozen settings snapshot.
+
+    Raises:
+        ValueError: If ``SQLITE_DB_PATH`` is missing, ``qa``/``prod`` invariants fail,
+            or ``prod`` forbids localhost CORS / ``DEBUG`` logging.
+    """
     app_env = _normalize_app_env(os.getenv("APP_ENV", "dev"))
     db_path = os.getenv("SQLITE_DB_PATH", "").strip()
     if not db_path:
         raise ValueError("Missing SQLITE_DB_PATH in environment.")
 
     def _split_csv(value: str, default: tuple[str, ...]) -> tuple[str, ...]:
+        """Parse a comma-separated env value into stripped non-empty parts.
+
+        Args:
+            value: Raw string (often from ``os.getenv``).
+            default: Used when ``value`` yields no tokens.
+
+        Returns:
+            Tuple of segment strings, or ``default`` if empty.
+        """
         parts = tuple(item.strip() for item in value.split(",") if item.strip())
         return parts or default
 
     def _as_bool(value: str, default: bool) -> bool:
+        """Parse truthy strings; empty string falls back to ``default``.
+
+        Args:
+            value: Raw string from environment.
+            default: Result when ``value`` is blank.
+
+        Returns:
+            ``True`` for ``1``/``true``/``yes``/``on`` (case-insensitive), else ``False``
+            when non-empty, else ``default``.
+        """
         normalized = value.strip().lower()
         if not normalized:
             return default
         return normalized in {"1", "true", "yes", "on"}
 
     def _as_buckets(value: str, default: tuple[float, ...]) -> tuple[float, ...]:
+        """Parse histogram bucket list from CSV floats; deduplicate and sort ascending.
+
+        Args:
+            value: Comma-separated float literals.
+            default: Used when ``value`` is empty.
+
+        Returns:
+            Sorted unique bucket upper bounds.
+        """
         raw = tuple(item.strip() for item in value.split(",") if item.strip())
         if not raw:
             return default

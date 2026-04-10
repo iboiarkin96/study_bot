@@ -1,8 +1,6 @@
-Когда появятся ручки conspectus, добавь сюда файл, например create.py, по образцу
+When conspectus endpoints exist, add a file here, e.g. create.py, following the pattern in
 ../user/create.py:
 
-  GROUP = "conspectus"
-  MIX = { "conspectus.create.ok": 1.0 }
-  SCENARIOS = { ... }
+  GROUP, SHARE_OF_GROUP, MIX, SCENARIOS
 
-И добавь долю "conspectus" в ../weights.py (GROUP_WEIGHTS), уменьшив другие группы.
+Also add a "conspectus" share in ../weights.py (GROUP_WEIGHTS) and reduce other groups.

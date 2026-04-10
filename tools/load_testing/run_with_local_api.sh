@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Запуск API с ослабленным rate limit, ожидание /ready, прогон tools.load_testing.runner, остановка API.
-# Вызывается из Makefile: make run-loadtest-api
+# Start API with a high rate limit, wait for /ready, run tools.load_testing.runner, stop API.
+# Invoked from Makefile: make run-loadtest-api
 #
-# Переменные (опционально):
-#   API_RATE_LIMIT_REQUESTS_LOADTEST (по умолчанию 1000000000), API_RATE_LIMIT_WINDOW_SECONDS_LOADTEST — лимиты API
-#   LOADTEST_TOTAL_REQUESTS — число запросов (иначе LOADTEST_DEFAULT_* из .env и env/$APP_ENV, иначе 100)
-#   LOADTEST_DELAY_MS — пауза (мс); дефолты — LOADTEST_DEFAULT_* в env/example и env/dev
-# Загрузка: .env, затем env/$APP_ENV (как в app.core.config). Export перед make перекрывает файлы.
-#   LOADTEST_RUNNER_EXTRA — доп. аргументы раннера (в кавычках), напр. "--seed 42"
-#   LOADTEST_SKIP_CONFIRM=1 — не спрашивать подтверждение (CI / скрипты)
+# Optional variables:
+#   API_RATE_LIMIT_REQUESTS_LOADTEST (default 1000000000), API_RATE_LIMIT_WINDOW_SECONDS_LOADTEST — API limits
+#   LOADTEST_TOTAL_REQUESTS — request count (else LOADTEST_DEFAULT_* from .env and env/$APP_ENV, else 100)
+#   LOADTEST_DELAY_MS — delay (ms); defaults from LOADTEST_DEFAULT_* in env/example and env/dev
+# Load order: .env then env/$APP_ENV (same as app.core.config). Exports before make override files.
+#   LOADTEST_RUNNER_EXTRA — extra runner args (quoted), e.g. "--seed 42"
+#   LOADTEST_SKIP_CONFIRM=1 — skip confirmation prompt (CI / scripts)
 
 set -euo pipefail
 
@@ -25,8 +25,8 @@ if [[ ! -f .venv/bin/python ]]; then
   exit 1
 fi
 
-# Явный export перед make перекрывает значения из файлов
-# (с set -e нельзя «[[ условие ]] && cmd» — ложное условие даёт exit 1 и рвёт скрипт)
+# Explicit export before make overrides values from files
+# (with set -e, `[[ condition ]] && cmd` fails the script if condition is false)
 _restore_loadtest_overrides() {
   if [[ "$_lt_preserve_total" -eq 1 ]]; then
     LOADTEST_TOTAL_REQUESTS="$_lt_save_total"
@@ -87,35 +87,35 @@ fi
 
 print_warning_and_confirm() {
   echo ""
-  echo "Внимание. Прогон run-loadtest-api делает следующее:"
-  echo "  • поднимает отдельный процесс uvicorn (повышенный rate limit, без --reload) на http://${CURL_HOST}:${PORT};"
-  echo "  • после ответа /ready запускает python -m tools.load_testing.runner;"
-  echo "  • по завершении раннера этот процесс API будет остановлен (как «тушение» временного сервера)."
+  echo "Notice: run-loadtest-api will:"
+  echo "  • start a separate uvicorn process (high rate limit, no --reload) at http://${CURL_HOST}:${PORT};"
+  echo "  • after /ready responds, run python -m tools.load_testing.runner;"
+  echo "  • when the runner finishes, stop that API process (temporary server)."
   echo ""
-  echo "Если сейчас у вас уже запущен API на этом порту (make run, make run-loadtest-api-serve и т.п.),"
-  echo "освободите порт ${PORT} вручную — иначе новый экземпляр не поднимется (адрес уже занят)."
+  echo "If an API is already running on this port (make run, make run-loadtest-api-serve, etc.),"
+  echo "free port ${PORT} manually — otherwise the new instance cannot bind (address in use)."
   echo ""
   if [[ "${LOADTEST_SKIP_CONFIRM:-}" == "1" ]]; then
-    echo "LOADTEST_SKIP_CONFIRM=1 — подтверждение пропущено."
+    echo "LOADTEST_SKIP_CONFIRM=1 — skipping confirmation."
     return 0
   fi
   local ans
   if [[ -c /dev/tty ]]; then
-    read -r -p "Продолжить прогон? [д/н] (y/n): " ans < /dev/tty || true
+    read -r -p "Continue? [y/n]: " ans < /dev/tty || true
   elif [[ -t 0 ]]; then
-    read -r -p "Продолжить прогон? [д/н] (y/n): " ans || true
+    read -r -p "Continue? [y/n]: " ans || true
   else
-    echo "Нет терминала для вопроса да/нет — подтверждение пропущено (в CI задайте LOADTEST_SKIP_CONFIRM=1 явно)."
+    echo "No TTY for yes/no — skipping confirmation (set LOADTEST_SKIP_CONFIRM=1 explicitly in CI)."
     return 0
   fi
   case "$ans" in
-    y|Y|yes|YES|д|Д|да|Да) return 0 ;;
+    y|Y|yes|YES) return 0 ;;
     *) return 1 ;;
   esac
 }
 
 if ! print_warning_and_confirm; then
-  echo "Операция отменена."
+  echo "Cancelled."
   exit 0
 fi
 

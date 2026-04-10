@@ -15,7 +15,15 @@ if TYPE_CHECKING:
 
 
 class InvalidationReason(Base):
-    """Dictionary of reasons for row invalidation."""
+    """Lookup table for why a user row may be marked invalid.
+
+    Attributes:
+        id: Surrogate primary key.
+        invalidation_reason_uuid: External UUID identifier.
+        code: Short stable code (unique).
+        description: Human-readable reason text.
+        users: Reverse relation to :class:`~app.models.core.user.User`.
+    """
 
     __tablename__ = "invalidation_reasons"
 

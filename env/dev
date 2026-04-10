@@ -18,8 +18,8 @@ CORS_ALLOW_CREDENTIALS=false
 API_BODY_MAX_BYTES=1048576
 API_RATE_LIMIT_REQUESTS=60
 API_RATE_LIMIT_WINDOW_SECONDS=60
-# Для нагрузочных прогонов локально: make run-loadtest-api / run-loadtest-api-serve выставляют
-# API_RATE_LIMIT_REQUESTS=1000000000 (если не задан API_RATE_LIMIT_REQUESTS_LOADTEST); иначе подними лимит здесь.
+# Local load runs: make run-loadtest-api / run-loadtest-api-serve set
+# API_RATE_LIMIT_REQUESTS=1000000000 (unless API_RATE_LIMIT_REQUESTS_LOADTEST is set); otherwise raise limits here.
 API_AUTH_STRATEGY=mock_api_key
 API_MOCK_API_KEY=local-dev-key
 API_AUTH_HEADER=X-API-Key
@@ -28,7 +28,7 @@ API_PROTECTED_PREFIX=/api/v1
 # Optional: expose GET /__loadtest/http500 (HTTP 500) for local traffic (tools/load_testing)
 LOADTEST_HTTP_500=false
 
-# make run-loadtest-api — раннер (дефолты; точное число запросов — LOADTEST_TOTAL_REQUESTS при необходимости)
+# make run-loadtest-api — runner defaults (override count with LOADTEST_TOTAL_REQUESTS if needed)
 LOADTEST_DEFAULT_TOTAL_REQUESTS=100000
 LOADTEST_DEFAULT_DELAY_MS=0
 
