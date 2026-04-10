@@ -87,8 +87,10 @@
             </li>
             <li>Continuous integration: on push and pull requests, GitHub Actions runs <code>make verify</code> (lint, types,
               OpenAPI, contract tests, tests, then <code>docs-fix</code>) and then
-              <code>pre-commit run --all-files</code>. Before pushing, run <code>make verify-ci</code> locally to ensure
-              committed docs match <code>docs-fix</code> (<code>docs-check</code>).
+              <code>pre-commit run --all-files</code>. You must still run <code>make verify-ci</code> locally before push:
+              CI does not assert that your <strong>commits</strong> match <code>docs-fix</code> output, but
+              <code>docs-check</code> (in <code>verify-ci</code>) does—otherwise GitHub Pages and other clones can show stale
+              generated docs while the build stays green.
               Standard hosted runners are free for public repositories; private repos receive a monthly Actions allowance on
               free plans.
             </li>

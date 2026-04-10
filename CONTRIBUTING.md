@@ -3,8 +3,14 @@
 ## Quality gate
 
 - **`make verify`** — Local gate: lint, types, OpenAPI checks, contract tests, tests, then **`make docs-fix`** (applies doc generation and formatting).
-- **`make verify-ci`** — Same as verify but runs **`make docs-check`** instead of `docs-fix`. Use before pushing to catch stale generated docs.
+- **`make verify-ci`** — Same as verify but runs **`make docs-check`** instead of `docs-fix`. **Run this before you push** (or before you consider a branch ready to merge).
 - **CI** (GitHub Actions on PR/push) runs **`make verify`** (ends with **`docs-fix`** on the runner, not `docs-check`), so the pipeline does not fail when the last committed tree differs slightly from a fresh `docs-fix` output.
+
+### Why `make verify-ci` locally is required
+
+- **`make verify`** finishes by **writing** outputs of the docs pipeline (`docs-fix`). After it runs, your disk can differ from **what is already committed**. CI does **not** compare the runner’s tree to your commits for those files—it only checks that the pipeline succeeds on a clean checkout.
+- **`docs-check`** (inside **`verify-ci`**) is the check that fails if **any committed file** would still change after `docs-fix` (synced README, rendered UML, formatted HTML, Makefile-derived snippets, and so on). That is what keeps **GitHub Pages** (`docs/` as the site root) and everyone else’s **`git clone`** aligned with the same sources as the code.
+- If you only run **`make verify`** and push without **`verify-ci`**, you can pass CI while shipping **stale or missing** generated docs—reviews and readers will see the wrong pages until someone runs `docs-fix` and commits.
 
 ## Dead code and unused imports
 
