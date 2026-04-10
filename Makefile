@@ -23,7 +23,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project migrate migration format-fix format-check lint-check lint-fix type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check observability-up observability-down observability-smoke
+.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check observability-up observability-down observability-smoke
 
 # ──────────────────────────────────────────────
 # Help
@@ -65,6 +65,7 @@ help:
 	@echo "  # Linting"
 	@echo "  make lint-fix             Run Ruff with auto-fixes"
 	@echo "  make lint-check           Run Ruff lint checks"
+	@echo "  make dead-code-check      Run Vulture (unused code; see ADR 0014; not in verify-ci)"
 	@echo ""
 	@echo "  # Type Checking"
 	@echo "  make type-check           Run mypy type checks"
@@ -267,6 +268,16 @@ lint-fix:
 	@printf "$(ICON_STEP) %s\n" "Running Ruff auto-fixes..."
 	@$(PYTHON) -m ruff check --fix .
 	@printf "$(ICON_OK) %s\n" "Auto-fix pass completed"
+
+# Unused code scan (Vulture). Advisory: triage before deleting; extend [tool.vulture] or use
+# vulture --ignore-names if a finding is a false positive (e.g. dynamic registration).
+dead-code-check:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Running Vulture dead-code scan..."
+	@$(PYTHON) -m vulture
+	@printf "$(ICON_OK) %s\n" "Vulture scan passed (no findings at configured min confidence)"
 
 # Run mypy static type checks.
 type-check:

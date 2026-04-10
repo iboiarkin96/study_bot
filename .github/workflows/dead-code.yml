@@ -1,0 +1,30 @@
+# Periodic unused-code scan (Vulture). Complements PR CI (`make verify-ci`): Ruff already
+# enforces unused imports (F401) and obsolete noqa (RUF100); Vulture is heuristic and
+# kept on a schedule to avoid noisy PR friction. See ADR 0014.
+name: Dead code scan
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  vulture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+
+      - name: Vulture
+        run: make dead-code-check

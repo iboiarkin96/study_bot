@@ -206,14 +206,18 @@ def install_sqlalchemy_metrics(*, engine: Engine, metrics: MetricsCollector) -> 
     _INSTALLED_SQL_HOOKS.add(engine_id)
 
     @event.listens_for(engine, "before_cursor_execute")
-    def _before_cursor_execute(conn, cursor, statement, parameters, context, executemany) -> None:
+    def _before_cursor_execute(
+        _conn, _cursor, statement, _parameters, context, _executemany
+    ) -> None:
         """Store monotonic start time on the execution context for DB latency."""
         if not metrics.enabled:
             return
         context._metrics_started_at = perf_counter()
 
     @event.listens_for(engine, "after_cursor_execute")
-    def _after_cursor_execute(conn, cursor, statement, parameters, context, executemany) -> None:
+    def _after_cursor_execute(
+        _conn, _cursor, statement, _parameters, context, _executemany
+    ) -> None:
         """Observe elapsed time since ``before_cursor_execute`` for this statement."""
         if not metrics.enabled:
             return

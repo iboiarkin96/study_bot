@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0014: Dead Code Analysis and Repository Hygiene</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0014: Dead Code Analysis and Repository Hygiene</h1>
+      <div id="docs-top-nav"></div>
+      <h2>Status</h2>
+      <p>Accepted</p>
+
+      <h2>Context</h2>
+      <p>
+        Unused modules, imports, and unreachable paths increase review cost, obscure real control flow, and widen the
+        surface for mistakes. After API and internal contracts stabilize, periodic cleanup becomes valuable, but
+        heuristic tools can report false positives (dynamic imports, registration hooks, test-only symbols).
+      </p>
+
+      <h2>Decision</h2>
+      <p>Adopt a two-layer approach:</p>
+      <ol>
+        <li>
+          <strong>Ruff (required on every PR)</strong>: keep the existing <code>E</code>/<code>F</code> rules so
+          <strong>F401</strong> (unused imports) is enforced in <code>make lint-check</code> / CI. Extend with
+          <strong>RUF100</strong> to remove obsolete <code>noqa</code> directives that no longer match an enabled rule.
+        </li>
+        <li>
+          <strong>Vulture (advisory)</strong>: configure <code>[tool.vulture]</code> in <code>pyproject.toml</code> for
+          paths <code>app</code>, <code>tests</code>, and <code>scripts</code>. Run locally via
+          <code>make dead-code-check</code>. Do <strong>not</strong> add Vulture to the default PR quality gate; run it
+          on a <strong>weekly schedule</strong> (and manual dispatch) in GitHub Actions so maintainers triage findings
+          without blocking every change.
+        </li>
+      </ol>
+      <p>
+        Removals of allegedly dead code require human confirmation and tests (or equivalent evidence) before merge;
+        static analysis alone is not sufficient for deletion.
+      </p>
+
+      <h2>Scope</h2>
+      <ul>
+        <li>In scope: configuration, Make target, scheduled workflow, contributor checklist.</li>
+        <li>Out of scope: automatic deletion, mandatory Vulture on every PR, full codebase purge in one change.</li>
+      </ul>
+
+      <h2>Alternatives considered</h2>
+      <ol>
+        <li>
+          Vulture in CI for every PR.
+          <ul>
+            <li>Pros: fastest feedback.</li>
+            <li>Cons: false positives create churn; tuning whitelists becomes a constant tax.</li>
+          </ul>
+        </li>
+        <li>
+          Ruff-only (no Vulture).
+          <ul>
+            <li>Pros: zero extra dependency, very stable signal for imports.</li>
+            <li>Cons: misses unused functions/classes that imports still reference indirectly.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Unused imports and stale <code>noqa</code> markers stay caught by the normal gate.</li>
+        <li>Optional deeper scans run on a predictable cadence without blocking routine work.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Maintainers must occasionally review scheduled workflow failures.</li>
+        <li>Vulture configuration or <code>--ignore-names</code> may need updates when patterns change.</li>
+      </ul>
+
+      <h2>Implementation notes</h2>
+      <ul>
+        <li>Make: <code>dead-code-check</code> runs <code>python -m vulture</code> (reads <code>pyproject.toml</code>).</li>
+        <li>Workflow: <code>.github/workflows/dead-code.yml</code> (weekly + <code>workflow_dispatch</code>).</li>
+        <li>Ruff: <code>tests/conftest.py</code> uses <code>[tool.ruff.lint.per-file-ignores]</code> for <strong>E402</strong>
+          (imports after environment setup); prefer that over per-line <code>noqa</code> so <strong>RUF100</strong> stays
+          meaningful.</li>
+          <li>Contributor expectations: see the “Dead code and unused imports” section in repository root
+            <code>CONTRIBUTING.md</code>.</li>
+          </ul>
+        </main>
+      </body>
+    </html>

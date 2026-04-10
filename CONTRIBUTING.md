@@ -5,9 +5,14 @@
 - **`make verify`** — Local gate: lint, types, OpenAPI checks, contract tests, tests, then **`make docs-fix`** (applies doc generation and formatting).
 - **`make verify-ci`** — Same as verify but runs **`make docs-check`** instead of `docs-fix`. Use before pushing; CI runs this on every PR.
 
+## Dead code and unused imports
+
+- **Ruff** (via **`make lint-check`** / pre-commit): enforces unused imports (**F401**) and drops obsolete **`noqa`** markers (**RUF100**). Fix with **`make lint-fix`**.
+- **Vulture** (optional): **`make dead-code-check`** runs a heuristic unused-code scan using **`[tool.vulture]`** in `pyproject.toml`. It is **not** part of `verify-ci` because it can false-positive on dynamic registration; triage each finding and only remove code when tests or clear evidence support it. A **weekly** GitHub Actions job also runs this scan (see [ADR 0014](docs/adr/0014-dead-code-analysis-and-repository-hygiene.html)).
+
 ## Documentation
 
-- **GitHub Pages** (Deploy from branch → `/docs`): the `docs/` folder is the **site root**, so public URLs are `https://<user>.github.io/<repo>/<file>.html` — **not** `…/<repo>/docs/<file>.html` (that path 404s). Example: `system-analysis.html` → `…/study_bot/system-analysis.html`.
+- **GitHub Pages** (Deploy from branch → `/docs`): the `docs/` folder is the **site root**, so public URLs are `https://<user>.github.io/<repo>/<file>.html`
 - After changing routes, Makefile help, env templates, PlantUML, or narrative HTML under `docs/`, run **`make docs-fix`** and commit the results so CI passes.
 - **`docs-check`** fails if the docs pipeline would change any file relative to `HEAD`—your tree must already include everything `docs-fix` would write.
 - Human-written overview: [docs/developer/0008-docs-pipeline.html](docs/developer/0008-docs-pipeline.html). ADR for the practice: [docs/adr/0001-docs-as-code.html](docs/adr/0001-docs-as-code.html).
@@ -18,7 +23,7 @@
 
 ## Architecture decisions (ADRs)
 
-- New decisions: copy [docs/adr/0000-template.html](docs/adr/0000-template.html), use the next number, add a row to [docs/adr/README.html](docs/adr/README.html), and follow the structure in [ADR 0001](docs/adr/0001-docs-as-code.html).
+- New decisions: copy [docs/adr/0000-template.html](docs/adr/0000-template.html), use the next number, add a row to [docs/adr/README.html](docs/adr/README.html), and follow the structure.
 
 ## Changelog
 
