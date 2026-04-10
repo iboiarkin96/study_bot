@@ -47,7 +47,7 @@ OPENAPI_TAGS = [
 
 app = FastAPI(
     title=settings.app_name,
-    version="1.1.0",
+    version="1.1.1",
     description="Study App API",
     docs_url=None,
     redoc_url=None,

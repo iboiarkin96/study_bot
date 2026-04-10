@@ -73,6 +73,66 @@
         <code>main</code> without a normal PR.
       </p>
 
+      <h3 id="llm-draft-workflow">Local workflow: <code>scripts/changelog_draft.py</code></h3>
+      <p>
+        The script does <strong>not</strong> write <code>CHANGELOG.md</code>. You copy or adapt its stdout into
+        <code>[Unreleased]</code> in a normal commit/PR.
+      </p>
+      <ol>
+        <li>
+          <strong>What <code>--since</code> and <code>--head</code> mean.</strong> It uses the same range as Git:
+          <code>since..head</code> means commits reachable from <code>head</code> that are <strong>not</strong> in
+          <code>since</code> (for example new work on your branch that is not yet in <code>main</code>). Defaults:
+          <code>--since main --head HEAD</code>.
+        </li>
+        <li>
+          <strong>Do you need a new branch?</strong> Not for the script itself. For collaboration, use a feature
+          branch and open a PR; point <code>--head</code> at that branch name or stay checked out on it and use
+          <code>--head HEAD</code>.
+        </li>
+        <li>
+          <strong><code>git add</code> is not enough.</strong> Until you <code>git commit</code>, your changes are not
+          in the history, so <code>main..your-branch</code> can show <strong>no commits</strong> even if files are
+          staged. The script then prints <code>_No changes in this range._</code> (or hints on stderr).
+        </li>
+        <li>
+          <strong>Draft <em>before</em> a commit.</strong> Run
+          <code>python scripts/changelog_draft.py --since main --head HEAD --include-working-tree</code>. That adds
+          <code>git diff --cached --stat</code> (staged) and <code>git diff --stat</code> (unstaged) to the prompt so
+          the model can summarize work that is not committed yet.
+        </li>
+        <li>
+          <strong>After one or more commits on the branch.</strong> Omit <code>--include-working-tree</code> (or keep
+          it if you still have local edits). Example:
+          <code>python scripts/changelog_draft.py --since main --head feature/my-feature</code>.
+        </li>
+        <li>
+          <strong>Inspect the prompt without calling the API:</strong>
+          <code>python scripts/changelog_draft.py --print-log</code> (add the same flags you would use for a real run).
+        </li>
+        <li>
+          <strong>Save the draft to a file:</strong>
+          <code>python scripts/changelog_draft.py ... -o /tmp/changelog-llm-draft.md</code> writes UTF-8 in addition to
+          stdout. Still merge into <code>CHANGELOG.md</code> by hand under the right <code>###</code> headings — do not
+          raw-append stdout to the changelog file.
+        </li>
+        <li>
+          <strong>Secrets (local only).</strong> Set <code>OPENROUTER_API_KEY</code> or <code>OPENAI_API_KEY</code> in
+          the repository root <code>.env</code> file (see <code>env/example</code>). Optional:
+          <code>OPENAI_BASE_URL</code>, <code>OPENAI_MODEL</code>, OpenRouter attribution headers described there.
+        </li>
+        <li>
+          <strong>Smoke-test the API key:</strong> <code>make llm-ping</code> or <code>python scripts/llm_ping.py</code>.
+        </li>
+        <li>
+          <strong>One-step draft (Makefile):</strong> <code>make changelog-draft</code> runs
+          <code>scripts/changelog_draft.py</code> with <code>main..HEAD</code>, includes working-tree stats by default,
+          and writes <code>changelog-llm-draft.md</code>. Override with
+          <code>CHANGELOG_HEAD=feature/x CHANGELOG_SINCE=main</code> or
+          <code>CHANGELOG_DRAFT_FLAGS=</code> for commits-only.
+        </li>
+      </ol>
+
       <h2>Validation</h2>
       <ul>
         <li>

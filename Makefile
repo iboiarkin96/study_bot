@@ -2,6 +2,12 @@ PYTHON := .venv/bin/python
 PIP    := .venv/bin/pip
 ENV    := .env
 DEPLOY_CMD ?=
+# changelog-draft: override refs or output path if needed (defaults: main..HEAD, include working tree)
+CHANGELOG_SINCE ?= main
+CHANGELOG_HEAD ?= HEAD
+CHANGELOG_DRAFT ?= changelog-llm-draft.md
+# Empty to draft from commits only (no staged/unstaged diff stat)
+CHANGELOG_DRAFT_FLAGS ?= --include-working-tree
 PYTEST_FLAGS ?= -q --disable-warnings
 NO_COLOR ?= 0
 MAKEFLAGS += --no-print-directory
@@ -23,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check observability-up observability-down observability-smoke
+.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check changelog-draft llm-ping observability-up observability-down observability-smoke
 
 # ──────────────────────────────────────────────
 # Help
@@ -94,6 +100,10 @@ help:
 	@echo "  # Documentation"
 	@echo "  make docs-fix             Auto-update docs (UML + marker sync + html render + html format)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
+	@echo ""
+	@echo "  # Changelog — optional LLM draft (OPENROUTER_API_KEY or OPENAI_API_KEY in .env; see env/example)"
+	@echo "  make changelog-draft      Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)"
+	@echo "  make llm-ping             Smoke-test LLM API (same env as changelog-draft)"
 	@echo ""
 	@echo "  # Observability (Prometheus + Grafana)"
 	@echo "  make observability-up     Start Prometheus/Grafana stack with Docker Compose"
@@ -499,6 +509,26 @@ docs-check:
 		rm -f "$$tmp_before" "$$tmp_after"; \
 		exit 1; \
 	fi
+
+# LLM-assisted Keep a Changelog draft (scripts/changelog_draft.py). Writes local file; edit CHANGELOG.md yourself.
+changelog-draft:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "changelog_draft.py ($(CHANGELOG_SINCE)..$(CHANGELOG_HEAD))…"
+	@$(PYTHON) scripts/changelog_draft.py \
+		--since "$(CHANGELOG_SINCE)" \
+		--head "$(CHANGELOG_HEAD)" \
+		$(CHANGELOG_DRAFT_FLAGS) \
+		-o "$(CHANGELOG_DRAFT)"
+	@printf "$(ICON_OK) %s\n" "Draft in $(CHANGELOG_DRAFT) — copy bullets under [Unreleased] in CHANGELOG.md (ADR 0013)"
+
+# Quick check that OPENROUTER_API_KEY / OPENAI_API_KEY works (scripts/llm_ping.py).
+llm-ping:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@$(PYTHON) scripts/llm_ping.py
 
 # Start local Prometheus + Grafana observability stack.
 observability-up:
