@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Draft Keep a Changelog bullets from git history (optional OpenAI-compatible API).
 
+Feeds the model **commit subjects and bodies**, **name-status paths**, and diff stat (labeled
+as scope-only) so output reflects *what changed*, not only insertion counts.
+
 Assistive only: prints markdown to stdout; humans merge into CHANGELOG.md.
 Use ``-o FILE`` to save the same text to a file; do not append raw stdout to
 CHANGELOG.md (structure must stay under ``###`` headings you already have).
@@ -44,14 +47,48 @@ def _working_tree_dirty() -> bool:
     return bool(out.strip())
 
 
+def _git_log_with_messages(since: str, head: str) -> str:
+    """Commit history with subject and body (not just oneline)."""
+    return _git(
+        "log",
+        f"{since}..{head}",
+        "--reverse",
+        "--no-decorate",
+        "--pretty=format:%h %s%n%b%n---",
+    )
+
+
+def _git_name_status(since: str, head: str) -> str:
+    """Paths changed between refs (M/A/D and file path)."""
+    return _git("diff", "--name-status", since, head)
+
+
+CHANGELOG_SYSTEM_PROMPT = (
+    "You draft Keep a Changelog [Unreleased] sections. Output ONLY markdown: "
+    "use ### Added, ### Changed, ### Fixed, ### Removed, or ### Security as needed, "
+    "each followed by bullet lines starting with '- '.\n\n"
+    "Critical rules:\n"
+    "- Do NOT summarize using diff statistics only (no answers like 'N files changed' or "
+    "'X insertions, Y deletions' as the main content).\n"
+    "- Derive meaning from commit subjects and bodies, and from which paths changed "
+    "(e.g. docs/, k8s/, app/, .github/).\n"
+    "- Each bullet should describe an outcome: feature, fix, doc, infra, or API behavior — "
+    "not raw git metrics.\n"
+    "- Merge related commits into one bullet when it reads better.\n"
+    "- If commit messages are vague, infer from file paths and still write concrete bullets "
+    "(e.g. 'Document local Kubernetes workflow in developer guides').\n"
+)
+
+
 def _build_prompt(
     since: str,
     head: str,
     *,
     include_working_tree: bool = False,
 ) -> str:
-    """Single user message: some OpenAI-compatible routers (e.g. openrouter/free) ignore ``system``."""
-    log = _git("log", f"{since}..{head}", "--oneline", "--no-decorate")
+    """Build user message: rich git context so the model can infer themes, not just diff size."""
+    log_detail = _git_log_with_messages(since, head)
+    names = _git_name_status(since, head)
     stat = _git("diff", "--stat", since, head)
     tail = ""
     if include_working_tree:
@@ -64,14 +101,14 @@ def _build_prompt(
             f"{unstaged or '(none)'}\n"
         )
     return (
-        "You help maintain a Keep a Changelog style entry under [Unreleased]. "
-        "Reply with markdown bullet lists only (### Added / Changed / Fixed as needed). "
-        "Be concise; describe user-visible or API-relevant changes; skip pure churn.\n\n"
         "Use only the git data below. If there are no commits in the first section and no "
-        "working-tree sections (or they are empty), reply exactly with a single line: "
-        "_No changes in this range._\n\n"
-        f"--- Git log ({since}..{head}) ---\n\n{log}\n\n"
-        f"--- Diff stat ({since}..{head}) ---\n\n{stat}\n"
+        "non-empty working-tree sections, reply exactly with one line: _No changes in this range._\n\n"
+        f"--- Git log with messages ({since}..{head}, chronological) ---\n\n"
+        f"{log_detail or '(no commits)'}\n\n"
+        f"--- Changed paths (git diff --name-status) ---\n\n"
+        f"{names or '(none)'}\n\n"
+        "--- Diff stat (for scope only; do not treat as the changelog) ---\n\n"
+        f"{stat or '(none)'}\n"
         f"{tail}"
     )
 
@@ -154,7 +191,11 @@ def main() -> int:
         return 0
 
     try:
-        text = chat_completion(user=user, model=args.model)
+        text = chat_completion(
+            user=user,
+            system=CHANGELOG_SYSTEM_PROMPT,
+            model=args.model,
+        )
     except Exception as e:
         print(f"changelog_draft: {e}", file=sys.stderr)
         return 1

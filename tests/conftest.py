@@ -1,4 +1,8 @@
-"""Pytest fixtures for API tests."""
+"""Pytest fixtures for API tests.
+
+Sets a dedicated SQLite path and QA-like env before importing the app, provisions schema and
+reference data once per session, and exposes a :class:`fastapi.testclient.TestClient` for HTTP tests.
+"""
 
 from __future__ import annotations
 

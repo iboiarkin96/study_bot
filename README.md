@@ -99,14 +99,14 @@ Auto-generated from root `Makefile` `help` target (same source as [engineering-p
 <!-- BEGIN:MAKEFILE_REF -->
 | Command | Purpose |
 | ------- | ------- |
-| `make api-docs` | Generate Python API HTML (pdoc) into docs/api/ (gitignored) |
+| `make api-docs` | Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix) |
 | `make changelog-draft` | Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand) |
 | `make container-start` | Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env) |
 | `make contract-test` | Stricter: generated OpenAPI must equal baseline JSON exactly |
 | `make dead-code-check` | Run Vulture (unused code; see ADR 0014; not in verify-ci) |
 | `make docker-build` | Build image study-app-api:local (requires Docker) |
 | `make docs-check` | Verify docs are already in sync (fails on drift) |
-| `make docs-fix` | Auto-update docs (UML + marker sync + html render + html format) |
+| `make docs-fix` | Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API) |
 | `make env-check` | Verify env, deps, and DB connectivity |
 | `make env-init` | Create .env from env/example (once per machine) |
 | `make fix` | Run auto-fixes (format-fix + lint-fix + docs-fix) |

@@ -99,9 +99,9 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make docs-fix             Auto-update docs (UML + marker sync + html render + html format)"
+	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
-	@echo "  make api-docs             Generate Python API HTML (pdoc) into docs/api/ (gitignored)"
+	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)"
 	@echo ""
 	@echo "  # Changelog — optional LLM draft (OPENROUTER_API_KEY or OPENAI_API_KEY in .env; see env/example)"
 	@echo "  make changelog-draft      Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)"
@@ -500,16 +500,18 @@ docs-fix:
 		printf "$(ICON_ERR) %s\n" "scripts/regenerate_docs.py not found."; exit 1; \
 	fi
 	@printf "$(COLOR_CYAN)== DOCS-FIX: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/5] regenerate UML diagrams"
+	@printf "$(ICON_INFO) %s\n" "[1/6] regenerate UML diagrams"
 	@$(PYTHON) scripts/regenerate_docs.py
-	@printf "$(ICON_INFO) %s\n" "[2/5] sync marker-based documentation"
+	@printf "$(ICON_INFO) %s\n" "[2/6] sync marker-based documentation"
 	@$(PYTHON) scripts/sync_docs.py
-	@printf "$(ICON_INFO) %s\n" "[3/5] render Kubernetes ConfigMap from k8s/app.env"
+	@printf "$(ICON_INFO) %s\n" "[3/6] render Kubernetes ConfigMap from k8s/app.env"
 	@$(PYTHON) scripts/render_k8s_configmap.py
-	@printf "$(ICON_INFO) %s\n" "[4/5] render docs markdown to html companions"
+	@printf "$(ICON_INFO) %s\n" "[4/6] render docs markdown to html companions"
 	@$(PYTHON) scripts/render_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[5/5] normalize docs html template"
+	@printf "$(ICON_INFO) %s\n" "[5/6] normalize docs html template"
 	@$(PYTHON) scripts/format_docs_html.py
+	@printf "$(ICON_INFO) %s\n" "[6/6] Python API reference (pdoc)"
+	@$(MAKE) api-docs
 	@printf "$(COLOR_GREEN)== DOCS-FIX: SUCCESS ==$(COLOR_RESET)\n"
 
 # Verify docs are already synchronized (no drift allowed).
@@ -533,7 +535,7 @@ docs-check:
 		exit 1; \
 	fi
 
-# Generate Python API reference from docstrings (pdoc). Output under docs/api/ (gitignored; not docs-fix).
+# Generate Python API reference from docstrings (pdoc). Output under docs/api/ (also invoked from docs-fix).
 api-docs:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
@@ -541,7 +543,7 @@ api-docs:
 	@printf "$(COLOR_CYAN)== API-DOCS: START ==$(COLOR_RESET)\n"
 	@rm -rf docs/api
 	@$(PYTHON) -m pdoc app -o docs/api
-	@printf "$(ICON_OK) %s\n" "Open docs/api/index.html in a browser (Python package: app)"
+	@printf "$(ICON_OK) %s\n" "Open docs/api/index.html in a browser (Python package: app); linked from docs/index.html for GitHub Pages"
 	@printf "$(COLOR_GREEN)== API-DOCS: SUCCESS ==$(COLOR_RESET)\n"
 
 # LLM-assisted Keep a Changelog draft (scripts/changelog_draft.py). Writes local file; edit CHANGELOG.md yourself.

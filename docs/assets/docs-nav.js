@@ -69,6 +69,9 @@ function activeTarget(relPath) {
   if (relPath.startsWith("runbooks/")) {
     return "runbooks/README.html";
   }
+  if (relPath.startsWith("api/")) {
+    return "api/index.html";
+  }
   if (relPath === "engineering-practices.html") {
     return "engineering-practices.html";
   }
@@ -92,6 +95,7 @@ function renderTopNav() {
     { label: "Backlog", target: "backlog/README.html" },
     { label: "ADR", target: "adr/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
+    { label: "API (Python)", target: "api/index.html" },
   ];
 
   const nav = document.createElement("nav");

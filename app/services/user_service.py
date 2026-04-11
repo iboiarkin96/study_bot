@@ -40,7 +40,17 @@ class UserService:
         return str(value)
 
     def create(self, payload: UserCreateRequest) -> User:
-        """Persist a new user or signal a duplicate composite key."""
+        """Persist a new user or reject a duplicate composite key.
+
+        Args:
+            payload: Validated create body; uniqueness is ``(system_user_id, system_uuid)``.
+
+        Returns:
+            Persisted :class:`~app.models.core.user.User` after save.
+
+        Raises:
+            fastapi.HTTPException: 400 with ``USER_CREATE_ALREADY_EXISTS`` when the composite key exists.
+        """
         su_id = str(payload.system_user_id)
         sys_uuid = str(payload.system_uuid)
 
@@ -87,7 +97,19 @@ class UserService:
         system_uuid: str,
         payload: UserUpdateRequest,
     ) -> User:
-        """Apply full ``payload`` to the user identified by the composite key."""
+        """Replace mutable profile fields with ``payload`` for the composite key.
+
+        Args:
+            system_user_id: External user id in the source system.
+            system_uuid: Source system UUID string.
+            payload: Full update body (PUT semantics).
+
+        Returns:
+            Updated user row after commit.
+
+        Raises:
+            fastapi.HTTPException: 404 when no user matches the composite key.
+        """
         user = self.get_or_404(system_user_id=system_user_id, system_uuid=system_uuid)
         user.username = cast(Any, payload.username)
         user.full_name = payload.full_name
@@ -107,7 +129,19 @@ class UserService:
         system_uuid: str,
         payload: UserPatchRequest,
     ) -> User:
-        """Merge non-omitted fields from ``payload`` into the user for the composite key."""
+        """Merge only set fields from ``payload`` (PATCH semantics).
+
+        Args:
+            system_user_id: External user id in the source system.
+            system_uuid: Source system UUID string.
+            payload: Partial body; omitted fields are left unchanged.
+
+        Returns:
+            Updated user row after commit.
+
+        Raises:
+            fastapi.HTTPException: 400 when the body omits every field, or 404 when the user is missing.
+        """
         user = self.get_or_404(system_user_id=system_user_id, system_uuid=system_uuid)
         data = payload.model_dump(exclude_unset=True)
         if not data:
@@ -144,7 +178,18 @@ class UserService:
         return self.repository.save(user)
 
     def get_or_404(self, *, system_user_id: str, system_uuid: str) -> User:
-        """Return the user for the composite key or raise a business 404."""
+        """Load the user for the composite key or raise a business-layer 404.
+
+        Args:
+            system_user_id: External user id in the source system.
+            system_uuid: Source system UUID string.
+
+        Returns:
+            ORM user when found.
+
+        Raises:
+            fastapi.HTTPException: 404 with ``USER_NOT_FOUND`` when absent.
+        """
         user = self.repository.get_by_system_user_id_and_system_uuid(
             system_user_id,
             system_uuid,

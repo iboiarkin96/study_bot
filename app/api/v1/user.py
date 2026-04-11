@@ -219,7 +219,20 @@ def get_user(
     session: Annotated[Session, Depends(get_db_session)],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Return a user by ``system_uuid`` and ``system_user_id`` path parameters."""
+    """Return a user by path parameters ``system_uuid`` and ``system_user_id``.
+
+    Args:
+        system_uuid: Source system UUID from the path.
+        system_user_id: External user id from the path.
+        session: Database session.
+        api_key: Declared for OpenAPI; auth is enforced by middleware.
+
+    Returns:
+        User payload with HTTP 200.
+
+    Raises:
+        fastapi.HTTPException: 404 when no user matches the composite key.
+    """
     _ = api_key  # represented in OpenAPI; runtime validation is handled by middleware
     service = UserService(UserRepository(session))
     user = service.get_or_404(
@@ -295,7 +308,22 @@ def update_user(
     ],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Handle ``PUT /api/v1/user/{system_uuid}/{system_user_id}`` with idempotent replay semantics."""
+    """Handle PUT with idempotent replay semantics (same pattern as :func:`create_user`).
+
+    Args:
+        system_uuid: Source system UUID from the path.
+        system_user_id: External user id from the path.
+        payload: Full replacement body for mutable fields.
+        session: Database session.
+        idempotency_key: Dedup token from ``Idempotency-Key``.
+        api_key: Declared for OpenAPI; auth is enforced by middleware.
+
+    Returns:
+        Updated user, or replayed JSON from a prior successful call with the same key.
+
+    Raises:
+        fastapi.HTTPException: 400 if idempotency header is missing, 409 on key/body mismatch, 404 if user missing.
+    """
     _ = api_key
     if not idempotency_key:
         raise HTTPException(
@@ -426,7 +454,22 @@ def patch_user(
     ],
     api_key: Annotated[str | None, Security(api_key_security)] = None,
 ) -> UserCreateResponse:
-    """Handle ``PATCH /api/v1/user/{system_uuid}/{system_user_id}`` with idempotent replay semantics."""
+    """Handle PATCH with idempotent replay semantics; partial field updates only.
+
+    Args:
+        system_uuid: Source system UUID from the path.
+        system_user_id: External user id from the path.
+        payload: Partial body; unset fields remain unchanged.
+        session: Database session.
+        idempotency_key: Dedup token from ``Idempotency-Key``.
+        api_key: Declared for OpenAPI; auth is enforced by middleware.
+
+    Returns:
+        Updated user, or replayed JSON from a prior successful call with the same key.
+
+    Raises:
+        fastapi.HTTPException: 400 if idempotency header is missing or body is empty, 409 on conflict, 404 if user missing.
+    """
     _ = api_key
     if not idempotency_key:
         raise HTTPException(
