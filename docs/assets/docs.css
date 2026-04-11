@@ -188,11 +188,234 @@ pre code {
   color: #334155;
 }
 
+.badge--danger {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #7f1d1d;
+}
+
 .adr-meta {
   margin: 10px 0 14px;
   line-height: 1.7;
 }
 
+/* ADR status tracks: per-axis stepper (green = done, yellow = current, gray = not yet, red = blocked). */
+.adr-status-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fafbff;
+}
+
+.adr-status-tracks--example {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+p.adr-track-branch-note {
+  margin: 0 0 12px;
+}
+
+.adr-track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.adr-track-label {
+  flex: 0 0 8.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.adr-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.adr-steps > li {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.adr-steps > li + li::before {
+  content: "→";
+  color: #94a3b8;
+  font-size: 0.75rem;
+  margin: 0 0.45rem;
+  font-weight: normal;
+}
+
+.adr-step {
+  border-radius: 8px;
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.adr-step--done {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.adr-step--current {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #713f12;
+  font-weight: 600;
+}
+
+.adr-step--todo {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+/* Neutral gray: default “current” for Draft / Not started, or Accepted when Superseded is the final green step. */
+.adr-step--muted {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.adr-step--blocked {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #7f1d1d;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .adr-track-label {
+    flex: 1 1 100%;
+  }
+}
+
+/* ADR: current status + linear status log (docs-nav.js, data-adr-weight on <main>) */
+.adr-current-status {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  font-size: 0.95rem;
+}
+
+.adr-current-status__label {
+  color: #64748b;
+  margin-right: 0.35em;
+}
+
+.adr-current-status__value {
+  color: #0f172a;
+}
+
+.adr-current-status--draft {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.adr-current-status--ongoing {
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.adr-current-status--declined {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.adr-current-status--declined .adr-current-status__value {
+  color: #7f1d1d;
+}
+
+.adr-current-status--done {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.adr-current-status--done .adr-current-status__value {
+  color: #14532d;
+  font-weight: 700;
+}
+
+.adr-status-log {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fafbff;
+}
+
+.adr-status-log__title {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.adr-status-log__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.adr-status-log__row .adr-step {
+  font-size: 0.78rem;
+}
+
+/* Final step when it is the current max: green (see stepKind in docs-nav.js) + clear focus */
+.adr-status-log__row .adr-step--done[aria-current="step"] {
+  font-weight: 600;
+}
+
+/* ADR template: collapsible weight instructions (<details> in 0000-template.html) */
+details.adr-weight-help {
+  margin: 0 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px 12px;
+  background: #fff;
+}
+
+details.adr-weight-help summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #334155;
+}
+
+details.adr-weight-help[open] summary {
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+/* Raster diagrams (legacy PNG exports) */
 .diagram {
   width: 100%;
   height: auto;
@@ -201,6 +424,114 @@ pre code {
   background: #fff;
   padding: 8px;
   margin: 8px 0 6px;
+}
+
+/* System analysis — Mermaid diagram chrome (vector, scalable) */
+.sys-diagram {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(165deg, #fafbff 0%, #ffffff 52%);
+  box-shadow:
+    0 1px 0 rgba(15, 23, 42, 0.05),
+    0 12px 32px rgba(15, 23, 42, 0.07);
+}
+
+.sys-diagram__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 14px;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.07) 0%, transparent 55%);
+}
+
+.sys-diagram__badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #1e40af;
+  background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  padding: 5px 11px;
+}
+
+.sys-diagram__titles {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.sys-diagram__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.sys-diagram__sub {
+  margin: 4px 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.sys-diagram__canvas {
+  padding: 22px 14px 26px;
+  overflow-x: auto;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(37, 99, 235, 0.06) 0%, transparent 55%),
+    #f8fafc;
+}
+
+.sys-diagram__canvas .mermaid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.sys-diagram__canvas svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* PlantUML PNGs: no double frame (card + .diagram already bordered globally). */
+.sys-diagram__canvas .diagram--uml {
+  display: block;
+  /* Intrinsic pixel size: avoid scaling width:100% which compresses labels (text-on-text). */
+  width: auto;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.sys-diagram__foot {
+  margin: 0;
+  padding: 12px 18px 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  background: #f8fafc;
+  line-height: 1.55;
+}
+
+.sys-diagram__foot a {
+  color: var(--accent);
+}
+
+.sys-diagram__foot code {
+  font-size: 0.88em;
 }
 
 table {

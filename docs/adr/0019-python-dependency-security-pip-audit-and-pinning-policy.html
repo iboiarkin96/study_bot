@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0019: Python dependency security, pip-audit, and pinning policy</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container" data-adr-weight="5">
+      <h1>ADR 0019: Python dependency security, pip-audit, and pinning policy</h1>
+      <div id="docs-top-nav"></div>
+      <details class="adr-weight-help">
+        <summary>How to set valid status (click to open)</summary>
+        <p class="small">
+          On <code>&lt;main&gt;</code>, set a single attribute <code>data-adr-weight</code> to the
+          <strong>current</strong>
+          milestone (−1 … 7). The page derives <strong>Current status</strong> and paints the <strong>Status log</strong>
+          from that one number (values are not shown as plain text on the page).
+        </p>
+        <table>
+          <caption>Which number means which step (single global order 0 → 7)</caption>
+          <thead>
+            <tr>
+              <th>Value</th>
+              <th>Meaning (current milestone)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>-1</code></td>
+              <td>Status not set (or unknown)</td>
+            </tr>
+            <tr>
+              <td><code>0</code></td>
+              <td><strong>Decision</strong> — Proposed</td>
+            </tr>
+            <tr>
+              <td><code>1</code></td>
+              <td><strong>Decision</strong> — Accepted</td>
+            </tr>
+            <tr>
+              <td><code>2</code></td>
+              <td><strong>Decision</strong> — Superseded</td>
+            </tr>
+            <tr>
+              <td><code>3</code></td>
+              <td><strong>Documentation</strong> — Draft</td>
+            </tr>
+            <tr>
+              <td><code>4</code></td>
+              <td><strong>Documentation</strong> — Ready</td>
+            </tr>
+            <tr>
+              <td><code>5</code></td>
+              <td><strong>Implementation</strong> — Not started</td>
+            </tr>
+            <tr>
+              <td><code>6</code></td>
+              <td><strong>Implementation</strong> — In progress</td>
+            </tr>
+            <tr>
+              <td><code>7</code></td>
+              <td><strong>Implementation</strong> — Done</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small">
+          Example: <code>data-adr-weight="4"</code> → <strong>Current status</strong> is Documentation · Ready; earlier
+          steps in the log are green, later steps gray. <strong>Implementation: Done</strong> (<code>7</code>) uses green
+          when it is the current value. Out-of-range values are clamped in <code>docs/assets/docs-nav.js</code>.
+        </p>
+      </details>
+      <h2>Ratification</h2>
+      <p>
+        Policy adopted to close the open backlog item on dependency security; link discussion Issue and merge PR here
+        when this ADR is ratified via the repository issue template.
+      </p>
+      <ul>
+        <li>Discussion Issue: <em>TBD</em></li>
+        <li>Merge PR: <em>TBD</em></li>
+        <li>Accepted: 2026-04-11</li>
+      </ul>
+
+      <h2>Context</h2>
+      <p>
+        Unpinned or stale dependencies increase exposure to known vulnerabilities and make CI and production behavior
+        harder to reproduce. The engineering backlog calls for automated scanning (<code>pip-audit</code>), a reproducible
+        dependency lock, and a clear rule for when and how to upgrade—aligned with supply-chain hygiene expectations
+        (OWASP, NIST SSDF).
+      </p>
+
+      <h2>Decision</h2>
+
+      <h3>1. Pinning and single source of truth</h3>
+      <ul>
+        <li>
+          <strong><code>requirements.txt</code></strong> is the committed install manifest for application and developer
+          tooling installed via <code>make install</code>. It must list <strong>exact versions</strong> (as produced by
+          <code>pip freeze</code>) so Docker, CI, and local environments resolve the same dependency graph.
+        </li>
+        <li>
+          After adding or upgrading packages in a virtualenv, regenerate the file with <code>make requirements</code>
+          (see repository <code>README.md</code>) and commit the diff in the same change that introduces the dependency
+          change, unless the upgrade is a dedicated maintenance PR.
+        </li>
+        <li>
+          Do not maintain a second parallel lockfile for Python unless a future ADR introduces a standard (for example
+          <code>uv.lock</code>); until then, <code>requirements.txt</code> remains authoritative.
+        </li>
+      </ul>
+
+      <h3>2. Vulnerability scanning with pip-audit</h3>
+      <ul>
+        <li>
+          Use <strong>pip-audit</strong> against the environment installed from <code>requirements.txt</code> as the
+          primary OSV-backed scanner for the PyPI ecosystem.
+        </li>
+        <li>
+          Expose a Make target <code>make deps-audit</code> that fails the command with non-zero exit when pip-audit
+          reports vulnerabilities, so developers can run the same check as CI locally.
+        </li>
+        <li>
+          Integrate the same command into continuous integration (for example the existing quality workflow on
+          <code>main</code> / pull requests) so dependency regressions cannot merge silently.
+        </li>
+      </ul>
+
+      <h3>3. Severity and response expectations</h3>
+      <ul>
+        <li>
+          <strong>Critical / High</strong>: resolve before merging the affected change, or document a time-bound exception
+          (see below). Prefer upgrading to a patched release; if none exists, consider removing or replacing the
+          dependency after risk review.
+        </li>
+        <li>
+          <strong>Medium</strong>: schedule remediation within the current iteration or the next; do not let findings
+          accumulate without a tracked issue.
+        </li>
+        <li>
+          <strong>Low / informational</strong>: triage during routine maintenance; batch upgrades are acceptable.
+        </li>
+      </ul>
+      <p>
+        pip-audit may report vulnerabilities in dev-only tools (linters, test runners). Apply the same severity logic;
+        if a fix would be disruptive, use the exception process instead of ignoring the report silently.
+      </p>
+
+      <h3>4. Exception process</h3>
+      <ul>
+        <li>
+          When remediation is not immediately possible (no fixed version, breaking upgrade required, or vendor delay),
+          add a short note in the pull request: <strong>affected package</strong>, <strong>CVE/advisory ID</strong>,
+          <strong>risk summary</strong>, <strong>owner</strong>, and <strong>review date</strong> (default: 30 days).
+        </li>
+        <li>
+          Exceptions are not permanent: either upgrade, replace, or re-justify on each review date.
+        </li>
+      </ul>
+
+      <h3>5. Upgrade cadence</h3>
+      <ul>
+        <li>
+          <strong>Reactive:</strong> any PR that touches <code>requirements.txt</code> should prefer pulling in security
+          patches for direct dependencies when pip-audit or release notes indicate fixes.
+        </li>
+        <li>
+          <strong>Proactive:</strong> at least one scheduled dependency hygiene pass per month (or each sprint) for
+          non-emergency upgrades and churn reduction—optional but recommended as the team grows.
+        </li>
+      </ul>
+
+      <h2>Scope</h2>
+      <ul>
+        <li>
+          In scope: Python packages installed from PyPI via <code>requirements.txt</code>, pip-audit wiring, Make and CI,
+          and PR/review expectations.
+        </li>
+        <li>
+          Out of scope: base OS and container image CVEs (covered by image rebuild and base-image policy under
+          <a href="./0015-container-image-and-local-kubernetes.html">ADR 0015</a>), and non-Python supply chains unless
+          separately documented.
+        </li>
+      </ul>
+
+      <h2>Alternatives considered</h2>
+      <ol>
+        <li>
+          Safety / other scanners only.
+          <ul>
+            <li>Pros: historical familiarity in some teams.</li>
+            <li>Cons: pip-audit aligns with PyPA and OSV; fewer surprises for Python-centric workflows.</li>
+          </ul>
+        </li>
+        <li>
+          Poetry or <code>uv</code> lockfiles without migrating the repo.
+          <ul>
+            <li>Pros: richer dependency resolution metadata.</li>
+            <li>Cons: would duplicate or replace the current <code>requirements.txt</code>-centric Makefile and CI; defer
+              until a dedicated migration ADR.</li>
+            </ul>
+          </li>
+        </ol>
+
+        <h2>Consequences</h2>
+        <h3>Positive</h3>
+        <ul>
+          <li>Reproducible installs and a defined path for CVE response.</li>
+          <li>Same command locally and in CI reduces “works on my machine” drift for security checks.</li>
+        </ul>
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>Exact pins require deliberate upgrades; dependabot-style automation may still be added later.</li>
+          <li>pip-audit depends on advisory completeness; false negatives are possible for unreported issues.</li>
+        </ul>
+
+        <h2>Compatibility and migration</h2>
+        <ul>
+          <li>Backward-compatibility impact: none for API consumers; dependency upgrades follow normal release notes.</li>
+          <li>Migration plan: add <code>pip-audit</code> to developer/CI install lists, implement
+            <code>make deps-audit</code>,
+            then gate CI.</li>
+            <li>Rollback strategy: revert the failing upgrade commit or temporarily document an exception with expiry.</li>
+          </ul>
+
+          <h2>Implementation plan</h2>
+          <ol>
+            <li>Add pip-audit to the project’s install surface (for example <code>requirements.txt</code> or a documented CI
+              install step).</li>
+              <li>Implement <code>make deps-audit</code> and document it next to other verify targets.</li>
+              <li>Run pip-audit in CI after <code>pip install -r requirements.txt</code>; fail on unmitigated Critical/High per
+                team policy above.</li>
+                <li>Reference this ADR from contributor or engineering-practices documentation.</li>
+              </ol>
+
+              <h2>Validation</h2>
+              <ul>
+                <li>Technical checks: <code>make deps-audit</code> passes on a clean tree after upgrades; CI job green.</li>
+                <li>Operational checks: maintainers know where to record exceptions (PR description + optional issue).</li>
+                <li>Documentation updates: this ADR, backlog item, and developer docs cross-links.</li>
+              </ul>
+
+              <h2>References</h2>
+              <ul>
+                <li>Related ADRs: <a href="./0015-container-image-and-local-kubernetes.html">ADR 0015</a> (container image).</li>
+                <li>Backlog: <a href="../backlog/README.html#item-4">P1 — Dependency security (pip-audit) and update policy</a>.
+                </li>
+                <li>pip-audit: <a href="https://pypi.org/project/pip-audit/" rel="noopener noreferrer">PyPI</a>.</li>
+              </ul>
+            </main>
+          </body>
+
+        </html>

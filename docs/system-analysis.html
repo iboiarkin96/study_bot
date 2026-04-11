@@ -41,211 +41,119 @@
       <section>
         <h2>3. Architectural Decomposition</h2>
         <div class="card">
-          <h3>3.1 C4 L1 - Context</h3>
-          <img class="diagram" src="./uml/rendered/architecture__system_context_view.png"
-          alt="System context diagram of Study App backend" />
+          <p>
+            The project uses a microservice-oriented architecture with FastAPI as the main backend service. All business
+            logic, data operations, and API endpoints are contained within a single container, using SQLite for data
+            storage. Monitoring and observability are handled by Prometheus, Grafana, and Blackbox, which run together in
+            a separate Docker Compose stack.
+          </p>
         </div>
-        <div class="card">
-          <h3>3.2 C4 L2 - Container</h3>
-          <img class="diagram" src="./uml/rendered/architecture__container_view.png"
-          alt="Container diagram of Study App backend" />
-        </div>
-        <div class="card">
-          <h3>3.3 C4 L3 - Components</h3>
-          <img class="diagram" src="./uml/rendered/architecture__system_component_view.png"
-          alt="Component architecture of Study App backend" />
-        </div>
-      </section>
 
-      <section>
-        <h2>4. Functional Requirements</h2>
         <div class="card">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Requirement</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>FR-1</td>
-                <td>User management by <code>system_user_id</code></td>
-                <td>Create user on first call and preserve stable identity for downstream operations.</td>
-              </tr>
-              <tr>
-                <td>FR-2</td>
-                <td>Note creation and slot assignment</td>
-                <td>Create note with required ETR structure and assign initial slot policy.</td>
-              </tr>
-              <tr>
-                <td>FR-3</td>
-                <td>Retrieve scenario and slot transitions</td>
-                <td>Return due notes and apply deterministic slot transition rules by review result.</td>
-              </tr>
-              <tr>
-                <td>FR-4</td>
-                <td>Error-log storage and retrieval</td>
-                <td>Store learning mistakes and provide ordered retrieval for review and analysis.</td>
-              </tr>
-              <tr>
-                <td>FR-5</td>
-                <td>Slot summary and schedule output</td>
-                <td>Provide aggregate slot distribution and recommended ETR schedule guidance.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section>
-        <h2 id="dev-nfr">5. Non-Functional Requirements</h2>
-        <div class="card">
-          <table>
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Requirement</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Performance</td>
-                <td>Typical API requests should complete under 300 ms with local DB and light load.</td>
-              </tr>
-              <tr>
-                <td>Reliability</td>
-                <td>Write operations are transactional; failures trigger rollback and stable error payloads.</td>
-              </tr>
-              <tr>
-                <td>Maintainability</td>
-                <td>Strict layering and automated endpoint tests are mandatory.</td>
-              </tr>
-              <tr>
-                <td>API Governance</td>
-                <td>OpenAPI/error contracts are additive and backward-compatible per version policy.</td>
-              </tr>
-              <tr>
-                <td>Observability</td>
-                <td>Logs and error payloads are structured for diagnostics.</td>
-              </tr>
-              <tr>
-                <td>Security by default</td>
-                <td>Protected API endpoints enforce mock API-key auth, body-size limit, CORS policy, security headers, and
-                  per-client rate limit.</td>
-                </tr>
-                <tr>
-                  <td>Idempotency of write operations</td>
-                  <td>Critical write endpoints must support safe retries via <code>Idempotency-Key</code> and dedup logic.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <figure class="sys-diagram" aria-labelledby="d-c4l1-title">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">C4 · L1</span>
+              <div class="sys-diagram__titles">
+                <h3 id="d-c4l1-title" class="sys-diagram__title">3.1 System context</h3>
+                <p class="sys-diagram__sub">People, client surfaces, the Study API, SQLite, the API as an OCI image
+                  (<code>study-app-api</code>), optional Kubernetes rollout (<code>k8s/*.yaml</code>), and observability
+                  via Docker Compose.</p>
+                </div>
+              </div>
+              <div class="sys-diagram__canvas">
+                <img class="diagram diagram--uml" src="./uml/rendered/architecture__system_context_view.png"
+                alt="C4 Level 1 system context diagram" decoding="async" loading="lazy" />
+              </div>
+              <figcaption class="sys-diagram__foot">
+                <strong>Source:</strong> <code>docs/uml/architecture/system_context_view.puml</code>.
+                The <strong>OCI image</strong> packages the API; the <strong>Kubernetes</strong> package is optional and
+                shows Deployment/Service wired to the same image and runtime. The <strong>Observability</strong> group is
+                Docker Compose (Prometheus scrapes metrics; Blackbox probes readiness; Grafana reads Prometheus). Details:
+                <a href="./developer/0009-docker-and-kubernetes-local.html">Docker image and local Kubernetes</a>,
+                <a href="./adr/0015-container-image-and-local-kubernetes.html">ADR 0015</a>.
+              </figcaption>
+            </figure>
           </div>
-        </section>
 
-        <section>
-          <h2>6. API Contracts (Required)</h2>
           <div class="card">
-            <p><strong>Swagger UI:</strong> <a href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a></p>
+            <figure class="sys-diagram" aria-labelledby="d-c4l2-title">
+              <div class="sys-diagram__head">
+                <span class="sys-diagram__badge">C4 · L2</span>
+                <div class="sys-diagram__titles">
+                  <h3 id="d-c4l2-title" class="sys-diagram__title">3.2 Containers and runtime</h3>
+                  <p class="sys-diagram__sub">Logical containers inside the Study App process, persistence, migrations, and
+                    how the observability stack reaches the API (typically on <code>localhost:8000</code> from Compose).
+                  </p>
+                </div>
+              </div>
+              <div class="sys-diagram__canvas">
+                <img class="diagram diagram--uml" src="./uml/rendered/architecture__container_view.png"
+                alt="C4 Level 2 container diagram" decoding="async" loading="lazy" />
+              </div>
+              <figcaption class="sys-diagram__foot">
+                <strong>Source:</strong> <code>docs/uml/architecture/container_view.puml</code>.
+                The API container image uses <code>scripts/container_entrypoint.sh</code> (migrate + Uvicorn). Local
+                development may run Uvicorn on the host without Docker; Compose still provides Prometheus, Grafana, and
+                Blackbox for parity with production-like observability.
+              </figcaption>
+            </figure>
           </div>
+
           <div class="card">
-            <h3>6.1 Security Constraints (Analyst-facing)</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Constraint</th>
-                  <th>Default value</th>
-                  <th>Business impact</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Authentication strategy</td>
-                  <td>Mock API key via <code>X-API-Key</code> on <code>/api/v1/*</code></td>
-                  <td>Integrations must send API key even in local/stub stage; unauthorized calls receive <code>401</code>.
-                  </td>
-                </tr>
-                <tr>
-                  <td>Rate limiting</td>
-                  <td><code>60 requests / 60 seconds</code> per client and endpoint path</td>
-                  <td>High-frequency clients must implement retry/backoff strategy; overflow returns <code>429</code>.</td>
-                </tr>
-                <tr>
-                  <td>Request body size limit</td>
-                  <td><code>1 MB</code> (<code>API_BODY_MAX_BYTES</code>)</td>
-                  <td>Payloads above limit are rejected with <code>413</code>; large uploads require dedicated flow.</td>
-                </tr>
-                <tr>
-                  <td>CORS policy</td>
-                  <td>Allowlist origins only (configured in <code>CORS_ALLOW_ORIGINS</code>)</td>
-                  <td>Browser clients from non-allowlisted origins cannot call API directly.</td>
-                </tr>
-                <tr>
-                  <td>Security headers</td>
-                  <td><code>X-Content-Type-Options</code>, <code>X-Frame-Options</code>, CSP, Referrer/Permissions policies
-                  </td>
-                  <td>Mitigates common browser-side abuse vectors for API surfaces.</td>
-                </tr>
-                <tr>
-                  <td>Idempotency requirement for writes</td>
-                  <td><code>Idempotency-Key</code> is required for critical write operations (e.g. user create)</td>
-                  <td>Clients can safely retry without duplicate writes; key reuse with another payload returns
-                    <code>409</code>. Dedup records are persisted in DB.</td>
-                  </tr>
-                </tbody>
-              </table>
+            <figure class="sys-diagram" aria-labelledby="d-c4l3-title">
+              <div class="sys-diagram__head">
+                <span class="sys-diagram__badge">C4 · L3</span>
+                <div class="sys-diagram__titles">
+                  <h3 id="d-c4l3-title" class="sys-diagram__title">3.3 Component view — Users domain</h3>
+                  <p class="sys-diagram__sub">One vertical slice through the monolith: presentation (router and
+                    schemas), application service, persistence (repository and SQLAlchemy session), then the database.
+                    Conspectuses, error logs, and schedules follow the same layering with different modules.</p>
+                  </div>
+                </div>
+                <div class="sys-diagram__canvas">
+                  <img class="diagram diagram--uml" src="./uml/rendered/architecture__system_component_view.png"
+                  alt="C4 Level 3: Users domain — presentation, application, persistence, SQLite" decoding="async"
+                  loading="lazy" />
+                </div>
+                <figcaption class="sys-diagram__foot">
+                  <strong>Source:</strong> <code>docs/uml/architecture/system_component_view.puml</code>.
+                  Illustrative paths: <code>app/api/v1/user.py</code>, <code>app/schemas/user.py</code>,
+                  <code>app/services/user_service.py</code>, <code>app/repositories/user_repository.py</code>,
+                  <code>app/core/database.py</code>.
+                </figcaption>
+              </figure>
             </div>
           </section>
-
           <section>
-            <h2>7. Sequence Diagrams</h2>
-            <div class="card">
-              <img class="diagram" src="./uml/rendered/create_conspectus_sequence.png" alt="UML sequence: note creation" />
-            </div>
-            <div class="card">
-              <img class="diagram" src="./uml/rendered/review_retrieve_sequence.png"
-              alt="UML sequence: retrieve review flow" />
-            </div>
-            <div class="card">
-              <img class="diagram" src="./uml/rendered/error_log_sequence.png" alt="UML sequence: error logging" />
-            </div>
-          </section>
-
-          <section>
-            <h2 id="dev-error-matrix">8. Error Matrix</h2>
-            <div class="card">
-              <p>Code-based contracts with source-of-truth in code:</p>
-              <ul>
-                <li><code>app/validation/user.py</code></li>
-                <li><code>app/schemas/errors.py</code></li>
-                <li><code>app/openapi/examples/errors.py</code></li>
-              </ul>
-            </div>
-          </section>
-
-          <section>
-            <h2>9. Architecture Decisions (ADR)</h2>
+            <h2>4. Functional Requirements</h2>
             <div class="card">
               <table>
                 <thead>
                   <tr>
-                    <th>Document</th>
-                    <th>Description</th>
-                    <th>Open</th>
+                    <th style="width: 22%;">Requirement</th>
+                    <th style="width: 78%;">Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>ADR Index</td>
-                    <td>All architecture decisions, their rationale, and reference links.</td>
-                    <td><a href="./adr/README.html">Open ADR index</a></td>
+                    <td><strong>FR-1</strong>. User management by <code>system_user_id</code></td>
+                    <td>Create user on first call and preserve stable identity for downstream operations.</td>
                   </tr>
                   <tr>
-                    <td>ADR Template</td>
-                    <td>Template for creating a new ADR with required sections and structure.</td>
-                    <td><a href="./adr/0000-template.html">Open template</a></td>
+                    <td><strong>FR-2</strong>. Note creation and slot assignment</td>
+                    <td>Create note with required ETR structure and assign initial slot policy.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>FR-3</strong>. Retrieve scenario and slot transitions</td>
+                    <td>Return due notes and apply deterministic slot transition rules by review result.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>FR-4</strong>. Error-log storage and retrieval</td>
+                    <td>Store learning mistakes and provide ordered retrieval for review and analysis.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>FR-5</strong>. Slot summary and schedule output</td>
+                    <td>Provide aggregate slot distribution and recommended ETR schedule guidance.</td>
                   </tr>
                 </tbody>
               </table>
@@ -253,27 +161,236 @@
           </section>
 
           <section>
-            <h2>10. Engineering Practices</h2>
+            <h2 id="dev-nfr">5. Non-Functional Requirements</h2>
             <div class="card">
               <table>
                 <thead>
                   <tr>
-                    <th>Document</th>
-                    <th>Description</th>
-                    <th>Open</th>
+                    <th style="width: 22%;">Requirement</th>
+                    <th style="width: 78%;">Description</th>
+
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Engineering Practices</td>
-                    <td>Workflow, quality gates, policy, and operational discipline.</td>
-                    <td><a href="./engineering-practices.html">Open document</a></td>
+                    <td><strong>NFR-1</strong>. Performance</td>
+                    <td>Typical API requests should complete under 300 ms with local DB and light load.</td>
                   </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </main>
-      </body>
+                  <tr>
+                    <td><strong>NFR-2</strong>. Reliability</td>
+                    <td>Write operations are transactional; failures trigger rollback and stable error payloads.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>NFR-3</strong>. Maintainability</td>
+                    <td>Strict layering and automated endpoint tests are mandatory.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>NFR-4</strong>. API Governance</td>
+                    <td>OpenAPI/error contracts are additive and backward-compatible per version policy.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>NFR-5</strong>. Observability</td>
+                    <td>Structured request logs; Prometheus metrics on <code>/metrics</code> (toggle via config); health and
+                      readiness on <code>/health</code> and <code>/ready</code>; optional local stack via Docker Compose
+                      (Prometheus, Grafana, Blackbox, SLO rules and dashboards) per ADR 0009 and ADR 0011.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>NFR-6</strong>. Security by default</td>
+                      <td>Protected API endpoints enforce mock API-key auth, body-size limit, CORS policy, security headers, and
+                        per-client rate limit.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>NFR-7</strong>. Idempotency of write operations</td>
+                        <td>Critical write endpoints must support safe retries via <code>Idempotency-Key</code> and dedup logic.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><strong>NFR-8</strong>. Packaging</td>
+                        <td>Production-oriented <code>Dockerfile</code> and image tag <code>study-app-api:local</code>; optional
+                          local Kubernetes manifests and Makefile targets per ADR 0015.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
 
-    </html>
+                <section>
+                  <h2>6. API Contracts (Required)</h2>
+                  <div class="card">
+                    <p><strong>Swagger UI:</strong> <a href="http://127.0.0.1:8000/docs">http://127.0.0.1:8000/docs</a></p>
+                  </div>
+                  <div class="card">
+                    <h3>6.1 Security Constraints (Analyst-facing)</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Constraint</th>
+                          <th>Default value</th>
+                          <th>Business impact</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Authentication strategy</td>
+                          <td>Mock API key via <code>X-API-Key</code> on <code>/api/v1/*</code></td>
+                          <td>Integrations must send API key even in local/stub stage; unauthorized calls receive <code>401</code>.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Rate limiting</td>
+                          <td><code>60 requests / 60 seconds</code> per client and endpoint path</td>
+                          <td>High-frequency clients must implement retry/backoff strategy; overflow returns <code>429</code>.</td>
+                        </tr>
+                        <tr>
+                          <td>Request body size limit</td>
+                          <td><code>1 MB</code> (<code>API_BODY_MAX_BYTES</code>)</td>
+                          <td>Payloads above limit are rejected with <code>413</code>; large uploads require dedicated flow.</td>
+                        </tr>
+                        <tr>
+                          <td>CORS policy</td>
+                          <td>Allowlist origins only (configured in <code>CORS_ALLOW_ORIGINS</code>)</td>
+                          <td>Browser clients from non-allowlisted origins cannot call API directly.</td>
+                        </tr>
+                        <tr>
+                          <td>Security headers</td>
+                          <td><code>X-Content-Type-Options</code>, <code>X-Frame-Options</code>, CSP, Referrer/Permissions policies
+                          </td>
+                          <td>Mitigates common browser-side abuse vectors for API surfaces.</td>
+                        </tr>
+                        <tr>
+                          <td>Idempotency requirement for writes</td>
+                          <td><code>Idempotency-Key</code> is required for critical write operations (e.g. user create)</td>
+                          <td>Clients can safely retry without duplicate writes; key reuse with another payload returns
+                            <code>409</code>. Dedup records are persisted in DB.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section>
+                  <h2>7. Sequence Diagrams</h2>
+                  <div class="card">
+                    <figure class="sys-diagram" aria-labelledby="d-seq-create-title">
+                      <div class="sys-diagram__head">
+                        <span class="sys-diagram__badge">Sequence</span>
+                        <div class="sys-diagram__titles">
+                          <h3 id="d-seq-create-title" class="sys-diagram__title">7.1 Create note (conspectus)</h3>
+                          <p class="sys-diagram__sub"><code>POST /conspectuses</code> — validation, slot policy, transactional
+                            insert.</p>
+                          </div>
+                        </div>
+                        <div class="sys-diagram__canvas">
+                          <img class="diagram diagram--uml" src="./uml/rendered/create_conspectus_sequence.png"
+                          alt="UML sequence: create conspectus" decoding="async" loading="lazy" />
+                        </div>
+                        <figcaption class="sys-diagram__foot">
+                          <strong>Source:</strong> <code>docs/uml/sequences/create_conspectus_sequence.puml</code>.
+                        </figcaption>
+                      </figure>
+                    </div>
+
+                    <div class="card">
+                      <figure class="sys-diagram" aria-labelledby="d-seq-review-title">
+                        <div class="sys-diagram__head">
+                          <span class="sys-diagram__badge">Sequence</span>
+                          <div class="sys-diagram__titles">
+                            <h3 id="d-seq-review-title" class="sys-diagram__title">7.2 Review retrieve</h3>
+                            <p class="sys-diagram__sub">Load, transition slot, persist log; map domain outcomes to HTTP status.</p>
+                          </div>
+                        </div>
+                        <div class="sys-diagram__canvas">
+                          <img class="diagram diagram--uml" src="./uml/rendered/review_retrieve_sequence.png"
+                          alt="UML sequence: review retrieve" decoding="async" loading="lazy" />
+                        </div>
+                        <figcaption class="sys-diagram__foot">
+                          <strong>Source:</strong> <code>docs/uml/sequences/review_retrieve_sequence.puml</code>.
+                        </figcaption>
+                      </figure>
+                    </div>
+
+                    <div class="card">
+                      <figure class="sys-diagram" aria-labelledby="d-seq-err-title">
+                        <div class="sys-diagram__head">
+                          <span class="sys-diagram__badge">Sequence</span>
+                          <div class="sys-diagram__titles">
+                            <h3 id="d-seq-err-title" class="sys-diagram__title">7.3 Create error log</h3>
+                            <p class="sys-diagram__sub">Ownership checks, insert path, conflict handling on concurrent writes.</p>
+                          </div>
+                        </div>
+                        <div class="sys-diagram__canvas">
+                          <img class="diagram diagram--uml" src="./uml/rendered/error_log_sequence.png" alt="UML sequence: error log"
+                          decoding="async" loading="lazy" />
+                        </div>
+                        <figcaption class="sys-diagram__foot">
+                          <strong>Source:</strong> <code>docs/uml/sequences/error_log_sequence.puml</code>.
+                        </figcaption>
+                      </figure>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 id="dev-error-matrix">8. Error Matrix</h2>
+                    <div class="card">
+                      <p>Code-based contracts with source-of-truth in code:</p>
+                      <ul>
+                        <li><code>app/validation/user.py</code></li>
+                        <li><code>app/schemas/errors.py</code></li>
+                        <li><code>app/openapi/examples/errors.py</code></li>
+                      </ul>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2>9. Architecture Decisions (ADR)</h2>
+                    <div class="card">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Document</th>
+                            <th>Description</th>
+                            <th>Open</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>ADR Index</td>
+                            <td>All architecture decisions, their rationale, and reference links.</td>
+                            <td><a href="./adr/README.html">Open ADR index</a></td>
+                          </tr>
+                          <tr>
+                            <td>ADR Template</td>
+                            <td>Template for creating a new ADR with required sections and structure.</td>
+                            <td><a href="./adr/0000-template.html">Open template</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2>10. Engineering Practices</h2>
+                    <div class="card">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Document</th>
+                            <th>Description</th>
+                            <th>Open</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Engineering Practices</td>
+                            <td>Workflow, quality gates, policy, and operational discipline.</td>
+                            <td><a href="./engineering-practices.html">Open document</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                </main>
+              </body>
+
+            </html>

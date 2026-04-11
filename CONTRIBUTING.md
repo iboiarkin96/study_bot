@@ -23,7 +23,7 @@
 - After changing routes, Makefile help, env templates, PlantUML, or narrative HTML under `docs/`, run **`make docs-fix`** and commit the results so CI passes.
 - **`docs-check`** fails if the docs pipeline would change any file relative to `HEAD`—your tree must already include everything `docs-fix` would write.
 - Human-written overview: [docs/developer/0008-docs-pipeline.html](docs/developer/0008-docs-pipeline.html). ADR for the practice: [docs/adr/0001-docs-as-code.html](docs/adr/0001-docs-as-code.html).
-- Documentation-only history (narrative ADRs, runbooks, guides): [docs/CHANGELOG.md](docs/CHANGELOG.md). ADR lifecycle, badges, and Issue-based discussion: [docs/adr/0018-adr-lifecycle-ratification-and-badges.html](docs/adr/0018-adr-lifecycle-ratification-and-badges.html).
+- Documentation-only history (narrative ADRs, runbooks, guides): [docs/CHANGELOG.md](docs/CHANGELOG.md). ADR lifecycle, status model, and Issue-based discussion: [docs/adr/0018-adr-lifecycle-ratification-and-badges.html](docs/adr/0018-adr-lifecycle-ratification-and-badges.html).
 
 ## Kubernetes local manifests
 
@@ -42,7 +42,8 @@
 
 ## Architecture decisions (ADRs)
 
-- New decisions: open a discussion using [`.github/ISSUE_TEMPLATE/adr_discussion.md`](.github/ISSUE_TEMPLATE/adr_discussion.md), then copy [docs/adr/0000-template.html](docs/adr/0000-template.html), use the next number, add a row to [docs/adr/README.html](docs/adr/README.html), and fill Status badges plus Ratification when merging (see [ADR 0018](docs/adr/0018-adr-lifecycle-ratification-and-badges.html)).
+- **Marking the work:** open an Issue from [`.github/ISSUE_TEMPLATE/adr_discussion.md`](.github/ISSUE_TEMPLATE/adr_discussion.md) and use a title starting with **`[ADR]`** (see [ADR 0018](docs/adr/0018-adr-lifecycle-ratification-and-badges.html)). That Issue is the discussion record; optional GitHub labels are not required.
+- **Publishing:** copy [docs/adr/0000-template.html](docs/adr/0000-template.html), take the next number, add a row to [docs/adr/README.html](docs/adr/README.html), set `data-adr-weight` on `<main>`, and fill **Ratification** (Issue + merge PR + date) when you merge.
 - Add a bullet under `[Unreleased]` in [docs/CHANGELOG.md](docs/CHANGELOG.md) when the change is user-visible for documentation readers.
 
 ## Changelog

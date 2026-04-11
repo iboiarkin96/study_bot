@@ -485,6 +485,7 @@ _DIR_COMMENTS: dict[str, str] = {
     "docs/developer": "Developer guides and onboarding",
     "docs/runbooks": "Operational troubleshooting guides",
     "docs/uml": "PlantUML diagrams",
+    "docs/uml/include": "Shared PlantUML skin (merged at Kroki render)",
     "docs/uml/sequences": "Sequence diagram sources",
     "docs/uml/rendered": "Rendered PNGs",
     "k8s": "Kubernetes manifests; k8s/app.env sources the generated ConfigMap",

@@ -1,39 +1,46 @@
 @startuml
 title Study App - C4 L2 Container View
 
-skinparam shadowing false
-skinparam linetype polyline
-skinparam componentStyle rectangle
-skinparam packageStyle rectangle
-skinparam defaultFontName Arial
-skinparam defaultFontSize 12
-skinparam ArrowColor #334155
-skinparam PackageBorderColor #94a3b8
-skinparam ComponentBorderColor #64748b
-skinparam ComponentBackgroundColor #f8fafc
-skinparam DatabaseBorderColor #64748b
-skinparam DatabaseBackgroundColor #f8fafc
-left to right direction
+top to bottom direction
 
-actor "Client App" as Client
+actor "Client app" as Client
 
-node "Study App Runtime" {
-  [HTTP API\nFastAPI + Routers] as Http
-  [Application\nServices + Schemas] as App
-  [Persistence\nRepositories + ORM] as Persist
+package "Study App\n(single process)" as Proc {
+  [HTTP · FastAPI routers] as Http
+  [Application services] as App
+  [Persistence · repositories] as Persist
+  Http -[hidden]down- App
+  App -[hidden]down- Persist
 }
 
 database "SQLite\nstudy_app.db" as Db
-[Alembic CLI] as Mig
+rectangle "Alembic\n(migrations)" as Mig
 
-Client --> Http : HTTPS
-Http --> App : use cases
-App --> Persist : data access
+Persist -[hidden]right- Db
+Mig -[hidden]down- Db
+
+package "Observability stack\n(Docker Compose)" as Obs {
+  [Grafana] as Graf
+  [Prometheus] as Prom
+  [Blackbox exporter] as Bbx
+  Graf -[hidden]right- Prom
+  Prom -[hidden]right- Bbx
+}
+
+Proc -[hidden]down- Obs
+
+Client --> Http : HTTPS / JSON
+Http --> App
+App --> Persist
 Persist --> Db : SQL
-Mig --> Db : schema migration
+Mig ..> Db : apply
+
+Graf --> Prom : queries
+Prom ..> Http : scrape :8000/metrics
+Bbx ..> Http : probe :8000/ready
 
 note bottom of App
-  Layering: API -> Services -> Repositories -> DB
+  Layering: API → Services → Repositories → DB
 end note
 
 @enduml

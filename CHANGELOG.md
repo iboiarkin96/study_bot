@@ -7,9 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+None
+
+## [1.1.1] — 2026-04-12
+
 ### Added
 
 - ADR 0017: branch naming (`feature/`, `fix/`, `docs/`, `chore/`, `refactor/`), `main` as integration branch, release tags `v*.*.*`, and hotfix forward-port guidance.
+
+- ADR 0020: C4 views, PlantUML conventions, shared diagram style (`docs/uml/include/style.puml`), and `docs/uml/README.txt` for authors.
+
+### Changed
+
+- PlantUML in `docs/uml/`: diagram sources and rendered PNGs updated; shared style via `docs/uml/include/style.puml` ([ADR 0020](docs/adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
+
+- Documentation pipeline and contributor touchpoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/adr_discussion.md`, and synced HTML pages (e.g. engineering practices, system analysis, backlog, runbooks, developer docs) brought in line with ADR lifecycle and UML generation.
 
 ## [1.1.1] — 2026-04-11
 

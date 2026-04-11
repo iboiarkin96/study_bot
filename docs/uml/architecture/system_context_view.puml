@@ -1,45 +1,64 @@
 @startuml
 title Study App - C4 L1 System Context
 
-skinparam shadowing false
-skinparam linetype polyline
-skinparam componentStyle rectangle
-skinparam packageStyle rectangle
-skinparam defaultFontName Arial
-skinparam defaultFontSize 12
-skinparam ArrowColor #334155
-skinparam PackageBorderColor #94a3b8
-skinparam ComponentBorderColor #64748b
-skinparam ComponentBackgroundColor #f8fafc
-left to right direction
+top to bottom direction
 
-actor Learner
-actor Mentor
-actor Operator
+package "People" as People {
+  actor Learner
+  actor Mentor
+  actor Operator
+}
 
-rectangle "Study App API" as Api
-
-package "Client Apps" {
-  [Web] as Web
+package "Client apps" as Clients {
+  [Web UI] as Web
   [Mobile] as Mobile
-  [Bot Adapter] as Bot
+  [Bot adapter] as Bot
+  Web -[hidden]right- Mobile
+  Mobile -[hidden]right- Bot
 }
 
-package "External Systems (planned)" {
-  [Identity Provider] as Idp
-  [Observability] as Obs
+rectangle "Study App API\nFastAPI · OpenAPI" as Api
+
+database "SQLite\nstudy_app.db" as Db
+rectangle "OCI image\nstudy-app-api" as Img
+
+package "Kubernetes\n(optional)" as K8s {
+  rectangle "Deployment · Service\nk8s/*.yaml" as K8sDep
 }
+
+package "Observability\n(Docker Compose)" as Obs {
+  [Grafana] as Graf
+  [Prometheus] as Prom
+  [Blackbox] as Bbx
+  Graf -[hidden]right- Prom
+  Prom -[hidden]right- Bbx
+}
+
+People -[hidden]down- Clients
+Clients -[hidden]down- Api
+Api -[hidden]down- Db
+Db -[hidden]right- Img
+Img -[hidden]right- K8s
+Db -[hidden]down- Obs
 
 Learner --> Web
 Learner --> Mobile
 Mentor --> Web
 Operator --> Bot
+Operator --> Graf
+Operator ..> K8sDep : optional
 
-Web --> Api : HTTPS / JSON
-Mobile --> Api : HTTPS / JSON
-Bot --> Api : HTTPS / JSON
+Web --> Api : HTTPS
+Mobile --> Api
+Bot --> Api
 
-Api ..> Idp : auth integration
-Api ..> Obs : metrics and logs
+Api --> Db : SQL
+Img ..> Api : packages
+K8sDep ..> Img : image pull
+K8sDep ..> Api : runs
+
+Prom ..> Api : metrics
+Bbx ..> Api : ready
+Graf --> Prom
 
 @enduml
