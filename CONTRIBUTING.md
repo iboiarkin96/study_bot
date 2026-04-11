@@ -35,6 +35,10 @@
 
 - Intentional API contract changes: update the baseline with **`make openapi-accept-changes`** after review, then commit `docs/openapi/openapi-baseline.json` (and related code) so **`make openapi-check`** and **`make contract-test`** stay green.
 
+## Branches and repository workflow
+
+- Conventions for branch names (`feature/…`, `fix/…`, `docs/…`, etc.), `main` as integration branch, tags `v*.*.*`, and hotfixes: [ADR 0017](docs/adr/0017-branch-naming-and-repository-workflow.html).
+
 ## Architecture decisions (ADRs)
 
 - New decisions: copy [docs/adr/0000-template.html](docs/adr/0000-template.html), use the next number, add a row to [docs/adr/README.html](docs/adr/README.html), and follow the structure.

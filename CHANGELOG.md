@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None
+### Added
 
+- ADR 0017: branch naming (`feature/`, `fix/`, `docs/`, `chore/`, `refactor/`), `main` as integration branch, release tags `v*.*.*`, and hotfix forward-port guidance.
 
 ## [1.1.1] — 2026-04-11
 

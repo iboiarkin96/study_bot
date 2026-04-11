@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0017: Branch Naming and Repository Workflow</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0017: Branch Naming and Repository Workflow</h1>
+      <div id="docs-top-nav"></div>
+      <h2>Status</h2>
+      <p>Accepted</p>
+
+      <h2>Context</h2>
+      <p>
+        Contributors create branches for features and fixes; without a shared convention, names become ambiguous in
+        reviews, automation, and release notes. Repository practices (how <code>main</code> is used, when to tag,
+        how to integrate work) also benefit from a single documented baseline so onboarding stays predictable.
+      </p>
+
+      <h2>Decision</h2>
+
+      <h3>1. Integration branch</h3>
+      <ul>
+        <li>
+          <strong><code>main</code></strong> is the default integration branch: it should remain <strong>releasable</strong>
+          (quality gates green on the latest commit). Feature work lands via pull request into <code>main</code> unless a
+          rare exception is agreed (hotfix branch policy below).
+        </li>
+      </ul>
+
+      <h3>2. Branch naming</h3>
+      <p>Use lowercase ASCII, hyphens as separators, and a short type prefix:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Prefix</th>
+            <th>Use for</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>feature/</code></td>
+            <td>New behavior, API additions, user-visible changes.</td>
+            <td><code>feature/user-export-csv</code></td>
+          </tr>
+          <tr>
+            <td><code>fix/</code></td>
+            <td>Bug fixes and regressions.</td>
+            <td><code>fix/idempotency-409-body</code></td>
+          </tr>
+          <tr>
+            <td><code>docs/</code></td>
+            <td>Documentation-only changes under <code>docs/</code>, README, ADRs.</td>
+            <td><code>docs/adr-0017-branches</code></td>
+          </tr>
+          <tr>
+            <td><code>chore/</code></td>
+            <td>Tooling, CI, formatting sweeps, dependencies without product behavior change.</td>
+            <td><code>chore/bump-ruff</code></td>
+          </tr>
+          <tr>
+            <td><code>refactor/</code></td>
+            <td>Internal restructuring without intended behavior change (still covered by tests).</td>
+            <td><code>refactor/user-service-split</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Optional: suffix or segment with an issue tracker id if the team uses one, e.g.
+        <code>feature/42-export-csv</code> or <code>fix/gh-12-rate-limit</code>. Avoid spaces, underscores except when
+        matching an external id, and very long names—keep the slug readable in Git UI and terminal tabs.
+      </p>
+
+      <h3>3. Lifespan and updates</h3>
+      <ul>
+        <li>Prefer <strong>one logical change set per branch</strong> per PR when practical; split unrelated edits.</li>
+        <li>Keep the branch reasonably current with <code>main</code> using <strong>rebase</strong> or <strong>merge</strong>
+          from <code>main</code> before merge; choose one style per PR and avoid mixing noisy merge commits unless the team
+          standardizes on merge commits for traceability.</li>
+          <li>After the PR merges, <strong>delete the remote feature branch</strong> when Git hosting offers it, to reduce
+            clutter (local branches may be deleted by the author).</li>
+          </ul>
+
+          <h3>4. Releases and tags</h3>
+          <ul>
+            <li>Release versions follow <a href="https://semver.org/">Semantic Versioning</a> as already stated in
+              <code>CHANGELOG.md</code> (see <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>).</li>
+              <li>Git tags for releases use the form <code>vMAJOR.MINOR.PATCH</code> (e.g. <code>v1.2.0</code>), created on the
+                commit that corresponds to the released changelog section.</li>
+              </ul>
+
+              <h3>5. Hotfixes</h3>
+              <p>
+                If a production fix must ship without taking everything on <code>main</code>, branch from the tagged release
+                (e.g. <code>fix/prod-1-1-2-null-deref</code>), fix, tag a patch, and forward-port the same commit to
+                <code>main</code> (or cherry-pick) so drift does not accumulate. This is exceptional; default flow remains
+                PR → <code>main</code> → release.
+              </p>
+
+              <h2>Scope</h2>
+              <ul>
+                <li>In scope: naming, integration model, tags, contributor expectations.</li>
+                <li>Out of scope: Git hosting UI settings (branch protection rules), required reviewers—configure per org policy.</li>
+              </ul>
+
+              <h2>Alternatives considered</h2>
+              <ol>
+                <li>
+                  Free-form branch names only.
+                  <ul>
+                    <li>Pros: zero rules.</li>
+                    <li>Cons: hard to scan history and to automate changelog or CI by prefix.</li>
+                  </ul>
+                </li>
+                <li>
+                  GitFlow with long-lived <code>develop</code>.
+                  <ul>
+                    <li>Pros: strict staging.</li>
+                    <li>Cons: extra overhead for a small service repo; <code>main</code>-as-trunk is enough with strong CI.</li>
+                  </ul>
+                </li>
+              </ol>
+
+              <h2>Consequences</h2>
+              <h3>Positive</h3>
+              <ul>
+                <li>Consistent names in PR lists and local <code>git branch</code> output.</li>
+                <li>Clear place to document hotfix and tagging expectations next to changelog policy.</li>
+              </ul>
+              <h3>Trade-offs</h3>
+              <ul>
+                <li>Existing branches keep their names until closed; rename is optional when touching an old branch.</li>
+              </ul>
+            </main>
+          </body>
+        </html>
