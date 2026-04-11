@@ -98,7 +98,7 @@ function renderTopNav() {
     { label: "ADR", target: "adr/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
     { label: "API (Python)", target: "api/index.html" },
-    { label: "OpenAPI validator", target: "openapi-explorer.html" },
+    { label: "OpenAPI (test)", target: "openapi-explorer.html" },
   ];
 
   const nav = document.createElement("nav");

@@ -89,7 +89,9 @@ Useful: `make env-check`, `curl -s http://127.0.0.1:8000/live | jq`.
 | Developer guides (requirements, contracts, load testing, local dev, Docker/K8s) | [docs/developer/README.html](docs/developer/README.html) |
 | ADRs | [docs/adr/README.html](docs/adr/README.html) |
 | Runbooks | [docs/runbooks/README.html](docs/runbooks/README.html) |
-| OpenAPI — static request validator (Swagger UI + Ajv, no network) | [docs/openapi-explorer.html](docs/openapi-explorer.html) |
+| OpenAPI (test) — Swagger UI for the baseline spec (browse only; no in-browser validation) | [docs/openapi-explorer.html](docs/openapi-explorer.html) |
+
+Serve the `docs/` folder over HTTP when using that page (for example `cd docs && python -m http.server 8765`). For interactive API docs against a running app, use FastAPI’s `/docs` when CORS allows your browser origin.
 
 Daily workflow: prefer `make` targets (`make help`). Common flows: `make fix`, `make verify`, `make release-check`. Before commit: `make pre-commit-check`. Docs sync: `make docs-fix`; verify: `make docs-check`.
 

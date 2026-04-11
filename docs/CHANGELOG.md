@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- [ADR 0022](adr/0022-embedded-swagger-ui-openapi-sandbox.html): embedded Swagger UI static request validation (browser-only Ajv); contract URL strategy, scope, and open risks; `openapi-explorer.html` is validation-only (no live API from that page).
+- [ADR 0022](adr/0022-embedded-swagger-ui-openapi-sandbox.html) superseded: browser validation cancelled; `openapi-explorer.html` is OpenAPI (test), Swagger browse-only; task on hold. Removed `openapi-live.html` (use app `/docs` for Try it out).
+
+### Added
 
 - [ADR 0021](adr/0021-continuous-delivery-github-actions-and-ghcr.html): continuous delivery via GitHub Actions — build <code>Dockerfile</code>, push to GHCR after CI, beginner-oriented context (CI vs CD), scope, and references; developer guide <a href="developer/0009-docker-and-kubernetes-local.html">0009</a> links to registry automation.
 

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **`docs/openapi-explorer.html`:** validation-only static page — Ajv checks `application/json` bodies against `openapi-baseline.json`; no live API / sandbox toggle. **`docs/assets/openapi-sandbox.js`** trimmed accordingly (interceptors, blob URL for `file://`, spec reload bypass).
+- **OpenAPI (test):** **`docs/openapi-explorer.html`** — Swagger UI against `openapi-baseline.json` for browsing only (**Try it out** disabled). Browser-side Ajv validation and **`docs/assets/openapi-sandbox.js`** removed. **[ADR 0022](docs/adr/0022-embedded-swagger-ui-openapi-sandbox.html)** marked superseded; validation approach on hold. **`docs/openapi-live.html`** removed (use app **`/docs`** for Try it out). README and indexes updated.
 
 - **CORS (`env/example`):** comment clarifies static `openapi-explorer.html` does not call the API; origins for `:8765` remain for browser access to the API from the same docs origin (e.g. FastAPI `/docs`).
 
