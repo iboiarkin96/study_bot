@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke docker-build k8s-render-configmap k8s-apply
+.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke docker-build k8s-render-configmap k8s-apply
 
 # ──────────────────────────────────────────────
 # Help
@@ -100,6 +100,7 @@ help:
 	@echo ""
 	@echo "  # Documentation"
 	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API)"
+	@echo "  make uml-check            Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
 	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)"
 	@echo ""
@@ -534,6 +535,18 @@ docs-check:
 		rm -f "$$tmp_before" "$$tmp_after"; \
 		exit 1; \
 	fi
+
+# Fast check: PlantUML sources vs committed PNGs (same logic as first step of docs-fix).
+uml-check:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@if [ ! -f "scripts/regenerate_docs.py" ]; then \
+		printf "$(ICON_ERR) %s\n" "scripts/regenerate_docs.py not found."; exit 1; \
+	fi
+	@printf "$(COLOR_CYAN)== UML-CHECK: START ==$(COLOR_RESET)\n"
+	@$(PYTHON) scripts/regenerate_docs.py --check
+	@printf "$(COLOR_GREEN)== UML-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
 # Generate Python API reference from docstrings (pdoc). Output under docs/api/ (also invoked from docs-fix).
 api-docs:

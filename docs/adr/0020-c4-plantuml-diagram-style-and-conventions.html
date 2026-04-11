@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0020: C4 views, PlantUML conventions, and shared diagram style</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container" data-adr-weight="7">
+      <h1>ADR 0020: C4 views, PlantUML conventions, and shared diagram style</h1>
+      <div id="docs-top-nav"></div>
+      <details class="adr-weight-help">
+        <summary>How to set valid status (click to open)</summary>
+        <p class="small">
+          On <code>&lt;main&gt;</code>, set a single attribute <code>data-adr-weight</code> to the
+          <strong>current</strong>
+          milestone (−1 … 7). The page derives <strong>Current status</strong> and paints the <strong>Status log</strong>
+          from that one number (values are not shown as plain text on the page).
+        </p>
+        <table>
+          <caption>Which number means which step (single global order 0 → 7)</caption>
+          <thead>
+            <tr>
+              <th>Value</th>
+              <th>Meaning (current milestone)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>-1</code></td>
+              <td>Status not set (or unknown)</td>
+            </tr>
+            <tr>
+              <td><code>0</code></td>
+              <td><strong>Decision</strong> — Proposed</td>
+            </tr>
+            <tr>
+              <td><code>1</code></td>
+              <td><strong>Decision</strong> — Accepted</td>
+            </tr>
+            <tr>
+              <td><code>2</code></td>
+              <td><strong>Decision</strong> — Superseded</td>
+            </tr>
+            <tr>
+              <td><code>3</code></td>
+              <td><strong>Documentation</strong> — Draft</td>
+            </tr>
+            <tr>
+              <td><code>4</code></td>
+              <td><strong>Documentation</strong> — Ready</td>
+            </tr>
+            <tr>
+              <td><code>5</code></td>
+              <td><strong>Implementation</strong> — Not started</td>
+            </tr>
+            <tr>
+              <td><code>6</code></td>
+              <td><strong>Implementation</strong> — In progress</td>
+            </tr>
+            <tr>
+              <td><code>7</code></td>
+              <td><strong>Implementation</strong> — Done</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small">
+          Example: <code>data-adr-weight="4"</code> → <strong>Current status</strong> is Documentation · Ready; earlier
+          steps in the log are green, later steps gray. <strong>Implementation: Done</strong> (<code>7</code>) uses green
+          when it is the current value. Out-of-range values are clamped in <code>docs/assets/docs-nav.js</code>.
+        </p>
+      </details>
+      <h2>Ratification</h2>
+      <p>
+        Record the discussion Issue, merge PR, and acceptance date here when ratified via the repository issue template
+        (see <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
+      </p>
+      <ul>
+        <li>Discussion Issue: <em>TBD</em></li>
+        <li>Merge PR: <em>TBD</em></li>
+        <li>Accepted: 2026-04-12</li>
+      </ul>
+
+      <h2>Context</h2>
+      <p>
+        This section explains <strong>what</strong> we are standardizing (C4 thinking, PlantUML, shared visuals) and
+        <strong>why</strong> that matters before the concrete rules in <a href="#decision-heading">Decision</a>.
+      </p>
+
+      <h3>Why draw architecture at all?</h3>
+      <p>
+        Software systems live in people’s heads, in code, and in running infrastructure—but those representations answer
+        different questions. Code shows <em>how</em> behavior is implemented; it does not, by itself, give newcomers a
+        stable map of <em>who</em> uses the system, <em>what</em> major parts exist, or <em>where</em> responsibilities
+        sit. Without shared structural pictures, teams rely on oral tradition, which drifts as people rotate and features
+        accumulate. Explicit architecture views reduce misunderstandings in planning, security review, onboarding, and
+        incident response: they are a deliberate compression of complexity, not decoration.
+      </p>
+
+      <h3>What the C4 model is (and what it is not)</h3>
+      <p>
+        The <strong>C4 model</strong> (popularized by Simon Brown and described at
+        <a href="https://c4model.com/" rel="noopener noreferrer">c4model.com</a>) is a <strong>hierarchy of zoom levels</strong>
+        for describing software architecture:
+      </p>
+      <ol>
+        <li>
+          <strong>Level 1 — System context:</strong> the system in its environment—users, external systems, key
+          dependencies. Answers “What is this thing, and who interacts with it from the outside?”
+        </li>
+        <li>
+          <strong>Level 2 — Containers:</strong> high-level technical building blocks that could be deployed or replaced
+          separately (applications, databases, message buses, major processes). Answers “What are the main runtime pieces
+          and how do they connect?”
+        </li>
+        <li>
+          <strong>Level 3 — Components:</strong> major parts <em>inside</em> a container—layers, modules, services. Answers
+          “How is responsibility divided inside that deployable unit?”
+        </li>
+        <li>
+          <strong>Level 4 — Code</strong> (optional in many teams): classes or files. Often left to the codebase and IDEs;
+          we do not require a standing L4 diagram for every feature.
+        </li>
+      </ol>
+      <p>
+        The point is <strong>separation of concerns by zoom</strong>: each level hides detail that belongs at a finer
+        grain, so diagrams stay readable. Mixing “a user clicks a button” with “this SQL migration file” on one canvas
+        usually produces noise. C4 is not a formal ISO standard with a single mandated notation; it is a <strong>mental
+        model and vocabulary</strong> that many teams have found compatible with agile delivery and incremental updates.
+      </p>
+
+      <h3>Why sequence diagrams alongside structure?</h3>
+      <p>
+        C4 views are mostly <strong>static</strong>: boxes and lines show ownership and dependency. They do not fully
+        capture <strong>order of operations</strong> across time—who calls whom, validation order, alternate failure paths.
+        <strong>Sequence diagrams</strong> (UML interaction diagrams) complement structural views by describing message flow
+        for concrete scenarios (for example “create note” or “handle conflict”). Together, structure plus sequences give a
+        fuller picture without replacing tests or code.
+      </p>
+
+      <h3>Why standardize on one textual notation (PlantUML)?</h3>
+      <p>
+        Diagrams can be drawn in many tools. A <strong>textual source</strong> (here, PlantUML) aligns with
+        <strong>docs as code</strong>: the same review, branching, and diff workflows as for application code. Generated
+        images (PNG) stay reproducible from source; style can be centralized. Alternatives such as binary drawing files or
+        unconstrained wiki embeds are harder to diff, easier to silently desynchronize from the repository, and harder to
+        lint or regenerate in CI. This ADR does not claim PlantUML is the only good tool in the industry—it claims that
+        <strong>one chosen tool for this repo</strong> is preferable to many.
+      </p>
+
+      <h3>Why a shared visual style (colors, fonts, arrows)?</h3>
+      <p>
+        Consistency is not vanity. When every author picks arbitrary colors, readers must re-learn a legend on every page.
+        A <strong>small, fixed palette</strong> tied to roles (people, APIs, data stores, infrastructure) lowers cognitive
+        load and makes printed or embedded PNGs look like one publication, not a collage. Shared typography and line
+        weight improve legibility in HTML and when slides are exported from the same sources.
+      </p>
+
+      <h3>Why this repository cares now</h3>
+      <p>
+        This project already keeps PlantUML under <code>docs/uml/</code>, merges a shared skin from
+        <code>docs/uml/include/style.puml</code> when rendering via Kroki, and references PNGs from HTML. The gap was a
+        written <strong>policy</strong>: what C4 means here, how it maps to PlantUML shapes, and how to evolve the skin
+        without one-off diagrams drifting away. This ADR turns an informal habit into an explicit contract so future
+        contributors know what “good” looks like and why.
+      </p>
+
+      <h2 id="decision-heading">Decision</h2>
+      <p>
+        All architecture and interaction diagrams that live under <code>docs/uml/</code> are authored in
+        <strong>PlantUML</strong> using standard UML and structural elements. We describe systems using the
+        <strong>C4 model</strong> as the mental map (levels 1–3), implemented with PlantUML primitives—not as a mandate
+        to use the third-party <code>C4-PlantUML</code> macro library, which would complicate single-file Kroki rendering.
+        Visual consistency comes from the shared file <code>docs/uml/include/style.puml</code>, injected at render time by
+        <code>scripts/regenerate_docs.py</code>.
+      </p>
+
+      <h3>1. Scope of notation (UML / PlantUML only)</h3>
+      <ul>
+        <li>
+          <strong>In scope for this repo:</strong> PlantUML sources (<code>.puml</code>) and PNG outputs under
+          <code>docs/uml/rendered/</code>, referenced from HTML such as <code>docs/system-analysis.html</code>.
+        </li>
+        <li>
+          <strong>Out of scope:</strong> Mermaid, Graphviz DOT, draw.io, or other diagram sources for the same canonical
+          architecture views—unless a future ADR changes this. (Informal sketches in issues or whiteboards are
+          unconstrained.)
+        </li>
+        <li>
+          Use PlantUML’s built-in layout (“smart” automatic placement). Prefer <code>left to right direction</code> for
+          structural views so wide diagrams read naturally on documentation pages. Use <code>top to bottom direction</code>
+          when a single container shows vertical layers (API → services → persistence): orthogonal routing and hidden
+          alignment links then stack internals cleanly without wide horizontal sprawl.
+        </li>
+      </ul>
+
+      <h3>2. C4 levels mapped to PlantUML elements</h3>
+      <p>
+        Follow C4 naming for titles and intent; map elements as below so colors from the shared skin apply predictably.
+      </p>
+      <table>
+        <caption>C4 level → suggested PlantUML shapes</caption>
+        <thead>
+          <tr>
+            <th>C4 level</th>
+            <th>Intent</th>
+            <th>PlantUML</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>L1 System context</td>
+            <td>People and external systems around the product</td>
+            <td>
+              <code>actor</code> for people; <code>package</code> to group external apps; <code>rectangle</code> for the
+              system under design; <code>database</code> when a store is iconic at this zoom level
+            </td>
+          </tr>
+          <tr>
+            <td>L2 Containers</td>
+            <td>Deployable apps, data stores, major technical building blocks</td>
+            <td>
+              <code>node</code> for a process or host boundary; <code>[Container]</code> rectangles inside;
+              <code>database</code> for stores; <code>package</code> for ancillary stacks (for example observability)
+            </td>
+          </tr>
+          <tr>
+            <td>L3 Components</td>
+            <td>Major parts inside a container (layers, modules)</td>
+            <td>
+              <code>package</code> per layer or bounded context; <code>[Name]</code> components inside; data access via
+              <code>database</code> / repositories as in existing examples
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small">
+        Reference implementations: <code>docs/uml/architecture/system_context_view.puml</code>,
+        <code>container_view.puml</code>, <code>system_component_view.puml</code>.
+      </p>
+
+      <h3>3. Titles, labels, and arrows</h3>
+      <ul>
+        <li>
+          <strong>Title line:</strong> Use <code>title Study App - C4 L1 …</code>, <code>L2 …</code>, or
+          <code>L3 …</code> for structural views; use <code>title Study App - Sequence: …</code> for interactions.
+        </li>
+        <li>
+          <strong>Element text:</strong> First line = name; optional second line with <code>\n</code> for technology or
+          path (for example <code>FastAPI · REST</code>, file path, or DB file name). Keep lines short; prefer 2 lines over
+          wrapping clutter.
+        </li>
+        <li>
+          <strong>Primary dependencies:</strong> solid arrows <code>--></code> with a short verb or protocol on the arrow
+          (for example <code>HTTPS / JSON</code>, <code>SQL</code>).
+        </li>
+        <li>
+          <strong>Secondary or optional links:</strong> dotted arrows <code>..></code> (metrics, probes, optional deploy,
+          non-blocking integrations).
+        </li>
+        <li>
+          <strong>Aliases:</strong> Use <code>as ShortName</code> for long labels to keep relationship lines readable.
+        </li>
+        <li>
+          <strong>Layout hints:</strong> Use hidden links (for example <code>-[hidden]down-</code>,
+          <code>-[hidden]right-</code>) to align ranks or stack layered components; express real dependencies only with
+          <code>--></code> or <code>..></code>.
+        </li>
+      </ul>
+
+      <h3>4. Sequence diagrams</h3>
+      <ul>
+        <li>Start with <code>autonumber</code> and <code>hide footbox</code> unless there is a reason not to.</li>
+        <li>
+          Use stereotypes that match the role: <code>actor</code>, <code>boundary</code> (API edge),
+          <code>control</code> (or plain <code>participant</code>) for services, <code>database</code> for persistence.
+        </li>
+        <li>Use <code>activate</code> / <code>deactivate</code> for the main request path; use <code>alt</code> /
+          <code>else</code> for branching flows.</li>
+          <li>Respect shared skin: message alignment, padding, and max message width come from
+            <code>style.puml</code>—avoid overriding them in individual files unless necessary.</li>
+          </ul>
+
+          <h3>5. Canonical visual template (shared skin)</h3>
+          <p>
+            The file <code>docs/uml/include/style.puml</code> is the single source of truth for fonts, corner radius, arrow
+            weight, and fill colors. <code>scripts/regenerate_docs.py</code> inserts it immediately after
+            <code>@startuml</code> when sending a diagram to Kroki. Do not duplicate those <code>skinparam</code> lines in each
+            diagram.
+          </p>
+          <table>
+            <caption>Palette and typography (must stay aligned with <code>style.puml</code>)</caption>
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Setting</th>
+                <th>Values (hex)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Page / packages</td>
+                <td>Package background and border</td>
+                <td>Background <code>#F8FAFC</code>, border <code>#94a3b8</code></td>
+              </tr>
+              <tr>
+                <td>Software / API / components</td>
+                <td>Rectangle (default component)</td>
+                <td>Fill <code>#EFF6FF</code>, border <code>#2563EB</code></td>
+              </tr>
+              <tr>
+                <td>Data stores</td>
+                <td>Database</td>
+                <td>Fill <code>#FFF7ED</code>, border <code>#EA580C</code></td>
+              </tr>
+              <tr>
+                <td>Infrastructure / deployment</td>
+                <td>Node</td>
+                <td>Fill <code>#F8FAFC</code>, border <code>#475569</code></td>
+              </tr>
+              <tr>
+                <td>People</td>
+                <td>Actor</td>
+                <td>Fill <code>#ECFDF5</code>, border <code>#059669</code></td>
+              </tr>
+              <tr>
+                <td>Arrows</td>
+                <td>Generalization / dependency lines</td>
+                <td>Color <code>#334155</code>, thickness <code>1.1</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <ul>
+            <li><strong>Font:</strong> <code>Segoe UI</code>, size <code>9</code> for elements; arrow labels use
+              <code>ArrowFontSize 8</code> (change only via shared style).</li>
+              <li><strong>Corners:</strong> <code>roundcorner 10</code>; <code>componentStyle rectangle</code>,
+                <code>packageStyle rectangle</code> for a clean, consistent look.</li>
+                <li><strong>Lines:</strong> <code>linetype ortho</code> (orthogonal segments—horizontal and vertical only, readable
+                  on docs pages), <code>shadowing false</code> to reduce visual noise.</li>
+                  <li><strong>Spacing:</strong> <code>nodesep</code>, <code>ranksep</code>, and <code>Padding</code> are set to
+                    moderate values—enough air between nodes without large blank areas; change only in shared style.</li>
+                    <li><strong>PNG sharpness:</strong> <code>dpi 150</code> improves raster output from Kroki (larger PNG files than
+                      the default).</li>
+                    </ul>
+                    <p>
+                      To render a diagram <strong>without</strong> the shared skin (rare debugging), put <code>!NO_STYLE</code> on the
+                      line immediately after <code>@startuml</code>; the merge script strips the marker and skips injection.
+                    </p>
+
+                    <h3>6. File layout and outputs</h3>
+                    <ul>
+                      <li><code>docs/uml/architecture/*.puml</code> — C4-style structural views.</li>
+                      <li><code>docs/uml/sequences/*.puml</code> — sequence diagrams.</li>
+                      <li><code>docs/uml/include/style.puml</code> — shared skin only (not sent to Kroki as a standalone diagram).</li>
+                      <li><code>docs/uml/rendered/*.png</code> — generated; never edit by hand. Commit PNGs together with source changes.</li>
+                    </ul>
+                    <p>
+                      Regenerate: <code>make docs-fix</code> or <code>.venv/bin/python scripts/regenerate_docs.py</code>. Verify CI:
+                      <code>make uml-check</code> or <code>scripts/regenerate_docs.py --check</code>.
+                    </p>
+
+                    <h2>Scope</h2>
+                    <ul>
+                      <li>
+                        <strong>In scope:</strong> Conventions for PlantUML in this repository, C4-level mapping, shared colors and
+                        typography, relationship semantics, sequence defaults, and render pipeline expectations.
+                      </li>
+                      <li>
+                        <strong>Out of scope:</strong> Structurizr DSL, official C4-PlantUML library adoption, and diagramming for
+                        non-docs assets—unless a later ADR extends this one.
+                      </li>
+                    </ul>
+
+                    <h2>Alternatives considered</h2>
+                    <ol>
+                      <li>
+                        <strong>C4-PlantUML library</strong>
+                        <ul>
+                          <li>Pros: explicit C4 stereotypes and legends.</li>
+                          <li>Cons: typically relies on <code>!include</code>; Kroki does not expand includes in our single-file upload
+                            path without bundling—would require a local preprocessor or checked-in expanded files.</li>
+                          </ul>
+                        </li>
+                        <li>
+                          <strong>Mermaid in Markdown</strong>
+                          <ul>
+                            <li>Pros: readable in GitHub without render step.</li>
+                            <li>Cons: second notation and styling path; weaker alignment with existing PNG-based docs pipeline.</li>
+                          </ul>
+                        </li>
+                        <li>
+                          <strong>Manual edits to PNG</strong>
+                          <ul>
+                            <li>Pros: pixel-perfect control.</li>
+                            <li>Cons: not reproducible; violates docs-as-code for diagrams.</li>
+                          </ul>
+                        </li>
+                      </ol>
+
+                      <h2>Consequences</h2>
+                      <h3>Positive</h3>
+                      <ul>
+                        <li>One visual language and one render path; onboarding and reviews are simpler.</li>
+                        <li>C4 thinking stays aligned with industry practice while keeping tooling minimal.</li>
+                        <li>Shared skin changes propagate to all diagrams on the next regeneration.</li>
+                      </ul>
+                      <h3>Trade-offs</h3>
+                      <ul>
+                        <li>Authors must learn PlantUML and respect file locations; sequence diagrams are more verbose than Mermaid.</li>
+                        <li>Large diagrams may need splitting or zoom-level discipline—C4 exists partly to avoid a single giant canvas.</li>
+                      </ul>
+
+                      <h2>Compatibility and migration</h2>
+                      <ul>
+                        <li>Backward-compatibility impact: none for runtime systems; documentation-only.</li>
+                        <li>Migration plan: new or touched diagrams follow this ADR; migrate legacy ad hoc styling when those files are next
+                          edited.</li>
+                          <li>Rollback strategy: revert ADR and skin changes; regenerate PNGs from previous commits.</li>
+                        </ul>
+
+                        <h2>Implementation plan</h2>
+                        <ol>
+                          <li>Keep <code>style.puml</code> and <code>regenerate_docs.py</code> in sync; any new global skinparam belongs in
+                            the shared file.</li>
+                            <li>When adding a diagram, copy structure from an existing architecture or sequence file; run
+                              <code>make docs-fix</code> and commit sources plus PNGs.</li>
+                              <li>Cross-link this ADR from engineering or system-analysis docs when those pages are updated.</li>
+                            </ol>
+
+                            <h2>Validation</h2>
+                            <ul>
+                              <li>Technical checks: <code>make uml-check</code> passes after changes; Kroki renders without errors.</li>
+                              <li>Documentation: HTML references <code>docs/uml/rendered/&lt;name&gt;.png</code> paths that match generated files.</li>
+                            </ul>
+
+                            <h2>References</h2>
+                            <ul>
+                              <li>C4 model: <a href="https://c4model.com/" rel="noopener noreferrer">c4model.com</a>.</li>
+                              <li>PlantUML: <a href="https://plantuml.com/" rel="noopener noreferrer">plantuml.com</a>.</li>
+                              <li>Repository: <code>docs/uml/README.txt</code>, <code>docs/uml/include/style.puml</code>.</li>
+                              <li>Related ADRs: <a href="./0001-docs-as-code.html">ADR 0001</a> (docs as code).</li>
+                            </ul>
+                          </main>
+                        </body>
+
+                      </html>

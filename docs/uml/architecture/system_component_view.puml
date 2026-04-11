@@ -1,43 +1,33 @@
 @startuml
 title Study App - C4 L3 Component View (Users)
 
-skinparam shadowing false
-skinparam linetype polyline
-skinparam componentStyle rectangle
-skinparam packageStyle rectangle
-skinparam defaultFontName Arial
-skinparam defaultFontSize 12
-skinparam ArrowColor #334155
-skinparam PackageBorderColor #94a3b8
-skinparam ComponentBorderColor #64748b
-skinparam ComponentBackgroundColor #f8fafc
-skinparam DatabaseBorderColor #64748b
-skinparam DatabaseBackgroundColor #f8fafc
-left to right direction
+top to bottom direction
 
-actor "Client App" as Client
+actor "Client" as Client
 
-package "API Layer" {
-  [User Router\napp/api/v1/user.py] as Router
-  [User Schemas\napp/schemas/user.py] as Schema
+package "Presentation — HTTP API" as Pres {
+  [User router\nFastAPI] as Router
+  [Schemas\nPydantic] as Schema
+  Router -[hidden]right- Schema
 }
 
-package "Application Layer" {
-  [UserService\napp/services/user_service.py] as Service
+package "Application — services" as AppPkg {
+  [UserService] as Service
 }
 
-package "Persistence Layer" {
-  [UserRepository\napp/repositories/user_repository.py] as Repo
-  [DB Session\napp/core/database.py] as Session
+package "Persistence — data access" as PerPkg {
+  [UserRepository] as Repo
+  [Session factory\nSQLAlchemy] as Session
+  Repo -[hidden]right- Session
 }
 
-database "SQLite" as Db
+database "SQLite\nstudy_app.db" as Db
 
-Client --> Router : request
-Router --> Schema : validate
-Router --> Service : call use case
-Service --> Repo : read and write
-Repo --> Session : transaction
+Client --> Router : HTTPS / JSON
+Router --> Schema : bind & validate
+Router --> Service : use case
+Service --> Repo : read / write
+Repo --> Session : ORM & unit of work
 Session --> Db : SQL
 
 @enduml

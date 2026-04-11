@@ -2,6 +2,7 @@
 
 Usage:
   python scripts/regenerate_docs.py
+  python scripts/regenerate_docs.py --check
   python scripts/regenerate_docs.py --watch
 """
 
@@ -17,6 +18,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 UML_SRC_DIR = PROJECT_ROOT / "docs" / "uml"
 UML_OUT_DIR = PROJECT_ROOT / "docs" / "uml" / "rendered"
+UML_STYLE_FILE = UML_SRC_DIR / "include" / "style.puml"
+# PNG quality is controlled mainly by skinparam dpi in docs/uml/include/style.puml (sent in the diagram body).
 KROKI_URL = "https://kroki.io/plantuml/png"
 NO_COLOR = os.getenv("NO_COLOR", "0") == "1"
 COLOR_RESET = "" if NO_COLOR else "\033[0m"
@@ -44,14 +47,52 @@ def _step(message: str) -> None:
     print(f"{ICON_STEP} {message}")
 
 
+def _merge_style(source_path: Path) -> str:
+    """Return PlantUML text sent to Kroki: optional shared skin after ``@startuml``.
+
+    Kroki receives a single file; ``docs/uml/include/style.puml`` is injected so sources
+    stay DRY. Use ``!NO_STYLE`` on the line after ``@startuml`` to skip injection.
+
+    Args:
+        source_path: Path to a diagram ``*.puml`` (not ``include/*.puml``).
+
+    Returns:
+        Full document body as UTF-8 text.
+    """
+    raw = source_path.read_text(encoding="utf-8")
+    lines = raw.splitlines(keepends=True)
+    if not lines:
+        return raw
+    if lines[0].strip().lower() != "@startuml":
+        return raw
+    if len(lines) > 1 and lines[1].strip() == "!NO_STYLE":
+        return "".join([lines[0]] + lines[2:])
+    if not UML_STYLE_FILE.is_file():
+        return raw
+    style = UML_STYLE_FILE.read_text(encoding="utf-8")
+    if style and not style.endswith("\n"):
+        style += "\n"
+    return lines[0] + style + "".join(lines[1:])
+
+
 def _source_files() -> list[Path]:
-    """Collect every ``*.puml`` under ``docs/uml`` except files inside ``rendered/``.
+    """Collect every diagram ``*.puml`` under ``docs/uml``.
+
+    Skips ``rendered/`` outputs and ``include/`` fragments (e.g. shared ``style.puml``).
 
     Returns:
         Sorted list of source paths.
     """
     files = sorted(UML_SRC_DIR.rglob("*.puml"))
-    return [f for f in files if "rendered" not in f.parts]
+    result: list[Path] = []
+    for f in files:
+        if "rendered" in f.parts:
+            continue
+        rel = f.relative_to(UML_SRC_DIR)
+        if rel.parts and rel.parts[0] == "include":
+            continue
+        result.append(f)
+    return result
 
 
 def _output_for(source_path: Path) -> Path:
@@ -76,6 +117,9 @@ def _output_for(source_path: Path) -> Path:
 def render_one(source_path: Path, output_path: Path) -> None:
     """Render one PlantUML file to PNG via POST to :data:`KROKI_URL` using ``curl``.
 
+    Injects :data:`UML_STYLE_FILE` after the opening ``@startuml`` line when present so
+    Kroki receives one self-contained document (``!include`` is not resolved server-side).
+
     Args:
         source_path: Input ``.puml`` file.
         output_path: Target ``.png`` path (parent dirs created).
@@ -84,21 +128,34 @@ def render_one(source_path: Path, output_path: Path) -> None:
         subprocess.CalledProcessError: If ``curl`` exits non-zero.
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [
-        "curl",
-        "-k",
-        "-sS",
-        "-X",
-        "POST",
-        "-H",
-        "Content-Type: text/plain",
-        "--data-binary",
-        f"@{source_path}",
-        KROKI_URL,
-        "-o",
-        str(output_path),
-    ]
-    subprocess.run(cmd, check=True)
+    merged = _merge_style(source_path)
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        suffix=".puml",
+        delete=False,
+    ) as tmp:
+        tmp.write(merged)
+        tmp_path = tmp.name
+    try:
+        cmd = [
+            "curl",
+            "-k",
+            "-sS",
+            "-f",
+            "-X",
+            "POST",
+            "-H",
+            "Content-Type: text/plain",
+            "--data-binary",
+            f"@{tmp_path}",
+            KROKI_URL,
+            "-o",
+            str(output_path),
+        ]
+        subprocess.run(cmd, check=True)
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)
 
 
 def render_all(verbose: bool = True) -> int:

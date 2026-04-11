@@ -3,21 +3,12 @@ title Study App - Sequence: Create Note
 
 autonumber
 hide footbox
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultFontSize 12
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-skinparam maxMessageSize 80
-skinparam ParticipantPadding 16
-skinparam BoxPadding 8
-skinparam ArrowColor #334155
 
-actor "Client App" as Client
+actor "Client app" as Client
 boundary "HTTP API" as Api
 control "ConspectusService" as Service
 participant "SchedulePolicy" as Policy
-database "Repo + DB" as RepoDb
+database "Repos + DB" as RepoDb
 
 Client -> Api: POST /conspectuses
 activate Api

@@ -39,7 +39,6 @@ function currentDocsRelPath() {
   if (idx >= 0) {
     return path.slice(idx + marker.length);
   }
-  // GitHub Pages project site: /{repo}/... maps to files at the published docs/ root (no /docs/ in URL).
   const ghPages = path.match(/^\/[^/]+\/(.*)$/);
   if (ghPages) {
     const rel = ghPages[1];
@@ -116,4 +115,155 @@ function renderTopNav() {
   host.replaceWith(nav);
 }
 
-document.addEventListener("DOMContentLoaded", renderTopNav);
+/** ADR: single `data-adr-weight` on <main> (−1…7) → current status + linear status log. */
+
+const ADR_STEPS = [
+  { w: 0, axis: "Decision", label: "Proposed" },
+  { w: 1, axis: "Decision", label: "Accepted" },
+  { w: 2, axis: "Decision", label: "Superseded" },
+  { w: 3, axis: "Documentation", label: "Draft" },
+  { w: 4, axis: "Documentation", label: "Ready" },
+  { w: 5, axis: "Implementation", label: "Not started" },
+  { w: 6, axis: "Implementation", label: "In progress" },
+  { w: 7, axis: "Implementation", label: "Done" },
+];
+
+function parseAdrWeightValue(raw) {
+  const n = parseInt(String(raw ?? "-1").trim(), 10);
+  if (Number.isNaN(n)) {
+    return -1;
+  }
+  if (n < -1) {
+    return -1;
+  }
+  if (n > 7) {
+    return 7;
+  }
+  return n;
+}
+
+function adrCurrentWeight(main) {
+  return parseAdrWeightValue(main.getAttribute("data-adr-weight"));
+}
+
+function stepKind(stepWeight, globalMax) {
+  if (globalMax < 0) {
+    return "todo";
+  }
+  if (stepWeight < globalMax) {
+    return "done";
+  }
+  if (stepWeight === globalMax) {
+    // Terminal step: show green (same as passed), not yellow "in progress"
+    if (stepWeight === 7) {
+      return "done";
+    }
+    return "current";
+  }
+  return "todo";
+}
+
+/** Current status banner: emoji + label + CSS tone (draft / ongoing / declined / done). */
+function adrCurrentStatusPresentation(globalMax) {
+  const rows = [
+    [-1, { emoji: "📝", label: "Draft", tone: "draft" }],
+    [0, { emoji: "⏳", label: "In progress", tone: "ongoing" }],
+    [1, { emoji: "⏳", label: "In progress", tone: "ongoing" }],
+    [2, { emoji: "🚫", label: "Declined", tone: "declined" }],
+    [3, { emoji: "⏳", label: "In progress", tone: "ongoing" }],
+    [4, { emoji: "⏳", label: "In progress", tone: "ongoing" }],
+    [5, { emoji: "⏳", label: "In progress", tone: "ongoing" }],
+    [6, { emoji: "⏳", label: "In progress", tone: "ongoing" }],
+    [7, { emoji: "⭐", label: "Done", tone: "done" }],
+  ];
+  const map = new Map(rows);
+  const hit = map.get(globalMax);
+  if (hit) {
+    return hit;
+  }
+  return {
+    emoji: "❔",
+    label: `Weight ${globalMax}`,
+    tone: "ongoing",
+  };
+}
+
+function renderAdrCurrentStatus(nav, globalMax) {
+  const box = document.createElement("div");
+  box.className = "adr-current-status";
+  box.setAttribute("role", "status");
+
+  const pres = adrCurrentStatusPresentation(globalMax);
+  box.classList.add(`adr-current-status--${pres.tone}`);
+
+  const label = document.createElement("span");
+  label.className = "adr-current-status__label";
+  label.textContent = "Current status:";
+
+  const value = document.createElement("strong");
+  value.className = "adr-current-status__value";
+  value.textContent = `${pres.emoji} ${pres.label}`;
+
+  box.appendChild(label);
+  box.appendChild(document.createTextNode(" "));
+  box.appendChild(value);
+  nav.insertAdjacentElement("afterend", box);
+  return box;
+}
+
+function renderAdrStatusLogAfter(anchor, globalMax) {
+  const wrap = document.createElement("div");
+  wrap.className = "adr-status-log";
+  wrap.setAttribute("role", "group");
+  wrap.setAttribute("aria-label", "Status log");
+
+  const title = document.createElement("span");
+  title.className = "adr-status-log__title";
+  title.textContent = "Status log";
+  wrap.appendChild(title);
+
+  const row = document.createElement("div");
+  row.className = "adr-status-log__row";
+
+  for (const step of ADR_STEPS) {
+    const sp = document.createElement("span");
+    const kind = stepKind(step.w, globalMax);
+    sp.className = `adr-step adr-step--${kind}`;
+    sp.textContent = `${step.axis}: ${step.label}`;
+    if (globalMax >= 0 && step.w === globalMax) {
+      sp.setAttribute("aria-current", "step");
+    }
+    row.appendChild(sp);
+  }
+
+  wrap.appendChild(row);
+  anchor.insertAdjacentElement("afterend", wrap);
+}
+
+function mainHasAdrWeight(main) {
+  return main.hasAttribute("data-adr-weight");
+}
+
+function renderAdr(main) {
+  if (!mainHasAdrWeight(main)) {
+    return;
+  }
+
+  const nav = main.querySelector("nav.top-nav");
+  if (!nav) {
+    return;
+  }
+
+  const globalMax = adrCurrentWeight(main);
+
+  const anchor = renderAdrCurrentStatus(nav, globalMax);
+  renderAdrStatusLogAfter(anchor, globalMax);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderTopNav();
+  const main = document.querySelector("main.container");
+  if (main) {
+    renderAdr(main);
+  }
+});

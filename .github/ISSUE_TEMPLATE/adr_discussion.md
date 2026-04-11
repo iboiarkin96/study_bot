@@ -1,35 +1,39 @@
 ---
 name: ADR discussion
-about: Discuss and record consensus before merging an Architecture Decision Record
+about: Discuss an architecture decision before merging its ADR
 title: "[ADR] "
 labels: []
 ---
 
+## Marking this task
+
+- **Title:** keep the **`[ADR]`** prefix (it is how we spot ADR threads in the list). Add a short subject after it.
+- **Labels:** optional — we do not require a special label; the template + title are enough.
+
 ## Summary
 
-Short description of the decision being proposed (link to a draft branch or paste the ADR title).
+Short description of the decision (link to a draft branch or paste the working title).
 
 ## Background
 
-Why this decision is needed now; links to related issues or prior context.
+Why this is needed now; links to related issues or prior context.
 
 ## Proposal
 
-Bullet points or a link to the proposed ADR text (or PR).
+Bullet points or a link to the proposed ADR text (or draft PR).
 
 ## Discussion checklist
 
-- [ ] Stakeholders notified or tagged
-- [ ] Alternatives and trade-offs understood
+- [ ] Alternatives and trade-offs are clear
 - [ ] Open questions resolved or explicitly deferred
 
 ## Consensus
 
-When ready, summarize the outcome here and open a PR that:
+When ready, open a PR that:
 
-- Updates or adds the ADR under `docs/adr/`
+- Adds or updates the ADR under `docs/adr/`
 - Updates `docs/adr/README.html` if the ADR is new
-- Adds an entry under `[Unreleased]` in `docs/CHANGELOG.md`
-- Sets **Ratification** in the ADR (links to this Issue and the merge PR, acceptance date)
+- Adds an entry under `[Unreleased]` in `docs/CHANGELOG.md` when readers should know
+- Fills **Ratification** (link to **this** Issue, merge PR, acceptance date) and sets `data-adr-weight` on `<main>`
 
 Close this Issue after the ADR PR is merged (or when the proposal is withdrawn).

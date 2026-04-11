@@ -138,6 +138,7 @@ Auto-generated from root `Makefile` `help` target (same source as [engineering-p
 | `make test-one path=…` | Run one test file or node |
 | `make test-warnings` | Run tests with full warning details |
 | `make type-check` | Run mypy type checks |
+| `make uml-check` | Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes) |
 | `make venv` | Create virtual environment |
 | `make verify` | Run lint-check + type-check + openapi-check + contract-test + test + docs-fix |
 | `make verify-ci` | Run lint-check + type-check + openapi-check + contract-test + test + docs-check |
@@ -177,6 +178,7 @@ study_app/
 │   ├── runbooks/  # Operational troubleshooting guides
 │   └── uml/  # PlantUML diagrams
 │       ├── architecture/
+│       ├── include/  # Shared PlantUML skin (merged at Kroki render)
 │       ├── rendered/  # Rendered PNGs
 │       └── sequences/  # Sequence diagram sources
 ├── k8s/  # Kubernetes manifests; k8s/app.env sources the generated ConfigMap
