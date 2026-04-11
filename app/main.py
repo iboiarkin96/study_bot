@@ -57,6 +57,13 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None,
     openapi_tags=OPENAPI_TAGS,
+    servers=[
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local development (APP_HOST/APP_PORT default)",
+        },
+        {"url": "http://localhost:8000", "description": "Local development (localhost)"},
+    ],
 )
 rate_limiter = InMemoryRateLimiter(
     limit=settings.api_rate_limit_requests,

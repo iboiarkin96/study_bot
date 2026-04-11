@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke docker-build k8s-render-configmap k8s-apply
+.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke docker-build k8s-render-configmap k8s-apply
 
 # ──────────────────────────────────────────────
 # Help
@@ -93,6 +93,9 @@ help:
 	@echo "  make verify               Run lint-check + type-check + openapi-check + contract-test + test + docs-fix"
 	@echo "  make verify-ci            Run lint-check + type-check + openapi-check + contract-test + test + docs-check"
 	@echo ""
+	@echo "  # Supply chain (ADR 0019)"
+	@echo "  make deps-audit           Scan requirements.txt with pip-audit (OSV); fails on known CVEs"
+	@echo ""
 	@echo "  # Tests"
 	@echo "  make test                 Run full test suite (pytest + coverage per pyproject.toml)"
 	@echo "  make test-one path=…      Run one test file or node"
@@ -123,7 +126,7 @@ help:
 	@echo "  make pre-commit-check     Run all pre-commit hooks"
 	@echo ""
 	@echo "  # Deployment"
-	@echo "  make release-check        Run env-check + verify before deploy"
+	@echo "  make release-check        Run env-check + deps-audit + verify before deploy"
 	@echo "  make release DEPLOY_CMD='…' Run release-check then deploy command"
 	@echo ""
 
@@ -158,6 +161,16 @@ requirements:
 	@printf "$(ICON_STEP) %s\n" "Generating requirements.txt from current .venv…"
 	@$(PIP) freeze | LC_ALL=C sort > requirements.txt
 	@printf "$(ICON_OK) %s\n" "requirements.txt updated"
+
+# OSV-backed vulnerability scan of pinned dependencies (ADR 0019). Uses a repo-local cache (see .gitignore).
+deps-audit:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@mkdir -p .pip-audit-cache
+	@printf "$(ICON_STEP) %s\n" "Running pip-audit against requirements.txt…"
+	@$(PYTHON) -m pip_audit -r requirements.txt --desc on --cache-dir .pip-audit-cache
+	@printf "$(ICON_OK) %s\n" "pip-audit: no known vulnerabilities reported"
 
 # Create root .env from the single tracked template (env/example).
 env-init:
@@ -466,9 +479,11 @@ release-check:
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
 	@printf "$(COLOR_CYAN)== RELEASE-CHECK: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/2] env-check"
+	@printf "$(ICON_INFO) %s\n" "[1/3] env-check"
 	@$(MAKE) env-check
-	@printf "$(ICON_INFO) %s\n" "[2/2] verify"
+	@printf "$(ICON_INFO) %s\n" "[2/3] deps-audit"
+	@$(MAKE) deps-audit
+	@printf "$(ICON_INFO) %s\n" "[3/3] verify"
 	@$(MAKE) verify
 	@printf "$(COLOR_GREEN)== RELEASE-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 

@@ -71,6 +71,9 @@ function activeTarget(relPath) {
   if (relPath.startsWith("api/")) {
     return "api/index.html";
   }
+  if (relPath === "openapi-explorer.html") {
+    return "openapi-explorer.html";
+  }
   if (relPath === "engineering-practices.html") {
     return "engineering-practices.html";
   }
@@ -95,6 +98,7 @@ function renderTopNav() {
     { label: "ADR", target: "adr/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
     { label: "API (Python)", target: "api/index.html" },
+    { label: "OpenAPI validator", target: "openapi-explorer.html" },
   ];
 
   const nav = document.createElement("nav");

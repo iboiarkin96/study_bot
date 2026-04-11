@@ -89,60 +89,10 @@ Useful: `make env-check`, `curl -s http://127.0.0.1:8000/live | jq`.
 | Developer guides (requirements, contracts, load testing, local dev, Docker/K8s) | [docs/developer/README.html](docs/developer/README.html) |
 | ADRs | [docs/adr/README.html](docs/adr/README.html) |
 | Runbooks | [docs/runbooks/README.html](docs/runbooks/README.html) |
+| OpenAPI — static request validator (Swagger UI + Ajv, no network) | [docs/openapi-explorer.html](docs/openapi-explorer.html) |
 
 Daily workflow: prefer `make` targets (`make help`). Common flows: `make fix`, `make verify`, `make release-check`. Before commit: `make pre-commit-check`. Docs sync: `make docs-fix`; verify: `make docs-check`.
 
-### Makefile reference
-
-Auto-generated from root `Makefile` `help` target (same source as [engineering-practices.html](docs/engineering-practices.html#dev-docs-as-code)):
-
-<!-- BEGIN:MAKEFILE_REF -->
-| Command | Purpose |
-| ------- | ------- |
-| `make api-docs` | Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix) |
-| `make changelog-draft` | Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand) |
-| `make container-start` | Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env) |
-| `make contract-test` | Stricter: generated OpenAPI must equal baseline JSON exactly |
-| `make dead-code-check` | Run Vulture (unused code; see ADR 0014; not in verify-ci) |
-| `make docker-build` | Build image study-app-api:local (requires Docker) |
-| `make docs-check` | Verify docs are already in sync (fails on drift) |
-| `make docs-fix` | Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API) |
-| `make env-check` | Verify env, deps, and DB connectivity |
-| `make env-init` | Create .env from env/example (once per machine) |
-| `make fix` | Run auto-fixes (format-fix + lint-fix + docs-fix) |
-| `make format-check` | Verify code formatting (no changes) |
-| `make format-fix` | Auto-format Python code |
-| `make install` | Install dependencies |
-| `make k8s-apply` | kubectl apply manifests (requires kubectl; see guide) |
-| `make k8s-render-configmap` | Render k8s/configmap.yaml from k8s/app.env (same as docs-fix step) |
-| `make lint-check` | Run Ruff lint checks |
-| `make lint-fix` | Run Ruff with auto-fixes |
-| `make llm-ping` | Smoke-test LLM API (same env as changelog-draft) |
-| `make migrate` | Apply all Alembic migrations |
-| `make migration name=…` | Auto-generate new Alembic migration |
-| `make observability-down` | Stop Prometheus/Grafana stack |
-| `make observability-smoke` | Check observability links return HTTP 200 |
-| `make observability-up` | Start Prometheus/Grafana stack with Docker Compose |
-| `make openapi-accept-changes` | Overwrite baseline with current app.openapi() (commit the file) |
-| `make openapi-check` | Lint (operationId, summary, write+422 examples) + breaking-change |
-| `make pre-commit-check` | Run all pre-commit hooks |
-| `make pre-commit-install` | Install git pre-commit hooks |
-| `make release DEPLOY_CMD='…'` | Run release-check then deploy command |
-| `make release-check` | Run env-check + verify before deploy |
-| `make requirements` | Auto-generate requirements.txt from .venv |
-| `make run` | Start FastAPI dev server |
-| `make run-loadtest-api` | Start API (high rate limit) → run tools.load_testing.runner → stop |
-| `make run-loadtest-api-serve` | Like run, but high API rate limit (foreground; use in 2nd terminal with runner) |
-| `make run-project` | Start observability stack (Prometheus/Grafana/…) + FastAPI |
-| `make test` | Run full test suite (pytest + coverage per pyproject.toml) |
-| `make test-one path=…` | Run one test file or node |
-| `make test-warnings` | Run tests with full warning details |
-| `make type-check` | Run mypy type checks |
-| `make uml-check` | Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes) |
-| `make venv` | Create virtual environment |
-| `make verify` | Run lint-check + type-check + openapi-check + contract-test + test + docs-fix |
-| `make verify-ci` | Run lint-check + type-check + openapi-check + contract-test + test + docs-check |
-<!-- END:MAKEFILE_REF -->
 
 ---
 

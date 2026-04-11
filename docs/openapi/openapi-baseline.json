@@ -499,6 +499,13 @@
       },
       "ValidationError": {
         "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
           "loc": {
             "items": {
               "anyOf": [
@@ -1979,6 +1986,16 @@
       }
     }
   },
+  "servers": [
+    {
+      "description": "Local development (APP_HOST/APP_PORT default)",
+      "url": "http://127.0.0.1:8000"
+    },
+    {
+      "description": "Local development (localhost)",
+      "url": "http://localhost:8000"
+    }
+  ],
   "tags": [
     {
       "description": "Operational endpoints (live/ready/metrics and platform metadata).",

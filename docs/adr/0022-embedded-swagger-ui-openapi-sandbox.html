@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0022: Embedded Swagger UI — static OpenAPI request validation</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container" data-adr-weight="6">
+      <h1>ADR 0022: Embedded Swagger UI — static OpenAPI request validation</h1>
+      <div id="docs-top-nav"></div>
+      <details class="adr-weight-help">
+        <summary>How to set valid status (click to open)</summary>
+        <p class="small">
+          On <code>&lt;main&gt;</code>, set a single attribute <code>data-adr-weight</code> to the
+          <strong>current</strong>
+          milestone (−1 … 7). The page derives <strong>Current status</strong> and paints the <strong>Status log</strong>
+          from that one number (values are not shown as plain text on the page).
+        </p>
+        <table>
+          <caption>Which number means which step (single global order 0 → 7)</caption>
+          <thead>
+            <tr>
+              <th>Value</th>
+              <th>Meaning (current milestone)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>-1</code></td>
+              <td>Status not set (or unknown)</td>
+            </tr>
+            <tr>
+              <td><code>0</code></td>
+              <td><strong>Decision</strong> — Proposed</td>
+            </tr>
+            <tr>
+              <td><code>1</code></td>
+              <td><strong>Decision</strong> — Accepted</td>
+            </tr>
+            <tr>
+              <td><code>2</code></td>
+              <td><strong>Decision</strong> — Superseded</td>
+            </tr>
+            <tr>
+              <td><code>3</code></td>
+              <td><strong>Documentation</strong> — Draft</td>
+            </tr>
+            <tr>
+              <td><code>4</code></td>
+              <td><strong>Documentation</strong> — Ready</td>
+            </tr>
+            <tr>
+              <td><code>5</code></td>
+              <td><strong>Implementation</strong> — Not started</td>
+            </tr>
+            <tr>
+              <td><code>6</code></td>
+              <td><strong>Implementation</strong> — In progress</td>
+            </tr>
+            <tr>
+              <td><code>7</code></td>
+              <td><strong>Implementation</strong> — Done</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small">
+          Example: <code>data-adr-weight="4"</code> → <strong>Current status</strong> is Documentation · Ready; earlier
+          steps in the log are green, later steps gray. <strong>Implementation: Done</strong> (<code>7</code>) uses green
+          when it is the current value. Out-of-range values are clamped in <code>docs/assets/docs-nav.js</code>.
+        </p>
+      </details>
+      <h2>Ratification</h2>
+      <p>
+        Decision recorded for traceability; discussion Issue and merge PR should be linked when this ADR is ratified
+        per <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.
+      </p>
+      <ul>
+        <li>Discussion Issue: <em>TBD</em></li>
+        <li>Merge PR: <em>TBD</em></li>
+        <li>Accepted: <em>TBD</em></li>
+      </ul>
+
+      <h2>Context</h2>
+      <p>
+        The documentation site embeds <strong>Swagger UI</strong> (<code>docs/openapi-explorer.html</code>) against the
+        committed contract snapshot <code>docs/openapi/openapi-baseline.json</code> (see
+        <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Contributors and readers often want
+        to explore operations <strong>without</strong> running the API, database, or network — for example from static
+        hosting or a local <code>file://</code> page.
+      </p>
+      <p>
+        Standard Swagger UI <strong>Try it out</strong> sends real HTTP requests. This embedded page instead
+        <strong>only</strong> validates JSON bodies against the contract: no network to configured servers.
+      </p>
+
+      <h2>Decision</h2>
+      <p>
+        The embedded explorer (<code>docs/openapi-explorer.html</code>) always runs in <strong>validation-only</strong>
+        mode: it validates <code>application/json</code> request bodies using <strong>Ajv</strong> (2020 dialect,
+        formats) against schemas from <code>openapi-baseline.json</code>, via interceptors — no toggle, no live API from
+        this page. Implementation lives in <code>docs/assets/openapi-sandbox.js</code> (ES module) and uses:
+      </p>
+      <ul>
+        <li>
+          <code>@apidevtools/json-schema-ref-parser</code> to dereference a <strong>clone</strong> of the spec for
+          validation (concrete request-body schemas for matching operations).
+        </li>
+        <li>
+          <code>requestInterceptor</code> / <code>responseInterceptor</code> on Swagger UI to short-circuit
+          <strong>Try it out</strong> with a synthetic response when validation succeeds, and to normalize the displayed
+          response so Swagger does not mis-render JSON against operation response schemas.
+        </li>
+        <li>
+          Bypass for requests that reload the OpenAPI document itself (same URL Swagger uses for <code>url:</code>
+          loading), so that fetch is not mistaken for an API call.
+        </li>
+      </ul>
+      <p>
+        <strong>Out of scope:</strong> validating headers, path parameters, query strings, or response bodies. Real HTTP
+        <strong>Try it out</strong> remains on the running service (e.g. FastAPI <code>/docs</code>), not on this static
+        page.
+      </p>
+
+      <h2>Swagger UI loading model (contract URL)</h2>
+      <p>
+        Internal <code>#/components/schemas/…</code> references must resolve against the OpenAPI <strong>document</strong>,
+        not the HTML page URL. The implementation therefore prefers loading the contract via <code>url</code> (relative
+        <code>openapi/openapi-baseline.json</code> on <code>http(s)</code>). For <code>file://</code> pages, resolving
+        refs via literal <code>file:///…/openapi-baseline.json#/…</code> can fail inside Swagger’s resolver
+        (“Evaluation failed on URI”); the code supplies the same JSON through a <strong>blob:</strong> object URL so
+        fragment refs resolve in memory.
+      </p>
+      <p>
+        A <strong>fully dereferenced</strong> (inlined) document is <em>not</em> passed into Swagger UI: it has been
+        observed to break rendering of the documented <strong>Responses</strong> section (e.g. React error
+        <code>responses_Responses</code>).
+      </p>
+
+      <h2>Implementation status</h2>
+      <p>
+        <strong>Implementation is in progress</strong> (<code>data-adr-weight="6"</code>). Core pieces (interceptors,
+        Ajv, path template matching, blob URL for <code>file://</code>, spec reload bypass) are in place; behavior
+        remains sensitive to Swagger UI version and browser.
+      </p>
+
+      <h2>Known issues and open risks</h2>
+      <p>
+        Not all combinations of <strong>page origin</strong> (<code>file://</code> vs <code>http(s)</code>),
+        <strong>Swagger UI</strong> patch version, and <strong>browser</strong> have been fully validated. Despite
+        mitigations above, users may still see resolver warnings, failed rendering in the Responses panel, or console
+        errors that we have <strong>not fully eliminated</strong>. Treat this page as a <strong>best-effort</strong>
+        helper for contract exploration, not a second test harness.
+      </p>
+      <ul>
+        <li>
+          <strong>Contract truth</strong> remains <code>make contract-test</code> / CI gates on
+          <code>openapi-baseline.json</code>; the browser validator does not replace server-side validation.
+        </li>
+      </ul>
+
+      <h2>Alternatives considered</h2>
+      <ol>
+        <li>
+          <strong>Only host Swagger at the live API</strong> (<code>/docs</code>) — simpler, but no offline/static-site
+          exploration of the committed snapshot.
+        </li>
+        <li>
+          <strong>Separate CLI or desktop validator</strong> — stronger guarantees, higher friction for readers.
+        </li>
+        <li>
+          <strong>Inline <code>spec:</code> only</strong> — breaks <code>$ref</code> base on <code>file://</code> (refs
+          anchor to the HTML file).
+        </li>
+      </ol>
+
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Readers can sanity-check JSON bodies against the published contract without infrastructure.</li>
+        <li>Aligns narrative docs with the same <code>openapi-baseline.json</code> enforced in CI.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Extra client-side JS, CDN imports (Swagger bundle, Ajv, ref-parser), and maintenance when upgrading Swagger UI.</li>
+        <li>Browser-only validation is not a substitute for automated contract tests.</li>
+      </ul>
+
+      <h2>Compatibility and migration</h2>
+      <ul>
+        <li>Backward-compatibility impact: <strong>none</strong> for the API; documentation-only behavior.</li>
+        <li>Rollback: revert or disable <code>openapi-sandbox.js</code> wiring in <code>openapi-explorer.html</code>.</li>
+      </ul>
+
+      <h2>Validation</h2>
+      <ul>
+        <li>Manual: open <code>docs/openapi-explorer.html</code>, run <strong>Try it out</strong> on JSON operations;
+          confirm no unintended network calls to the API (only spec load / blob as configured).</li>
+        <li>Contract gates unchanged: <code>make contract-test</code> / CI.</li>
+      </ul>
+
+      <h2>References</h2>
+      <ul>
+        <li>
+          Related ADRs:
+          <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> (OpenAPI governance),
+          <a href="./0001-docs-as-code.html">ADR 0001</a> (docs as code).
+        </li>
+        <li>Implementation: <code>docs/assets/openapi-sandbox.js</code>, <code>docs/openapi-explorer.html</code>.</li>
+      </ul>
+    </main>
+  </body>
+
+</html>

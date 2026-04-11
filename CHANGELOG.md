@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- [ADR 0021](docs/adr/0021-continuous-delivery-github-actions-and-ghcr.html): continuous delivery of the container image (GitHub Actions → GHCR), CI vs CD, scope, and why runtime secrets stay outside the workflow.
+- **`docs/openapi-explorer.html`:** validation-only static page — Ajv checks `application/json` bodies against `openapi-baseline.json`; no live API / sandbox toggle. **`docs/assets/openapi-sandbox.js`** trimmed accordingly (interceptors, blob URL for `file://`, spec reload bypass).
 
-- GitHub Actions: **CD** job **`publish-image`** builds the [`Dockerfile`](Dockerfile) and pushes to **GHCR** (`ghcr.io/<owner>/<repo>`) on successful **`quality`** (and **`changelog`** when that job runs) after push to **`main`** / **`master`** or **`v*`** tags. Uses the default **`GITHUB_TOKEN`** (`packages: write`); image tags include **short SHA**, **`latest`** on the default branch, and **semver** labels on version tags.
+- **CORS (`env/example`):** comment clarifies static `openapi-explorer.html` does not call the API; origins for `:8765` remain for browser access to the API from the same docs origin (e.g. FastAPI `/docs`).
+
+
 
 ## [1.1.1] — 2026-04-12
 
@@ -20,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ADR 0017: branch naming (`feature/`, `fix/`, `docs/`, `chore/`, `refactor/`), `main` as integration branch, release tags `v*.*.*`, and hotfix forward-port guidance.
 
 - ADR 0020: C4 views, PlantUML conventions, shared diagram style (`docs/uml/include/style.puml`), and `docs/uml/README.txt` for authors.
+
+- [ADR 0021](docs/adr/0021-continuous-delivery-github-actions-and-ghcr.html): continuous delivery of the container image (GitHub Actions → GHCR), CI vs CD, scope, and why runtime secrets stay outside the workflow.
+
+- GitHub Actions: **CD** job **`publish-image`** builds the [`Dockerfile`](Dockerfile) and pushes to **GHCR** (`ghcr.io/<owner>/<repo>`) on successful **`quality`** (and **`changelog`** when that job runs) after push to **`main`** / **`master`** or **`v*`** tags. Uses the default **`GITHUB_TOKEN`** (`packages: write`); image tags include **short SHA**, **`latest`** on the default branch, and **semver** labels on version tags.
+
+- **Embedded Swagger UI:** [docs/openapi-explorer.html](docs/openapi-explorer.html) loads the committed OpenAPI snapshot (`docs/openapi/openapi-baseline.json`) with **Try it out**; top nav link **Swagger UI**; linked from docs index, developer index, and README.
 
 ### Changed
 

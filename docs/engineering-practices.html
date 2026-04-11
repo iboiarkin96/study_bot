@@ -308,6 +308,10 @@
                             <td>Run Vulture (unused code; see ADR 0014; not in verify-ci)</td>
                           </tr>
                           <tr>
+                            <td><code>make deps-audit</code></td>
+                            <td>Scan requirements.txt with pip-audit (OSV); fails on known CVEs</td>
+                          </tr>
+                          <tr>
                             <td><code>make docker-build</code></td>
                             <td>Build image study-app-api:local (requires Docker)</td>
                           </tr>
@@ -405,7 +409,7 @@
                           </tr>
                           <tr>
                             <td><code>make release-check</code></td>
-                            <td>Run env-check + verify before deploy</td>
+                            <td>Run env-check + deps-audit + verify before deploy</td>
                           </tr>
                           <tr>
                             <td><code>make requirements</code></td>
