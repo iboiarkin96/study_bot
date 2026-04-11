@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0018: ADR lifecycle, ratification, and status badges</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0018: ADR lifecycle, ratification, and status badges</h1>
+      <div id="docs-top-nav"></div>
+      <h2>Status</h2>
+      <p class="adr-meta">
+        <span class="badge badge--success">Decision: Accepted</span>
+        <span class="badge badge--muted">Implementation: Done</span>
+        <span class="badge badge--muted">Documentation: Ready</span>
+      </p>
+      <h2>Ratification</h2>
+      <p>
+        Bootstrap: this ADR introduces the ratification block; ADRs numbered 0017 and below were adopted under earlier
+        conventions. From ADR 0018 onward, new decisions should link to their discussion Issue and merge PR here.
+      </p>
+      <h2>Context</h2>
+      <p>
+        The project uses HTML ADRs under <code>docs/adr/</code> and publishes them with the rest of the site (for example GitHub Pages).
+        Contributors need a clear split between <strong>decision accepted</strong>, <strong>implementation progress</strong>, and
+        <strong>documentation polish</strong>, plus a lightweight way to record discussion outcomes without interactive voting in static HTML.
+      </p>
+      <h2>Decision</h2>
+      <ol>
+        <li>
+          Each ADR exposes three axes in the <strong>Status</strong> section using shared CSS badges (see <code>docs/assets/docs.css</code>):
+          <strong>Decision</strong> (Proposed, Accepted, Superseded), <strong>Implementation</strong> (Not started, In progress, Done),
+          and <strong>Documentation</strong> (Draft, Ready). <strong>Accepted</strong> decisions use the success (green) badge style.
+        </li>
+        <li>
+          <strong>Ratification</strong>: for new decisions after this ADR, record links to the GitHub discussion Issue and the merge PR,
+          and the acceptance date, in a dedicated section (see <code>docs/adr/0000-template.html</code>). Consensus is reached in the Issue;
+          the merged ADR is the published record.
+        </li>
+        <li>
+          <strong>Documentation changelog</strong>: notable changes under <code>docs/</code> are summarized in
+          <code>docs/CHANGELOG.md</code>, separate from the root <code>CHANGELOG.md</code> (product/API focus per
+          <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>).
+        </li>
+        <li>
+          <strong>Documentation-only delivery</strong>: pull requests that only change documentation (including ADRs) may merge to
+          <code>main</code> before implementation code; implementation follows in separate PRs.
+        </li>
+      </ol>
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Readers see decision vs implementation vs doc readiness at a glance.</li>
+        <li>Discussion and votes remain auditable in GitHub Issues and PRs.</li>
+        <li>Doc history is traceable without overloading the product changelog.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Badge lines must be updated manually when status changes.</li>
+        <li>Older ADRs may lack a Ratification block until edited; they remain valid as adopted under prior process.</li>
+      </ul>
+      <h2>References</h2>
+      <ul>
+        <li><a href="./0001-docs-as-code.html">ADR 0001: Docs as Code</a></li>
+        <li><a href="./0013-changelog-and-release-notes.html">ADR 0013: Changelog and release notes</a></li>
+        <li><a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a></li>
+        <li>Issue template: <code>.github/ISSUE_TEMPLATE/adr_discussion.md</code></li>
+      </ul>
+    </main>
+  </body>
+</html>
