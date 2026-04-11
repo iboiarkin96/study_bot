@@ -24,9 +24,20 @@
 - **`docs-check`** fails if the docs pipeline would change any file relative to `HEAD`—your tree must already include everything `docs-fix` would write.
 - Human-written overview: [docs/developer/0008-docs-pipeline.html](docs/developer/0008-docs-pipeline.html). ADR for the practice: [docs/adr/0001-docs-as-code.html](docs/adr/0001-docs-as-code.html).
 
+## Kubernetes local manifests
+
+- **Optional for daily development** — feature work uses **`make run`** and tests; Docker/Kubernetes are for packaging and remote-like runs. See the root **README** (section *Container image & local Kubernetes*) and [docs/developer/0009-docker-and-kubernetes-local.html](docs/developer/0009-docker-and-kubernetes-local.html) for the usual dev cycle vs a high-level **real deploy** outline (registry → rollout).
+- Edit **`k8s/app.env`** for non-secret pod variables; run **`make k8s-render-configmap`** (or **`make docs-fix`**) so **`k8s/configmap.yaml`** stays in sync — it is generated, not hand-edited.
+- API keys for **`qa`**/**`prod`**-style runs belong in a Kubernetes **Secret**; see **`k8s/secret.example.yaml`**.
+- **`make container-start`** runs the same **`scripts/container_entrypoint.sh`** as the Docker image (migrate + Uvicorn, no `--reload`). The image does not call **`make`** — there is no `.venv` inside the container.
+
 ## OpenAPI
 
 - Intentional API contract changes: update the baseline with **`make openapi-accept-changes`** after review, then commit `docs/openapi/openapi-baseline.json` (and related code) so **`make openapi-check`** and **`make contract-test`** stay green.
+
+## Branches and repository workflow
+
+- Conventions for branch names (`feature/…`, `fix/…`, `docs/…`, etc.), `main` as integration branch, tags `v*.*.*`, and hotfixes: [ADR 0017](docs/adr/0017-branch-naming-and-repository-workflow.html).
 
 ## Architecture decisions (ADRs)
 

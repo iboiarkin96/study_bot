@@ -1,4 +1,7 @@
-"""Alembic environment configuration."""
+"""Alembic environment configuration.
+
+Wires SQLAlchemy URL from application settings and :mod:`app.models` metadata for offline and online migrations.
+"""
 
 from __future__ import annotations
 
@@ -21,7 +24,7 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode."""
+    """Generate SQL scripts without a live DB connection (Alembic offline mode)."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -35,7 +38,7 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode."""
+    """Apply migrations through a live engine connection (Alembic online mode)."""
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",

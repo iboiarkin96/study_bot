@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0016: Python Docstrings (Google Style) and pdoc</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>ADR 0016: Python Docstrings (Google Style) and pdoc</h1>
+      <div id="docs-top-nav"></div>
+      <h2>Status</h2>
+      <p>Accepted</p>
+
+      <h2>Context</h2>
+      <p>
+        API contracts are documented in OpenAPI and narrative HTML docs, but <strong>in-code documentation</strong>
+        (modules, services, repositories) lacked a single convention. Contributors and automation (including LLM
+        assistants) need a predictable template so docstrings stay consistent and so
+        <a href="https://pdoc.dev/">pdoc</a> (<code>make api-docs</code>) produces a useful developer reference.
+      </p>
+
+      <h2>Decision</h2>
+      <ol>
+        <li>
+          <strong>Style:</strong> Use <strong>Google-style</strong> docstrings for all new and updated Python in
+          <code>app/</code>, <code>scripts/</code>, <code>tests/</code>, and <code>tools/</code>. Public functions and
+          classes MUST have a docstring unless the name is completely self-explanatory and private (leading
+          <code>_</code>); even then, prefer a one-line summary for anything non-trivial.
+        </li>
+        <li>
+          <strong>Language:</strong> Docstring text is in <strong>English</strong> (same as code identifiers and API
+          error keys). Comments for local teams may use other languages in separate docs, not in docstrings.
+        </li>
+        <li>
+          <strong>First line:</strong> Imperative or descriptive one-line summary (subject: verb), ending without a
+          period if it is a phrase fragment, or with a period if it is a full sentence—either is acceptable; stay
+          consistent within a file.
+        </li>
+        <li>
+          <strong>Sections</strong> (use when applicable): <code>Args</code>, <code>Returns</code>, <code>Raises</code>,
+          <code>Yields</code>, <code>Note</code> / <code>Notes</code>, <code>Attributes</code> (classes and dataclasses).
+        </li>
+        <li>
+          <strong>pdoc:</strong> Generated HTML under <code>docs/api/</code> is the browseable view; keeping docstrings
+          accurate is part of maintainability. See <a href="../developer/0008-docs-pipeline.html">Documentation
+          pipeline</a>, §6.
+        </li>
+      </ol>
+
+      <h2>Scope</h2>
+      <ul>
+        <li>In scope: docstrings, module-level <code>"""..."""</code> for packages, ADR and editor rules.</li>
+        <li>Out of scope: replacing OpenAPI descriptions; changing Ruff/mypy rules solely for docstrings.</li>
+      </ul>
+
+      <h2>Templates (copy from here)</h2>
+      <h3>Module</h3>
+      <pre><code>"""One-line summary of the module responsibility.
+
+        Optional longer context: what callers use this for, main exports.
+        """</code></pre>
+
+        <h3>Function</h3>
+        <pre><code>"""Do one specific thing (summary line).
+
+          Args:
+          name: What this parameter represents.
+          other: Second parameter.
+
+          Returns:
+          What the caller receives.
+
+          Raises:
+          ValueError: When the input is invalid.
+          HTTPException: When returning a business-layer error (document status if non-obvious).
+          """</code></pre>
+
+          <h3>Class</h3>
+          <pre><code>"""Short description of the class role.
+
+            Attributes:
+            field: Meaning of this attribute.
+            """</code></pre>
+
+            <h3>Method / property</h3>
+            <p>Same as function; use <code>Args</code> including <code>self</code> only when non-obvious.</p>
+
+            <h2>Checklist for humans and LLM agents</h2>
+            <ul>
+              <li>After changing behavior, update the docstring in the same PR.</li>
+              <li>Do not restate type information that is already in type hints unless it adds semantics.</li>
+              <li>For FastAPI route handlers, document idempotency, security assumptions, and replay behavior where not obvious
+                from OpenAPI.</li>
+                <li>For service/repository methods, document <code>Raises</code> for <code>HTTPException</code> and business
+                  rules.</li>
+                  <li>Prefer linking related concepts with <code>:class:`...</code> / <code>:func:`...</code> (Sphinx-style
+                    cross-refs) where pdoc can resolve them; otherwise use plain backticks for code names.</li>
+                    <li>Run <code>make api-docs</code> locally when changing public <code>app</code> APIs to verify rendering.</li>
+                  </ul>
+
+                  <h2>Alternatives considered</h2>
+                  <ol>
+                    <li>
+                      NumPy-style docstrings.
+                      <ul>
+                        <li>Pros: common in data science stacks.</li>
+                        <li>Cons: heavier visually; Google style already used in this repo (e.g. <code>scripts/sync_docs.py</code>).</li>
+                      </ul>
+                    </li>
+                    <li>
+                      Sphinx-only (no pdoc).
+                      <ul>
+                        <li>Pros: maximum features.</li>
+                        <li>Cons: more setup; pdoc matches the desired “cargo doc” workflow with minimal config.</li>
+                      </ul>
+                    </li>
+                  </ol>
+
+                  <h2>Consequences</h2>
+                  <h3>Positive</h3>
+                  <ul>
+                    <li>Single convention for reviews and for generated API HTML.</li>
+                    <li>Agents can follow the ADR and the Cursor rule without guessing.</li>
+                  </ul>
+                  <h3>Trade-offs</h3>
+                  <ul>
+                    <li>Existing files may still carry older phrasing until touched; opportunistic updates are welcome.</li>
+                  </ul>
+                </main>
+              </body>
+            </html>

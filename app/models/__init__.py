@@ -1,4 +1,8 @@
-"""ORM model exports."""
+"""ORM model exports for Alembic and application code.
+
+Re-exports the declarative base, core entities, and reference tables so metadata and imports
+stay centralized.
+"""
 
 from app.models.base import Base
 from app.models.core.idempotency_key import IdempotencyKeyRecord

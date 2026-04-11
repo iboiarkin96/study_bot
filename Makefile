@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check changelog-draft llm-ping observability-up observability-down observability-smoke
+.PHONY: help venv install requirements env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke docker-build k8s-render-configmap k8s-apply
 
 # ──────────────────────────────────────────────
 # Help
@@ -56,6 +56,7 @@ help:
 	@echo ""
 	@echo "  # Application"
 	@echo "  make run                  Start FastAPI dev server"
+	@echo "  make container-start      Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env)"
 	@echo "  make run-loadtest-api     Start API (high rate limit) → run tools.load_testing.runner → stop"
 	@echo "  make run-loadtest-api-serve  Like run, but high API rate limit (foreground; use in 2nd terminal with runner)"
 	@echo "  make run-project          Start observability stack (Prometheus/Grafana/…) + FastAPI"
@@ -98,8 +99,9 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make docs-fix             Auto-update docs (UML + marker sync + html render + html format)"
+	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
+	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)"
 	@echo ""
 	@echo "  # Changelog — optional LLM draft (OPENROUTER_API_KEY or OPENAI_API_KEY in .env; see env/example)"
 	@echo "  make changelog-draft      Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)"
@@ -109,6 +111,11 @@ help:
 	@echo "  make observability-up     Start Prometheus/Grafana stack with Docker Compose"
 	@echo "  make observability-down   Stop Prometheus/Grafana stack"
 	@echo "  make observability-smoke  Check observability links return HTTP 200"
+	@echo ""
+	@echo "  # Container & local Kubernetes (see docs/developer/0009-docker-and-kubernetes-local.html)"
+	@echo "  make docker-build         Build image study-app-api:local (requires Docker)"
+	@echo "  make k8s-render-configmap Render k8s/configmap.yaml from k8s/app.env (same as docs-fix step)"
+	@echo "  make k8s-apply            kubectl apply manifests (requires kubectl; see guide)"
 	@echo ""
 	@echo "  # Pre-commit Hooks"
 	@echo "  make pre-commit-install   Install git pre-commit hooks"
@@ -174,6 +181,20 @@ run:
 	APP_HOST=$${APP_HOST:-127.0.0.1}; \
 	APP_PORT=$${APP_PORT:-8000}; \
 	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload
+
+# Same sequence as the Docker image ENTRYPOINT: Alembic upgrade then Uvicorn (no --reload).
+# Uses scripts/container_entrypoint.sh; does not invoke Make inside the container.
+container-start:
+	@if [ ! -f "$(ENV)" ]; then \
+		printf "$(ICON_ERR) %s\n" "$(ENV) not found. Run 'make env-init' (or cp env/example .env)."; exit 1; \
+	fi
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Starting API (scripts/container_entrypoint.sh — same as Docker)…"
+	@set -a; . ./$(ENV); set +a; \
+	export PYTHON="$(CURDIR)/$(PYTHON)"; \
+	exec sh "$(CURDIR)/scripts/container_entrypoint.sh"
 
 # Start API with high rate limits, wait for /ready, run tools.load_testing.runner, stop API.
 # Asks for confirmation (server is temporary; port must be free). CI: LOADTEST_SKIP_CONFIRM=1
@@ -479,14 +500,18 @@ docs-fix:
 		printf "$(ICON_ERR) %s\n" "scripts/regenerate_docs.py not found."; exit 1; \
 	fi
 	@printf "$(COLOR_CYAN)== DOCS-FIX: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/3] regenerate UML diagrams"
+	@printf "$(ICON_INFO) %s\n" "[1/6] regenerate UML diagrams"
 	@$(PYTHON) scripts/regenerate_docs.py
-	@printf "$(ICON_INFO) %s\n" "[2/3] sync marker-based documentation"
+	@printf "$(ICON_INFO) %s\n" "[2/6] sync marker-based documentation"
 	@$(PYTHON) scripts/sync_docs.py
-	@printf "$(ICON_INFO) %s\n" "[3/4] render docs markdown to html companions"
+	@printf "$(ICON_INFO) %s\n" "[3/6] render Kubernetes ConfigMap from k8s/app.env"
+	@$(PYTHON) scripts/render_k8s_configmap.py
+	@printf "$(ICON_INFO) %s\n" "[4/6] render docs markdown to html companions"
 	@$(PYTHON) scripts/render_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[4/4] normalize docs html template"
+	@printf "$(ICON_INFO) %s\n" "[5/6] normalize docs html template"
 	@$(PYTHON) scripts/format_docs_html.py
+	@printf "$(ICON_INFO) %s\n" "[6/6] Python API reference (pdoc)"
+	@$(MAKE) api-docs
 	@printf "$(COLOR_GREEN)== DOCS-FIX: SUCCESS ==$(COLOR_RESET)\n"
 
 # Verify docs are already synchronized (no drift allowed).
@@ -509,6 +534,17 @@ docs-check:
 		rm -f "$$tmp_before" "$$tmp_after"; \
 		exit 1; \
 	fi
+
+# Generate Python API reference from docstrings (pdoc). Output under docs/api/ (also invoked from docs-fix).
+api-docs:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(COLOR_CYAN)== API-DOCS: START ==$(COLOR_RESET)\n"
+	@rm -rf docs/api
+	@$(PYTHON) -m pdoc app -o docs/api
+	@printf "$(ICON_OK) %s\n" "Open docs/api/index.html in a browser (Python package: app); linked from docs/index.html for GitHub Pages"
+	@printf "$(COLOR_GREEN)== API-DOCS: SUCCESS ==$(COLOR_RESET)\n"
 
 # LLM-assisted Keep a Changelog draft (scripts/changelog_draft.py). Writes local file; edit CHANGELOG.md yourself.
 changelog-draft:
@@ -548,6 +584,43 @@ observability-smoke:
 	@printf "$(ICON_STEP) %s\n" "Checking observability links..."
 	@$(PYTHON) scripts/check_observability_links.py
 	@printf "$(ICON_OK) %s\n" "Observability links are reachable"
+
+# ──────────────────────────────────────────────
+# Container image & local Kubernetes
+# ──────────────────────────────────────────────
+docker-build:
+	@if ! command -v docker >/dev/null 2>&1; then \
+		printf "$(ICON_ERR) %s\n" "docker not found"; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Building image study-app-api:local…"
+	@docker build -t study-app-api:local .
+	@printf "$(ICON_OK) %s\n" "Image study-app-api:local ready"
+
+k8s-render-configmap:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Rendering k8s/configmap.yaml from k8s/app.env…"
+	@$(PYTHON) scripts/render_k8s_configmap.py
+	@printf "$(ICON_OK) %s\n" "ConfigMap manifest updated"
+
+k8s-apply:
+	@if ! command -v kubectl >/dev/null 2>&1; then \
+		printf "$(ICON_ERR) %s\n" "kubectl not found"; exit 1; \
+	fi
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Rendering ConfigMap from k8s/app.env…"
+	@$(PYTHON) scripts/render_k8s_configmap.py
+	@printf "$(ICON_STEP) %s\n" "Ensuring namespace study-app…"
+	@kubectl apply -f k8s/namespace.yaml
+	@printf "$(ICON_STEP) %s\n" "Applying Kubernetes manifests…"
+	@kubectl apply -f k8s/configmap.yaml
+	@kubectl apply -f k8s/pvc.yaml
+	@kubectl apply -f k8s/deployment.yaml
+	@kubectl apply -f k8s/service.yaml
+	@printf "$(ICON_OK) %s\n" "Applied. Port-forward: kubectl -n study-app port-forward svc/study-app-api 8000:8000"
 
 # ──────────────────────────────────────────────
 # Health check

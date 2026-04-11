@@ -192,7 +192,15 @@ def _field_from_loc(loc: list[Any]) -> str | None:
 
 
 def _resolve_update_user_rule(field: str | None, error_type: str) -> ValidationCodeRule:
-    """Map ``(field, error_type)`` for PUT/PATCH ``/api/v1/user/{system_uuid}/{system_user_id}`` body."""
+    """Map ``(field, error_type)`` for PUT/PATCH user-by-composite-key bodies.
+
+    Args:
+        field: Body field name from :func:`_field_from_loc`, or ``None``.
+        error_type: Pydantic error type string (e.g. ``missing``, ``string_too_short``).
+
+    Returns:
+        Matching rule from :data:`UPDATE_USER_VALIDATION_RULES` or a generic ``COMMON_000`` rule.
+    """
     if field is not None and (field, error_type) in UPDATE_USER_VALIDATION_RULES:
         return UPDATE_USER_VALIDATION_RULES[(field, error_type)]
     return ValidationCodeRule(

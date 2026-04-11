@@ -242,7 +242,7 @@ def format_html_file(path: Path) -> bool:
 
 
 def main() -> None:
-    """Walk all ``docs/**/*.html`` (except ``docs/backlog/**``) and normalize in place.
+    """Walk all ``docs/**/*.html`` (except ``docs/backlog/**`` and ``docs/api/**``) and normalize in place.
 
     Prints the count of updated files.
     """
@@ -254,6 +254,9 @@ def main() -> None:
             continue
         # Backlog pages use custom layout; skip indentation normalization that can break structure.
         if rel.parts and rel.parts[0] == "backlog":
+            continue
+        # pdoc output for `make api-docs`; keep generator-owned HTML untouched.
+        if rel.parts and rel.parts[0] == "api":
             continue
         if format_html_file(html_path):
             updated_count += 1

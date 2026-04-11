@@ -177,9 +177,8 @@
                         <td>Local verification</td>
                         <td><code>make verify</code></td>
                         <td>Run the full local quality gate before commit/PR.</td>
-                        <td><code>lint-check</code> + <code>type-check</code> + <code>openapi-check</code> + <code>test</code>
-                          +
-                          <code>docs-fix</code>
+                        <td><code>lint-check</code> + <code>type-check</code> + <code>openapi-check</code> +
+                          <code>contract-test</code> + <code>test</code> + <code>docs-fix</code>
                         </td>
                       </tr>
                       <tr>
@@ -202,6 +201,11 @@
                       </tr>
                     </tbody>
                   </table>
+                  <p class="small">
+                    Subsections below group related <code>make</code> targets (quality, docs, release, containers, and
+                    Kubernetes). The complete inventory is the auto-generated table at the end of section 2.2 (synced from
+                    the <code>Makefile</code>).
+                  </p>
                 </div>
               </section>
               <p class="small">
@@ -231,6 +235,28 @@
                 <li><code>make release-check</code> - enforce release gate before deployment.</li>
                 <li><code>make pre-commit-check</code> - run configured git hook checks manually.</li>
               </ul>
+
+              <h4>Container, observability, and local Kubernetes</h4>
+              <ul>
+                <li><code>make container-start</code> — same migrate + Uvicorn as the Docker image
+                  (<code>scripts/container_entrypoint.sh</code>).
+                </li>
+                <li><code>make docker-build</code> — build image <code>study-app-api:local</code> (Docker).</li>
+                <li><code>make observability-up</code>, <code>make observability-down</code>,
+                  <code>make observability-smoke</code> — Prometheus/Grafana stack (Docker Compose).
+                </li>
+                <li><code>make run-project</code> — observability stack, then FastAPI dev server.</li>
+                <li><code>make k8s-render-configmap</code> — render <code>k8s/configmap.yaml</code> from
+                  <code>k8s/app.env</code>.
+                </li>
+                <li><code>make k8s-apply</code> — apply namespace, ConfigMap, workload, and Service manifests
+                  (<code>kubectl</code>).
+                </li>
+              </ul>
+              <p class="small">
+                Walkthrough and prerequisites:
+                <a href="./developer/0009-docker-and-kubernetes-local.html">Docker and Kubernetes (local)</a>.
+              </p>
               <p class="small">
                 Auto-generated from <code>Makefile</code> help output (source of truth):
               </p>
@@ -249,8 +275,16 @@
                 </thead>
                 <tbody>
                   <tr>
+                    <td><code>make api-docs</code></td>
+                    <td>Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)</td>
+                  </tr>
+                  <tr>
                     <td><code>make changelog-draft</code></td>
                     <td>Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)</td>
+                  </tr>
+                  <tr>
+                    <td><code>make container-start</code></td>
+                    <td>Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env)</td>
                   </tr>
                   <tr>
                     <td><code>make contract-test</code></td>
@@ -261,12 +295,16 @@
                     <td>Run Vulture (unused code; see ADR 0014; not in verify-ci)</td>
                   </tr>
                   <tr>
+                    <td><code>make docker-build</code></td>
+                    <td>Build image study-app-api:local (requires Docker)</td>
+                  </tr>
+                  <tr>
                     <td><code>make docs-check</code></td>
                     <td>Verify docs are already in sync (fails on drift)</td>
                   </tr>
                   <tr>
                     <td><code>make docs-fix</code></td>
-                    <td>Auto-update docs (UML + marker sync + html render + html format)</td>
+                    <td>Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API)</td>
                   </tr>
                   <tr>
                     <td><code>make env-check</code></td>
@@ -291,6 +329,14 @@
                   <tr>
                     <td><code>make install</code></td>
                     <td>Install dependencies</td>
+                  </tr>
+                  <tr>
+                    <td><code>make k8s-apply</code></td>
+                    <td>kubectl apply manifests (requires kubectl; see guide)</td>
+                  </tr>
+                  <tr>
+                    <td><code>make k8s-render-configmap</code></td>
+                    <td>Render k8s/configmap.yaml from k8s/app.env (same as docs-fix step)</td>
                   </tr>
                   <tr>
                     <td><code>make lint-check</code></td>
@@ -474,6 +520,13 @@
                     <td>Developer guide — Local development</td>
                     <td>Local run targets (<code>make run</code>, <code>make run-project</code>), observability stack, ports, shutdown.</td>
                     <td><a href="./developer/0007-local-development.html">Open guide</a></td>
+                  </tr>
+                  <tr>
+                    <td>Developer guide — Docker and Kubernetes (local)</td>
+                    <td>Image build, ConfigMap render, <code>kubectl apply</code>, port-forward; ties to
+                      <code>make docker-build</code>, <code>make k8s-apply</code>, and related targets.
+                    </td>
+                    <td><a href="./developer/0009-docker-and-kubernetes-local.html">Open guide</a></td>
                   </tr>
                   <tr>
                     <td>Runbook — Error budget exhaustion</td>

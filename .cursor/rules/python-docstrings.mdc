@@ -1,0 +1,13 @@
+---
+description: Google-style Python docstrings for app, scripts, tests, tools (ADR 0016, pdoc).
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python docstrings (this repository)
+
+- **Standard:** Google-style docstrings in **English** for modules, classes, and public functions. See [docs/adr/0016-python-docstrings-google-style-and-pdoc.html](docs/adr/0016-python-docstrings-google-style-and-pdoc.html) for templates and the full decision.
+- **When editing Python:** add or refresh docstrings in the **same change** as behavior changes.
+- **Sections:** use `Args`, `Returns`, `Raises`, `Yields`, `Attributes`, `Note`/`Notes` as needed. Do not duplicate types already in annotations unless it adds meaning.
+- **FastAPI:** handlers may reference idempotency and middleware-enforced auth; service layer should document `HTTPException` and business rules under `Raises`.
+- **API HTML:** run `make api-docs` and open `docs/api/index.html` when changing documented public surfaces in `app/`.

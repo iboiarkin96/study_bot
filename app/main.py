@@ -1,4 +1,9 @@
-"""FastAPI application entrypoint."""
+"""FastAPI application entrypoint.
+
+Registers middleware (logging, body size, auth, rate limit, security headers), exception
+handlers, health and metrics routes, and the versioned API router. Application settings and
+logging are initialized at import time.
+"""
 
 from __future__ import annotations
 
