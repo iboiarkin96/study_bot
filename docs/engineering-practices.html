@@ -253,12 +253,20 @@
                     <td>Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)</td>
                   </tr>
                   <tr>
+                    <td><code>make container-start</code></td>
+                    <td>Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env)</td>
+                  </tr>
+                  <tr>
                     <td><code>make contract-test</code></td>
                     <td>Stricter: generated OpenAPI must equal baseline JSON exactly</td>
                   </tr>
                   <tr>
                     <td><code>make dead-code-check</code></td>
                     <td>Run Vulture (unused code; see ADR 0014; not in verify-ci)</td>
+                  </tr>
+                  <tr>
+                    <td><code>make docker-build</code></td>
+                    <td>Build image study-app-api:local (requires Docker)</td>
                   </tr>
                   <tr>
                     <td><code>make docs-check</code></td>
@@ -291,6 +299,14 @@
                   <tr>
                     <td><code>make install</code></td>
                     <td>Install dependencies</td>
+                  </tr>
+                  <tr>
+                    <td><code>make k8s-apply</code></td>
+                    <td>kubectl apply manifests (requires kubectl; see guide)</td>
+                  </tr>
+                  <tr>
+                    <td><code>make k8s-render-configmap</code></td>
+                    <td>Regenerate k8s/configmap.yaml from k8s/app.env</td>
                   </tr>
                   <tr>
                     <td><code>make lint-check</code></td>

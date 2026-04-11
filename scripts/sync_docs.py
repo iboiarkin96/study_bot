@@ -459,7 +459,7 @@ _SKIP_DIRS = {
 }
 
 # Show only high-level architecture blocks at repository root.
-_ARCHITECTURE_ROOT_DIRS = ("app", "alembic", "docs", "scripts")
+_ARCHITECTURE_ROOT_DIRS = ("app", "alembic", "docs", "k8s", "scripts")
 
 # Default depth is 2 (root + one nested level), but some domains are worth 3.
 _MAX_DEPTH_DEFAULT = 2
@@ -487,6 +487,7 @@ _DIR_COMMENTS: dict[str, str] = {
     "docs/uml": "PlantUML diagrams",
     "docs/uml/sequences": "Sequence diagram sources",
     "docs/uml/rendered": "Rendered PNGs",
+    "k8s": "Kubernetes manifests; k8s/app.env sources the generated ConfigMap",
     "scripts": "Dev & CI helper scripts",
 }
 

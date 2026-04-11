@@ -49,6 +49,19 @@ Examples: `http_requests_total`, `http_request_duration_seconds_bucket`, `db_ope
 
 ---
 
+## Container image & local Kubernetes (optional)
+
+Day-to-day development does **not** depend on Docker or Kubernetes: use **`make run`**, tests, and **`make verify`** as usual. The cycle (feature → tests → merge) stays the same.
+
+**Why add Docker at all?** In most real environments the service runs as a **container image**: the same artifact is promoted through staging and production. Building an image (`make docker-build`) is the standard packaging step when you prepare a release or run in a remote environment. **Local Kubernetes** (`k8s/`, `make k8s-apply`) is optional — mainly for learning and for checking manifests; it is not required for every feature.
+
+- **Prerequisites:** Docker (Desktop or Engine), `kubectl`, and a local cluster (Docker Desktop Kubernetes, minikube, or kind). Install links and options are in [§0 of the Docker & Kubernetes guide](docs/developer/0009-docker-and-kubernetes-local.html#prerequisites).
+- **Docker:** `make docker-build` produces image `study-app-api:local` (see `Dockerfile`). The container runs `scripts/container_entrypoint.sh` (Alembic, then Uvicorn) — the same script as `make container-start` on the host (without `--reload`). Dependencies are the same pinned `requirements.txt` as `make install` (no second lockfile).
+- **Kubernetes:** non-secret pod env is edited in **`k8s/app.env`** (single source); `make k8s-render-configmap` (also run from `make docs-fix`) regenerates `k8s/configmap.yaml`. Default profile is **`APP_ENV=dev`** — no API key Secret required. Then `make k8s-apply` and `kubectl -n study-app port-forward svc/study-app-api 8000:8000`.
+- **Guide (optional tooling, real deploy outline, step-by-step):** [Docker & local Kubernetes](docs/developer/0009-docker-and-kubernetes-local.html). **ADR:** [0015](docs/adr/0015-container-image-and-local-kubernetes.html). **Optional Secret for `qa`:** [k8s/secret.example.yaml](k8s/secret.example.yaml).
+
+---
+
 ## Environment (`APP_ENV`)
 
 The process reads **`APP_ENV`** (`dev`, `qa`, `prod`). Set it in **`.env`** or the host environment. **`GET /live`** includes `"app_env"` for a quick check.
@@ -73,7 +86,7 @@ Useful: `make env-check`, `curl -s http://127.0.0.1:8000/live | jq`.
 | Contributing (verify, docs, OpenAPI, ADRs) | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Engineering practices & handbook | [engineering-practices.html](docs/engineering-practices.html) |
 | System analysis & error matrix | [system-analysis.html](docs/system-analysis.html) |
-| Developer guides (requirements, contracts, load testing, local dev) | [docs/developer/README.html](docs/developer/README.html) |
+| Developer guides (requirements, contracts, load testing, local dev, Docker/K8s) | [docs/developer/README.html](docs/developer/README.html) |
 | ADRs | [docs/adr/README.html](docs/adr/README.html) |
 | Runbooks | [docs/runbooks/README.html](docs/runbooks/README.html) |
 
@@ -113,6 +126,7 @@ study_app/
 │       ├── architecture/
 │       ├── rendered/  # Rendered PNGs
 │       └── sequences/  # Sequence diagram sources
+├── k8s/  # Kubernetes manifests; k8s/app.env sources the generated ConfigMap
 └── scripts/  # Dev & CI helper scripts
 ```
 <!-- END:REPO_LAYOUT -->

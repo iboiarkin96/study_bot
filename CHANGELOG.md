@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nonne
+### Added
+
+- `Dockerfile`, `scripts/container_entrypoint.sh`, and `k8s/` manifests for local Docker and Kubernetes workflows.
+- README and developer guide clarify that Docker/Kubernetes are optional for daily development, and outline how real-world deploys typically use a registry and target environment.
+- Developer guide [docs/developer/0009-docker-and-kubernetes-local.html](docs/developer/0009-docker-and-kubernetes-local.html) and ADR 0015 (container image and local Kubernetes).
+- Makefile targets `docker-build`, `container-start` (same entrypoint script as Docker), `k8s-render-configmap`, and `k8s-apply`.
+- `k8s/app.env` as the source for the generated `k8s/configmap.yaml` (`scripts/render_k8s_configmap.py`, wired into `make docs-fix`).
 
 ## [1.1.1] — 2026-04-11
 
