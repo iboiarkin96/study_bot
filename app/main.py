@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 import os
 from time import perf_counter
+from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -24,6 +25,12 @@ from app.core.config import get_settings
 from app.core.database import SessionLocal, engine
 from app.core.logging import configure_logging
 from app.core.metrics import MetricsCollector, install_sqlalchemy_metrics, metrics_content_type
+from app.core.request_context import (
+    new_request_id,
+    normalize_request_id_header,
+    request_id_var,
+    reset_request_context,
+)
 from app.core.security import (
     InMemoryRateLimiter,
     apply_security_headers,
@@ -83,6 +90,7 @@ app.add_middleware(
     allow_credentials=settings.cors_allow_credentials,
     allow_methods=list(settings.cors_allow_methods),
     allow_headers=list(settings.cors_allow_headers),
+    expose_headers=list(settings.cors_expose_headers),
 )
 
 
@@ -225,6 +233,31 @@ async def security_headers_middleware(request: Request, call_next) -> Response:
     return response
 
 
+@app.middleware("http")
+async def request_context_middleware(request: Request, call_next) -> Response:
+    """Bind ``X-Request-Id`` (client-supplied or generated) for logging and response headers.
+
+    Registered last so it runs first on the request path, ensuring downstream logs include
+    ``request_id``. ``trace_id`` / ``span_id`` stay empty until OpenTelemetry is added.
+
+    Args:
+        request: Incoming ASGI request.
+        call_next: Next middleware or route handler.
+
+    Returns:
+        Downstream response with ``X-Request-Id`` set.
+    """
+    incoming = normalize_request_id_header(request.headers.get("X-Request-Id"))
+    rid = incoming or new_request_id()
+    token = request_id_var.set(rid)
+    try:
+        response = await call_next(request)
+    finally:
+        reset_request_context(token)
+    response.headers["X-Request-Id"] = rid
+    return response
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
@@ -355,6 +388,31 @@ def custom_swagger_ui() -> Response:
 
 
 app.include_router(user_router, prefix="/api/v1")
+
+
+def custom_openapi() -> dict[str, Any]:
+    """Build OpenAPI schema and document ``X-Request-Id`` on every operation for Swagger UI."""
+    if app.openapi_schema is not None:
+        return app.openapi_schema
+    from fastapi.openapi.utils import get_openapi
+
+    from app.openapi.request_id_openapi import enrich_openapi_with_request_id
+
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        openapi_version=app.openapi_version,
+        description=app.description,
+        routes=app.routes,
+        tags=app.openapi_tags,
+        servers=app.servers,
+    )
+    enrich_openapi_with_request_id(openapi_schema)
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+setattr(app, "openapi", custom_openapi)  # noqa: B010 -- mypy rejects direct assignment to FastAPI.openapi
 
 
 if os.getenv("LOADTEST_HTTP_500", "").lower() in ("1", "true", "yes"):

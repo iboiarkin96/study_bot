@@ -45,7 +45,8 @@
             The project uses a microservice-oriented architecture with FastAPI as the main backend service. All business
             logic, data operations, and API endpoints are contained within a single container, using SQLite for data
             storage. Monitoring and observability are handled by Prometheus, Grafana, and Blackbox, which run together in
-            a separate Docker Compose stack.
+            a separate Docker Compose stack. Searchable structured logs (NDJSON on disk, optional Elasticsearch and Kibana
+            via another Compose file) are documented in <a href="./adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
           </p>
         </div>
 
@@ -68,7 +69,9 @@
                 <strong>Source:</strong> <code>docs/uml/architecture/system_context_view.puml</code>.
                 The <strong>OCI image</strong> packages the API; the <strong>Kubernetes</strong> package is optional and
                 shows Deployment/Service wired to the same image and runtime. The <strong>Observability</strong> group is
-                Docker Compose (Prometheus scrapes metrics; Blackbox probes readiness; Grafana reads Prometheus). Details:
+                Docker Compose (Prometheus scrapes metrics; Blackbox probes readiness; Grafana reads Prometheus); an
+                optional <strong>Logging</strong> stack (Elasticsearch, Kibana, Filebeat) can index NDJSON from the host
+                log directory. Details:
                 <a href="./developer/0009-docker-and-kubernetes-local.html">Docker image and local Kubernetes</a>,
                 <a href="./adr/0015-container-image-and-local-kubernetes.html">ADR 0015</a>.
               </figcaption>
@@ -94,7 +97,8 @@
                 <strong>Source:</strong> <code>docs/uml/architecture/container_view.puml</code>.
                 The API container image uses <code>scripts/container_entrypoint.sh</code> (migrate + Uvicorn). Local
                 development may run Uvicorn on the host without Docker; Compose still provides Prometheus, Grafana, and
-                Blackbox for parity with production-like observability.
+                Blackbox for parity with production-like metrics; optional Elasticsearch/Kibana/Filebeat ship file logs for
+                local search (<a href="./adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>).
               </figcaption>
             </figure>
           </div>

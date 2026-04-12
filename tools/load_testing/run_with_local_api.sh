@@ -120,7 +120,7 @@ if ! print_warning_and_confirm; then
 fi
 
 echo "→ Starting uvicorn (loadtest limits: ${API_RATE_LIMIT_REQUESTS}/${API_RATE_LIMIT_WINDOW_SECONDS}s)…"
-.venv/bin/python -m uvicorn app.main:app --host "$HOST" --port "$PORT" &
+.venv/bin/python -m uvicorn app.main:app --host "$HOST" --port "$PORT" --no-access-log &
 UV_PID=$!
 
 cleanup() {

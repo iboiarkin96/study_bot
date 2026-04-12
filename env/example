@@ -30,6 +30,7 @@
 #   Metrics and readiness
 #   Observability — host:port labels for scripts and docs (not all read by the app)
 #   Docker Compose — Prometheus, Grafana, Blackbox (make observability-up)
+#   Docker Compose — Elasticsearch, Kibana, Filebeat (make logging-up); use with LOG_FORMAT=json
 #
 # Kubernetes (local cluster): non-secret pod env is maintained in k8s/app.env → generated ConfigMap
 # (scripts/render_k8s_configmap.py). See docs/developer/0009-docker-and-kubernetes-local.html.
@@ -77,6 +78,10 @@ LOG_DIR=logs
 LOG_FILE_NAME=app.log
 # Typical: DEBUG, INFO, WARNING, ERROR (prod forbids DEBUG).
 LOG_LEVEL=INFO
+# json (default if unset in app) = NDJSON with top-level request_id for Kibana/ES; text = human-readable lines.
+LOG_FORMAT=json
+# Stable service id in JSON logs (field "service"); keep short and constant across deploys.
+LOG_SERVICE_NAME=study-app-api
 
 # --- CORS (browser clients) ------------------------------------------------
 
@@ -87,7 +92,9 @@ LOG_LEVEL=INFO
 CORS_ALLOW_ORIGINS=http://127.0.0.1:3000,http://localhost:3000,http://127.0.0.1:8765,http://localhost:8765
 CORS_ALLOW_METHODS=GET,POST,PUT,PATCH,DELETE,OPTIONS
 # Idempotency-Key is required for browser preflight on write endpoints from Swagger UI.
-CORS_ALLOW_HEADERS=Authorization,Content-Type,X-API-Key,Idempotency-Key
+CORS_ALLOW_HEADERS=Authorization,Content-Type,X-API-Key,Idempotency-Key,X-Request-Id
+# Response headers readable by JS on cross-origin responses (Swagger on another port, SPAs).
+CORS_EXPOSE_HEADERS=X-Request-Id,X-RateLimit-Limit,X-RateLimit-Remaining,Retry-After
 CORS_ALLOW_CREDENTIALS=false
 
 # --- API security & limits --------------------------------------------------
@@ -143,6 +150,11 @@ OBS_PROM_HOST=127.0.0.1
 OBS_PROM_PORT=9090
 OBS_GRAF_HOST=127.0.0.1
 OBS_GRAF_PORT=3001
+# Elasticsearch + Kibana (make logging-up / scripts/check_logging_links.py)
+OBS_ES_HOST=127.0.0.1
+OBS_ES_PORT=9200
+OBS_KIB_HOST=127.0.0.1
+OBS_KIB_PORT=5601
 
 # --- Docker: Prometheus, Grafana, Blackbox (docker-compose.observability) ---
 
@@ -160,3 +172,11 @@ BLACKBOX_EXPORTER_PORT=9115
 # Grafana first-login credentials (change in real deployments).
 GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=admin
+
+# --- Docker: Elasticsearch + Kibana + Filebeat (docker-compose.logging.yml) ---
+# Optional local log analytics. Set LOG_FORMAT=json so Filebeat can parse NDJSON lines from LOG_DIR.
+# Allocate ~2 GiB RAM for ES+Kibana. Elasticsearch and Kibana are free to self-host for development
+# (see docs/adr/0023-structured-logging-and-local-elasticsearch.html).
+
+ELASTICSEARCH_PORT=9200
+KIBANA_PORT=5601

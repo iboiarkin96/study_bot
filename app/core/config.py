@@ -41,6 +41,28 @@ def _normalize_app_env(raw: str) -> str:
     return normalized
 
 
+def _normalize_log_format(raw: str) -> str:
+    """Normalize ``LOG_FORMAT`` to ``text`` or ``json``.
+
+    Args:
+        raw: Environment string (``text``, ``json``, ``ndjson``, etc.).
+
+    Returns:
+        ``text`` or ``json``.
+
+    Raises:
+        ValueError: If the value is not recognized.
+    """
+    normalized = raw.strip().lower()
+    if not normalized:
+        return "text"
+    if normalized in ("text", "plain"):
+        return "text"
+    if normalized in ("json", "ndjson", "jsonl"):
+        return "json"
+    raise ValueError(f"LOG_FORMAT must be 'text' or 'json'. Got: {raw!r}")
+
+
 # Variables already set in the environment before import (e.g. `export` before uvicorn)
 # must not be overwritten by `env/<APP_ENV>` — otherwise `make run-loadtest-api` loses
 # API_RATE_LIMIT_REQUESTS_LOADTEST when env/dev sets 60 again.
@@ -103,9 +125,12 @@ class Settings:
         log_dir: Directory for rotating application log files.
         log_file_name: Log file basename inside ``log_dir``.
         log_level: Root logging level (e.g. ``INFO``, ``DEBUG``).
+        log_format: ``text`` (human-readable) or ``json`` (NDJSON for log platforms).
+        log_service_name: Stable service identifier in JSON logs (``service`` field).
         cors_allow_origins: Allowed CORS origin URLs.
         cors_allow_methods: Allowed CORS HTTP methods (or ``*``).
         cors_allow_headers: Allowed CORS request header names.
+        cors_expose_headers: Response header names browsers may read on cross-origin responses.
         cors_allow_credentials: Whether browsers may send credentials on CORS requests.
         api_body_max_bytes: Maximum accepted HTTP request body size in bytes.
         api_rate_limit_requests: Request cap per client identifier per window for protected routes.
@@ -129,9 +154,12 @@ class Settings:
     log_dir: str
     log_file_name: str
     log_level: str
+    log_format: str
+    log_service_name: str
     cors_allow_origins: tuple[str, ...]
     cors_allow_methods: tuple[str, ...]
     cors_allow_headers: tuple[str, ...]
+    cors_expose_headers: tuple[str, ...]
     cors_allow_credentials: bool
     api_body_max_bytes: int
     api_rate_limit_requests: int
@@ -228,6 +256,8 @@ def get_settings() -> Settings:
         log_dir=os.getenv("LOG_DIR", "logs").strip() or "logs",
         log_file_name=os.getenv("LOG_FILE_NAME", "app.log").strip() or "app.log",
         log_level=os.getenv("LOG_LEVEL", "INFO").strip().upper() or "INFO",
+        log_format=_normalize_log_format(os.getenv("LOG_FORMAT", "json")),
+        log_service_name=os.getenv("LOG_SERVICE_NAME", "study-app-api").strip() or "study-app-api",
         cors_allow_origins=_split_csv(
             os.getenv("CORS_ALLOW_ORIGINS", "http://127.0.0.1:3000,http://localhost:3000"),
             ("http://127.0.0.1:3000", "http://localhost:3000"),
@@ -236,8 +266,23 @@ def get_settings() -> Settings:
             os.getenv("CORS_ALLOW_METHODS", "GET,POST,PUT,PATCH,DELETE,OPTIONS"), ("*",)
         ),
         cors_allow_headers=_split_csv(
-            os.getenv("CORS_ALLOW_HEADERS", "Authorization,Content-Type,X-API-Key"),
-            ("Authorization", "Content-Type", "X-API-Key"),
+            os.getenv(
+                "CORS_ALLOW_HEADERS",
+                "Authorization,Content-Type,X-API-Key,Idempotency-Key,X-Request-Id",
+            ),
+            ("Authorization", "Content-Type", "X-API-Key", "Idempotency-Key", "X-Request-Id"),
+        ),
+        cors_expose_headers=_split_csv(
+            os.getenv(
+                "CORS_EXPOSE_HEADERS",
+                "X-Request-Id,X-RateLimit-Limit,X-RateLimit-Remaining,Retry-After",
+            ),
+            (
+                "X-Request-Id",
+                "X-RateLimit-Limit",
+                "X-RateLimit-Remaining",
+                "Retry-After",
+            ),
         ),
         cors_allow_credentials=_as_bool(os.getenv("CORS_ALLOW_CREDENTIALS", "false"), False),
         api_body_max_bytes=max(1024, int(os.getenv("API_BODY_MAX_BYTES", "1048576"))),

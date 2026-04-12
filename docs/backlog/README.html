@@ -179,6 +179,13 @@
             <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
           </div>
         </dd>
+        <dt>5) Delivered (to date)</dt>
+        <dd>
+          <a href="../adr/0011-slo-sla-error-budget.html">ADR 0011</a>; Prometheus recording and alert rules in
+          <code>ops/prometheus/rules/study_app_slo.yml</code>; Grafana dashboard import and Blackbox probe wiring via
+          <code>docker-compose.observability.yml</code> and <code>ops/prometheus/</code>; links from README and developer
+          docs to local observability URLs.
+        </dd>
       </dl>
     </article>
 
@@ -514,7 +521,8 @@
         <dd>
           Python runner and scenarios under <code>tools/load_testing/</code>; Makefile targets
           <code>run-loadtest-api</code> and <code>run-loadtest-api-serve</code> for local runs against a live API;
-          scenario docs in-repo. Scheduled CI load thresholds remain optional.
+          scenario docs in-repo. Optional automated CI smoke/load remains tracked under
+          <a href="#item-23">item 23</a>.
         </dd>
       </dl>
     </article>
@@ -703,6 +711,271 @@
           <code>.github/workflows/dead-code.yml</code>; checklist in <code>CONTRIBUTING.md</code>. Ongoing removal of
           dead
           code remains manual with test-backed review.
+        </dd>
+      </dl>
+    </article>
+
+    <article class="backlog-item" id="item-17">
+      <h2>
+        <span class="priority-tag">P2</span>
+        Distributed tracing (OpenTelemetry) and trace context
+        <span class="status-pill status-pill--todo">To do</span>
+      </h2>
+      <dl>
+        <dt>1) Summary</dt>
+        <dd>
+          Instrument the API with OpenTelemetry (W3C Trace Context): HTTP server spans, outbound calls, and database
+          spans where practical; export to OTLP (local Jaeger/Tempo or a hosted backend). Link traces to logs and metrics
+          via <code>trace_id</code> / <code>span_id</code>.
+        </dd>
+        <dt>2) Problem &amp; value</dt>
+        <dd>
+          <strong>Problem:</strong> Prometheus metrics and plain logs explain symptoms but not end-to-end request paths
+          across layers and replicas.<br />
+          <strong>Value:</strong> Standard in large-scale platforms for incident response, latency breakdown, and
+          dependency mapping—complements existing SLO work (ADR 0011) without replacing it.
+        </dd>
+        <dt>3) Scope &amp; deliverables</dt>
+        <dd>
+          ADR (sampler rules, PII in attributes, env vars); FastAPI/Starlette OTel integration; optional Compose service
+          for local trace UI; developer doc: how to find a trace from a failing request.
+        </dd>
+        <dt>4) Rough estimate (calendar days)</dt>
+        <dd>
+          <div class="time-grid">
+            <div class="time-cell"><strong>3 h/day</strong> ~5 days (~16 h)</div>
+            <div class="time-cell"><strong>2 h/day</strong> ~8 days</div>
+            <div class="time-cell"><strong>1 h/day</strong> ~16 days</div>
+          </div>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="backlog-item" id="item-18">
+      <h2>
+        <span class="priority-tag">P3</span>
+        Structured logging (JSON) and request correlation IDs
+        <span class="status-pill status-pill--done">Done</span>
+      </h2>
+      <dl>
+        <dt>1) Summary</dt>
+        <dd>
+          Emit machine-readable JSON logs in production (and optionally in dev), with a stable schema: timestamp,
+          level, logger, message, and correlation fields (<code>request_id</code>, later <code>trace_id</code> when
+          OpenTelemetry lands). Accept or generate <code>X-Request-Id</code> (or similar) per request.
+        </dd>
+        <dt>2) Problem &amp; value</dt>
+        <dd>
+          <strong>Problem:</strong> Plain text logs are harder to query at volume and to join across services in log
+          platforms.<br />
+          <strong>Value:</strong> Aligns with how centralized logging (ELK, Cloud Logging, Datadog) expects payloads;
+          speeds up support and postmortems.
+        </dd>
+        <dt>3) Scope &amp; deliverables</dt>
+        <dd>
+          Config flag or <code>APP_ENV</code> switch; middleware for request ID; document field list; ensure PII policy
+          (no secrets in log fields).
+        </dd>
+        <dt>4) Rough estimate (calendar days)</dt>
+        <dd>
+          <div class="time-grid">
+            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
+            <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
+            <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
+          </div>
+        </dd>
+        <dt>5) Delivered (to date)</dt>
+        <dd>
+          <code>LOG_FORMAT</code> / <code>LOG_SERVICE_NAME</code>; NDJSON fields including <code>request_id</code>,
+          <code>trace_id</code>, <code>span_id</code> (placeholders for OTel); <code>X-Request-Id</code> middleware;
+          optional <code>docker-compose.logging.yml</code> (Elasticsearch, Kibana, Filebeat) and
+          <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
+        </dd>
+      </dl>
+    </article>
+
+    <article class="backlog-item" id="item-19">
+      <h2>
+        <span class="priority-tag">P3</span>
+        CI: container image SBOM and vulnerability scan (published GHCR image)
+        <span class="status-pill status-pill--todo">To do</span>
+      </h2>
+      <dl>
+        <dt>1) Summary</dt>
+        <dd>
+          After building and pushing the Docker image to GHCR, generate an SBOM (e.g. Syft), scan the image for known CVEs
+          (e.g. Trivy or Grype), upload SARIF or summary to the workflow run, and fail or warn on configurable severity
+          thresholds—documented in engineering practices.
+        </dd>
+        <dt>2) Problem &amp; value</dt>
+        <dd>
+          <strong>Problem:</strong> <code>pip-audit</code> covers Python deps; the runtime image still carries OS
+          packages and layers that need separate review.<br />
+          <strong>Value:</strong> Matches supply-chain expectations in regulated and large orgs; complements ADR 0019.
+        </dd>
+        <dt>3) Scope &amp; deliverables</dt>
+        <dd>
+          GitHub Actions job after <code>publish-image</code> (or same workflow step with the built digest); artifact
+          retention policy; exception process for accepted CVEs.
+        </dd>
+        <dt>4) Rough estimate (calendar days)</dt>
+        <dd>
+          <div class="time-grid">
+            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+            <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+          </div>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="backlog-item" id="item-20">
+      <h2>
+        <span class="priority-tag">P1</span>
+        OpenAPI governance: lint, semantic baseline, and strict contract test
+        <span class="status-pill status-pill--done">Done</span>
+      </h2>
+      <dl>
+        <dt>1) Summary</dt>
+        <dd>
+          Treat the public HTTP contract as versioned code: automated checks for operation IDs, summaries, examples on
+          write paths and 422 responses, and guardrails against accidental breaking changes vs a checked-in baseline.
+        </dd>
+        <dt>2) Problem &amp; value</dt>
+        <dd>
+          <strong>Problem:</strong> Undocumented or drifting OpenAPI confuses clients and hides incompatible changes.<br />
+          <strong>Value:</strong> Same discipline as large API platforms: contract-first visibility and safer evolution
+          within <code>/api/v1</code> (see ADR 0007).
+        </dd>
+        <dt>3) Scope &amp; deliverables</dt>
+        <dd>
+          Lint rules; semantic compare vs <code>docs/openapi/openapi-baseline.json</code>; optional strict byte-for-byte
+          <code>contract-test</code>; documented accept workflow when changing the spec intentionally.
+        </dd>
+        <dt>4) Rough estimate (calendar days)</dt>
+        <dd>
+          <div class="time-grid">
+            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
+            <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
+            <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
+          </div>
+        </dd>
+        <dt>5) Delivered (to date)</dt>
+        <dd>
+          <code>scripts/openapi_governance.py</code>; <code>make openapi-check</code> and <code>make contract-test</code>
+          in <code>Makefile</code>; baseline under <code>docs/openapi/openapi-baseline.json</code>; integrated into
+          <code>make verify</code> / CI (<code>.github/workflows/ci.yml</code>); ADR 0007.
+        </dd>
+      </dl>
+    </article>
+
+    <article class="backlog-item" id="item-21">
+      <h2>
+        <span class="priority-tag">P1</span>
+        Continuous delivery: publish container image to GHCR from <code>main</code> / tags
+        <span class="status-pill status-pill--done">Done</span>
+      </h2>
+      <dl>
+        <dt>1) Summary</dt>
+        <dd>
+          After the quality gate passes, build and push a reproducible Docker artifact to GitHub Container Registry so
+          staging and tutorials can pull a known image digest.
+        </dd>
+        <dt>2) Problem &amp; value</dt>
+        <dd>
+          <strong>Problem:</strong> “Works on my machine” without a standard OCI image slows adoption of container/K8s
+          paths.<br />
+          <strong>Value:</strong> Aligns with common internal platform practice: Git commit → tested artifact → registry.
+        </dd>
+        <dt>3) Scope &amp; deliverables</dt>
+        <dd>
+          Workflow job with Buildx cache; tags for SHA, semver, and <code>latest</code> on default branch; ADR describing
+          scope (registry delivery vs full prod rollout).
+        </dd>
+        <dt>4) Rough estimate (calendar days)</dt>
+        <dd>
+          <div class="time-grid">
+            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+            <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+          </div>
+        </dd>
+        <dt>5) Delivered (to date)</dt>
+        <dd>
+          <code>publish-image</code> job in <code>.github/workflows/ci.yml</code> (GHCR, metadata tags, GHA cache);
+          <a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a>; <code>make docker-build</code>
+          for local parity.
+        </dd>
+      </dl>
+    </article>
+
+    <article class="backlog-item" id="item-22">
+      <h2>
+        <span class="priority-tag">P2</span>
+        Single source of truth for application / OpenAPI version metadata
+        <span class="status-pill status-pill--todo">To do</span>
+      </h2>
+      <dl>
+        <dt>1) Summary</dt>
+        <dd>
+          Define one canonical version string (e.g. <code>[project]</code> in <code>pyproject.toml</code> or
+          <code>app/__version__.py</code>) and inject it into FastAPI metadata, OpenAPI, and release notes workflows so
+          tags and docs cannot drift from the running app.
+        </dd>
+        <dt>2) Problem &amp; value</dt>
+        <dd>
+          <strong>Problem:</strong> A hardcoded <code>FastAPI(version=…)</code> diverges from <code>CHANGELOG.md</code>
+          and git tags.<br />
+          <strong>Value:</strong> Operational clarity (support asks “which build?”) and cleaner automation.
+        </dd>
+        <dt>3) Scope &amp; deliverables</dt>
+        <dd>
+          Single import or TOML field; optional <code>/live</code> or <code>/version</code> payload field; contributor
+          note: bump process tied to release.
+        </dd>
+        <dt>4) Rough estimate (calendar days)</dt>
+        <dd>
+          <div class="time-grid">
+            <div class="time-cell"><strong>3 h/day</strong> ~1 day (~3 h)</div>
+            <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
+            <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
+          </div>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="backlog-item" id="item-23">
+      <h2>
+        <span class="priority-tag">P2</span>
+        CI: optional HTTP smoke or load-regression job (post-<code>main</code> or nightly)
+        <span class="status-pill status-pill--todo">To do</span>
+      </h2>
+      <dl>
+        <dt>1) Summary</dt>
+        <dd>
+          Run a minimal automated scenario (health + one protected API path, or a short load profile from
+          <code>tools/load_testing/</code>) in GitHub Actions so latency and 5xx regressions surface without manual
+          <code>make run-loadtest-api</code>. Builds on local tooling already delivered under
+          <a href="#item-11">item 11</a>.
+        </dd>
+        <dt>2) Problem &amp; value</dt>
+        <dd>
+          <strong>Problem:</strong> Local load tooling (backlog item 11) does not run on every merge by default.<br />
+          <strong>Value:</strong> Catches performance and timeout issues before they reach operators; complements SLO
+          alerts.
+        </dd>
+        <dt>3) Scope &amp; deliverables</dt>
+        <dd>
+          Workflow that starts API + DB (or uses test stack), runs scripted checks with thresholds; document flakiness
+          mitigations; keep optional or <code>workflow_dispatch</code> if cost is a concern.
+        </dd>
+        <dt>4) Rough estimate (calendar days)</dt>
+        <dd>
+          <div class="time-grid">
+            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+            <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+          </div>
         </dd>
       </dl>
     </article>

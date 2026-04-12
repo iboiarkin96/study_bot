@@ -459,7 +459,7 @@ _SKIP_DIRS = {
 }
 
 # Show only high-level architecture blocks at repository root.
-_ARCHITECTURE_ROOT_DIRS = ("app", "alembic", "docs", "k8s", "scripts")
+_ARCHITECTURE_ROOT_DIRS = ("app", "alembic", "docs", "k8s", "ops", "scripts")
 
 # Default depth is 2 (root + one nested level), but some domains are worth 3.
 _MAX_DEPTH_DEFAULT = 2
@@ -489,6 +489,10 @@ _DIR_COMMENTS: dict[str, str] = {
     "docs/uml/sequences": "Sequence diagram sources",
     "docs/uml/rendered": "Rendered PNGs",
     "k8s": "Kubernetes manifests; k8s/app.env sources the generated ConfigMap",
+    "ops": "Prometheus, Grafana, Filebeat configs",
+    "ops/filebeat": "Filebeat → Elasticsearch (local logging stack)",
+    "ops/grafana": "Dashboards and provisioning",
+    "ops/prometheus": "Scrape config, rules, Blackbox",
     "scripts": "Dev & CI helper scripts",
 }
 
@@ -501,6 +505,14 @@ def _build_tree() -> str:
     """
 
     lines: list[str] = [f"{ROOT.name}/"]
+
+    _ROOT_FILE_COMMENTS: tuple[tuple[str, str], ...] = (
+        ("docker-compose.observability.yml", "Prometheus, Grafana, Blackbox"),
+        ("docker-compose.logging.yml", "Optional: Elasticsearch, Kibana, Filebeat"),
+    )
+    for fname, comment in _ROOT_FILE_COMMENTS:
+        if (ROOT / fname).is_file():
+            lines.append(f"├── {fname}  # {comment}")
 
     def _walk(directory: Path, prefix: str, rel: str, max_depth: int) -> None:
         """Recursively append directory lines up to ``max_depth`` relative to ``rel``.

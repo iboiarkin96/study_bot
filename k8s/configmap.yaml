@@ -18,12 +18,15 @@ data:
   APP_NAME: Study App API
   APP_PORT: '8000'
   CORS_ALLOW_CREDENTIALS: 'false'
-  CORS_ALLOW_HEADERS: Authorization,Content-Type,X-API-Key
+  CORS_ALLOW_HEADERS: Authorization,Content-Type,X-API-Key,Idempotency-Key,X-Request-Id
   CORS_ALLOW_METHODS: GET,POST,PUT,PATCH,DELETE,OPTIONS
   CORS_ALLOW_ORIGINS: http://127.0.0.1:3000,http://localhost:3000
+  CORS_EXPOSE_HEADERS: X-Request-Id,X-RateLimit-Limit,X-RateLimit-Remaining,Retry-After
   LOG_DIR: /tmp/logs
   LOG_FILE_NAME: app.log
+  LOG_FORMAT: json
   LOG_LEVEL: INFO
+  LOG_SERVICE_NAME: study-app-api
   METRICS_ENABLED: 'true'
   METRICS_PATH: /metrics
   READINESS_DB_TIMEOUT_MS: '500'

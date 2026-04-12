@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke docker-build k8s-render-configmap k8s-apply
+.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build k8s-render-configmap k8s-apply
 
 # ──────────────────────────────────────────────
 # Help
@@ -116,6 +116,13 @@ help:
 	@echo "  make observability-down   Stop Prometheus/Grafana stack"
 	@echo "  make observability-smoke  Check observability links return HTTP 200"
 	@echo ""
+	@echo "  # Logging stack (Elasticsearch + Kibana + Filebeat; optional, heavy)"
+	@echo "  make logging-up           Start ES/Kibana/Filebeat (use LOG_FORMAT=json, ./logs)"
+	@echo "  make logging-down         Stop logging stack"
+	@echo "  make logging-reset        Stop stack, delete ES volume + ./logs/*.log (clean slate)"
+	@echo "  make logging-smoke        Check Elasticsearch and Kibana URLs"
+	@echo "  make logging-es-query     Query ES for study-app logs (optional QUERY=<uuid>)"
+	@echo ""
 	@echo "  # Container & local Kubernetes (see docs/developer/0009-docker-and-kubernetes-local.html)"
 	@echo "  make docker-build         Build image study-app-api:local (requires Docker)"
 	@echo "  make k8s-render-configmap Render k8s/configmap.yaml from k8s/app.env (same as docs-fix step)"
@@ -194,7 +201,7 @@ run:
 	@set -a; . ./$(ENV); set +a; \
 	APP_HOST=$${APP_HOST:-127.0.0.1}; \
 	APP_PORT=$${APP_PORT:-8000}; \
-	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload
+	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload --no-access-log
 
 # Same sequence as the Docker image ENTRYPOINT: Alembic upgrade then Uvicorn (no --reload).
 # Uses scripts/container_entrypoint.sh; does not invoke Make inside the container.
@@ -241,7 +248,7 @@ run-loadtest-api-serve:
 	printf "$(ICON_INFO) %s\n" "API_RATE_LIMIT_REQUESTS=$$API_RATE_LIMIT_REQUESTS API_RATE_LIMIT_WINDOW_SECONDS=$$API_RATE_LIMIT_WINDOW_SECONDS"; \
 	APP_HOST=$${APP_HOST:-127.0.0.1}; \
 	APP_PORT=$${APP_PORT:-8000}; \
-	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload
+	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload --no-access-log
 
 # Start Docker observability stack, then FastAPI (foreground). Requires Docker.
 run-project: observability-up run
@@ -616,6 +623,41 @@ observability-smoke:
 	@printf "$(ICON_STEP) %s\n" "Checking observability links..."
 	@$(PYTHON) scripts/check_observability_links.py
 	@printf "$(ICON_OK) %s\n" "Observability links are reachable"
+
+# Elasticsearch + Kibana + Filebeat (structured logs → Elasticsearch). Requires Docker; ~2 GiB RAM.
+logging-up:
+	@printf "$(ICON_STEP) %s\n" "Starting logging stack (Elasticsearch, Kibana, Filebeat)..."
+	@docker compose -f docker-compose.logging.yml up -d
+	@printf "$(ICON_OK) %s\n" "Logging stack is up (Elasticsearch:9200, Kibana:5601). Set LOG_FORMAT=json; logs in ./logs"
+
+logging-down:
+	@printf "$(ICON_STEP) %s\n" "Stopping logging stack..."
+	@docker compose -f docker-compose.logging.yml down
+	@printf "$(ICON_OK) %s\n" "Logging stack stopped"
+
+# Wipes Elasticsearch indices (docker volume) and local log files. Filebeat registry is reset on next up.
+# Kibana saved objects (data views) live in ES — recreate data view *study-app-logs* after reset.
+logging-reset:
+	@if ! command -v docker >/dev/null 2>&1; then \
+		printf "$(ICON_ERR) %s\n" "docker not found"; exit 1; \
+	fi
+	@printf "$(ICON_STEP) %s\n" "Stopping logging stack and removing elasticsearch_data volume..."
+	@docker compose -f docker-compose.logging.yml down -v
+	@printf "$(ICON_STEP) %s\n" "Removing logs/*.log under ./logs..."
+	@rm -f logs/*.log
+	@printf "$(ICON_OK) %s\n" "Reset done. Run: make logging-up — then recreate Kibana data view *study-app-logs* if needed"
+
+logging-smoke:
+	@printf "$(ICON_STEP) %s\n" "Checking logging stack links..."
+	@$(PYTHON) scripts/check_logging_links.py
+	@printf "$(ICON_OK) %s\n" "Logging stack links are reachable"
+
+# Query Elasticsearch for study-app logs (no Kibana). Optional: QUERY=<uuid> to search request_id / message.
+# Requires: make logging-up and API writing JSON to ./logs. Env: OBS_ES_HOST, OBS_ES_PORT.
+logging-es-query:
+	@printf "$(ICON_STEP) %s\n" "Querying Elasticsearch (*study-app-logs*)..."
+	@$(PYTHON) scripts/check_es_request_id.py $(QUERY)
+	@printf "$(ICON_OK) %s\n" "Done (see output above)"
 
 # ──────────────────────────────────────────────
 # Container image & local Kubernetes

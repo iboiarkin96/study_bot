@@ -9,8 +9,10 @@ Layout
   include/style.puml      Shared skin — injected after @startuml by scripts/regenerate_docs.py
                           (Kroki needs one file; !include is not expanded server-side.)
   rendered/*.png          Generated — do not edit by hand
+  input-hashes.json       Fingerprint cache (merged source + PNG SHA-256); commit it. Renders
+                          skip Kroki when unchanged; use --bootstrap-manifest to fill offline.
 
-Regenerate PNGs (requires network, curl → kroki.io)
+Regenerate PNGs (requires network when a diagram actually changes, curl → kroki.io)
   make docs-fix
   # or:
   .venv/bin/python scripts/regenerate_docs.py

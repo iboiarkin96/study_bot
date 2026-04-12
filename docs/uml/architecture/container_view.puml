@@ -27,7 +27,21 @@ package "Observability stack\n(Docker Compose)" as Obs {
   Prom -[hidden]right- Bbx
 }
 
+package "Log stack\n(optional Compose)" as LogStack {
+  [Elasticsearch] as ES
+  [Kibana] as Kib
+  [Filebeat] as FB
+  ES -[hidden]right- Kib
+  Kib -[hidden]right- FB
+}
+
+artifact "logs/*.log\n(NDJSON)" as LogFile
+
 Proc -[hidden]down- Obs
+Proc ..> LogFile : LOG_FORMAT=json
+LogFile ..> FB : volume mount
+FB --> ES : index
+Kib --> ES : Discover / search
 
 Client --> Http : HTTPS / JSON
 Http --> App
