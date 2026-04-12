@@ -412,7 +412,7 @@ def custom_openapi() -> dict[str, Any]:
     return app.openapi_schema
 
 
-app.openapi = custom_openapi
+setattr(app, "openapi", custom_openapi)  # noqa: B010 -- mypy rejects direct assignment to FastAPI.openapi
 
 
 if os.getenv("LOADTEST_HTTP_500", "").lower() in ("1", "true", "yes"):
