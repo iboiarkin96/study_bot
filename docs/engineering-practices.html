@@ -130,6 +130,19 @@
                 <li>Use low-cardinality metric labels only (method, route template, status class/code, operation type).</li>
                 <li>Run <code>make contract-test</code> and <code>make verify</code> before release to protect API contract.
                 </li>
+                <li>
+                  <strong>Structured logs and correlation:</strong> file logs support <code>LOG_FORMAT=text|json</code>; the
+                  process default when <code>LOG_FORMAT</code> is unset is <strong>NDJSON (<code>json</code>)</strong> with
+                  stable fields including <code>request_id</code>. <code>trace_id</code> and <code>span_id</code> are reserved
+                  for future OpenTelemetry. Every response carries <code>X-Request-Id</code> (echo or generate); OpenAPI and
+                  CORS <code>expose_headers</code> must stay aligned so integrators and browser clients can read the header.
+                  Policy and local Elasticsearch: <a href="./adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
+                </li>
+                <li>
+                  <strong>Optional local log search:</strong> Docker stack Elasticsearch + Kibana + Filebeat
+                  (<code>make logging-up</code>, <code>make logging-down</code>, …) is for developer debugging only—not a CI
+                  or production requirement. See <a href="./developer/0007-local-development.html">Local development</a>.
+                </li>
               </ul>
 
               <h3>1.11 Environment Profiles and Config Governance (Mandatory)</h3>
@@ -368,6 +381,26 @@
                           <tr>
                             <td><code>make llm-ping</code></td>
                             <td>Smoke-test LLM API (same env as changelog-draft)</td>
+                          </tr>
+                          <tr>
+                            <td><code>make logging-down</code></td>
+                            <td>Stop logging stack</td>
+                          </tr>
+                          <tr>
+                            <td><code>make logging-es-query</code></td>
+                            <td>Query ES for study-app logs (optional QUERY=&lt;uuid&gt;)</td>
+                          </tr>
+                          <tr>
+                            <td><code>make logging-reset</code></td>
+                            <td>Stop stack, delete ES volume + ./logs/*.log (clean slate)</td>
+                          </tr>
+                          <tr>
+                            <td><code>make logging-smoke</code></td>
+                            <td>Check Elasticsearch and Kibana URLs</td>
+                          </tr>
+                          <tr>
+                            <td><code>make logging-up</code></td>
+                            <td>Start ES/Kibana/Filebeat (use LOG_FORMAT=json, ./logs)</td>
                           </tr>
                           <tr>
                             <td><code>make migrate</code></td>

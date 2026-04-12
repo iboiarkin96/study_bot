@@ -1,0 +1,38 @@
+# Filebeat ships NDJSON lines from the API log file into Elasticsearch (local dev stack).
+# Requires LOG_FORMAT=json and a running API writing to ./logs (mounted as /var/log/study-app).
+# JSON must be ECS-friendly: e.g. service.name (object), not a string at `service` — otherwise ES rejects bulk.
+# See docs/developer/0007-local-development.html and ADR 0023.
+#
+# Kibana: use data view index pattern *study-app-logs* (with leading/trailing wildcards), not only
+# study-app-logs-* — Elasticsearch 8 may store events under backing indices named .ds-study-app-logs-...
+# which do not match study-app-logs-*.
+
+filebeat.inputs:
+  - type: filestream
+    id: study-app-api-logs
+    enabled: true
+    paths:
+      - /var/log/study-app/*.log
+    parsers:
+      - ndjson:
+          keys_under_root: true
+          overwrite_keys: true
+          message_key: message
+
+processors:
+  - add_host_metadata: ~
+
+setup.ilm.enabled: false
+setup.template.enabled: true
+setup.template.name: "study-app-logs"
+setup.template.pattern: "study-app-logs-*"
+# Classic daily indices (study-app-logs-YYYY.MM.DD) so Kibana pattern study-app-logs-* matches.
+# Without this, ES 8 may use data streams (.ds-study-app-logs-...) and the narrow pattern misses documents.
+setup.template.type: legacy
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  index: "study-app-logs-%{+yyyy.MM.dd}"
+
+logging.level: warning
+logging.to_stderr: true

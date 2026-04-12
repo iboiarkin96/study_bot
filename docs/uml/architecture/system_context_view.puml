@@ -34,18 +34,26 @@ package "Observability\n(Docker Compose)" as Obs {
   Prom -[hidden]right- Bbx
 }
 
+package "Log search\n(optional Compose)" as LogSearch {
+  [Elasticsearch] as ES
+  [Kibana] as Kib
+  ES -[hidden]right- Kib
+}
+
 People -[hidden]down- Clients
 Clients -[hidden]down- Api
 Api -[hidden]down- Db
 Db -[hidden]right- Img
 Img -[hidden]right- K8s
 Db -[hidden]down- Obs
+Db -[hidden]right- LogSearch
 
 Learner --> Web
 Learner --> Mobile
 Mentor --> Web
 Operator --> Bot
 Operator --> Graf
+Operator --> Kib : optional\n(log search)
 Operator ..> K8sDep : optional
 
 Web --> Api : HTTPS
@@ -60,5 +68,6 @@ K8sDep ..> Api : runs
 Prom ..> Api : metrics
 Bbx ..> Api : ready
 Graf --> Prom
+Api ..> ES : NDJSON logs\n(via Filebeat)
 
 @enduml

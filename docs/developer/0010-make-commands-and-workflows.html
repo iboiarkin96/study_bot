@@ -277,7 +277,7 @@
                   </table>
                 </div>
 
-                <h3>4.6 Observability, container, Kubernetes</h3>
+                <h3>4.6 Observability, logging, container, Kubernetes</h3>
                 <div class="card">
                   <table>
                     <thead>
@@ -290,6 +290,10 @@
                       <tr>
                         <td><code>observability-up</code>, <code>observability-down</code>, <code>observability-smoke</code></td>
                         <td>Prometheus/Grafana stack and link checks.</td>
+                      </tr>
+                      <tr>
+                        <td><code>logging-up</code>, <code>logging-down</code>, <code>logging-reset</code>, <code>logging-smoke</code>, <code>logging-es-query</code></td>
+                        <td>Optional Elasticsearch + Kibana + Filebeat for local NDJSON search (<code>docker-compose.logging.yml</code>); <code>QUERY=&lt;uuid&gt;</code> for CLI search. See <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.</td>
                       </tr>
                       <tr>
                         <td><code>docker-build</code></td>
@@ -368,6 +372,10 @@
                                 terminal</td>
                               </tr>
                               <tr>
+                                <td>Want logs in Kibana / Elasticsearch locally</td>
+                                <td><code>make logging-up</code>, run the API with NDJSON to <code>./logs</code> (default <code>LOG_FORMAT</code> is <code>json</code>), create Kibana data view <code>*study-app-logs*</code> — see <a href="./0007-local-development.html">Local development</a></td>
+                              </tr>
+                              <tr>
                                 <td>Prepare a release</td>
                                 <td><code>make release-check</code>; deploy with <code>make release DEPLOY_CMD='…'</code></td>
                               </tr>
@@ -386,6 +394,7 @@
                         <ul>
                           <li><a href="./README.html">Developer docs index</a></li>
                           <li><a href="./0007-local-development.html">Local development</a></li>
+                          <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and local Elasticsearch</a></li>
                           <li><a href="./0008-docs-pipeline.html">Documentation pipeline</a></li>
                           <li><a href="./0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a></li>
                           <li><a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — PlantUML style for this repo</li>

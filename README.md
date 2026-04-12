@@ -9,10 +9,10 @@ FastAPI service for Study App domain workflows. Long-form documentation: [system
 | [Quick start](#quick-start) | Install, migrate, run the API locally |
 | [Environment and configuration](#environment-and-configuration) | `APP_ENV`, `.env`, profile files |
 | [Documentation and workflows](#documentation-and-workflows) | Changelog, guides, ADRs, Make entrypoints |
-| [Observability (local)](#observability-local) | Prometheus, Grafana, metrics URLs |
+| [Observability (local)](#observability-local) | Prometheus, Grafana, metrics, optional Elasticsearch/Kibana |
 | [Container image and Kubernetes (optional)](#container-image-and-local-kubernetes-optional) | Docker image, local cluster |
 | [Repository layout](#repository-layout) | Top-level tree |
-| [HTTP endpoints](#http-endpoints) | Route summary |
+| [HTTP endpoints](#http-endpoints) | OpenAPI reference (`docs/api`) |
 | [License](#license) | MIT |
 
 ---
@@ -95,6 +95,17 @@ Override host/port labels for docs and smoke checks: `OBS_API_*`, `OBS_PROM_*`, 
 
 More detail (ports, Blackbox, stopping containers): [Local development](docs/developer/0007-local-development.html). Architecture and SLO/error-budget context: [ADR 0009](docs/adr/0009-health-readiness-and-observability.html), [ADR 0011](docs/adr/0011-slo-sla-error-budget.html).
 
+### Structured logs and Elasticsearch (optional)
+
+For **NDJSON** logs and local **search/analytics**, use `LOG_FORMAT=json` and `LOG_SERVICE_NAME` (see `env/example`; **json is the default** when `LOG_FORMAT` is unset). Uvicorn’s duplicate access log is disabled (`--no-access-log`); correlation uses **`request_id`** in `app.main` **request_done** lines. Every response includes an **`X-Request-Id`** header; JSON lines include `request_id`, and `trace_id` / `span_id` are reserved (null until OpenTelemetry).
+
+| What | URL | Notes |
+| ---- | --- | ----- |
+| Elasticsearch | [http://127.0.0.1:9200](http://127.0.0.1:9200) | REST API; indices `study-app-logs-*` (see Kibana note) |
+| Kibana | [http://127.0.0.1:5601](http://127.0.0.1:5601) | Data view index pattern **`*study-app-logs*`** (wildcards on both sides) — **not** only `study-app-logs-*`, or Discover may miss `.ds-study-app-logs-*` data streams |
+
+**Flow:** `make logging-up` starts `docker-compose.logging.yml` (Elasticsearch, Kibana, Filebeat). The API should run on the host with `LOG_FORMAT=json` writing to `./logs` (mounted read-only into Filebeat). **~2 GiB RAM** recommended for ES+Kibana. `make logging-smoke` checks ES/Kibana; `make logging-down` stops the stack. Details and licensing notes: [ADR 0023](docs/adr/0023-structured-logging-and-local-elasticsearch.html).
+
 ### Metrics useful in Prometheus / Grafana
 
 Examples: `http_requests_total`, `http_request_duration_seconds_bucket`, `db_operation_duration_seconds_bucket`. Use the Grafana dashboard above for charts; in Prometheus UI use **Graph** and paste PromQL (e.g. `sum(rate(http_requests_total[1m]))` for overall RPS).
@@ -119,6 +130,8 @@ Day-to-day development does **not** depend on Docker or Kubernetes: use **`make 
 <!-- BEGIN:REPO_LAYOUT -->
 ```text
 study_app/
+├── docker-compose.observability.yml  # Prometheus, Grafana, Blackbox
+├── docker-compose.logging.yml  # Optional: Elasticsearch, Kibana, Filebeat
 ├── app/  # Application package
 │   ├── api/  # HTTP layer
 │   │   └── v1/  # v1 routers
@@ -151,6 +164,10 @@ study_app/
 │       ├── rendered/  # Rendered PNGs
 │       └── sequences/  # Sequence diagram sources
 ├── k8s/  # Kubernetes manifests; k8s/app.env sources the generated ConfigMap
+├── ops/  # Prometheus, Grafana, Filebeat configs
+│   ├── filebeat/  # Filebeat → Elasticsearch (local logging stack)
+│   ├── grafana/  # Dashboards and provisioning
+│   └── prometheus/  # Scrape config, rules, Blackbox
 └── scripts/  # Dev & CI helper scripts
 ```
 <!-- END:REPO_LAYOUT -->
@@ -159,18 +176,7 @@ study_app/
 
 ## HTTP endpoints
 
-<!-- BEGIN:HTTP_ENDPOINTS -->
-| Method | Path | Description |
-| ------ | ---- | ----------- |
-| `POST` | `/api/v1/user` | Create user |
-| `GET` | `/api/v1/user/{system_uuid}/{system_user_id}` | Get user by system_uuid and system_user_id |
-| `PATCH` | `/api/v1/user/{system_uuid}/{system_user_id}` | Partially update user by system_uuid and system_user_id |
-| `PUT` | `/api/v1/user/{system_uuid}/{system_user_id}` | Update user by system_uuid and system_user_id |
-| `GET` | `/docs` | Custom Swagger Ui |
-| `GET` | `/live` | Liveness probe |
-| `GET` | `/metrics` | Metrics Endpoint |
-| `GET` | `/ready` | Readiness probe |
-<!-- END:HTTP_ENDPOINTS -->
+The full HTTP API, including all endpoints, schemas, and example requests and responses, is documented separately with OpenAPI. To browse the API reference, see: [docs/api/index.html](docs/api/index.html)
 
 ---
 

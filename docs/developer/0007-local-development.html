@@ -15,8 +15,10 @@
       <div id="docs-top-nav"></div>
       <p class="lead">
         How to run the API locally, optionally with the Docker observability stack (Prometheus, Grafana,
-        Blackbox exporter). For metrics URLs and probe checks, the repository root
-        <a href="../../README.md">README.md</a> has a concise observability quick start.
+        Blackbox exporter) and, separately, an optional logging stack (Elasticsearch, Kibana, Filebeat) for searchable
+        NDJSON logs. For metrics URLs, logging quick start, and probe checks, the repository root
+        <a href="../../README.md">README.md</a> is the short reference; details below complement
+        <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
       </p>
 
       <h2>1. First-time setup</h2>
@@ -75,10 +77,63 @@
         <code>make observability-down</code> (or <code>docker compose -f docker-compose.observability.yml down</code>).
       </p>
 
-      <h2>5. Sanity checks</h2>
+      <h2>5. Optional logging stack (Elasticsearch, Kibana, Filebeat)</h2>
+      <p>
+        For searchable, structured logs locally, use NDJSON (<code>LOG_FORMAT=json</code> or leave
+        <code>LOG_FORMAT</code> unset—the application default is <strong><code>json</code></strong>; see
+        <code>env/example</code> and <code>app/core/config.py</code>) so the API writes lines under <code>LOG_DIR</code>
+        (default <code>logs/</code>).
+        Then start the Elastic stack (requires Docker; allocate roughly <strong>2&nbsp;GiB RAM</strong> for Elasticsearch and Kibana):
+      </p>
+      <pre><code>make logging-up</code></pre>
+      <p>
+        Filebeat tails the mounted <code>./logs</code> directory and ships lines to Elasticsearch. Open Kibana at
+        <code>http://127.0.0.1:5601</code> (default), create a <strong>data view</strong> whose index pattern is
+        <strong><code>*study-app-logs*</code></strong> (asterisks before and after — Elasticsearch&nbsp;8 may store
+        documents in backing indices named <code>.ds-study-app-logs-…</code>, which <strong>do not</strong> match the
+        narrower pattern <code>study-app-logs-*</code>, so searches like <code>request_id: "…"</code> return nothing).
+        Then use <strong>Discover</strong> to search (filter by field <code>request_id</code> or paste the UUID into the
+        Kibana search bar). CLI check without Kibana: <code>make logging-es-query</code> (last few docs) or
+        <code>make logging-es-query QUERY=&lt;uuid&gt;</code> (same as <code>python scripts/check_es_request_id.py &lt;uuid&gt;</code>).
+        Smoke checks: <code>make logging-smoke</code>. Stop with <code>make logging-down</code>. Licensing and scope:
+        <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
+      </p>
+
+      <h3>Data path (why Discover can be empty)</h3>
+      <ol>
+        <li>
+          <strong>API on the host</strong> writes lines to <code>./logs/*.log</code> (e.g. <code>app.log</code>). Nothing is sent to Elastic until step 3.
+        </li>
+        <li>
+          <strong>Filebeat</strong> (container) reads the same files via the bind mount <code>./logs</code> →
+          <code>/var/log/study-app</code> and publishes events to Elasticsearch. If the API is not running or writes elsewhere,
+          Filebeat has nothing new to ship.
+        </li>
+        <li>
+          <strong>Elasticsearch</strong> stores documents in indices / data streams whose names contain
+          <code>study-app-logs</code> (e.g. <code>.ds-study-app-logs-…</code>).
+        </li>
+        <li>
+          <strong>Kibana Discover</strong> reads from Elasticsearch only through a <strong>data view</strong> whose pattern
+          matches those indices — use <strong><code>*study-app-logs*</code></strong>. Set the time range to include “now”
+          (e.g. Last 15 minutes) after you generate traffic.
+        </li>
+      </ol>
+
+      <h3>Clean slate (reset logs + Elastic)</h3>
+      <p>
+        To remove old noise and old indices: <code>make logging-reset</code> stops the stack, deletes the Docker volume
+        holding Elasticsearch data (all indices and Kibana objects such as saved data views), and deletes <code>logs/*.log</code>.
+        Then run <code>make logging-up</code>, open Kibana → <strong>Stack Management → Data views → Create data view</strong>,
+        index pattern <strong><code>*study-app-logs*</code></strong>, timestamp field <code>@timestamp</code>. Start the API
+        (<code>make run</code>), hit <code>/ready</code> a few times with <code>curl</code>, wait ~10–20&nbsp;s, refresh Discover.
+      </p>
+
+      <h2>6. Sanity checks</h2>
       <ul>
-        <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code></li>
+        <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code> (responses include <code>X-Request-Id</code>)</li>
         <li>Observability endpoints: <code>make observability-smoke</code></li>
+        <li>Logging stack (when running): <code>make logging-smoke</code></li>
       </ul>
 
       <h2>See also</h2>
@@ -86,6 +141,7 @@
         <li><a href="./0010-make-commands-and-workflows.html">Make commands and workflows (onboarding)</a> — all targets by theme, PlantUML pipeline diagrams, if-then scenarios</li>
         <li><a href="./0009-docker-and-kubernetes-local.html">Docker image and local Kubernetes</a></li>
         <li><a href="../adr/0009-health-readiness-and-observability.html">ADR 0009 — health, readiness, observability</a></li>
+        <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and local Elasticsearch</a></li>
         <li><a href="./0006-api-load-testing.html">API load testing (tools.load_testing.runner)</a></li>
         <li><a href="../runbooks/0008-observability-scrape-failing.html">Runbook: observability scrape failing</a></li>
         <li><a href="./README.html">Developer docs index</a></li>

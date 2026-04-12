@@ -4,21 +4,29 @@ Usage:
   python scripts/regenerate_docs.py
   python scripts/regenerate_docs.py --check
   python scripts/regenerate_docs.py --watch
+  python scripts/regenerate_docs.py --bootstrap-manifest   # offline: fill input-hashes.json
+  python scripts/regenerate_docs.py --force                 # ignore cache, re-render all
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import os
 import subprocess
 import tempfile
 import time
 from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 UML_SRC_DIR = PROJECT_ROOT / "docs" / "uml"
 UML_OUT_DIR = PROJECT_ROOT / "docs" / "uml" / "rendered"
 UML_STYLE_FILE = UML_SRC_DIR / "include" / "style.puml"
+# Committed fingerprint store: skip Kroki when merged PlantUML + PNG bytes match last run.
+UML_MANIFEST_PATH = UML_SRC_DIR / "input-hashes.json"
+MANIFEST_VERSION = 1
 # PNG quality is controlled mainly by skinparam dpi in docs/uml/include/style.puml (sent in the diagram body).
 KROKI_URL = "https://kroki.io/plantuml/png"
 NO_COLOR = os.getenv("NO_COLOR", "0") == "1"
@@ -114,6 +122,80 @@ def _output_for(source_path: Path) -> Path:
     return UML_OUT_DIR / safe_name
 
 
+def _rel_key(source_path: Path) -> str:
+    """Stable posix path of ``source_path`` relative to ``docs/uml``."""
+    return source_path.relative_to(UML_SRC_DIR).as_posix()
+
+
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _input_sha256(source_path: Path) -> str:
+    """SHA-256 of the UTF-8 merged document sent to Kroki (includes injected style)."""
+    merged = _merge_style(source_path)
+    return _sha256_bytes(merged.encode("utf-8"))
+
+
+def _load_manifest_diagrams() -> dict[str, dict[str, str]]:
+    """Load ``diagrams`` map from :data:`UML_MANIFEST_PATH`; missing or bad file → empty."""
+    if not UML_MANIFEST_PATH.is_file():
+        return {}
+    try:
+        raw = json.loads(UML_MANIFEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if raw.get("version") != MANIFEST_VERSION:
+        return {}
+    diagrams = raw.get("diagrams")
+    if not isinstance(diagrams, dict):
+        return {}
+    out: dict[str, dict[str, str]] = {}
+    for key, val in diagrams.items():
+        if not isinstance(key, str) or not isinstance(val, dict):
+            continue
+        inp = val.get("input_sha256")
+        outp = val.get("output_sha256")
+        if isinstance(inp, str) and isinstance(outp, str) and len(inp) == 64 and len(outp) == 64:
+            out[key] = {"input_sha256": inp, "output_sha256": outp}
+    return out
+
+
+def _persist_render_in_manifest(source_path: Path, output_path: Path) -> None:
+    """Update or insert one diagram entry and prune orphans (used by watch mode)."""
+    diagrams = _load_manifest_diagrams()
+    key = _rel_key(source_path)
+    diagrams[key] = {
+        "input_sha256": _input_sha256(source_path),
+        "output_sha256": _sha256_bytes(output_path.read_bytes()),
+    }
+    keep = {_rel_key(s) for s in _source_files()}
+    diagrams = {k: v for k, v in diagrams.items() if k in keep}
+    _save_manifest_diagrams(diagrams)
+
+
+def _save_manifest_diagrams(diagrams: dict[str, dict[str, str]]) -> None:
+    """Atomically write manifest (sorted keys for stable diffs)."""
+    payload: dict[str, Any] = {
+        "version": MANIFEST_VERSION,
+        "diagrams": dict(sorted(diagrams.items())),
+    }
+    text = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+    UML_MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(
+        prefix=".input-hashes-",
+        suffix=".json",
+        dir=str(UML_MANIFEST_PATH.parent),
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        Path(tmp).replace(UML_MANIFEST_PATH)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
 def render_one(source_path: Path, output_path: Path) -> None:
     """Render one PlantUML file to PNG via POST to :data:`KROKI_URL` using ``curl``.
 
@@ -158,22 +240,78 @@ def render_one(source_path: Path, output_path: Path) -> None:
         Path(tmp_path).unlink(missing_ok=True)
 
 
-def render_all(verbose: bool = True) -> int:
-    """Render every discovered PlantUML source to its PNG under ``rendered/``.
+def render_all(verbose: bool = True, *, force: bool = False) -> tuple[int, int]:
+    """Render PlantUML sources to PNGs, skipping Kroki when manifest and bytes match.
+
+    Uses :data:`UML_MANIFEST_PATH` (input + output SHA-256 per diagram). Orphan manifest
+    keys are removed after a successful run.
 
     Args:
-        verbose: When True, print one success line per file via :func:`_ok`.
+        verbose: When True, print one line per file via :func:`_ok`.
+        force: When True, ignore the manifest and re-render every diagram.
 
     Returns:
-        Count of source files processed.
+        ``(rendered, skipped)`` — counts of Kroki renders vs cache hits.
     """
     files = _source_files()
+    diagrams: dict[str, dict[str, str]] = {} if force else _load_manifest_diagrams()
+    rendered = 0
+    skipped = 0
     for src in files:
         out = _output_for(src)
+        key = _rel_key(src)
+        in_h = _input_sha256(src)
+        if not force and out.is_file():
+            entry = diagrams.get(key)
+            out_h = _sha256_bytes(out.read_bytes())
+            if entry and entry["input_sha256"] == in_h and entry["output_sha256"] == out_h:
+                skipped += 1
+                if verbose:
+                    _ok(f"Skipped (unchanged) {out.relative_to(PROJECT_ROOT)}")
+                continue
         render_one(src, out)
+        out_h = _sha256_bytes(out.read_bytes())
+        diagrams[key] = {"input_sha256": in_h, "output_sha256": out_h}
+        rendered += 1
         if verbose:
             _ok(f"Rendered {out.relative_to(PROJECT_ROOT)}")
-    return len(files)
+    keep = {_rel_key(s) for s in files}
+    diagrams = {k: v for k, v in diagrams.items() if k in keep}
+    _save_manifest_diagrams(diagrams)
+    return rendered, skipped
+
+
+def bootstrap_manifest(verbose: bool = True) -> int:
+    """Fill ``input-hashes.json`` from current sources and PNGs without calling Kroki.
+
+    Use when introducing the fingerprint file or offline; assumes each ``.puml`` already
+    matches its ``rendered/*.png``.
+
+    Args:
+        verbose: Print one status line per diagram.
+
+    Returns:
+        Number of diagrams recorded.
+
+    Raises:
+        SystemExit: If any diagram has no PNG on disk.
+    """
+    diagrams: dict[str, dict[str, str]] = {}
+    for src in _source_files():
+        out = _output_for(src)
+        if not out.is_file():
+            print(
+                f"✗ Missing PNG for {src.relative_to(PROJECT_ROOT)} — run docs-fix with network first."
+            )
+            raise SystemExit(1)
+        key = _rel_key(src)
+        in_h = _input_sha256(src)
+        out_h = _sha256_bytes(out.read_bytes())
+        diagrams[key] = {"input_sha256": in_h, "output_sha256": out_h}
+        if verbose:
+            _ok(f"Recorded {key}")
+    _save_manifest_diagrams(diagrams)
+    return len(diagrams)
 
 
 def _is_render_up_to_date(source_path: Path, output_path: Path) -> bool:
@@ -198,7 +336,7 @@ def _is_render_up_to_date(source_path: Path, output_path: Path) -> bool:
 
 
 def check_all(verbose: bool = True) -> int:
-    """Compare each source PNG pair without writing to the final path (except temp).
+    """Compare each source/output pair; uses manifest + hashes first, then Kroki if needed.
 
     Args:
         verbose: Print per-file status lines.
@@ -208,8 +346,18 @@ def check_all(verbose: bool = True) -> int:
     """
     stale = 0
     files = _source_files()
+    diagrams = _load_manifest_diagrams()
     for src in files:
         out = _output_for(src)
+        key = _rel_key(src)
+        in_h = _input_sha256(src)
+        entry = diagrams.get(key)
+        if entry and entry["input_sha256"] == in_h and out.is_file():
+            out_h = _sha256_bytes(out.read_bytes())
+            if out_h == entry["output_sha256"]:
+                if verbose:
+                    _ok(f"Up to date {out.relative_to(PROJECT_ROOT)}")
+                continue
         if _is_render_up_to_date(src, out):
             if verbose:
                 _ok(f"Up to date {out.relative_to(PROJECT_ROOT)}")
@@ -234,8 +382,10 @@ def watch(interval_sec: float = 1.0) -> None:
     for src in _source_files():
         mtimes[src] = src.stat().st_mtime
 
-    total = render_all(verbose=True)
-    _ok(f"Initial render done: {total} file(s)")
+    rendered, skipped = render_all(verbose=True)
+    _ok(
+        f"Initial render done: {rendered + skipped} file(s) ({rendered} rendered, {skipped} from cache)"
+    )
 
     while True:
         changed = []
@@ -249,6 +399,7 @@ def watch(interval_sec: float = 1.0) -> None:
         for src in changed:
             out = _output_for(src)
             render_one(src, out)
+            _persist_render_in_manifest(src, out)
             _ok(f"Updated {out.relative_to(PROJECT_ROOT)}")
 
         removed = [path for path in mtimes if path not in current_files]
@@ -276,7 +427,26 @@ def main() -> None:
         action="store_true",
         help="Check outputs are up-to-date without writing files.",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-render every diagram (ignore input-hashes.json).",
+    )
+    parser.add_argument(
+        "--bootstrap-manifest",
+        action="store_true",
+        help="Write input-hashes.json from current .puml/.png only (no Kroki).",
+    )
     args = parser.parse_args()
+
+    if args.bootstrap_manifest:
+        if args.watch or args.check or args.force:
+            print("✗ --bootstrap-manifest cannot be combined with --watch, --check, or --force.")
+            raise SystemExit(2)
+        _step("Bootstrapping input-hashes.json (no Kroki)…")
+        n = bootstrap_manifest(verbose=True)
+        _ok(f"Recorded {n} diagram(s) in {UML_MANIFEST_PATH.relative_to(PROJECT_ROOT)}")
+        return
 
     if args.watch:
         watch(interval_sec=args.interval)
@@ -292,8 +462,11 @@ def main() -> None:
         return
 
     _step("Rendering UML diagrams...")
-    total = render_all(verbose=True)
-    _ok(f"Done: rendered {total} file(s)")
+    rendered, skipped = render_all(verbose=True, force=args.force)
+    if skipped:
+        _ok(f"Done: {rendered} rendered, {skipped} unchanged (see {UML_MANIFEST_PATH.name})")
+    else:
+        _ok(f"Done: rendered {rendered} file(s)")
 
 
 if __name__ == "__main__":

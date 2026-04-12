@@ -650,6 +650,15 @@
               "title": "Idempotency-Key",
               "type": "string"
             }
+          },
+          {
+            "description": "Optional correlation id. If you send **X-Request-Id**, the same value is returned in the response header and written to server logs as **request_id** (JSON logs / Elasticsearch). If omitted, the server generates a UUID.",
+            "in": "header",
+            "name": "X-Request-Id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -692,7 +701,15 @@
                 }
               }
             },
-            "description": "User created successfully."
+            "description": "User created successfully.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -722,7 +739,15 @@
                 }
               }
             },
-            "description": "Business validation failure."
+            "description": "Business validation failure.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "content": {
@@ -743,7 +768,15 @@
                 }
               }
             },
-            "description": "Missing or invalid API key header."
+            "description": "Missing or invalid API key header.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "409": {
             "content": {
@@ -764,7 +797,15 @@
                 }
               }
             },
-            "description": "Idempotency key was reused with different payload."
+            "description": "Idempotency key was reused with different payload.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "413": {
             "content": {
@@ -785,7 +826,15 @@
                 }
               }
             },
-            "description": "Request body exceeds configured maximum size."
+            "description": "Request body exceeds configured maximum size.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -1174,7 +1223,15 @@
                 }
               }
             },
-            "description": "Request validation errors for all supported user create field rules."
+            "description": "Request validation errors for all supported user create field rules.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "429": {
             "content": {
@@ -1211,6 +1268,12 @@
               },
               "X-RateLimit-Remaining": {
                 "description": "Remaining requests in current window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
                 "schema": {
                   "type": "string"
                 }
@@ -1256,6 +1319,15 @@
               "title": "System User Id",
               "type": "string"
             }
+          },
+          {
+            "description": "Optional correlation id. If you send **X-Request-Id**, the same value is returned in the response header and written to server logs as **request_id** (JSON logs / Elasticsearch). If omitted, the server generates a UUID.",
+            "in": "header",
+            "name": "X-Request-Id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1267,7 +1339,15 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "content": {
@@ -1288,7 +1368,15 @@
                 }
               }
             },
-            "description": "Missing or invalid API key header."
+            "description": "Missing or invalid API key header.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
             "content": {
@@ -1309,7 +1397,15 @@
                 }
               }
             },
-            "description": "User not found."
+            "description": "User not found.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -1319,7 +1415,15 @@
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Validation Error",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "429": {
             "content": {
@@ -1356,6 +1460,12 @@
               },
               "X-RateLimit-Remaining": {
                 "description": "Remaining requests in current window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
                 "schema": {
                   "type": "string"
                 }
@@ -1413,6 +1523,15 @@
               "title": "Idempotency-Key",
               "type": "string"
             }
+          },
+          {
+            "description": "Optional correlation id. If you send **X-Request-Id**, the same value is returned in the response header and written to server logs as **request_id** (JSON logs / Elasticsearch). If omitted, the server generates a UUID.",
+            "in": "header",
+            "name": "X-Request-Id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -1448,7 +1567,15 @@
                 }
               }
             },
-            "description": "User updated successfully."
+            "description": "User updated successfully.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {
@@ -1478,7 +1605,15 @@
                 }
               }
             },
-            "description": "Business validation failure."
+            "description": "Business validation failure.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "content": {
@@ -1499,7 +1634,15 @@
                 }
               }
             },
-            "description": "Missing or invalid API key header."
+            "description": "Missing or invalid API key header.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
             "content": {
@@ -1520,7 +1663,15 @@
                 }
               }
             },
-            "description": "User not found."
+            "description": "User not found.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "409": {
             "content": {
@@ -1541,7 +1692,15 @@
                 }
               }
             },
-            "description": "Idempotency key was reused with different payload."
+            "description": "Idempotency key was reused with different payload.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "413": {
             "content": {
@@ -1562,7 +1721,15 @@
                 }
               }
             },
-            "description": "Request body exceeds configured maximum size."
+            "description": "Request body exceeds configured maximum size.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -1601,7 +1768,15 @@
                 }
               }
             },
-            "description": "Request validation errors for user patch body rules."
+            "description": "Request validation errors for user patch body rules.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "429": {
             "content": {
@@ -1638,6 +1813,12 @@
               },
               "X-RateLimit-Remaining": {
                 "description": "Remaining requests in current window.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
                 "schema": {
                   "type": "string"
                 }
@@ -1695,6 +1876,15 @@
               "title": "Idempotency-Key",
               "type": "string"
             }
+          },
+          {
+            "description": "Optional correlation id. If you send **X-Request-Id**, the same value is returned in the response header and written to server logs as **request_id** (JSON logs / Elasticsearch). If omitted, the server generates a UUID.",
+            "in": "header",
+            "name": "X-Request-Id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -1736,7 +1926,15 @@
                 }
               }
             },
-            "description": "User updated successfully."
+            "description": "User updated successfully.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "content": {
@@ -1757,7 +1955,15 @@
                 }
               }
             },
-            "description": "Missing or invalid API key header."
+            "description": "Missing or invalid API key header.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
             "content": {
@@ -1778,7 +1984,15 @@
                 }
               }
             },
-            "description": "User not found."
+            "description": "User not found.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "409": {
             "content": {
@@ -1799,7 +2013,15 @@
                 }
               }
             },
-            "description": "Idempotency key was reused with different payload."
+            "description": "Idempotency key was reused with different payload.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "413": {
             "content": {
@@ -1820,7 +2042,15 @@
                 }
               }
             },
-            "description": "Request body exceeds configured maximum size."
+            "description": "Request body exceeds configured maximum size.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -1886,7 +2116,15 @@
                 }
               }
             },
-            "description": "Request validation errors for user update body rules."
+            "description": "Request validation errors for user update body rules.",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "429": {
             "content": {
@@ -1926,6 +2164,12 @@
                 "schema": {
                   "type": "string"
                 }
+              },
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -1945,6 +2189,17 @@
       "get": {
         "description": "Kubernetes-style liveness: process is up (no dependency checks).\n\nReturns:\n    Payload with ``status=\"alive\"`` and current ``app_env``.",
         "operationId": "getLiveProbe",
+        "parameters": [
+          {
+            "description": "Optional correlation id. If you send **X-Request-Id**, the same value is returned in the response header and written to server logs as **request_id** (JSON logs / Elasticsearch). If omitted, the server generates a UUID.",
+            "in": "header",
+            "name": "X-Request-Id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -1954,7 +2209,15 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "summary": "Liveness probe",
@@ -1967,6 +2230,17 @@
       "get": {
         "description": "Readiness probe including database connectivity and latency budget.\n\nReturns:\n    ``ReadyResponse`` with HTTP 200 when ready, or HTTP 503 with the same schema\n    when the DB check fails or exceeds the timeout.",
         "operationId": "getReadyProbe",
+        "parameters": [
+          {
+            "description": "Optional correlation id. If you send **X-Request-Id**, the same value is returned in the response header and written to server logs as **request_id** (JSON logs / Elasticsearch). If omitted, the server generates a UUID.",
+            "in": "header",
+            "name": "X-Request-Id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -1976,7 +2250,15 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this HTTP request\u2014echo of **X-Request-Id** from the request or a server-generated UUID. Use it to match browser or Swagger calls to log lines and Kibana.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "summary": "Readiness probe",

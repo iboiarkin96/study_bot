@@ -13,4 +13,5 @@ mkdir -p "$LOG_DIR" 2>/dev/null || true
 
 PYTHON_CMD="${PYTHON:-python3}"
 "$PYTHON_CMD" -m alembic upgrade head
-exec "$PYTHON_CMD" -m uvicorn app.main:app --host "${APP_HOST:-0.0.0.0}" --port "${APP_PORT:-8000}"
+# --no-access-log: HTTP lines are logged in app.main with request_id; avoids uvicorn.access without correlation.
+exec "$PYTHON_CMD" -m uvicorn app.main:app --host "${APP_HOST:-0.0.0.0}" --port "${APP_PORT:-8000}" --no-access-log

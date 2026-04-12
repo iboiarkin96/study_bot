@@ -7,17 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- **Dependency security (backlog item-4):** `pip-audit` was already pinned and run in CI; **`make verify-ci`** now runs **`make deps-audit`** first so local pre-push matches the **`quality`** job (`deps-audit` then **`make verify`**). Backlog [item-4](docs/backlog/README.html#item-4) marked **Done**; [ADR 0019](docs/adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html) implementation status set to **Done** (`data-adr-weight="7"`).
-
-### Changed
-
-- **OpenAPI (test):** **`docs/openapi-explorer.html`** — Swagger UI against `openapi-baseline.json` for browsing only (**Try it out** disabled). Browser-side Ajv validation and **`docs/assets/openapi-sandbox.js`** removed. **[ADR 0022](docs/adr/0022-embedded-swagger-ui-openapi-sandbox.html)** marked superseded; validation approach on hold. **`docs/openapi-live.html`** removed (use app **`/docs`** for Try it out). README and indexes updated.
-
-- **CORS (`env/example`):** comment clarifies static `openapi-explorer.html` does not call the API; origins for `:8765` remain for browser access to the API from the same docs origin (e.g. FastAPI `/docs`).
-
-
+None
 
 ## [1.1.1] — 2026-04-12
 
@@ -33,11 +23,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Embedded Swagger UI:** [docs/openapi-explorer.html](docs/openapi-explorer.html) loads the committed OpenAPI snapshot (`docs/openapi/openapi-baseline.json`) with **Try it out**; top nav link **Swagger UI**; linked from docs index, developer index, and README.
 
+- **Structured logging and optional local Elasticsearch:** NDJSON (`LOG_FORMAT=json`, or leave unset — application default is **json**), `LOG_SERVICE_NAME`, `X-Request-Id` middleware, `docker-compose.logging.yml` (Elasticsearch, Kibana, Filebeat), `make logging-up` / `logging-down` / `logging-smoke` / `logging-reset` / `logging-es-query`, and [ADR 0023](docs/adr/0023-structured-logging-and-local-elasticsearch.html). `trace_id` / `span_id` are reserved in JSON logs for future OpenTelemetry.
+
+- **X-Request-Id in browsers and Swagger:** `CORS_EXPOSE_HEADERS` (default includes `X-Request-Id`) so cross-origin clients can read the correlation header; OpenAPI documents optional request header and response `X-Request-Id` on every operation for Swagger UI **Try it out**.
+
+- **Logging defaults for correlation:** `LOG_FORMAT` defaults to **json** (NDJSON with top-level `request_id`); `env/dev` sets `LOG_FORMAT` + `CORS_EXPOSE_HEADERS`; Uvicorn runs with **`--no-access-log`** so duplicate `uvicorn.access` lines (without `request_id`) are not written—HTTP traces use `app.main` `request_done` only.
+
+- **Kibana / Elasticsearch:** Documented data view index pattern **`*study-app-logs*`** (not only `study-app-logs-*`) so Discover includes `.ds-study-app-logs-*` backing indices; Filebeat sets **`setup.template.type: legacy`** for classic daily index names on new data.
+
+- **Dependency security (backlog item-4):** `pip-audit` was already pinned and run in CI; **`make verify-ci`** now runs **`make deps-audit`** first so local pre-push matches the **`quality`** job (`deps-audit` then **`make verify`**). Backlog [item-4](docs/backlog/README.html#item-4) marked **Done**; [ADR 0019](docs/adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html) implementation status set to **Done** (`data-adr-weight="7"`).
+
 ### Changed
 
 - PlantUML in `docs/uml/`: diagram sources and rendered PNGs updated; shared style via `docs/uml/include/style.puml` ([ADR 0020](docs/adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
 
 - Documentation pipeline and contributor touchpoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/adr_discussion.md`, and synced HTML pages (e.g. engineering practices, system analysis, backlog, runbooks, developer docs) brought in line with ADR lifecycle and UML generation.
+
+- **OpenAPI (test):** **`docs/openapi-explorer.html`** — Swagger UI against `openapi-baseline.json` for browsing only (**Try it out** disabled). Browser-side Ajv validation and **`docs/assets/openapi-sandbox.js`** removed. **[ADR 0022](docs/adr/0022-embedded-swagger-ui-openapi-sandbox.html)** marked superseded; validation approach on hold. **`docs/openapi-live.html`** removed (use app **`/docs`** for Try it out). README and indexes updated.
+
+- **CORS (`env/example`):** comment clarifies static `openapi-explorer.html` does not call the API; origins for `:8765` remain for browser access to the API from the same docs origin (e.g. FastAPI `/docs`).
 
 ## [1.1.1] — 2026-04-11
 
