@@ -147,6 +147,7 @@ study_app/
 │   └── uml/  # PlantUML diagrams
 │       ├── architecture/
 │       ├── include/  # Shared PlantUML skin (merged at Kroki render)
+│       ├── make/
 │       ├── rendered/  # Rendered PNGs
 │       └── sequences/  # Sequence diagram sources
 ├── k8s/  # Kubernetes manifests; k8s/app.env sources the generated ConfigMap
