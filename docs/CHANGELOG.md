@@ -4,29 +4,34 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## 2026-04-14
+
 
 ### Added
 
+- Shared **assessment score** styling: `docs/assets/docs.css` defines `--audit-score-*` colours, `.audit-score-table` cell classes (`score-excellent`, `score-good`, `score-needs-attention`; `score-neutral` remains an alias), and `.audit-score-legend` / swatch layout. Canonical legend markup: [`docs/assets/audit-score-legend-fragment.html`](assets/audit-score-legend-fragment.html), injected by [`docs/assets/docs-nav.js`](assets/docs-nav.js) into `<div class="audit-score-legend-include" data-legend-id="…">` placeholders (see [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html#assessment-score-scale)). `SKIP_HTML_INDENT_NORMALIZE` in [`scripts/format_docs_html.py`](../scripts/format_docs_html.py) includes the fragment file.
+
+- [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html): architecture and quality **assessment** documents — `docs/audit/` location, `YYYY-MM-DD-topic-assessment.html` naming, canonical HTML sections (lead metadata, Table 1 reference practices, Table 2 mapping/scores, narrative findings, mitigation, checklist, document history), goals, process (when to refresh, ownership, `docs/CHANGELOG.md`), relationship to ADRs/runbooks, alternatives, links to existing assessments, and a note on `SKIP_HTML_INDENT_NORMALIZE` in [`scripts/format_docs_html.py`](../scripts/format_docs_html.py).
+
+- [`scripts/format_docs_html.py`](../scripts/format_docs_html.py): optional skip list `SKIP_HTML_INDENT_NORMALIZE` so the line-based indenter does not corrupt long HTML pages with multiline list items (ADR 0024 registered).
+
 - [Developer guide 0010](developer/0010-make-commands-and-workflows.html): Make commands and workflows — PlantUML sources under [`docs/uml/make/`](uml/make/) (rendered PNGs via `make docs-fix`), composite pipeline and run/observability figures, tables of atomic targets by theme, if-then onboarding scenarios; linked from [docs index](index.html), [developer README](developer/README.html), [CONTRIBUTING](../CONTRIBUTING.md), [ADR 0008](adr/0008-make-command-taxonomy-and-workflow-entrypoints.html), [engineering-practices](engineering-practices.html), and [local development](developer/0007-local-development.html).
+
+### Changed
+
+- [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html): rewritten around a single **published assessment backbone** (ordered list: lead/TOC, scope/methodology, Table 1, Table 2 + injected legend, scoring summary, gaps 5.1–5.3, mitigation, optional beyond-baseline, checklist, document history); merged former implementation/validation into **Rollout and validation**; shorter alternatives; anchor `#published-assessment-backbone` replaces the old canonical-sections template list.
+
+- [API assessment](audit/2026-04-14-api-assessment.html): §8 actionable checklist, §9 document history, TOC entries for sections 7–9 (aligned with ADR 0024).
+
+- [DX assessment](audit/2026-04-14-documentation-experience-assessment.html): same section order as the API assessment; Table 2 anchor `table-2-study-app-scores`; invalid nesting and duplicate blocks removed.
+
+## <= 2026-04-12
 
 ### Changed
 
 - [ADR 0019](adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html): implementation marked **Done** (`data-adr-weight="7"`). [Backlog item-4](backlog/README.html#item-4) marked **Done**; `Makefile` **`verify-ci`** now includes **`deps-audit`** (engineering-practices table synced).
 
 - [ADR 0022](adr/0022-embedded-swagger-ui-openapi-sandbox.html) superseded: browser validation cancelled; `openapi-explorer.html` is OpenAPI (test), Swagger browse-only; task on hold. Removed `openapi-live.html` (use app `/docs` for Try it out).
-
-### Added
-
-- [ADR 0021](adr/0021-continuous-delivery-github-actions-and-ghcr.html): continuous delivery via GitHub Actions — build <code>Dockerfile</code>, push to GHCR after CI, beginner-oriented context (CI vs CD), scope, and references; developer guide <a href="developer/0009-docker-and-kubernetes-local.html">0009</a> links to registry automation.
-
-- [ADR 0019](adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html): Python dependency security—`requirements.txt` as exact pin, `pip-audit`, Make/CI expectations, severity handling, and exception process (implements backlog policy; `make deps-audit` / CI wiring tracked there).
-
-- Documentation changelog (`docs/CHANGELOG.md`) and ADR lifecycle policy ([ADR 0018](adr/0018-adr-lifecycle-ratification-and-badges.html)): Issue discussion with `[ADR]` title, ratification via Issue + PR, `data-adr-weight`, and `docs/CHANGELOG.md` update expectations.
-
-- [ADR 0020](adr/0020-c4-plantuml-diagram-style-and-conventions.html): C4 views, PlantUML layout and naming conventions, and a shared diagram style via `docs/uml/include/style.puml` (with `docs/uml/README.txt` for authors).
-
-### Changed
 
 - All numbered ADRs (`0001`–`0017`): replaced legacy **Status** badge blocks with `data-adr-weight="7"` on `<main>` and a **Ratification** note for pre–ADR-0018 adoption; UI status comes from `docs/assets/docs-nav.js` per [ADR 0018](adr/0018-adr-lifecycle-ratification-and-badges.html). [ADR 0018](adr/0018-adr-lifecycle-ratification-and-badges.html) and [ADR 0019](adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html) include the collapsible weight help from the [ADR template](adr/0000-template.html).
 
@@ -39,3 +44,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - PlantUML under `docs/uml/`: architecture and sequence `.puml` sources include the shared style; rendered PNGs in `docs/uml/rendered/` updated to match ([ADR 0020](adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
 
 - Docs pipeline and contributor entrypoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, and `.github/ISSUE_TEMPLATE/adr_discussion.md` aligned with ADR lifecycle, UML rendering, and synced HTML companions (`docs/engineering-practices.html`, `docs/system-analysis.html`, `docs/backlog/README.html`, `docs/runbooks/README.html`, `docs/developer/0008-docs-pipeline.html`).
+
+
+### Added
+
+- [ADR 0021](adr/0021-continuous-delivery-github-actions-and-ghcr.html): continuous delivery via GitHub Actions — build <code>Dockerfile</code>, push to GHCR after CI, beginner-oriented context (CI vs CD), scope, and references; developer guide <a href="developer/0009-docker-and-kubernetes-local.html">0009</a> links to registry automation.
+
+- [ADR 0019](adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html): Python dependency security—`requirements.txt` as exact pin, `pip-audit`, Make/CI expectations, severity handling, and exception process (implements backlog policy; `make deps-audit` / CI wiring tracked there).
+
+- Documentation changelog (`docs/CHANGELOG.md`) and ADR lifecycle policy ([ADR 0018](adr/0018-adr-lifecycle-ratification-and-badges.html)): Issue discussion with `[ADR]` title, ratification via Issue + PR, `data-adr-weight`, and `docs/CHANGELOG.md` update expectations.
+
+- [ADR 0020](adr/0020-c4-plantuml-diagram-style-and-conventions.html): C4 views, PlantUML layout and naming conventions, and a shared diagram style via `docs/uml/include/style.puml` (with `docs/uml/README.txt` for authors).

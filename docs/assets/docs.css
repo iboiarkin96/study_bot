@@ -8,6 +8,15 @@
   --muted: #4b5563;
   --accent: #2563eb;
   --line: #dbe3ef;
+  /* Assessment score bands (Table 2) — see ADR 0024, docs/assets/audit-score-legend-fragment.html */
+  --audit-score-excellent-bg: #d1e7dd;
+  --audit-score-excellent-border: #198754;
+  --audit-score-good-bg: #fff3cd;
+  --audit-score-good-border: #e0a800;
+  --audit-score-needs-bg: #f8d7da;
+  --audit-score-needs-border: #c82333;
+  --audit-score-legend-border: #dee2e6;
+  --audit-score-legend-bg: #f8f9fa;
 }
 
 * {
@@ -556,6 +565,116 @@ td {
 th {
   background: #f3f6fc;
   font-weight: 600;
+}
+
+/* Assessment Table 2 — score column + legend layout (normative copy: audit-score-legend-fragment.html; ADR 0024). */
+
+.audit-score-table td.score-excellent,
+.audit-score-table td.score-good,
+.audit-score-table td.score-needs-attention,
+.audit-score-table td.score-neutral {
+  font-weight: 600;
+  text-align: center;
+  border-left: 3px solid transparent;
+}
+
+.audit-score-table td.score-excellent {
+  background-color: var(--audit-score-excellent-bg);
+  border-left-color: var(--audit-score-excellent-border);
+}
+
+.audit-score-table td.score-good {
+  background-color: var(--audit-score-good-bg);
+  border-left-color: var(--audit-score-good-border);
+}
+
+/* 1–6 / gaps — same visual (alias: score-neutral kept for older HTML) */
+.audit-score-table td.score-needs-attention,
+.audit-score-table td.score-neutral {
+  background-color: var(--audit-score-needs-bg);
+  border-left-color: var(--audit-score-needs-border);
+}
+
+aside.audit-score-legend {
+  margin: 1rem 0 1.25rem;
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid var(--audit-score-legend-border);
+  border-radius: 8px;
+  background: var(--audit-score-legend-bg);
+}
+
+.audit-score-legend-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.audit-score-legend-intro {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+ul.audit-score-legend-bands {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.audit-score-legend-bands li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.45rem 0 0;
+  line-height: 1.45;
+  font-size: 0.92rem;
+}
+
+.audit-score-swatch {
+  width: 1.15rem;
+  height: 1.15rem;
+  min-width: 1.15rem;
+  border-radius: 4px;
+  margin-top: 0.15rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+.audit-score-swatch.score-excellent {
+  background: var(--audit-score-excellent-bg);
+  border-color: var(--audit-score-excellent-border);
+}
+
+.audit-score-swatch.score-good {
+  background: var(--audit-score-good-bg);
+  border-color: var(--audit-score-good-border);
+}
+
+.audit-score-swatch.score-needs-attention {
+  background: var(--audit-score-needs-bg);
+  border-color: var(--audit-score-needs-border);
+}
+
+/* Placeholder before docs-nav.js injects the legend from audit-score-legend-fragment.html */
+.audit-score-legend-include {
+  min-height: 1px;
+}
+
+p.audit-score-legend-noscript,
+p.audit-score-legend-error {
+  margin: 0.75rem 0;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: #fff8e6;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+p.audit-score-legend-error {
+  background: #fde8e8;
+  color: #7f1d1d;
 }
 
 /* openapi-explorer.html — OpenAPI (test), Swagger UI browse-only */

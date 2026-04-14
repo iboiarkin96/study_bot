@@ -68,6 +68,9 @@ function activeTarget(relPath) {
   if (relPath.startsWith("runbooks/")) {
     return "runbooks/README.html";
   }
+  if (relPath.startsWith("audit/")) {
+    return "audit/README.html";
+  }
   if (relPath.startsWith("api/")) {
     return "api/index.html";
   }
@@ -96,6 +99,7 @@ function renderTopNav() {
     { label: "Developer Docs", target: "developer/README.html" },
     { label: "Backlog", target: "backlog/README.html" },
     { label: "ADR", target: "adr/README.html" },
+    { label: "Assessments", target: "audit/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
     { label: "API (Python)", target: "api/index.html" },
     { label: "OpenAPI (test)", target: "openapi-explorer.html" },
@@ -264,10 +268,79 @@ function renderAdr(main) {
   renderAdrStatusLogAfter(anchor, globalMax);
 }
 
+/**
+ * Inject shared audit score legend from `assets/audit-score-legend-fragment.html` into
+ * `<div class="audit-score-legend-include" data-legend-id="optional-suffix"></div>`.
+ * One source of truth for markup; styles remain in docs.css (ADR 0024).
+ */
+function auditScoreLegendFragmentUrl() {
+  const relPath = currentDocsRelPath();
+  const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
+  return relHref(fromDir, "assets/audit-score-legend-fragment.html");
+}
+
+function stripLeadingHtmlComment(text) {
+  return text.replace(/^\s*<!--[\s\S]*?-->\s*/, "").trimStart();
+}
+
+function applyLegendIdSuffix(aside, suffix) {
+  const h3 = aside.querySelector(".audit-score-legend-title");
+  if (!h3) {
+    return;
+  }
+  if (suffix) {
+    const id = `audit-score-legend-title-${suffix}`;
+    h3.id = id;
+    aside.setAttribute("aria-labelledby", id);
+  }
+}
+
+async function injectAuditScoreLegends() {
+  const hosts = document.querySelectorAll(".audit-score-legend-include");
+  if (hosts.length === 0) {
+    return;
+  }
+
+  const url = auditScoreLegendFragmentUrl();
+  let htmlText;
+  try {
+    const res = await fetch(url, { credentials: "same-origin" });
+    if (!res.ok) {
+      throw new Error(`${res.status}`);
+    }
+    htmlText = await res.text();
+  } catch (e) {
+    for (const host of hosts) {
+      const err = document.createElement("p");
+      err.className = "audit-score-legend-error";
+      err.setAttribute("role", "alert");
+      err.textContent =
+        "Could not load the score legend. Open this site over HTTP(S) or see ADR 0024 for the scale.";
+      host.replaceWith(err);
+    }
+    return;
+  }
+
+  const cleaned = stripLeadingHtmlComment(htmlText);
+  const parsed = new DOMParser().parseFromString(cleaned, "text/html");
+  const templateAside = parsed.querySelector("aside.audit-score-legend");
+  if (!templateAside) {
+    return;
+  }
+
+  for (const host of hosts) {
+    const suffix = (host.getAttribute("data-legend-id") || "").trim();
+    const aside = document.importNode(templateAside, true);
+    applyLegendIdSuffix(aside, suffix);
+    host.replaceWith(aside);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderTopNav();
   const main = document.querySelector("main.container");
   if (main) {
     renderAdr(main);
   }
+  injectAuditScoreLegends();
 });

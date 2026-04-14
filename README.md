@@ -1,6 +1,6 @@
 # Study App API
 
-FastAPI service for Study App domain workflows. Long-form documentation: [system analysis](docs/system-analysis.html), [engineering practices](docs/engineering-practices.html).
+FastAPI service for Study App domain workflows. Long-form documentation: [system analysis](docs/system-analysis.html), [engineering practices](docs/engineering-practices.html), [architecture & quality assessments](docs/audit/README.html).
 
 ## Contents
 
@@ -59,6 +59,7 @@ Useful: `make env-check`, `curl -s http://127.0.0.1:8000/live | jq`.
 | System analysis & error matrix | [system-analysis.html](docs/system-analysis.html) |
 | Developer guides (requirements, contracts, load testing, local dev, Docker/K8s) | [docs/developer/README.html](docs/developer/README.html) |
 | ADRs | [docs/adr/README.html](docs/adr/README.html) |
+| Architecture & quality assessments (audits) | [docs/audit/README.html](docs/audit/README.html) |
 | Runbooks | [docs/runbooks/README.html](docs/runbooks/README.html) |
 | OpenAPI (test) — Swagger UI for the baseline spec (browse only; no in-browser validation) | [docs/openapi-explorer.html](docs/openapi-explorer.html) |
 
@@ -153,6 +154,7 @@ study_app/
 │   ├── api/
 │   │   └── app/
 │   ├── assets/
+│   ├── audit/
 │   ├── backlog/
 │   ├── developer/  # Developer guides and onboarding
 │   ├── openapi/
