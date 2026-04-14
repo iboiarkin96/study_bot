@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-None
+### Documentation
+
+- **Assessment HTML (`docs/audit/`, 2026-04-14):** [`2026-04-14-api-assessment.html`](docs/audit/2026-04-14-api-assessment.html) — completed with §8 actionable checklist, §9 document history, and TOC anchors for sections 7–9. [`2026-04-14-documentation-experience-assessment.html`](docs/audit/2026-04-14-documentation-experience-assessment.html) — restructured to the same backbone (scope/methodology, Tables 1–2 with shared score legend, scoring summary, gaps §5.1–5.3, mitigation phases, checklist, document history); fixed markup and removed redundant sections.
+- **[ADR 0024](docs/adr/0024-architecture-and-quality-assessment-documents.html)** (assessment / audit format): normative **published assessment backbone** (`#published-assessment-backbone`) aligned with those pages; Table 2 score scale, legend fragment injection, and `docs/assets/docs.css` bands; consolidated rollout/validation and references. See also [`docs/CHANGELOG.md`](docs/CHANGELOG.md) (2026-04-14).
 
 ## [1.1.1] — 2026-04-12
 
