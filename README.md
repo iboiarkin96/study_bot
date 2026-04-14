@@ -157,6 +157,8 @@ study_app/
 │   ├── audit/
 │   ├── backlog/
 │   ├── developer/  # Developer guides and onboarding
+│   ├── internal/
+│   │   └── user/
 │   ├── openapi/
 │   ├── runbooks/  # Operational troubleshooting guides
 │   └── uml/  # PlantUML diagrams

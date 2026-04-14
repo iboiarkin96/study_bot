@@ -89,6 +89,67 @@
         </tbody>
       </table>
 
+      <h2 id="industry-context-and-study-app">Industry context and applicability to this project</h2>
+      <p>
+        This section is <strong>informative</strong> (not a normative copy of any one company’s process). It explains
+        why we keep assessments in-repo and which “big company” ideas we intentionally lighten or skip for Study App.
+      </p>
+
+      <h3>What large technology organizations typically do</h3>
+      <p>
+        Names vary by employer, but patterns recur at scale:
+      </p>
+      <ul>
+        <li>
+          <strong>Design docs / RFCs / API proposals</strong> — written before major changes; reviewed for trade-offs.
+          Closest to our <a href="./README.html">ADRs</a>, not to maturity assessments.
+        </li>
+        <li>
+          <strong>Production or launch readiness reviews</strong> — checklists for observability, rollback, capacity,
+          dependencies before wide release. Heavier and more gate-like than our HTML audits.
+        </li>
+        <li>
+          <strong>Security and privacy review programs</strong> — mandatory for products and external APIs; often
+          rubric-driven with tooling. We do not replicate that program here; penetration tests and formal compliance are
+          out of scope for these assessment pages (see each report’s “what this is not”).
+        </li>
+        <li>
+          <strong>Internal developer portals and API catalogues</strong> — org-wide discovery, keys, usage, sometimes
+          billing. Table&nbsp;1 may reference those patterns; Table&nbsp;2 should say honestly when the repo is PET-scale
+          and does not need a full portal.
+        </li>
+        <li>
+          <strong>Platform standards for public APIs</strong> — linting (e.g. Spectral), versioning and deprecation
+          policy, SLOs for documentation. Our assessments <em>align vocabulary</em> with that world while scoring what is
+          actually implemented in git.
+        </li>
+      </ul>
+
+      <h3>How repository assessments map to that landscape</h3>
+      <p>
+        Our format is a <strong>lightweight, versioned rubric</strong>: Table&nbsp;1 states reference practices; Table&nbsp;2
+        scores this codebase against them and points to evidence. That is analogous in <em>spirit</em> to internal
+        maturity conversations and launch readiness themes, but it is <strong>not</strong> a substitute for organizational
+        gates, headcount review boards, or automated org-wide scorecards. It is cheap to maintain for a small service and
+        stays next to ADRs in <code>docs/audit/</code>.
+      </p>
+
+      <h3>PET scale: when “full” industry standards are unnecessary or deferred</h3>
+      <p>
+        Study App is framed as a <strong>small / PET-scale</strong> service unless an assessment explicitly widens scope.
+        Many Table&nbsp;1 rows describe practices that matter at <strong>platform or multi-team</strong> scale (e.g.
+        distributed rate limits across regions, full developer portals, multi-language SDK tabs, 24/7 doc analytics
+        programs). Scores in the <strong>1–6</strong> band often mean “not built yet” or “not worth the cost at current
+        stage,” not necessarily “the team failed.”
+      </p>
+      <p>
+        Each assessment should make that explicit in <strong>Scope and methodology</strong> (see
+        <a href="#published-assessment-backbone">published backbone</a>): name the deployment assumptions, call out rows that
+        are <strong>intentionally out of scope</strong> for now, and use <strong>5.3 Nice-to-have</strong> (or equivalent)
+        for product-dependent items. Readers should never infer that every row must reach 9–10 for the project to be
+        legitimate.
+      </p>
+
       <h2>Decision</h2>
       <p>We adopt the following norms:</p>
       <ol>
@@ -204,8 +265,9 @@
               </li>
               <li><strong>Table of contents</strong> — numbered <code>&lt;ol&gt;</code> linking to major <code>id</code>s.</li>
               <li>
-                <strong>Scope and methodology</strong> — what was examined, method (often a short numbered list), and what the
-                assessment is not.
+                <strong>Scope and methodology</strong> — what was examined, method (often a short numbered list), what the
+                assessment is not, and a short <strong>industry / PET applicability</strong> subsection (why some reference
+                practices are deferred or not targeted — see <a href="#industry-context-and-study-app">Industry context and applicability</a> above).
               </li>
               <li>
                 <strong>Table 1 — Reference practices.</strong> Neutral rubric: #, Category, Practice, Reference description,

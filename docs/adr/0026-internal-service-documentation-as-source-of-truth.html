@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0026: Internal service documentation as source of truth</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container" data-adr-weight="1">
+      <h1>ADR 0026: Internal service documentation as source of truth</h1>
+      <div id="docs-top-nav"></div>
+      <details class="adr-weight-help">
+        <summary>ADR status on this page</summary>
+        <p class="small">
+          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+          <a href="./0000-template.html">ADR template</a> for the full milestone table.
+        </p>
+      </details>
+
+      <h2>Ratification</h2>
+      <p>
+        This ADR records <strong>norms for internal HTML documentation</strong> under <code>docs/internal/</code>: what
+        must appear there, how pages relate to code and OpenAPI, and how we preserve history. Complements
+        <a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a> (audience split). The audit trail is
+        the git history for this file on <code>main</code>.
+      </p>
+      <ul>
+        <li>Discussion Issue: <em>optional — link when opened with <code>[ADR]</code> title</em></li>
+        <li>Merge PR: <em>see git history for this file</em></li>
+        <li>Accepted: 2026-04-14</li>
+      </ul>
+
+      <h2>Context</h2>
+      <p>
+        <strong>Why this matters:</strong> External integrators rely on OpenAPI
+        (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Internally, we still need a
+        <strong>single, reviewable place</strong> for rules that span layers: business invariants, when an error is
+        considered operational vs validation, how a flow is expected to be monitored, and how HTTP handlers relate to
+        domain services and (if any) asynchronous boundaries. Without that, disagreements default to “read the
+        implementation,” which is slow and version-ambiguous.
+      </p>
+      <p>
+        This ADR makes <code>docs/internal/</code> the <strong>authoritative narrative for engineering</strong> for those
+        topics. It does not duplicate OpenAPI field lists; it <strong>interprets and binds</strong> them to behavior and
+        operations.
+      </p>
+
+      <h2>Decision</h2>
+      <ol>
+        <li>
+          <strong>Location and format.</strong> Internal service documentation lives under <code>docs/internal/</code> as
+          static <strong>English</strong> <strong>HTML</strong> using the shared stack
+          (<code>docs/assets/docs.css</code>, <code>docs/assets/docs-nav.js</code>). New pages are added or updated in the
+          same pull request as the behavior change when the change is user-visible or alters invariants described here.
+        </li>
+        <li>
+          <strong>Source of truth for engineering disputes.</strong> For topics explicitly covered in
+          <code>docs/internal/</code>, the written page (on <code>main</code> after merge) is the <strong>normative
+          reference</strong> for how the team intends the system to work. If code disagrees, either the code or the doc
+          must be fixed in a follow-up; silent divergence is treated as a defect. Topics not yet documented remain
+          governed by ADRs, runbooks, and code until a page exists.
+        </li>
+        <li>
+          <strong>What to document (non-exhaustive).</strong> Pages should cover, as applicable:
+          <ul>
+            <li><strong>Capability or domain slice</strong> — purpose, boundaries, key entities.</li>
+            <li><strong>HTTP mapping</strong> — reference <code>operationId</code>s or paths that implement the slice; link
+              to OpenAPI rather than copying schemas.</li>
+              <li><strong>Business rules</strong> — invariants, ordering assumptions, idempotency and conflict behavior (see
+                also <a href="./0006-idempotency-write-operations.html">ADR 0006</a>).</li>
+                <li><strong>Errors and observability</strong> — which codes or signals warrant alerts vs expected client
+                  mistakes; correlation with logs and metrics (see
+                  <a href="./0003-error-contract-governance.html">ADR 0003</a>,
+                  <a href="./0009-health-readiness-and-observability.html">ADR 0009</a>,
+                  <a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>).</li>
+                  <li><strong>Async and integration</strong> — message topics, consumers, outbox patterns, or external systems, when
+                    present.</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>History and traceability.</strong> Material pages include a short <strong>Document history</strong>
+                  subsection (table: date, author optional, summary of change). Git history remains the full audit trail; the
+                  table is for human scanning. Breaking behavioral changes also appear in root <code>CHANGELOG.md</code> per
+                  <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>.
+                </li>
+                <li>
+                  <strong>Index.</strong> <a href="../internal/README.html"><code>docs/internal/README.html</code></a> is the entry
+                  point: scope, links to ADR 0025/0026, and a curated list of internal pages.
+                </li>
+                <li>
+                  <strong>Relationship to ADRs.</strong> Cross-cutting policy (versioning, security, idempotency) stays in ADRs.
+                  <code>docs/internal/</code> applies those policies to <strong>concrete flows and entities</strong>. If a new
+                  policy is needed, add or update an ADR; do not bury policy-only decisions in internal prose alone.
+                </li>
+              </ol>
+
+              <h2>Scope</h2>
+              <ul>
+                <li>
+                  <strong>In scope:</strong> Structure, authority, and minimum expectations for <code>docs/internal/</code> HTML.
+                </li>
+                <li>
+                  <strong>Out of scope:</strong> Replacing OpenAPI, replacing pdoc under <code>docs/api/</code>, or duplicating
+                  runbook procedures (link to <code>docs/runbooks/</code> instead).
+                </li>
+              </ul>
+
+              <h2>Alternatives considered</h2>
+              <ol>
+                <li>
+                  <strong>Wiki or external tool.</strong>
+                  <ul>
+                    <li>Pros: rich editors, permissions.</li>
+                    <li>Cons: not versioned with the same PR as code; harder to enforce review alongside behavior changes.</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Markdown only under <code>docs/internal/</code>.</strong>
+                  <ul>
+                    <li>Pros: faster to write.</li>
+                    <li>Cons: this site’s published docs are HTML-first; one stack keeps nav and styling consistent.</li>
+                  </ul>
+                </li>
+              </ol>
+
+              <h2>Consequences</h2>
+              <h3>Positive</h3>
+              <ul>
+                <li>Engineers can resolve “what did we agree?” without inferring from code alone for documented areas.</li>
+                <li>Onboarding gains a bounded reading path starting at the internal README.</li>
+              </ul>
+              <h3>Trade-offs</h3>
+              <ul>
+                <li>Ongoing maintenance: pages must be updated when behavior changes, or authority of the doc set erodes.</li>
+              </ul>
+            </main>
+          </body>
+
+        </html>

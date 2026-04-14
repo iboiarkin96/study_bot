@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Service overview — Study App API</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>Service overview</h1>
+      <div id="docs-top-nav"></div>
+      <p class="lead">
+        The <strong>Study App API</strong> is a FastAPI application that exposes versioned HTTP endpoints for Study App
+        domain workflows. This page summarizes its role, boundaries, and where to find authoritative detail for engineers.
+      </p>
+
+      <nav aria-labelledby="toc">
+        <h2 id="toc">Contents</h2>
+        <ol>
+          <li><a href="#role">Role and scope</a></li>
+          <li><a href="#boundaries">Architectural boundaries</a></li>
+          <li><a href="#contract">Contract and integrators</a></li>
+          <li><a href="#internals">Where logic lives</a></li>
+          <li><a href="#observability">Observability and operations</a></li>
+          <li><a href="#history">Document history</a></li>
+        </ol>
+      </nav>
+
+      <section id="role" class="card">
+        <h2>Role and scope</h2>
+        <p>
+          The service’s job is to provide a <strong>stable, documented HTTP surface</strong> for clients (including
+          partner integrations): authentication as documented, validated request bodies, predictable error envelopes, and
+          clear write semantics where idempotency applies. Business rules enforced at the boundary must match the error
+          catalog and examples declared in OpenAPI (<a href="../adr/0003-error-contract-governance.html">ADR 0003</a>).
+        </p>
+        <p>
+          <strong>In scope</strong> for this codebase: request handling, domain services, persistence adapters, and the
+          observability hooks defined in ADRs. <strong>Out of scope</strong> for this page: client UI implementation and
+          third-party product roadmaps.
+        </p>
+      </section>
+
+      <section id="boundaries" class="card">
+        <h2>Architectural boundaries</h2>
+        <ul>
+          <li>
+            <strong>API layer</strong> — FastAPI routers under <code>app/api/</code>: translation between HTTP and
+            application schemas, declaration of OpenAPI responses and examples.
+          </li>
+          <li>
+            <strong>Domain / application</strong> — services and validation orchestration (avoid duplicating boundary
+            validation deeper than needed; see <a href="../engineering-practices.html">engineering practices</a>).
+          </li>
+          <li>
+            <strong>Persistence</strong> — repositories and migrations; storage constraints must remain consistent with
+            what the API promises.
+          </li>
+        </ul>
+        <p>
+          Capability-specific internal docs live as additional HTML pages under <code>docs/internal/</code>; see the index
+          at <a href="./README.html">Internal service documentation</a>. Example:
+          <a href="./user-http-api.html">User HTTP API</a>.
+        </p>
+      </section>
+
+      <section id="contract" class="card">
+        <h2>Contract and integrators</h2>
+        <p>
+          External developers must use the <strong>OpenAPI document</strong> as the contract: committed snapshot at
+          <code>docs/openapi/openapi-baseline.json</code>, explorer at
+          <a href="../openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at <code>/docs</code>.
+          Release-to-release changes are summarized in the repository root <code>CHANGELOG.md</code>
+          (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
+        </p>
+        <p>
+          Versioning rules (URL major version, additive changes within a major) follow
+          <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
+        </p>
+      </section>
+
+      <section id="internals" class="card">
+        <h2>Where logic lives</h2>
+        <p>
+          Implementation detail is in the Python tree; this document does not duplicate file-by-file listings. When
+          extending behavior, update tests, OpenAPI artifacts, and — when the change affects invariants or operational
+          meaning — this internal documentation set per
+          <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
+        </p>
+        <ul>
+          <li>
+            <strong>Contributor workflows</strong> — <a href="../developer/README.html">Developer guides</a>,
+            <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>.
+          </li>
+          <li>
+            <strong>Python module reference</strong> — generated <a href="../api/index.html">API (Python)</a> (pdoc).
+          </li>
+        </ul>
+      </section>
+
+      <section id="observability" class="card">
+        <h2>Observability and operations</h2>
+        <p>
+          Health and metrics expectations follow <a href="../adr/0009-health-readiness-and-observability.html">ADR 0009</a>.
+          Structured logging and request correlation follow
+          <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>. When a feature introduces new
+          failure modes or dashboards, describe how those signals are distinguished from normal client errors in a
+          dedicated internal subsection or page — not only in code.
+        </p>
+        <p>
+          Operational recovery steps belong in <a href="../runbooks/README.html">Runbooks</a> when they are procedural;
+          this overview links policies to ADRs rather than replacing runbooks.
+        </p>
+      </section>
+
+      <section id="history" class="card">
+        <h2>Document history</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026-04-14</td>
+              <td>Initial internal service overview; ADR 0025/0026 establish <code>docs/internal/</code> norms.</td>
+            </tr>
+            <tr>
+              <td>2026-04-14</td>
+              <td>Linked <a href="./user-http-api.html">User HTTP API</a> from architectural boundaries.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <p>
+        <a href="./README.html">← Internal service documentation</a>
+      </p>
+    </main>
+  </body>
+
+</html>

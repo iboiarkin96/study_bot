@@ -71,6 +71,9 @@ function activeTarget(relPath) {
   if (relPath.startsWith("audit/")) {
     return "audit/README.html";
   }
+  if (relPath.startsWith("internal/")) {
+    return "internal/README.html";
+  }
   if (relPath.startsWith("api/")) {
     return "api/index.html";
   }
@@ -100,6 +103,7 @@ function renderTopNav() {
     { label: "Backlog", target: "backlog/README.html" },
     { label: "ADR", target: "adr/README.html" },
     { label: "Assessments", target: "audit/README.html" },
+    { label: "Internal (service)", target: "internal/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
     { label: "API (Python)", target: "api/index.html" },
     { label: "OpenAPI (test)", target: "openapi-explorer.html" },

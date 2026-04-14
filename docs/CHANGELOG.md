@@ -9,6 +9,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- [ADR 0025](adr/0025-external-and-internal-api-documentation.html): external vs internal documentation — OpenAPI (`docs/openapi/`) as the sole normative HTTP contract for integrators; internal engineering narrative under `docs/internal/`; relationship table vs changelog, pdoc, Swagger views.
+
+- [ADR 0026](adr/0026-internal-service-documentation-as-source-of-truth.html): internal service HTML as the authoritative engineering narrative for documented topics; scope (business rules, HTTP mapping via `operationId`, observability expectations, async boundaries); document history tables; index at [`docs/internal/README.html`](internal/README.html).
+
+- [`docs/internal/README.html`](internal/README.html) — entry point for internal service docs; [`docs/internal/service-overview.html`](internal/service-overview.html) — high-level service overview for contributors.
+
+- [`docs/internal/user-http-api.html`](internal/user-http-api.html) — internal specification for the User HTTP API (operations, idempotency, errors, logging, metrics, dependencies).
+
+- [`docs/internal/user/index.html`](internal/user/index.html) — User resource **internal hub** (contract links, per-`operationId` anchors into the unified spec). [`docs/internal/README.html`](internal/README.html) — **Documentation map** with collapsible `<details>` blocks (platform, User resource, future topics); [`docs/assets/docs.css`](assets/docs.css) — `details.internal-doc-map` styles. Anchors on `user-http-api.html`: `#user-op-createUser`, `#user-op-getUserBySystemUserId`, `#user-op-updateUserBySystemUserId`, `#user-op-patchUserBySystemUserId`.
+
+- [`docs/assets/docs-nav.js`](assets/docs-nav.js): top nav item **Internal (service)** and `activeTarget` for `internal/*` paths.
+
 - Shared **assessment score** styling: `docs/assets/docs.css` defines `--audit-score-*` colours, `.audit-score-table` cell classes (`score-excellent`, `score-good`, `score-needs-attention`; `score-neutral` remains an alias), and `.audit-score-legend` / swatch layout. Canonical legend markup: [`docs/assets/audit-score-legend-fragment.html`](assets/audit-score-legend-fragment.html), injected by [`docs/assets/docs-nav.js`](assets/docs-nav.js) into `<div class="audit-score-legend-include" data-legend-id="…">` placeholders (see [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html#assessment-score-scale)). `SKIP_HTML_INDENT_NORMALIZE` in [`scripts/format_docs_html.py`](../scripts/format_docs_html.py) includes the fragment file.
 
 - [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html): architecture and quality **assessment** documents — `docs/audit/` location, `YYYY-MM-DD-topic-assessment.html` naming, canonical HTML sections (lead metadata, Table 1 reference practices, Table 2 mapping/scores, narrative findings, mitigation, checklist, document history), goals, process (when to refresh, ownership, `docs/CHANGELOG.md`), relationship to ADRs/runbooks, alternatives, links to existing assessments, and a note on `SKIP_HTML_INDENT_NORMALIZE` in [`scripts/format_docs_html.py`](../scripts/format_docs_html.py).
@@ -24,6 +36,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - [API assessment](audit/2026-04-14-api-assessment.html): §8 actionable checklist, §9 document history, TOC entries for sections 7–9 (aligned with ADR 0024).
 
 - [DX assessment](audit/2026-04-14-documentation-experience-assessment.html): same section order as the API assessment; Table 2 anchor `table-2-study-app-scores`; invalid nesting and duplicate blocks removed.
+
+- [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html): **Industry context and applicability** — how common large-org practices (RFC/launch/security/portal) relate to this repo’s lightweight rubric; **PET scale** and when low scores mean deferral, not failure; backbone now expects an industry/PET subsection under scope/methodology.
+
+- [API assessment](audit/2026-04-14-api-assessment.html): §1.6 industry/PET; restored §8 checklist and §9 document history (TOC).
+
+- [DX assessment](audit/2026-04-14-documentation-experience-assessment.html): §1.5 industry/PET; restored §7 checklist; Table 1 intro fixed; [audit index](audit/README.html) — “not a FAANG gate” card.
 
 ## <= 2026-04-12
 

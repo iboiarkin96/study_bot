@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Internal service documentation — Study App</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>Internal service documentation</h1>
+      <div id="docs-top-nav"></div>
+      <p class="lead">
+        This section holds <strong>engineering-facing</strong> documentation for the Study App service: business context,
+        behavioral semantics, and operational expectations. It complements — but does not replace — the public HTTP
+        contract in OpenAPI.
+      </p>
+
+      <div class="card">
+        <h2>Audience and authority</h2>
+        <p>
+          <strong>Who this is for:</strong> contributors and maintainers working in this repository. External integrators
+          should rely on the OpenAPI snapshot and release notes instead; see
+          <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>.
+        </p>
+        <p>
+          <strong>Authority:</strong> For topics explicitly documented here, these pages are the
+          <strong>normative narrative</strong> for how the team intends the system to behave, per
+          <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>. Policy-level
+          decisions
+          (versioning, security, global error rules) remain in <a href="../adr/README.html">ADRs</a>.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Relationship to OpenAPI and code</h2>
+        <ul>
+          <li>
+            <strong>OpenAPI</strong> (<code>docs/openapi/openapi-baseline.json</code>, live <code>/openapi.json</code>) is
+            the <strong>sole external contract</strong> for paths, schemas, and declared errors.
+          </li>
+          <li>
+            <strong>Internal pages</strong> explain <em>why</em> and <em>how it behaves</em> in production terms — rules,
+            edge cases, monitoring hooks — without duplicating full schema definitions.
+          </li>
+          <li>
+            <strong>Code</strong> must implement both; if internal docs and runtime disagree, treat it as a bug and fix
+            docs or code in the same maintenance spirit as contract tests.
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Documentation map</h2>
+        <p>
+          This tree follows a <strong>vendor-style information architecture</strong>: platform context first, then
+          <strong>resource hubs</strong> (what the thing is, links to the contract), then <strong>deep
+          specifications</strong>
+          — behavior, idempotency, error and logging semantics, metrics — either on one page or split per method when the
+          API grows. OpenAPI stays the only external contract; internal pages are the engineering narrative
+          (<a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>).
+        </p>
+
+        <details class="internal-doc-map">
+          <summary>Platform &amp; service</summary>
+          <div class="internal-doc-map__body">
+            <p>
+              Cross-cutting view of the HTTP service: role, architectural boundaries, observability pointers — before
+              diving into a specific resource.
+            </p>
+            <ul>
+              <li>
+                <a href="./service-overview.html">Service overview</a> — scope of the API process, contract vs internal
+                docs, where implementation lives.
+              </li>
+            </ul>
+          </div>
+        </details>
+        <details class="internal-doc-map">
+          <summary>Documentation of API methods</summary>
+          <details class="internal-doc-map">
+            <summary>HTTP API — User resource</summary>
+            <div class="internal-doc-map__body">
+              <p>
+                Identity lifecycle for <code>(system_user_id, system_uuid)</code> under <code>/api/v1/user</code>.
+                Pattern:
+                <strong>hub</strong> (navigation + intent) → <strong>unified internal spec</strong> (exhaustive today) →
+                optional <strong>per-operation HTML pages</strong> under <code>docs/internal/user/operations/</code> when
+                each method needs its own long-form guide (parity with large cloud API doc sets: full request/response
+                narrative, side effects, error and log matrix per method).
+              </p>
+              <p><strong>Hub and full spec</strong></p>
+              <ul>
+                <li>
+                  <a href="./user/index.html">User resource — internal hub</a> — what the resource is, links to OpenAPI,
+                  table of <code>operationId</code> anchors, and cross-cutting sections (errors, logging, metrics).
+                </li>
+                <li>
+                  <a href="./user-http-api.html">User HTTP API — full internal specification</a> — governance, API
+                  surface,
+                  layers, data model, idempotency, errors, logging, metrics, dependencies.
+                </li>
+              </ul>
+              <p><strong>Per-<code>operationId</code> anchors</strong> (into the unified spec, API surface section)</p>
+              <ul>
+                <li><a href="./user-http-api.html#user-op-createUser"><code>createUser</code></a> —
+                  <code>POST /api/v1/user</code>
+                </li>
+                <li><a href="./user-http-api.html#user-op-getUserBySystemUserId"><code>getUserBySystemUserId</code></a> —
+                  <code>GET /api/v1/user/{system_uuid}/{system_user_id}</code>
+                </li>
+                <li><a
+                  href="./user-http-api.html#user-op-updateUserBySystemUserId"><code>updateUserBySystemUserId</code></a>
+                  —
+                  <code>PUT /api/v1/user/{system_uuid}/{system_user_id}</code>
+                </li>
+                <li><a
+                  href="./user-http-api.html#user-op-patchUserBySystemUserId"><code>patchUserBySystemUserId</code></a>
+                  —
+                  <code>PATCH /api/v1/user/{system_uuid}/{system_user_id}</code>
+                </li>
+              </ul>
+            </div>
+          </details>
+        </details>
+
+        <details class="internal-doc-map">
+          <summary>Other resources &amp; topics</summary>
+          <div class="internal-doc-map__body">
+            <p>
+              Add a sibling block in this map when a new capability gets an internal hub (for example another router under
+              <code>/api/v1</code>, async consumers, or shared cross-cutting libraries).
+            </p>
+            <ul>
+              <li><em>None yet beyond User.</em></li>
+            </ul>
+          </div>
+        </details>
+
+        <p class="small">
+          After adding pages, extend this map and the <a href="./user/index.html">User hub</a> (or new hub) in the same PR
+          as behavior changes.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Related links</h2>
+        <ul>
+          <li><a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> — external vs internal
+            split.</li>
+            <li><a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> — norms for this
+              tree.</li>
+              <li><a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a> — OpenAPI governance.</li>
+              <li><a href="../openapi-explorer.html">OpenAPI (test)</a> — browse the committed baseline in Swagger UI.</li>
+              <li><a href="../developer/README.html">Developer guides</a> — workflows and how-tos for working in the repo.
+              </li>
+            </ul>
+          </div>
+        </main>
+      </body>
+
+    </html>
