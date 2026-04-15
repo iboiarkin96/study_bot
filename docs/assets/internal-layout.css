@@ -1,0 +1,267 @@
+/* Shared chrome for multi-page internal documentation (docs/internal/**). */
+
+.internal-layout {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.internal-layout__shell {
+  display: grid;
+  grid-template-columns: min(288px, 92vw) minmax(0, 1fr);
+  gap: 0;
+  align-items: start;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 20px 72px;
+}
+
+@media (max-width: 900px) {
+  .internal-layout__shell {
+    grid-template-columns: 1fr;
+    padding: 16px 16px 56px;
+  }
+}
+
+.internal-layout__sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  max-height: 100vh;
+  overflow: auto;
+  padding: 4px 16px 20px 0;
+  border-right: 1px solid var(--line, #dbe3ef);
+}
+
+@media (max-width: 900px) {
+  .internal-layout__sidebar {
+    position: static;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--line, #dbe3ef);
+    padding: 0 0 16px;
+    margin-bottom: 12px;
+  }
+}
+
+.internal-layout__sidebar-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0 0 10px;
+}
+
+.internal-layout__main {
+  min-width: 0;
+  padding-left: 8px;
+}
+
+@media (max-width: 900px) {
+  .internal-layout__main {
+    padding-left: 0;
+  }
+}
+
+.internal-layout__main .container {
+  max-width: 880px;
+  margin: 0;
+  padding: 0;
+}
+
+.internal-sidebar__tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.internal-sidebar__tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 6px 12px;
+  border-left: 2px solid #e8edf5;
+}
+
+.internal-sidebar__tree > li {
+  margin: 4px 0;
+}
+
+.internal-sidebar__tree a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  word-break: break-word;
+  color: var(--text, #1f2937);
+  text-decoration: none;
+}
+
+.internal-sidebar__tree a:hover {
+  background: #eef2ff;
+  text-decoration: none;
+}
+
+.internal-sidebar__tree a.is-active {
+  background: #e8efff;
+  border: 1px solid #c7d7fe;
+  font-weight: 650;
+  color: #1e40af;
+}
+
+.internal-sidebar__group {
+  margin: 4px 0;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.internal-sidebar__group[open] {
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.internal-sidebar__summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 650;
+  font-size: 0.88rem;
+  padding: 9px 12px 9px 32px;
+  position: relative;
+  user-select: none;
+}
+
+.internal-sidebar__summary::-webkit-details-marker {
+  display: none;
+}
+
+.internal-sidebar__summary::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 0.32em;
+  height: 0.32em;
+  margin-top: -0.18em;
+  border-right: 2px solid var(--accent, #2563eb);
+  border-bottom: 2px solid var(--accent, #2563eb);
+  transform: rotate(-45deg);
+  transition: transform 0.12s ease;
+}
+
+.internal-sidebar__group[open] > .internal-sidebar__summary::before {
+  transform: rotate(45deg);
+  margin-top: -0.1em;
+}
+
+.internal-sidebar__summary:hover {
+  background: #f8fafc;
+}
+
+.internal-sidebar__group .internal-sidebar__tree {
+  padding: 2px 8px 10px 10px;
+  border-left: none;
+}
+
+.internal-sidebar__group .internal-sidebar__tree ul {
+  margin-left: 4px;
+}
+
+/* Entity + HTTP “tablet” hero on operation pages */
+.internal-doc-entity {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+h1.internal-doc-h1 {
+  margin: 0 0 18px;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.internal-http-tablet {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 0;
+  padding: 14px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--line, #dbe3ef);
+  background: linear-gradient(165deg, #ffffff 0%, #f4f7fc 50%, #eef2ff 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 6px 22px rgba(15, 23, 42, 0.08);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Method on first line, full path on second (operation pages). */
+.internal-http-tablet--stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.internal-http-tablet .badge {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  padding: 5px 11px;
+}
+
+.internal-http-tablet__path {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #0f172a;
+  word-break: break-all;
+}
+
+.internal-http-tablet--stacked .internal-http-tablet__path {
+  display: block;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.internal-doc-opid {
+  margin: 6px 0 0;
+  color: var(--muted, #4b5563);
+}
+
+/* HTTP method badges (operation pages under internal/api/**) */
+.internal-layout .badge--method-get {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+}
+
+.internal-layout .badge--method-post {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.internal-layout .badge--method-put {
+  background: #ffedd5;
+  border-color: #fdba74;
+  color: #7c2d12;
+}
+
+.internal-layout .badge--method-patch {
+  background: #f3e8ff;
+  border-color: #d8b4fe;
+  color: #581c87;
+}
+
+.internal-layout .badge--method-delete {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #7f1d1d;
+}

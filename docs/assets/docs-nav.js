@@ -74,6 +74,9 @@ function activeTarget(relPath) {
   if (relPath.startsWith("internal/")) {
     return "internal/README.html";
   }
+  if (relPath.startsWith("howto/")) {
+    return "howto/README.html";
+  }
   if (relPath.startsWith("api/")) {
     return "api/index.html";
   }
@@ -100,6 +103,7 @@ function renderTopNav() {
     { label: "System Analysis", target: "system-analysis.html" },
     { label: "Engineering Practices", target: "engineering-practices.html" },
     { label: "Developer Docs", target: "developer/README.html" },
+    { label: "How-to guides", target: "howto/README.html" },
     { label: "Backlog", target: "backlog/README.html" },
     { label: "ADR", target: "adr/README.html" },
     { label: "Assessments", target: "audit/README.html" },

@@ -403,62 +403,6 @@ p.adr-track-branch-note {
   font-weight: 600;
 }
 
-/* Internal docs index: collapsible documentation map (docs/internal/README.html). */
-details.internal-doc-map {
-  margin: 12px 0;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0 16px 4px;
-  background: #fff;
-}
-
-details.internal-doc-map > summary {
-  cursor: pointer;
-  font-weight: 650;
-  font-size: 1.02rem;
-  padding: 14px 0;
-  list-style: none;
-  color: var(--text);
-}
-
-details.internal-doc-map > summary::-webkit-details-marker {
-  display: none;
-}
-
-details.internal-doc-map > summary::before {
-  content: "▸ ";
-  display: inline-block;
-  width: 1.1em;
-  color: var(--accent);
-  transition: transform 0.12s ease;
-}
-
-details.internal-doc-map[open] > summary::before {
-  transform: rotate(90deg);
-}
-
-details.internal-doc-map[open] > summary {
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 10px;
-}
-
-details.internal-doc-map .internal-doc-map__body {
-  padding-bottom: 12px;
-}
-
-details.internal-doc-map--nested {
-  margin: 10px 0 4px 12px;
-  background: #f8fafc;
-}
-
-details.internal-doc-map p {
-  margin-top: 8px;
-}
-
-details.internal-doc-map ul {
-  margin: 8px 0 8px 20px;
-}
-
 /* ADR template: collapsible weight instructions (<details> in 0000-template.html) */
 details.adr-weight-help {
   margin: 0 0 18px;
@@ -823,16 +767,19 @@ main.docs-page-layout [id] {
 
 .docs-page-layout__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) min(260px, 30%);
+  grid-template-columns: min(260px, 30%) minmax(0, 1fr);
   gap: 2rem 1.75rem;
   align-items: start;
 }
 
+/* DOM order is article then aside; order places the sticky TOC in the first column (left). */
 .docs-page-layout__article {
   min-width: 0;
+  order: 2;
 }
 
 .docs-inpage-toc {
+  order: 1;
   position: sticky;
   top: 1rem;
   padding: 14px 16px;
@@ -901,6 +848,6 @@ main.docs-page-layout [id] {
 
   .docs-inpage-toc {
     position: static;
-    order: -1;
+    order: 1;
   }
 }

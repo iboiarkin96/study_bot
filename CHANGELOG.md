@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Internal service documentation:** [`docs/internal/`](docs/internal/) (HTML entry point [`docs/internal/README.html`](docs/internal/README.html), [`service-overview.html`](docs/internal/service-overview.html)). [ADR 0025](docs/adr/0025-external-and-internal-api-documentation.html) — OpenAPI as the sole external HTTP contract; internal docs for engineering narrative. [ADR 0026](docs/adr/0026-internal-service-documentation-as-source-of-truth.html) — norms and authority for `docs/internal/`. Top nav **Internal (service)**; see [`docs/CHANGELOG.md`](docs/CHANGELOG.md) (2026-04-14).
 
-- **User HTTP API (internal):** [`docs/internal/user-http-api.html`](docs/internal/user-http-api.html) — capability spec: endpoints, idempotency, errors, logging, metrics, PostgreSQL dependency.
+- **User HTTP API (internal):** [`docs/internal/api/user/index.html`](docs/internal/api/user/index.html) — capability spec: endpoints, idempotency, errors, logging, metrics, PostgreSQL dependency (see `docs/CHANGELOG.md` 2026-04-15).
 
 ## [1.1.1] — 2026-04-12
 

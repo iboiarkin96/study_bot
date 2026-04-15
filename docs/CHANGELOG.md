@@ -4,6 +4,31 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-04-15
+
+### Removed
+
+- Legacy [`docs/internal/user/index.html`](internal/user/index.html) (superseded by [`internal/api/user/index.html`](internal/api/user/index.html)); orphan assets `internal-doc-demo.css`, `internal-doc-nav.js`; unused `details.internal-doc-map` rules in [`docs/assets/docs.css`](assets/docs.css).
+
+### Added
+
+- [`docs/howto/README.html`](howto/README.html) — index for how-to guides.
+- [`docs/howto/internal-service-docs-layout.html`](howto/internal-service-docs-layout.html) — directory layout for `docs/internal/`, shared chrome, and how to add or edit internal HTML pages (content moved from [`internal/STRUCTURE.md`](internal/STRUCTURE.md), which is now a short pointer).
+- [`docs/howto/0004-how-to-add-post-contract.html`](howto/0004-how-to-add-post-contract.html) — beginner guide for `POST /api/v1/contract` (moved from [`developer/0004-how-to-add-post-contract.html`](developer/0004-how-to-add-post-contract.html); old URL redirects).
+
+### Changed
+
+- [`docs/internal/STRUCTURE.md`](internal/STRUCTURE.md) — now links to [`howto/internal-service-docs-layout.html`](howto/internal-service-docs-layout.html) instead of holding the full tree and steps inline.
+
+- [`docs/assets/docs-nav.js`](assets/docs-nav.js): top nav item **How-to guides** (`howto/README.html`) and `activeTarget` for `howto/*` paths.
+
+- [`docs/internal/user-http-api.html`](internal/user-http-api.html) moved to [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) (resource-scoped layout); sidebar and inbound links updated.
+
+- Full User internal specification merged into [`docs/internal/api/user/index.html`](internal/api/user/index.html) (single entry point). [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) is a redirect stub to `index.html` with hash preserved; per-method pages link to `../index.html#…`.
+
+- [ADR 0025](adr/0025-external-and-internal-api-documentation.html): internal docs described as multi-page (`docs/internal/api/`, per-resource hub, [`STRUCTURE.md`](internal/STRUCTURE.md) / [how-to layout](howto/internal-service-docs-layout.html)).
+- [ADR 0026](adr/0026-internal-service-documentation-as-source-of-truth.html): expanded with repository layout table, navigation ownership (`INTERNAL_SIDEBAR_NAV` in [`docs/assets/internal-sidebar.js`](assets/internal-sidebar.js)), contributor workflow, and ratification note (2026-04-15).
+
 ## 2026-04-14
 
 
@@ -15,9 +40,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - [`docs/internal/README.html`](internal/README.html) — entry point for internal service docs; [`docs/internal/service-overview.html`](internal/service-overview.html) — high-level service overview for contributors.
 
-- [`docs/internal/user-http-api.html`](internal/user-http-api.html) — internal specification for the User HTTP API (operations, idempotency, errors, logging, metrics, dependencies).
+- [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) — internal specification for the User HTTP API (operations, idempotency, errors, logging, metrics, dependencies); lives under the User resource folder (see 2026-04-15 changelog).
 
-- [`docs/internal/user/index.html`](internal/user/index.html) — User resource **internal hub** (contract links, per-`operationId` anchors into the unified spec). [`docs/internal/README.html`](internal/README.html) — **Documentation map** with collapsible `<details>` blocks (platform, User resource, future topics); [`docs/assets/docs.css`](assets/docs.css) — `details.internal-doc-map` styles. Anchors on `user-http-api.html`: `#user-op-createUser`, `#user-op-getUserBySystemUserId`, `#user-op-updateUserBySystemUserId`, `#user-op-patchUserBySystemUserId`.
+- [`docs/internal/api/user/index.html`](internal/api/user/index.html) — User resource **internal hub** (contract links, method index). Per-endpoint pages under [`docs/internal/api/user/operations/`](internal/api/user/operations/). How to extend `docs/internal/`: [`docs/howto/internal-service-docs-layout.html`](howto/internal-service-docs-layout.html) (see also [`internal/STRUCTURE.md`](internal/STRUCTURE.md)). Anchors on `user-http-api.html`: `#user-op-createUser`, `#user-op-getUserBySystemUserId`, `#user-op-updateUserBySystemUserId`, `#user-op-patchUserBySystemUserId`.
 
 - [`docs/assets/docs-nav.js`](assets/docs-nav.js): top nav item **Internal (service)** and `activeTarget` for `internal/*` paths.
 

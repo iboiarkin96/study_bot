@@ -74,8 +74,12 @@
           it does, <strong>business invariants</strong>, <strong>cross-cutting processes</strong> (idempotency, error
           monitoring expectations, messaging topics), and <strong>traceability of decisions</strong> over time lives under
           <code>docs/internal/</code> as HTML, governed by
-          <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>. It does not replace
-          OpenAPI for external consumers.
+          <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>. Layout is multi-page: a
+          landing page, service overview, an HTTP API hub under <code>docs/internal/api/</code>, and per-resource folders
+          with a <strong>single hub</strong> (<code>index.html</code>) plus optional per-endpoint pages — see ADR 0026
+          and <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>
+          (contributor layout; <a href="../internal/STRUCTURE.md"><code>STRUCTURE.md</code></a> links there). It does not replace OpenAPI
+          for external consumers.
         </li>
         <li>
           <strong>Python API reference.</strong> Generated HTML under <code>docs/api/</code> remains the reference for
@@ -117,9 +121,9 @@
             <td>What changed between releases (API surface, behavior)</td>
           </tr>
           <tr>
-            <td><code>docs/internal/*.html</code></td>
+            <td><code>docs/internal/</code> (HTML) + <a href="../howto/internal-service-docs-layout.html">how-to layout</a> / <code>STRUCTURE.md</code> stub</td>
             <td>Engineers in this repo</td>
-            <td>Behavioral semantics, business rules, ops expectations, decision history (per ADR 0026)</td>
+            <td>Behavioral semantics, business rules, ops expectations, per-resource hubs and method pages (per ADR 0026)</td>
           </tr>
           <tr>
             <td><code>docs/api/</code> (pdoc)</td>
