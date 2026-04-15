@@ -27,6 +27,18 @@
         </p>
       </div>
 
+      <div class="card">
+        <h2 id="internal-service-documentation">Internal service documentation</h2>
+        <p>
+          Engineering-facing behavior, business rules, and operational meaning for the HTTP API are documented under
+          <code>docs/internal/</code> (HTML). External integrators rely on OpenAPI and the root changelog; the split and
+          authority rules are fixed in
+          <a href="./adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> and
+          <a href="./adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
+          <a href="./internal/README.html">Browse internal service documentation</a>.
+        </p>
+      </div>
+
       <section>
         <h2 id="dev-guide">1. Development Guide</h2>
         <div class="card">
@@ -547,63 +559,70 @@
                         Entry-point navigation for developers: requirements, contracts, business logic,
                         architecture decisions, and implementation guides.
                       </p>
-                    </table>
-                    <div class="callout"
-                      style="background: #f3f4f6; color: #222; border-radius: 6px; margin: 1em 0; padding: 1em 1.25em; font-size: 0.97em;">
-                      <strong>Note:</strong>
-                      <ul>
-                        <li>Architecture and policy decisions are documented via <b>ADR</b>.</li>
-                        <li>Operational recovery procedures are documented via <b>runbooks</b>. Runbook mini-SLA: ⏳ Temporary
-                          incident
-                          notes within 30 minutes; finalized runbook updates within 24 hours
-                          after resolution.</li>
-                        </li>
-                      </ul>
-                    </div>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Document</th>
-                          <th>Description</th>
-                          <th>Open</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>System Analysis</td>
-                          <td>Analyst document with context, FR/NFR, architecture, API contracts, and diagrams.</td>
-                          <td><a href="./system-analysis.html">Open document</a></td>
-                        </tr>
-                        <tr>
-                          <td>Developer Docs Index</td>
-                          <td>Entry point for all developer guides.</td>
-                          <td><a href="./developer/README.html">Open index</a></td>
-                        </tr>
-                        <tr>
-                          <td>Backlog Index</td>
-                          <td>Product and quality engineering backlog with priorities, estimates, and status.</td>
-                          <td><a href="./backlog/README.html">Open index</a></td>
-                        </tr>
-                        <tr>
-                          <td>ADR Index</td>
-                          <td>Architecture and policy decisions with rationale and references.</td>
-                          <td><a href="./adr/README.html">Open index</a></td>
-                        </tr>
-                        <tr>
-                          <td>Runbooks Index</td>
-                          <td>Operational incident guides and standardized recovery checklists.</td>
-                          <td><a href="./runbooks/README.html">Open index</a></td>
-                        </tr>
-                        <tr>
-                          <td>Developer guide — Local development</td>
-                          <td>Local run targets (<code>make run</code>, <code>make run-project</code>), observability stack, ports,
-                            shutdown.</td>
-                            <td><a href="./developer/0007-local-development.html">Open guide</a></td>
-                          </tr>
-                        </tbody>
-                      </div>
-                    </section>
-                  </main>
-                </body>
+                      <div class="callout"
+                        style="background: #f3f4f6; color: #222; border-radius: 6px; margin: 1em 0; padding: 1em 1.25em; font-size: 0.97em;">
+                        <strong>Note:</strong>
+                        <ul>
+                          <li>Architecture and policy decisions are documented via <b>ADR</b>.</li>
+                          <li>Operational recovery procedures are documented via <b>runbooks</b>. Runbook mini-SLA: ⏳ Temporary
+                            incident
+                            notes within 30 minutes; finalized runbook updates within 24 hours
+                            after resolution.</li>
+                          </ul>
+                        </div>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Document</th>
+                              <th>Description</th>
+                              <th>Open</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>System Analysis</td>
+                              <td>Analyst document with context, FR/NFR, architecture, API contracts, and diagrams.</td>
+                              <td><a href="./system-analysis.html">Open document</a></td>
+                            </tr>
+                            <tr>
+                              <td>Developer Docs Index</td>
+                              <td>Entry point for all developer guides.</td>
+                              <td><a href="./developer/README.html">Open index</a></td>
+                            </tr>
+                            <tr>
+                              <td>How-to guides</td>
+                              <td>Internal HTML documentation layout (<code>docs/internal/</code>) and task guides such as adding
+                                <code>POST /api/v1/contract</code>; moved from <code>STRUCTURE.md</code> and
+                                <code>developer/0004-…</code>.</td>
+                                <td><a href="./howto/README.html">Open index</a></td>
+                              </tr>
+                              <tr>
+                                <td>Backlog Index</td>
+                                <td>Product and quality engineering backlog with priorities, estimates, and status.</td>
+                                <td><a href="./backlog/README.html">Open index</a></td>
+                              </tr>
+                              <tr>
+                                <td>ADR Index</td>
+                                <td>Architecture and policy decisions with rationale and references.</td>
+                                <td><a href="./adr/README.html">Open index</a></td>
+                              </tr>
+                              <tr>
+                                <td>Runbooks Index</td>
+                                <td>Operational incident guides and standardized recovery checklists.</td>
+                                <td><a href="./runbooks/README.html">Open index</a></td>
+                              </tr>
+                              <tr>
+                                <td>Developer guide — Local development</td>
+                                <td>Local run targets (<code>make run</code>, <code>make run-project</code>), observability stack, ports,
+                                  shutdown.</td>
+                                  <td><a href="./developer/0007-local-development.html">Open guide</a></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+                        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                      </main>
+                    </body>
 
-              </html>
+                  </html>

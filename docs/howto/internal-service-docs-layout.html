@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Internal service docs — layout and how to add pages</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1><code>docs/internal/</code> layout</h1>
+      <div id="docs-top-nav"></div>
+      <p class="lead">
+        Engineering-facing HTML for the Study App service. OpenAPI remains the <strong>external</strong> contract; these
+        pages are the <strong>internal narrative</strong> (ADR 0025 / 0026). This guide was moved from
+        <code>docs/internal/STRUCTURE.md</code>; the markdown file now only points here.
+      </p>
+
+      <div class="card">
+        <h2>Directory tree</h2>
+        <pre style="white-space: pre; overflow-x: auto;"><code>docs/internal/
+          ├── README.html                 # Entry: teams, ADRs, practices, links
+          ├── STRUCTURE.md                # Stub → links to this page (howto)
+          ├── service-overview.html       # Process scope, boundaries, observability
+          └── api/
+          ├── README.html             # HTTP API hub — list of resources
+          └── user/                   # One folder per API resource name
+          ├── index.html          # Hub: business, contract, technical spec, method index
+          ├── user-http-api.html  # Optional redirect stub → index.html (bookmarks)
+          └── operations/         # One HTML file per HTTP endpoint (not per operationId)
+          ├── post-api-v1-user.html
+          ├── get-api-v1-user-system_uuid-system_user_id.html
+          ├── put-api-v1-user-system_uuid-system_user_id.html
+          └── patch-api-v1-user-system_uuid-system_user_id.html</code></pre>
+        </div>
+
+        <div class="card">
+          <h2>Shared chrome</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="../assets/internal-layout.css"><code>docs/assets/internal-layout.css</code></a></td>
+                <td>Two-column layout + sidebar chrome + HTTP “tablet” on operation pages</td>
+              </tr>
+              <tr>
+                <td><a href="../assets/internal-sidebar.js"><code>docs/assets/internal-sidebar.js</code></a></td>
+                <td><strong>Single source of truth</strong> for the left nav — edit <code>INTERNAL_SIDEBAR_NAV</code> when
+                  adding pages</td>
+                </tr>
+                <tr>
+                  <td><a href="../assets/docs-nav.js"><code>docs/assets/docs-nav.js</code></a></td>
+                  <td>Top “pill” navigation across all docs</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Every internal page that should show the sidebar: load <code>internal-layout.css</code> +
+              <code>internal-sidebar.js</code>, include <code>#internal-sidebar-mount</code>, and use the shell markup (see
+              <a href="../internal/README.html"><code>internal/README.html</code></a>).
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>How to add a new resource (e.g. <code>Order</code>)</h2>
+            <ol>
+              <li>Create <code>docs/internal/api/&lt;resource&gt;/index.html</code> (hub) and
+                <code>docs/internal/api/&lt;resource&gt;/operations/</code> for endpoint pages.</li>
+                <li>Name operation files from <strong>HTTP method + path template</strong>, e.g.
+                  <code>get-api-v1-orders--order_id.html</code> — not from Python <code>operationId</code>.</li>
+                  <li>Extend <strong><code>INTERNAL_SIDEBAR_NAV</code></strong> in <code>internal-sidebar.js</code> (paths from
+                    <code>docs/</code> root, e.g. <code>internal/api/order/index.html</code>).</li>
+                    <li>Add a card + link on <a href="../internal/api/README.html"><code>internal/api/README.html</code></a>.</li>
+                    <li>
+                      Put business + technical narrative on the resource <code>index.html</code> (see
+                      <a href="../internal/api/user/index.html"><code>internal/api/user/index.html</code></a>). Add
+                      <code>&lt;resource&gt;-http-api.html</code> only as a redirect stub if you rename later — follow ADR 0026
+                      (same PR as behavior changes).
+                    </li>
+                  </ol>
+                </div>
+
+                <div class="card">
+                  <h2>How to edit existing pages</h2>
+                  <ul>
+                    <li><strong>Sidebar</strong>: change labels or paths in <code>INTERNAL_SIDEBAR_NAV</code> in
+                      <code>internal-sidebar.js</code>.</li>
+                      <li><strong>Top navigation</strong> (Home, Internal, …): edit <code>renderTopNav</code> in
+                        <code>docs-nav.js</code>.</li>
+                        <li><strong>Page body</strong>: edit the HTML file; run <code>make docs-fix</code> if your workflow includes
+                          doc sync and format checks.</li>
+                        </ul>
+                      </div>
+
+                      <div class="card">
+                        <h2>Removed / obsolete</h2>
+                        <ul>
+                          <li><strong><code>docs/internal/user/</code></strong> — removed; the canonical User hub is
+                            <a href="../internal/api/user/index.html"><code>api/user/index.html</code></a>.</li>
+                            <li><strong><code>details.internal-doc-map</code></strong> styles were removed from <code>docs.css</code> (old
+                              collapsible map on README).</li>
+                              <li><strong><code>internal-doc-demo.css</code> / <code>internal-doc-nav.js</code></strong> — removed; they only
+                                served a deleted prototype page.</li>
+                              </ul>
+                            </div>
+
+                            <div class="card">
+                              <h2>Related</h2>
+                              <ul>
+                                <li><a href="../internal/README.html">Internal service documentation — index</a></li>
+                                <li><a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> — external vs internal API
+                                  documentation</li>
+                                  <li><a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> — internal
+                                    narrative as source of truth</li>
+                                    <li><a href="./README.html">How-to guides — index</a></li>
+                                  </ul>
+                                </div>
+
+                                <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                              </main>
+                            </body>
+
+                          </html>

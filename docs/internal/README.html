@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Internal service documentation — Study App</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <link rel="stylesheet" href="../assets/internal-layout.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+    <script defer src="../assets/internal-sidebar.js"></script>
+  </head>
+
+  <body class="internal-layout">
+    <div class="internal-layout__shell">
+      <aside class="internal-layout__sidebar">
+        <p class="internal-layout__sidebar-title">Internal docs</p>
+        <div id="internal-sidebar-mount"></div>
+      </aside>
+      <div class="internal-layout__main">
+        <div class="container">
+          <h1>Internal service documentation</h1>
+          <div id="docs-top-nav"></div>
+          <p class="lead">
+            Engineering-facing documentation for the <strong>Study App</strong> HTTP service: how we work, which policies
+            apply, and where to find API narrative beyond OpenAPI. Use the <strong>left navigation</strong> to open the API
+            hub, resource hubs, and per-method pages — content is split across pages on purpose so readers are not faced
+            with a single endless document.
+          </p>
+          <p class="small">
+            <strong>Contributors:</strong> folder layout and how to add or edit internal HTML pages —
+            <a href="../howto/internal-service-docs-layout.html">How-to: internal service docs layout</a>
+            (<code>STRUCTURE.md</code> is a short pointer to the same content).
+          </p>
+
+          <div class="card">
+            <h2>Product and teams (working model)</h2>
+            <p>
+              Study App is a learning platform prototype; the repo is structured for clarity of ownership and review. The
+              following squads are a <strong>logical</strong> split — in a small team one person may wear several hats:
+            </p>
+            <ul>
+              <li>
+                <strong>Product API</strong> — HTTP surface, domain rules, contract tests, and internal specs for
+                resources and operations. Owns alignment between OpenAPI, runtime behavior, and these HTML pages.
+              </li>
+              <li>
+                <strong>Platform &amp; reliability</strong> — deployment topology, observability defaults, SLOs, and
+                runbooks; collaborates with API on error envelopes and logging fields.
+              </li>
+              <li>
+                <strong>Developer experience</strong> — docs-as-code in <code>docs/</code>, ADR workflow, local dev and
+                Make targets; keeps navigation and templates maintainable.
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>Where to go next</h2>
+            <ul>
+              <li><a href="./service-overview.html">Service overview</a> — role of the API process, boundaries, observability.</li>
+              <li><a href="./api/README.html">HTTP API (internal hub)</a> — resources and links to per-resource pages.</li>
+              <li><a href="./api/user/index.html">User resource</a> — business context, data contract summary, method index.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>ADRs that govern this documentation</h2>
+            <p class="small">Policy stays in ADRs; narrative here must not contradict them.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>ADR</th>
+                  <th>Topic</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a href="../adr/0025-external-and-internal-api-documentation.html">0025</a></td>
+                  <td>External vs internal API documentation — OpenAPI vs engineering narrative.</td>
+                </tr>
+                <tr>
+                  <td><a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">0026</a></td>
+                  <td>Internal service documentation as source of truth for described behavior.</td>
+                </tr>
+                <tr>
+                  <td><a href="../adr/0007-openapi-governance-and-usability-standard.html">0007</a></td>
+                  <td>OpenAPI governance and usability.</td>
+                </tr>
+                <tr>
+                  <td><a href="../adr/0003-error-contract-governance.html">0003</a></td>
+                  <td>Error contract — HTTP status and payload shape.</td>
+                </tr>
+                <tr>
+                  <td><a href="../adr/0006-idempotency-write-operations.html">0006</a></td>
+                  <td>Idempotency for write operations.</td>
+                </tr>
+                <tr>
+                  <td><a href="../adr/0022-embedded-swagger-ui-openapi-sandbox.html">0022</a></td>
+                  <td>Embedded Swagger UI / OpenAPI sandbox (when applicable).</td>
+                </tr>
+                <tr>
+                  <td><a href="../adr/README.html">Index</a></td>
+                  <td>Full ADR catalog.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>Documentation and development practices</h2>
+            <ul>
+              <li>
+                <strong>Contract-first:</strong> <code>docs/openapi/openapi-baseline.json</code> (and live
+                <code>/openapi.json</code>) is the sole external contract for paths, schemas, and declared errors.
+              </li>
+              <li>
+                <strong>Change behavior and docs together:</strong> meaningful HTTP or semantics changes ship with
+                updates to OpenAPI, internal pages, and tests in the same maintenance window (see developer guides).
+              </li>
+              <li>
+                <strong>Split by page:</strong> landing (this page) for orientation; <strong>API hub</strong> per surface;
+                <strong>resource hub</strong> for business + data contract; <strong>one page per method</strong> when
+                operation-level detail would overload the resource page.
+              </li>
+              <li>
+                <strong>User resource:</strong> business context, contract summary, and full technical narrative live on one page —
+                <a href="./api/user/index.html">User resource — internal specification</a>; method pages link to anchors there.
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2>Audience and authority</h2>
+            <p>
+              <strong>Who this is for:</strong> contributors and maintainers in this repository. External integrators
+              should rely on OpenAPI and release notes.
+            </p>
+            <p>
+              <strong>Authority:</strong> For topics documented under <code>docs/internal/</code>, these pages are the
+              normative narrative where they explicitly describe behavior, per ADR 0026. Global policies remain in ADRs.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Related</h2>
+            <ul>
+              <li><a href="../developer/README.html">Developer guides</a> — workflows in the repo.</li>
+              <li><a href="../openapi-explorer.html">OpenAPI (test)</a> — Swagger UI over the baseline.</li>
+            </ul>
+          </div>
+
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>

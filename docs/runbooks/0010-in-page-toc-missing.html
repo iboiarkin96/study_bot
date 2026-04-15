@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Runbook: In-page “On this page” sidebar missing or empty</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Runbook: In-page “On this page” sidebar missing or empty</h1>
+      <div id="docs-top-nav"></div>
+      <h2>Trigger</h2>
+      <ul>
+        <li>
+          A long-form HTML page under <code>docs/</code> (not <code>docs/api/</code>) shows no sticky “On this page”
+          block, or the list is empty.
+        </li>
+        <li>
+          Expected: after the global doc nav, the main column and a right-hand (or stacked) TOC built by
+          <code>docs/assets/docs-nav.js</code>.
+        </li>
+      </ul>
+      <h2>Fast triage</h2>
+      <ol>
+        <li>
+          Confirm <code>&lt;script defer src="…/assets/docs-nav.js"&gt;&lt;/script&gt;</code> is present and loads (browser
+          devtools → Network → no 404 for <code>docs-nav.js</code>).
+        </li>
+        <li>
+          Confirm JavaScript is allowed (not disabled; for <code>file://</code> some browsers restrict scripts — prefer a
+          local static server, e.g. <code>cd docs &amp;&amp; python -m http.server 8765</code>).
+        </li>
+        <li>
+          Open devtools → Console: look for errors from <code>docs-nav.js</code> before layout runs.
+        </li>
+        <li>
+          In Elements, check that <code>&lt;div id="docs-top-nav"&gt;</code> still exists after load (it must wrap the top
+          nav — the script must not replace this node; it should contain <code>&lt;nav class="top-nav"&gt;</code>).
+        </li>
+        <li>
+          Confirm the page ends <code>&lt;main&gt;</code> with
+          <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> (last child of
+          <code>&lt;main&gt;</code>).
+        </li>
+      </ol>
+      <h2>Most common causes</h2>
+      <ul>
+        <li>
+          <strong>Mount missing or wrong place</strong> — without the mount div, the TOC layout is not inserted.
+        </li>
+        <li>
+          <strong>No qualifying headings</strong> — the TOC is built from <code>h2</code>/<code>h3</code> with
+          <code>id</code> (assigned automatically where missing). <code>p.lead</code> is intentionally not listed.
+        </li>
+        <li>
+          <strong>Missing <code>id</code> on a heading</strong> — the script assigns stable <code>id</code>s from heading
+          text when absent; if a heading still does not appear, check for invalid markup around it.
+        </li>
+        <li>
+          <strong>Diagram-only headings skipped</strong> — <code>h3</code> inside <code>figure.sys-diagram</code> /
+          <code>.sys-diagram</code> are excluded from the TOC.
+        </li>
+        <li>
+          <strong>Very long TOC lists</strong> — pages with many headings (for example the backlog index) still use the
+          same mount; the link list scrolls inside the sidebar. If you truly want no sidebar, remove the mount from that
+          page only.
+        </li>
+      </ul>
+      <h2>Recovery steps</h2>
+      <ol>
+        <li>
+          Add the mount as the last node inside <code>&lt;main&gt;</code> (see
+          <a href="../developer/0008-docs-pipeline.html#in-page-on-this-page-sidebar">Documentation pipeline → In-page
+            “On this page” sidebar</a>).
+          </li>
+          <li>
+            Ensure each section you want in the TOC has an <code>h2</code> or <code>h3</code> with a stable
+            <code>id</code> (or let the script generate one from heading text).
+          </li>
+          <li>
+            Use clear <code>h2</code>/<code>h3</code> structure; cards and sections are optional and do not affect which
+            headings are listed.
+          </li>
+          <li>
+            Run <code>make docs-fix</code> so HTML normalization stays consistent, then <code>make docs-check</code>.
+          </li>
+        </ol>
+        <h2>Exit criteria</h2>
+        <ul>
+          <li>“On this page” appears with the expected section links; scroll-spy highlights the active link while scrolling.</li>
+          <li>No console errors from <code>docs-nav.js</code> on that page.</li>
+        </ul>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </body>
+  </html>

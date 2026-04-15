@@ -4,10 +4,47 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-04-15
+
+### Removed
+
+- Legacy [`docs/internal/user/index.html`](internal/user/index.html) (superseded by [`internal/api/user/index.html`](internal/api/user/index.html)); orphan assets `internal-doc-demo.css`, `internal-doc-nav.js`; unused `details.internal-doc-map` rules in [`docs/assets/docs.css`](assets/docs.css).
+
+### Added
+
+- [`docs/howto/README.html`](howto/README.html) — index for how-to guides.
+- [`docs/howto/internal-service-docs-layout.html`](howto/internal-service-docs-layout.html) — directory layout for `docs/internal/`, shared chrome, and how to add or edit internal HTML pages (content moved from [`internal/STRUCTURE.md`](internal/STRUCTURE.md), which is now a short pointer).
+- [`docs/howto/0004-how-to-add-post-contract.html`](howto/0004-how-to-add-post-contract.html) — beginner guide for `POST /api/v1/contract` (moved from [`developer/0004-how-to-add-post-contract.html`](developer/0004-how-to-add-post-contract.html); old URL redirects).
+
+### Changed
+
+- [`docs/internal/STRUCTURE.md`](internal/STRUCTURE.md) — now links to [`howto/internal-service-docs-layout.html`](howto/internal-service-docs-layout.html) instead of holding the full tree and steps inline.
+
+- [`docs/assets/docs-nav.js`](assets/docs-nav.js): top nav item **How-to guides** (`howto/README.html`) and `activeTarget` for `howto/*` paths.
+
+- [`docs/internal/user-http-api.html`](internal/user-http-api.html) moved to [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) (resource-scoped layout); sidebar and inbound links updated.
+
+- Full User internal specification merged into [`docs/internal/api/user/index.html`](internal/api/user/index.html) (single entry point). [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) is a redirect stub to `index.html` with hash preserved; per-method pages link to `../index.html#…`.
+
+- [ADR 0025](adr/0025-external-and-internal-api-documentation.html): internal docs described as multi-page (`docs/internal/api/`, per-resource hub, [`STRUCTURE.md`](internal/STRUCTURE.md) / [how-to layout](howto/internal-service-docs-layout.html)).
+- [ADR 0026](adr/0026-internal-service-documentation-as-source-of-truth.html): expanded with repository layout table, navigation ownership (`INTERNAL_SIDEBAR_NAV` in [`docs/assets/internal-sidebar.js`](assets/internal-sidebar.js)), contributor workflow, and ratification note (2026-04-15).
+
 ## 2026-04-14
 
 
 ### Added
+
+- [ADR 0025](adr/0025-external-and-internal-api-documentation.html): external vs internal documentation — OpenAPI (`docs/openapi/`) as the sole normative HTTP contract for integrators; internal engineering narrative under `docs/internal/`; relationship table vs changelog, pdoc, Swagger views.
+
+- [ADR 0026](adr/0026-internal-service-documentation-as-source-of-truth.html): internal service HTML as the authoritative engineering narrative for documented topics; scope (business rules, HTTP mapping via `operationId`, observability expectations, async boundaries); document history tables; index at [`docs/internal/README.html`](internal/README.html).
+
+- [`docs/internal/README.html`](internal/README.html) — entry point for internal service docs; [`docs/internal/service-overview.html`](internal/service-overview.html) — high-level service overview for contributors.
+
+- [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) — internal specification for the User HTTP API (operations, idempotency, errors, logging, metrics, dependencies); lives under the User resource folder (see 2026-04-15 changelog).
+
+- [`docs/internal/api/user/index.html`](internal/api/user/index.html) — User resource **internal hub** (contract links, method index). Per-endpoint pages under [`docs/internal/api/user/operations/`](internal/api/user/operations/). How to extend `docs/internal/`: [`docs/howto/internal-service-docs-layout.html`](howto/internal-service-docs-layout.html) (see also [`internal/STRUCTURE.md`](internal/STRUCTURE.md)). Anchors on `user-http-api.html`: `#user-op-createUser`, `#user-op-getUserBySystemUserId`, `#user-op-updateUserBySystemUserId`, `#user-op-patchUserBySystemUserId`.
+
+- [`docs/assets/docs-nav.js`](assets/docs-nav.js): top nav item **Internal (service)** and `activeTarget` for `internal/*` paths.
 
 - Shared **assessment score** styling: `docs/assets/docs.css` defines `--audit-score-*` colours, `.audit-score-table` cell classes (`score-excellent`, `score-good`, `score-needs-attention`; `score-neutral` remains an alias), and `.audit-score-legend` / swatch layout. Canonical legend markup: [`docs/assets/audit-score-legend-fragment.html`](assets/audit-score-legend-fragment.html), injected by [`docs/assets/docs-nav.js`](assets/docs-nav.js) into `<div class="audit-score-legend-include" data-legend-id="…">` placeholders (see [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html#assessment-score-scale)). `SKIP_HTML_INDENT_NORMALIZE` in [`scripts/format_docs_html.py`](../scripts/format_docs_html.py) includes the fragment file.
 
@@ -24,6 +61,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - [API assessment](audit/2026-04-14-api-assessment.html): §8 actionable checklist, §9 document history, TOC entries for sections 7–9 (aligned with ADR 0024).
 
 - [DX assessment](audit/2026-04-14-documentation-experience-assessment.html): same section order as the API assessment; Table 2 anchor `table-2-study-app-scores`; invalid nesting and duplicate blocks removed.
+
+- [ADR 0024](adr/0024-architecture-and-quality-assessment-documents.html): **Industry context and applicability** — how common large-org practices (RFC/launch/security/portal) relate to this repo’s lightweight rubric; **PET scale** and when low scores mean deferral, not failure; backbone now expects an industry/PET subsection under scope/methodology.
+
+- [API assessment](audit/2026-04-14-api-assessment.html): §1.6 industry/PET; restored §8 checklist and §9 document history (TOC).
+
+- [DX assessment](audit/2026-04-14-documentation-experience-assessment.html): §1.5 industry/PET; restored §7 checklist; Table 1 intro fixed; [audit index](audit/README.html) — “not a FAANG gate” card.
 
 ## <= 2026-04-12
 

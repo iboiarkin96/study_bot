@@ -71,6 +71,12 @@ function activeTarget(relPath) {
   if (relPath.startsWith("audit/")) {
     return "audit/README.html";
   }
+  if (relPath.startsWith("internal/")) {
+    return "internal/README.html";
+  }
+  if (relPath.startsWith("howto/")) {
+    return "howto/README.html";
+  }
   if (relPath.startsWith("api/")) {
     return "api/index.html";
   }
@@ -97,9 +103,11 @@ function renderTopNav() {
     { label: "System Analysis", target: "system-analysis.html" },
     { label: "Engineering Practices", target: "engineering-practices.html" },
     { label: "Developer Docs", target: "developer/README.html" },
+    { label: "How-to guides", target: "howto/README.html" },
     { label: "Backlog", target: "backlog/README.html" },
     { label: "ADR", target: "adr/README.html" },
     { label: "Assessments", target: "audit/README.html" },
+    { label: "Internal (service)", target: "internal/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
     { label: "API (Python)", target: "api/index.html" },
     { label: "OpenAPI (test)", target: "openapi-explorer.html" },
@@ -120,7 +128,8 @@ function renderTopNav() {
     nav.appendChild(link);
   }
 
-  host.replaceWith(nav);
+  /* Keep `#docs-top-nav` in the DOM — `initAutoInPageToc` and formatters anchor off this host. */
+  host.replaceChildren(nav);
 }
 
 /** ADR: single `data-adr-weight` on <main> (−1…7) → current status + linear status log. */
@@ -336,6 +345,235 @@ async function injectAuditScoreLegends() {
   }
 }
 
+function slugifyForTocId(text) {
+  let s = String(text || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+  return s || "section";
+}
+
+function ensureUniqueDomId(base, used) {
+  let id = base;
+  let n = 2;
+  while (used.has(id)) {
+    id = `${base}-${n}`;
+    n += 1;
+  }
+  used.add(id);
+  return id;
+}
+
+/**
+ * Assign stable `id`s for in-page anchors on headings. `p.lead` is not listed in the TOC; add `id` on a lead manually if
+ * you need a shareable `#fragment`.
+ */
+function ensureTocAnchorIds(article) {
+  const used = new Set();
+  for (const el of article.querySelectorAll("[id]")) {
+    if (el.id) {
+      used.add(el.id);
+    }
+  }
+
+  for (const el of article.querySelectorAll("h2, h3")) {
+    if (el.closest(".docs-inpage-toc")) {
+      continue;
+    }
+    if (el.closest("figure.sys-diagram, .sys-diagram")) {
+      continue;
+    }
+    if (!el.id) {
+      const base = slugifyForTocId(el.textContent);
+      el.id = ensureUniqueDomId(base, used);
+    }
+  }
+}
+
+function collectTocEntries(article) {
+  const candidates = [];
+  for (const el of article.querySelectorAll("h2, h3")) {
+    if (el.closest(".docs-inpage-toc")) {
+      continue;
+    }
+    if (el.closest("figure.sys-diagram, .sys-diagram")) {
+      continue;
+    }
+    if (!el.id) {
+      continue;
+    }
+    const level = el.tagName === "H3" ? 3 : 2;
+    candidates.push({ el, level });
+  }
+
+  return candidates.map(({ el, level }) => ({
+    id: el.id,
+    label: el.textContent.trim().replace(/\s+/g, " "),
+    level,
+  }));
+}
+
+/**
+ * Wrap content after `#docs-top-nav` in a grid with a sticky “On this page” TOC built from `h2`/`h3` (not `p.lead`).
+ * Add a mount as the last child of `<main>`: `<div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>`.
+ * Very long outlines scroll inside the sidebar (see `.docs-inpage-toc nav` in docs.css).
+ */
+function initAutoInPageToc() {
+  const mount = document.querySelector('.docs-inpage-toc-mount[data-inpage-toc="auto"]');
+  if (!mount) {
+    return;
+  }
+  const main = mount.closest("main");
+  if (!main) {
+    return;
+  }
+  const nav = main.querySelector("#docs-top-nav");
+  if (!nav) {
+    mount.remove();
+    return;
+  }
+
+  main.classList.add("docs-page-layout");
+
+  const article = document.createElement("article");
+  article.className = "docs-page-layout__article";
+
+  let node = nav.nextSibling;
+  while (node && node !== mount) {
+    const next = node.nextSibling;
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      article.appendChild(node);
+    } else if (node.nodeType === Node.TEXT_NODE) {
+      const t = node.textContent;
+      if (t && t.trim()) {
+        article.appendChild(node);
+      } else {
+        node.remove();
+      }
+    }
+    node = next;
+  }
+
+  ensureTocAnchorIds(article);
+  const entries = collectTocEntries(article);
+
+  const inner = document.createElement("div");
+  inner.className = "docs-page-layout__inner";
+  inner.appendChild(article);
+
+  if (entries.length > 0) {
+    const aside = document.createElement("aside");
+    aside.className = "docs-inpage-toc";
+    aside.setAttribute("aria-labelledby", "inpage-toc-heading");
+
+    const title = document.createElement("p");
+    title.id = "inpage-toc-heading";
+    title.className = "docs-inpage-toc__title";
+    title.textContent = "On this page";
+
+    const navEl = document.createElement("nav");
+    navEl.setAttribute("aria-labelledby", "inpage-toc-heading");
+    const ul = document.createElement("ul");
+
+    for (const e of entries) {
+      const li = document.createElement("li");
+      if (e.level === 3) {
+        li.className = "docs-inpage-toc__item--nested";
+      }
+      const a = document.createElement("a");
+      a.className = "docs-inpage-toc__link";
+      a.href = `#${e.id}`;
+      a.textContent = e.label;
+      li.appendChild(a);
+      ul.appendChild(li);
+    }
+
+    navEl.appendChild(ul);
+    aside.appendChild(title);
+    aside.appendChild(navEl);
+    inner.appendChild(aside);
+  }
+
+  mount.replaceWith(inner);
+}
+
+/**
+ * Highlight the “On this page” TOC link that matches the section currently at the top of the viewport.
+ * Expects `.docs-inpage-toc nav a[href^="#"]` and matching `id` on in-page targets.
+ */
+function initInPageTocScrollSpy() {
+  const toc = document.querySelector(".docs-inpage-toc");
+  if (!toc) {
+    return;
+  }
+  const links = [...toc.querySelectorAll('nav a[href^="#"]')];
+  if (links.length === 0) {
+    return;
+  }
+
+  const targets = links
+    .map((a) => {
+      const id = a.getAttribute("href").slice(1);
+      if (!id) {
+        return null;
+      }
+      const el = document.getElementById(id);
+      return el ? { a, el } : null;
+    })
+    .filter(Boolean);
+
+  if (targets.length === 0) {
+    return;
+  }
+
+  /** Sections whose top edge has crossed this line (from viewport top) become candidates; last match wins. */
+  const ACTIVATION_LINE_PX = 96;
+
+  function updateActive() {
+    const scrollBottom = window.scrollY + window.innerHeight;
+    const docBottom = document.documentElement.scrollHeight;
+    const nearBottom = scrollBottom >= docBottom - 8;
+
+    let activeIndex = 0;
+    if (nearBottom) {
+      activeIndex = targets.length - 1;
+    } else {
+      for (let i = 0; i < targets.length; i++) {
+        const top = targets[i].el.getBoundingClientRect().top;
+        if (top <= ACTIVATION_LINE_PX) {
+          activeIndex = i;
+        }
+      }
+    }
+
+    for (let i = 0; i < targets.length; i++) {
+      const on = i === activeIndex;
+      targets[i].a.classList.toggle("docs-inpage-toc__link--active", on);
+      if (on) {
+        targets[i].a.setAttribute("aria-current", "location");
+      } else {
+        targets[i].a.removeAttribute("aria-current");
+      }
+    }
+  }
+
+  let ticking = false;
+  function onScrollOrResize() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateActive();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize, { passive: true });
+  updateActive();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderTopNav();
   const main = document.querySelector("main.container");
@@ -343,4 +581,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderAdr(main);
   }
   injectAuditScoreLegends();
+  initAutoInPageToc();
+  initInPageTocScrollSpy();
 });

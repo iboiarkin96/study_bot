@@ -187,6 +187,36 @@
         deploy alongside or instead of raw <code>docs/</code> browsing; the Makefile pipeline remains the source of
         committed UML and marker-synced content until you migrate those steps.
       </p>
+
+      <h2 id="in-page-on-this-page-sidebar">8. In-page “On this page” sidebar (HTML docs)</h2>
+      <p>
+        Long-form pages that load <code>docs/assets/docs-nav.js</code> can show a sticky <strong>On this page</strong>
+        outline beside the article. Add this as the <strong>last child</strong> of <code>&lt;main&gt;</code>:
+      </p>
+      <pre><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code></pre>
+      <p>
+        The script wraps content after <code>#docs-top-nav</code> into a grid, builds links from <code>h2</code> /
+        <code>h3</code> (with generated <code>id</code> where missing), and skips diagram titles inside
+        <code>figure.sys-diagram</code> / <code>.sys-diagram</code>. <strong><code>p.lead</code> is not listed</strong> in
+        the sidebar (add an explicit <code>id</code> on a lead only if you need a shareable fragment).
+      </p>
+      <p>
+        <strong>Authoring layout:</strong> cards and sections are still recommended for visual consistency, but the
+        sidebar lists <strong>every</strong> in-article <code>h2</code>/<code>h3</code> with an <code>id</code> (except
+        diagram titles inside <code>figure.sys-diagram</code> / <code>.sys-diagram</code>) so long assessments and mixed
+        layouts stay fully navigable.
+      </p>
+      <p>
+        <strong>Long outlines:</strong> many <code>h2</code>/<code>h3</code> entries produce a tall list; the sidebar
+        scrolls inside a capped height so the block stays usable (see <code>.docs-inpage-toc nav</code> in
+        <code>docs.css</code>). You can still omit the mount on a page if a TOC would add no value.
+      </p>
+      <p>
+        The top doc nav must keep the host node <code>&lt;div id="docs-top-nav"&gt;</code> in the DOM (the script injects
+        <code>&lt;nav class="top-nav"&gt;</code> inside it). If the sticky block is missing, see
+        <a href="../runbooks/0010-in-page-toc-missing.html">Runbook: In-page “On this page” sidebar missing or empty</a>.
+      </p>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
     </main>
   </body>
 

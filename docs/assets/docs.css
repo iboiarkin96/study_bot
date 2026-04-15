@@ -543,6 +543,74 @@ details.adr-weight-help[open] summary {
   font-size: 0.88em;
 }
 
+/* Horizontal scroll for wide tables (narrow viewports, long code cells). */
+.docs-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.docs-table-scroll table {
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+}
+
+/* Stacked endpoint rows (internal API docs): replaces wide 5-column tables. */
+.api-endpoint-list {
+  margin: 14px 0 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.api-endpoint {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.api-endpoint:last-child {
+  border-bottom: none;
+}
+
+.api-endpoint__title {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+  font-weight: 650;
+  line-height: 1.4;
+  color: var(--text);
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.api-endpoint__title code {
+  font-size: 0.92em;
+}
+
+.api-endpoint__grid {
+  display: grid;
+  grid-template-columns: minmax(108px, 132px) minmax(0, 1fr);
+  gap: 8px 14px;
+  margin: 0;
+  font-size: 0.93rem;
+}
+
+.api-endpoint__grid dt {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.api-endpoint__grid dd {
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -685,4 +753,101 @@ main.container--swagger {
 main.container--swagger #swagger-ui {
   min-height: 72vh;
   margin-top: 16px;
+}
+
+/* Long-form docs: sticky “On this page” TOC (e.g. system-analysis.html) */
+main.container.docs-page-layout {
+  max-width: min(1240px, 100%);
+}
+
+/* Offset so in-page links don’t hide under browser UI */
+main.docs-page-layout [id] {
+  scroll-margin-top: 1.25rem;
+}
+
+.docs-page-layout__inner {
+  display: grid;
+  grid-template-columns: min(260px, 30%) minmax(0, 1fr);
+  gap: 2rem 1.75rem;
+  align-items: start;
+}
+
+/* DOM order is article then aside; order places the sticky TOC in the first column (left). */
+.docs-page-layout__article {
+  min-width: 0;
+  order: 2;
+}
+
+.docs-inpage-toc {
+  order: 1;
+  position: sticky;
+  top: 1rem;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.docs-inpage-toc__title {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+/* Long outlines (e.g. backlog): keep the box on-screen; scroll links inside it */
+.docs-inpage-toc nav {
+  max-height: min(75vh, 36rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.docs-inpage-toc nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.docs-inpage-toc nav li {
+  margin: 5px 0;
+  line-height: 1.35;
+}
+
+.docs-inpage-toc nav li.docs-inpage-toc__item--nested {
+  padding-left: 0.65rem;
+}
+
+.docs-inpage-toc nav a {
+  display: block;
+  padding: 3px 0 3px 10px;
+  margin-left: -10px;
+  border-left: 2px solid transparent;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.docs-inpage-toc nav a:hover {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+
+.docs-inpage-toc nav a.docs-inpage-toc__link--active {
+  font-weight: 700;
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+
+@media (max-width: 960px) {
+  .docs-page-layout__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-inpage-toc {
+    position: static;
+    order: 1;
+  }
 }

@@ -282,6 +282,13 @@ def _doc_sort_key(path: Path) -> tuple[int, str]:
 _HANDBOOK_EXCLUDE_PREFIXES: tuple[str, ...] = ("draft-",)
 _HANDBOOK_EXCLUDE_SUBSTRINGS: tuple[str, ...] = ("-draft-", "_draft", ".draft.")
 
+_HANDBOOK_EXCLUDE_EXACT: frozenset[str] = frozenset(
+    {
+        # Canonical page is docs/howto/0004-…; keep a redirect stub under developer/ for old links.
+        "developer/0004-how-to-add-post-contract.html",
+    }
+)
+
 
 def _should_include_handbook_doc(path: Path) -> bool:
     """Return False for draft or excluded handbook pages.
@@ -300,6 +307,12 @@ def _should_include_handbook_doc(path: Path) -> bool:
         return False
     if stem.endswith("-draft") or stem.endswith("_draft"):
         return False
+    try:
+        rel_key = path.relative_to(ROOT / "docs").as_posix()
+    except ValueError:
+        return True
+    if rel_key in _HANDBOOK_EXCLUDE_EXACT:
+        return False
     return True
 
 
@@ -311,7 +324,13 @@ _HANDBOOK_DESCRIPTION_OVERRIDES: dict[str, str] = {
         "Rules for request/response/error contracts and backward-compatible changes."
     ),
     "developer/0003-business-logic.html": "Layer responsibilities and implementation change flow.",
-    "developer/0004-how-to-add-post-contract.html": (
+    "howto/README.html": (
+        "How-to index: internal HTML documentation layout and endpoint walkthroughs (moved from STRUCTURE.md and developer/0004)."
+    ),
+    "howto/internal-service-docs-layout.html": (
+        "Directory layout for docs/internal/, shared chrome, and how to add or edit resource and operation pages."
+    ),
+    "howto/0004-how-to-add-post-contract.html": (
         "Step-by-step guide for adding POST /api/v1/contract."
     ),
     "developer/0007-local-development.html": (
@@ -362,6 +381,14 @@ def _handbook_doc_entries() -> list[tuple[str, str, str, str]]:
             "Open guide",
             "Developer Docs Template",
             "Entry point for all developer guides.",
+        ),
+        (
+            "How-to guides",
+            docs / "howto",
+            "how-to guide",
+            "Open guide",
+            "How-to Template",
+            "Task-focused guides for internal HTML docs and endpoint implementation.",
         ),
         (
             "ADR",

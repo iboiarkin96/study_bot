@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADR 0025: External and internal API documentation</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
+
+  <body>
+    <main class="container" data-adr-weight="1">
+      <h1>ADR 0025: External and internal API documentation</h1>
+      <div id="docs-top-nav"></div>
+      <details class="adr-weight-help">
+        <summary>ADR status on this page</summary>
+        <p class="small">
+          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+          <a href="./0000-template.html">ADR template</a> for the full milestone table.
+        </p>
+      </details>
+
+      <h2>Ratification</h2>
+      <p>
+        This ADR records a <strong>documentation architecture decision</strong>: how we separate material aimed at
+        <strong>external integrators</strong> (partners, client developers) from material aimed at
+        <strong>repository engineers</strong>. The audit trail is the git history for this file on <code>main</code>.
+      </p>
+      <ul>
+        <li>Discussion Issue: <em>optional — link when opened with <code>[ADR]</code> title</em></li>
+        <li>Merge PR: <em>see git history for this file</em></li>
+        <li>Accepted: 2026-04-14</li>
+      </ul>
+
+      <h2>Context</h2>
+      <p>
+        <strong>Why this matters:</strong> One audience needs a <strong>stable, machine-readable contract</strong> and
+        release notes; the other needs <strong>business rules, operational semantics, and design rationale</strong> that
+        are awkward to fully express in OpenAPI alone. Mixing both in ad hoc prose creates drift: external readers inherit
+        internal detail they do not need, while engineers hunt behavior in code when prose is missing.
+      </p>
+      <p>
+        We already govern HTTP surface quality via
+        <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> (OpenAPI snapshot, examples, CI) and
+        consumer-facing change history via <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>. This ADR does
+        not relax those rules — it <strong>labels</strong> which artifacts are authoritative for which audience and where
+        internal narrative lives (<a href="../internal/README.html"><code>docs/internal/</code></a>, see
+        <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>).
+      </p>
+
+      <h2>Decision</h2>
+      <ol>
+        <li>
+          <strong>External contract (integrators).</strong> The <strong>OpenAPI document</strong> committed under
+          <code>docs/openapi/</code> (baseline snapshot and the same contract exposed at runtime when the app serves
+          <code>/openapi.json</code>) is the <strong>sole normative description</strong> of the public HTTP API for
+          external development: paths, methods, schemas, declared errors, examples, and documented headers. Partners and
+          third-party clients should treat it as <strong>immutable truth</strong> for <em>what we publish</em> at a given
+          release; changes flow through versioning and changelog policy
+          (<a href="./0004-api-versioning-policy.html">ADR 0004</a>, <a href="./0013-changelog-and-release-notes.html">ADR
+          0013</a>).
+        </li>
+        <li>
+          <strong>External discovery aids.</strong> Swagger UI at <code>/docs</code> (when the app runs) and the static
+          <code>docs/openapi-explorer.html</code> page are <strong>views</strong> on that contract; they are not
+          independent sources of truth. If explorer text disagrees with the committed baseline after a merge, the fix is to
+          align code and baseline (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>), not to
+          treat the browser copy as authoritative.
+        </li>
+        <li>
+          <strong>Internal service documentation.</strong> Narrative that explains <strong>why</strong> the API behaves as
+          it does, <strong>business invariants</strong>, <strong>cross-cutting processes</strong> (idempotency, error
+          monitoring expectations, messaging topics), and <strong>traceability of decisions</strong> over time lives under
+          <code>docs/internal/</code> as HTML, governed by
+          <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>. Layout is multi-page: a
+          landing page, service overview, an HTTP API hub under <code>docs/internal/api/</code>, and per-resource folders
+          with a <strong>single hub</strong> (<code>index.html</code>) plus optional per-endpoint pages — see ADR 0026
+          and <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>
+          (contributor layout; <a href="../internal/STRUCTURE.md"><code>STRUCTURE.md</code></a> links there). It does not replace OpenAPI
+          for external consumers.
+        </li>
+        <li>
+          <strong>Python API reference.</strong> Generated HTML under <code>docs/api/</code> remains the reference for
+          <strong>in-repo Python modules</strong> (per <a href="./0016-python-docstrings-google-style-and-pdoc.html">ADR
+          0016</a>), distinct from HTTP OpenAPI and from <code>docs/internal/</code>.
+        </li>
+      </ol>
+
+      <h2>Scope</h2>
+      <ul>
+        <li>
+          <strong>In scope:</strong> Audience split, location of internal HTML docs, primacy of OpenAPI for external
+          HTTP contract.
+        </li>
+        <li>
+          <strong>Out of scope:</strong> A separate public developer portal product, monetization, or org-wide API
+          catalogue outside this repository.
+        </li>
+      </ul>
+
+      <h2>Relationship to other artifacts</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Artifact</th>
+            <th>Primary audience</th>
+            <th>Authoritative for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>OpenAPI baseline + runtime</td>
+            <td>External integrators</td>
+            <td>HTTP request/response contract at a version</td>
+          </tr>
+          <tr>
+            <td>Root <code>CHANGELOG.md</code></td>
+            <td>Integrators &amp; release readers</td>
+            <td>What changed between releases (API surface, behavior)</td>
+          </tr>
+          <tr>
+            <td><code>docs/internal/</code> (HTML) + <a href="../howto/internal-service-docs-layout.html">how-to layout</a> / <code>STRUCTURE.md</code> stub</td>
+            <td>Engineers in this repo</td>
+            <td>Behavioral semantics, business rules, ops expectations, per-resource hubs and method pages (per ADR 0026)</td>
+          </tr>
+          <tr>
+            <td><code>docs/api/</code> (pdoc)</td>
+            <td>Contributors</td>
+            <td>Python package internals</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Alternatives considered</h2>
+      <ol>
+        <li>
+          <strong>Single prose manual for everything.</strong>
+          <ul>
+            <li>Pros: one place to open.</li>
+            <li>Cons: duplicates OpenAPI; drifts from CI-checked contract; poor for machine clients.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>OpenAPI-only, no internal tree.</strong>
+          <ul>
+            <li>Pros: minimal files.</li>
+            <li>Cons: business rules and rationale scatter across code review and chat; disputes default to reading code.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Clear expectation: integrators trust OpenAPI + changelog; engineers extend internal docs when behavior is non-obvious.</li>
+        <li>Aligns with existing governance (ADR 0007, 0013) without changing contract-test meaning.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Two maintained surfaces (OpenAPI + internal HTML) require discipline; internal pages must link to operations and PRs when they change behavior.</li>
+      </ul>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
+  </body>
+
+</html>

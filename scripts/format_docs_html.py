@@ -252,9 +252,6 @@ def main() -> None:
             rel = html_path.relative_to(DOCS_ROOT)
         except ValueError:
             continue
-        # Backlog pages use custom layout; skip indentation normalization that can break structure.
-        if rel.parts and rel.parts[0] == "backlog":
-            continue
         # pdoc output for `make api-docs`; keep generator-owned HTML untouched.
         if rel.parts and rel.parts[0] == "api":
             continue

@@ -1,989 +1,1028 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Backlog — quality and scale roadmap</title>
-  <link rel="stylesheet" href="../assets/docs.css" />
-  <link rel="stylesheet" href="backlog.css" />
-  <script defer src="../assets/docs-nav.js"></script>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Backlog — quality and scale roadmap</title>
+    <link rel="stylesheet" href="../assets/docs.css" />
+    <link rel="stylesheet" href="backlog.css" />
+    <script defer src="../assets/docs-nav.js"></script>
+  </head>
 
-<body>
-  <main class="container">
-    <h1>Backlog: priorities and status</h1>
-    <div id="docs-top-nav"></div>
-    <p class="backlog-intro lead">
-      A single prioritized list of engineering work, from critical to nice-to-have. Estimates are <strong>rough
+  <body>
+    <main class="container">
+      <h1>Backlog: priorities and status</h1>
+      <div id="docs-top-nav"></div>
+      <p class="backlog-intro lead">
+        A single prioritized list of engineering work, from critical to nice-to-have. Estimates are <strong>rough
         calendar-day ranges</strong> assuming steady focus (weekends excluded) at <strong>3 / 2 / 1 hours per
         day</strong>—not commitments, but a shared planning baseline. Update each item’s status by changing the pill
-      class (see legend). This roadmap markup is separate from ADR lifecycle
-      (<code>data-adr-weight</code> on ADR pages — see <a
+        class (see legend). This roadmap markup is separate from ADR lifecycle
+        (<code>data-adr-weight</code> on ADR pages — see <a
         href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR
         0018</a>).
-    </p>
-    <p class="backlog-intro">
-      <strong>See also:</strong> <a href="../audit/README.html">Architecture &amp; quality assessments</a> (indexed
-      maturity reports under <code>docs/audit/</code>, <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>).
-    </p>
+      </p>
+      <p class="backlog-intro">
+        <strong>See also:</strong> <a href="../audit/README.html">Architecture &amp; quality assessments</a> (indexed
+        maturity reports under <code>docs/audit/</code>, <a
+        href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>).
+      </p>
 
-    <section class="card" aria-labelledby="legend-title">
-      <h2 id="legend-title">Status legend</h2>
+      <section class="card" aria-labelledby="legend-title">
+        <h2 id="legend-title">Status legend</h2>
 
-      <dl class="backlog-legend">
-        <dt style="text-align: left; font-weight: bold; margin-bottom: .5em;">Work item states</dt>
-        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.75em;">
-          <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--todo">To do</span>
-            <span style="text-align:left;">— queued; not started</span>
+        <dl class="backlog-legend">
+          <dt style="text-align: left; font-weight: bold; margin-bottom: .5em;">Work item states</dt>
+          <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.75em;">
+            <div style="display: flex; align-items: center; gap: .75em;">
+              <span class="status-pill status-pill--todo">To do</span>
+              <span style="text-align:left;">— queued; not started</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: .75em;">
+              <span class="status-pill status-pill--in-progress">In progress</span>
+              <span style="text-align:left;">— actively in progress</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: .75em;">
+              <span class="status-pill status-pill--done">Done</span>
+              <span style="text-align:left;">— completed and accepted</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: .75em;">
+              <span class="status-pill status-pill--blocked">Blocked</span>
+              <span style="text-align:left;">— waiting on external dependency or decision</span>
+            </div>
           </div>
-          <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--in-progress">In progress</span>
-            <span style="text-align:left;">— actively in progress</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--done">Done</span>
-            <span style="text-align:left;">— completed and accepted</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: .75em;">
-            <span class="status-pill status-pill--blocked">Blocked</span>
-            <span style="text-align:left;">— waiting on external dependency or decision</span>
-          </div>
+        </dl>
+        <div class="meta">
+          <p><strong>How to update status in this page (<code>README.html</code>)</strong></p>
+          <ol>
+            <li>Status colors are defined in <code>docs/backlog/backlog.css</code> using CSS custom properties.</li>
+            <li>To change the palette, edit the <code>--status-*</code> variables; all pills on the page follow them.</li>
+            <li>In each backlog item heading (<code>&lt;h2&gt;</code>), find
+              <code>&lt;span class="status-pill status-pill--...">&lt;/span></code> and replace the suffix after
+              <code>status-pill--</code> with one of: <code>todo</code>, <code>in-progress</code>, <code>done</code>,
+              <code>blocked</code>.
+            </li>
+          </ol>
         </div>
-      </dl>
-      <div class="meta">
-        <p><strong>How to update status in this page (<code>README.html</code>)</strong></p>
-        <ol>
-          <li>Status colors are defined in <code>docs/backlog/backlog.css</code> using CSS custom properties.</li>
-          <li>To change the palette, edit the <code>--status-*</code> variables; all pills on the page follow them.</li>
-          <li>In each backlog item heading (<code>&lt;h2&gt;</code>), find
-            <code>&lt;span class="status-pill status-pill--...">&lt;/span></code> and replace the suffix after
-            <code>status-pill--</code> with one of: <code>todo</code>, <code>in-progress</code>, <code>done</code>,
-            <code>blocked</code>.
-          </li>
-        </ol>
-      </div>
-    </section>
+      </section>
 
-    <!-- 0 Meta -->
-    <article class="backlog-item" id="item-0">
-      <h2>
-        <span class="priority-tag">Meta</span>
-        Backlog page and <code>docs/backlog/</code> layout
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Maintain a static backlog under <code>docs/backlog/</code>: human-readable HTML, shared status styling, and a
-          consistent field template so priorities are visible to the team and stakeholders without a separate tool.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          Without a single source of truth, roadmap discussions fragment across chats and tickets. This page gives a
-          lightweight, version-controlled backlog aligned with the repo—useful for reviews, onboarding, and release
-          planning when you are not yet on Jira/Linear or want docs co-located with code.
-        </dd>
-        <dt>3) Delivered (to date)</dt>
-        <dd>
-          <code>README.html</code>, <code>backlog.css</code> (status color variables), navigation from the developer
-          docs
-          index, and the status model described in the legend above (see ADR 0001 for the <code>README.html</code>
-          convention).
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> 1 calendar day</div>
-            <div class="time-cell"><strong>2 h/day</strong> 1 calendar day</div>
-            <div class="time-cell"><strong>1 h/day</strong> 1 calendar day</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+      <!-- 0 Meta -->
+      <section class="card" aria-labelledby="backlog-title">
+        <article class="backlog-item" id="item-0">
+          <h2>
+            <span class="priority-tag">Meta</span>
+            Backlog page and <code>docs/backlog/</code> layout
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Maintain a static backlog under <code>docs/backlog/</code>: human-readable HTML, shared status styling, and
+              a
+              consistent field template so priorities are visible to the team and stakeholders without a separate tool.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              Without a single source of truth, roadmap discussions fragment across chats and tickets. This page gives a
+              lightweight, version-controlled backlog aligned with the repo—useful for reviews, onboarding, and release
+              planning when you are not yet on Jira/Linear or want docs co-located with code.
+            </dd>
+            <dt>3) Delivered (to date)</dt>
+            <dd>
+              <code>README.html</code>, <code>backlog.css</code> (status color variables), navigation from the developer
+              docs
+              index, and the status model described in the legend above (see ADR 0001 for the <code>README.html</code>
+              convention).
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> 1 calendar day</div>
+                <div class="time-cell"><strong>2 h/day</strong> 1 calendar day</div>
+                <div class="time-cell"><strong>1 h/day</strong> 1 calendar day</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <!-- P0 -->
-    <article class="backlog-item" id="item-1">
-      <h2>
-        <span class="priority-tag">P0 — critical</span>
-        CI pipeline: quality gates, coverage threshold, docs-check
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Automate the same checks developers run locally (<code>make verify</code> or equivalent) in continuous
-          integration: linters, types, tests with a minimum coverage floor, OpenAPI/doc consistency, and optional
-          contract tests—so <code>main</code> stays releasable.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Strict local workflows do not protect the default branch if CI is missing or weaker;
-          regressions and doc drift merge silently.<br />
-          <strong>Value:</strong> Shifts defects left; gives reviewers a green pipeline signal; matches industry
-          practice
-          (quality gates per commit/PR).
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          GitHub Actions (or equivalent): run formatter/linter, mypy, pytest with coverage and <code>fail-under</code>,
-          OpenAPI check, contract tests, docs-check; cache dependencies for speed; fail the build on violations.
-          Optionally run the same hooks in CI that pre-commit uses locally. Document how to reproduce CI locally in
-          contributor docs.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~4 days (~12 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~6 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          <code>.github/workflows/ci.yml</code> on push/PR to <code>main</code> or <code>master</code>: Python 3.11, pip
-          cache, <code>make verify</code> then <code>pre-commit run --all-files</code>. Coverage enforced via
-          pytest-cov and <code>fail_under</code> in <code>pyproject.toml</code>. Local pre-push drift check:
-          <code>make verify-ci</code>. Contributor note in engineering practices (CI / reproduce locally).
-        </dd>
-      </dl>
-    </article>
+        <!-- P0 -->
+        <article class="backlog-item" id="item-1">
+          <h2>
+            <span class="priority-tag">P0 — critical</span>
+            CI pipeline: quality gates, coverage threshold, docs-check
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Automate the same checks developers run locally (<code>make verify</code> or equivalent) in continuous
+              integration: linters, types, tests with a minimum coverage floor, OpenAPI/doc consistency, and optional
+              contract tests—so <code>main</code> stays releasable.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Strict local workflows do not protect the default branch if CI is missing or
+              weaker;
+              regressions and doc drift merge silently.<br />
+              <strong>Value:</strong> Shifts defects left; gives reviewers a green pipeline signal; matches industry
+              practice
+              (quality gates per commit/PR).
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              GitHub Actions (or equivalent): run formatter/linter, mypy, pytest with coverage and
+              <code>fail-under</code>,
+              OpenAPI check, contract tests, docs-check; cache dependencies for speed; fail the build on violations.
+              Optionally run the same hooks in CI that pre-commit uses locally. Document how to reproduce CI locally in
+              contributor docs.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~4 days (~12 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~6 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              <code>.github/workflows/ci.yml</code> on push/PR to <code>main</code> or <code>master</code>: Python 3.11,
+              pip
+              cache, <code>make verify</code> then <code>pre-commit run --all-files</code>. Coverage enforced via
+              pytest-cov and <code>fail_under</code> in <code>pyproject.toml</code>. Local pre-push drift check:
+              <code>make verify-ci</code>. Contributor note in engineering practices (CI / reproduce locally).
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-2">
-      <h2>
-        <span class="priority-tag">P0</span>
-        SLOs / SLAs, error budget, and monitoring alerts
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Define service level indicators (SLIs), objectives (SLOs), and optional external-facing SLAs for latency,
-          availability, and error rate; wire Prometheus (or current stack) dashboards and alerts; document what happens
-          when the error budget burns (e.g. feature freeze, incident response).
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Raw metrics without targets do not drive release discipline or on-call
-          clarity.<br />
-          <strong>Value:</strong> Measurable reliability promises for users and dependent teams; aligns operations with
-          product risk (Google SRE–style error budgeting).
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          ADR or runbook: e.g. p95 latency, <code>/ready</code>-based availability, max 5xx ratio; Grafana panels and
-          Prometheus alert rules; runbook steps for budget exhaustion; link from existing observability docs.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~4 days (~12 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~6 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          <a href="../adr/0011-slo-sla-error-budget.html">ADR 0011</a>; Prometheus recording and alert rules in
-          <code>ops/prometheus/rules/study_app_slo.yml</code>; Grafana dashboard import and Blackbox probe wiring via
-          <code>docker-compose.observability.yml</code> and <code>ops/prometheus/</code>; links from README and developer
-          docs to local observability URLs.
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-2">
+          <h2>
+            <span class="priority-tag">P0</span>
+            SLOs / SLAs, error budget, and monitoring alerts
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Define service level indicators (SLIs), objectives (SLOs), and optional external-facing SLAs for latency,
+              availability, and error rate; wire Prometheus (or current stack) dashboards and alerts; document what
+              happens
+              when the error budget burns (e.g. feature freeze, incident response).
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Raw metrics without targets do not drive release discipline or on-call
+              clarity.<br />
+              <strong>Value:</strong> Measurable reliability promises for users and dependent teams; aligns operations
+              with
+              product risk (Google SRE–style error budgeting).
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              ADR or runbook: e.g. p95 latency, <code>/ready</code>-based availability, max 5xx ratio; Grafana panels and
+              Prometheus alert rules; runbook steps for budget exhaustion; link from existing observability docs.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~4 days (~12 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~6 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              <a href="../adr/0011-slo-sla-error-budget.html">ADR 0011</a>; Prometheus recording and alert rules in
+              <code>ops/prometheus/rules/study_app_slo.yml</code>; Grafana dashboard import and Blackbox probe wiring via
+              <code>docker-compose.observability.yml</code> and <code>ops/prometheus/</code>; links from README and
+              developer
+              docs to local observability URLs.
+            </dd>
+          </dl>
+        </article>
 
-    <!-- P1 -->
-    <article class="backlog-item" id="item-3">
-      <h2>
-        <span class="priority-tag">P1</span>
-        DB uniqueness, race safety, and documented concurrency behavior
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Encode business invariants in the schema (unique constraints), map database conflict errors to the API error
-          contract, and document concurrent scenarios (double submit, retries, idempotency) so behavior under load is
-          explicit.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> “Check-then-act” without unique indexes races under concurrency and causes duplicate
-          rows and production incidents.<br />
-          <strong>Value:</strong> Data integrity at the database layer; predictable client handling; less tribal
-          knowledge
-          for support and new engineers.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Add constraints on natural keys; consistent HTTP/status codes for conflicts; developer doc table: scenarios
-          (duplicate create, idempotent retry) and expected outcomes.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~10 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~5 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~10 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          Alembic/SQLAlchemy unique indexes and constraints on natural keys (e.g. systems, timezones, users,
-          <code>idempotency_keys</code> composite uniqueness per ADR 0006); HTTP/error contract for conflicts and
-          idempotency replay; ADR 0006 plus developer docs and error matrix for retry and idempotency semantics.
-        </dd>
-      </dl>
-    </article>
+        <!-- P1 -->
+        <article class="backlog-item" id="item-3">
+          <h2>
+            <span class="priority-tag">P1</span>
+            DB uniqueness, race safety, and documented concurrency behavior
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Encode business invariants in the schema (unique constraints), map database conflict errors to the API error
+              contract, and document concurrent scenarios (double submit, retries, idempotency) so behavior under load is
+              explicit.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> “Check-then-act” without unique indexes races under concurrency and causes
+              duplicate
+              rows and production incidents.<br />
+              <strong>Value:</strong> Data integrity at the database layer; predictable client handling; less tribal
+              knowledge
+              for support and new engineers.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Add constraints on natural keys; consistent HTTP/status codes for conflicts; developer doc table: scenarios
+              (duplicate create, idempotent retry) and expected outcomes.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~3 days (~10 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~5 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~10 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              Alembic/SQLAlchemy unique indexes and constraints on natural keys (e.g. systems, timezones, users,
+              <code>idempotency_keys</code> composite uniqueness per ADR 0006); HTTP/error contract for conflicts and
+              idempotency replay; ADR 0006 plus developer docs and error matrix for retry and idempotency semantics.
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-4">
-      <h2>
-        <span class="priority-tag">P1</span>
-        Dependency security (<code>pip-audit</code>) and update policy
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Automate vulnerability scanning of Python dependencies, pin direct dependencies for reproducible builds, and
-          publish a short policy for when and how to upgrade (e.g. per sprint, severity thresholds).
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Unpinned or stale dependencies increase CVE exposure and unpredictable CI/prod
-          behavior.<br />
-          <strong>Value:</strong> Aligns with supply-chain hygiene (OWASP, NIST SSDF); reduces emergency upgrades.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          <code>make deps-audit</code> (or equivalent) using pip-audit; integrate into CI; ADR: pinning rules, review
-          cadence, exception process.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~1 day (~3 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          Policy ADR: <a href="../adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a>
-          (pinning, pip-audit, cadence, exceptions). <code>pip_audit</code> pinned in <code>requirements.txt</code>;
-          <code>make deps-audit</code> (OSV scan, <code>.pip-audit-cache</code>); CI quality job runs it before
-          <code>make verify</code> (<code>.github/workflows/ci.yml</code>); <code>make verify-ci</code> includes
-          <code>deps-audit</code> for local pre-push parity; engineering practices table documents the command.
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-4">
+          <h2>
+            <span class="priority-tag">P1</span>
+            Dependency security (<code>pip-audit</code>) and update policy
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Automate vulnerability scanning of Python dependencies, pin direct dependencies for reproducible builds, and
+              publish a short policy for when and how to upgrade (e.g. per sprint, severity thresholds).
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Unpinned or stale dependencies increase CVE exposure and unpredictable CI/prod
+              behavior.<br />
+              <strong>Value:</strong> Aligns with supply-chain hygiene (OWASP, NIST SSDF); reduces emergency upgrades.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              <code>make deps-audit</code> (or equivalent) using pip-audit; integrate into CI; ADR: pinning rules, review
+              cadence, exception process.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~1 day (~3 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              Policy ADR: <a href="../adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a>
+              (pinning, pip-audit, cadence, exceptions). <code>pip_audit</code> pinned in <code>requirements.txt</code>;
+              <code>make deps-audit</code> (OSV scan, <code>.pip-audit-cache</code>); CI quality job runs it before
+              <code>make verify</code> (<code>.github/workflows/ci.yml</code>); <code>make verify-ci</code> includes
+              <code>deps-audit</code> for local pre-push parity; engineering practices table documents the command.
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-5">
-      <h2>
-        <span class="priority-tag">P1</span>
-        Integration tests against the database (CI)
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Add an integration test layer that runs against a real PostgreSQL instance (with migrations applied and
-          repositories exercised) in CI using Docker Compose—complementing unit tests, which may use SQLite or mocks.
-        </dd>
-        <dt>2) Problem &amp; Value</dt>
-        <dd>
-          <strong>Problem:</strong> Developer SQLite and production PostgreSQL differ in datatypes, locking logic, and
-          edge cases; higher load can reveal latent bugs.<br />
-          <strong>Value:</strong> Test pyramid: fast unit tests plus a smaller set of high-signal integration tests—an
-          essential approach for data-heavy APIs.
-        </dd>
-        <dt>3) Scope &amp; Deliverables</dt>
-        <dd>
-          Docker Compose service for PostgreSQL in CI; <code>integration</code> Pytest marker; database fixtures and
-          teardown; migrations executed before tests; well-documented local command matching the CI process.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~5 days (~16 hours)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~8 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~16 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-5">
+          <h2>
+            <span class="priority-tag">P1</span>
+            Integration tests against the database (CI)
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Add an integration test layer that runs against a real PostgreSQL instance (with migrations applied and
+              repositories exercised) in CI using Docker Compose—complementing unit tests, which may use SQLite or mocks.
+            </dd>
+            <dt>2) Problem &amp; Value</dt>
+            <dd>
+              <strong>Problem:</strong> Developer SQLite and production PostgreSQL differ in datatypes, locking logic, and
+              edge cases; higher load can reveal latent bugs.<br />
+              <strong>Value:</strong> Test pyramid: fast unit tests plus a smaller set of high-signal integration tests—an
+              essential approach for data-heavy APIs.
+            </dd>
+            <dt>3) Scope &amp; Deliverables</dt>
+            <dd>
+              Docker Compose service for PostgreSQL in CI; <code>integration</code> Pytest marker; database fixtures and
+              teardown; migrations executed before tests; well-documented local command matching the CI process.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~5 days (~16 hours)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~8 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~16 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <!-- P2 -->
-    <article class="backlog-item" id="item-6">
-      <h2>
-        <span class="priority-tag">P2</span>
-        Test pyramid: unit tests + property-based tests (Hypothesis)
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Strengthen fast feedback: extract pure validation functions, cover them with unit and property-based tests
-          (Hypothesis) to assert invariants across generated inputs—reducing edge-case regressions without relying only
-          on slow E2E tests.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Ad-hoc examples miss boundary combinations; line coverage alone does not prove
-          correctness.<br />
-          <strong>Value:</strong> Cheaper than E2E for input-heavy logic; industry-standard for parsers and validation
-          rules.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Identify critical pure functions; Hypothesis strategies; guidelines in the developer guide (when to use
-          properties vs examples).
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~4 days (~12 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~6 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <!-- P2 -->
+        <article class="backlog-item" id="item-6">
+          <h2>
+            <span class="priority-tag">P2</span>
+            Test pyramid: unit tests + property-based tests (Hypothesis)
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Strengthen fast feedback: extract pure validation functions, cover them with unit and property-based tests
+              (Hypothesis) to assert invariants across generated inputs—reducing edge-case regressions without relying
+              only
+              on slow E2E tests.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Ad-hoc examples miss boundary combinations; line coverage alone does not prove
+              correctness.<br />
+              <strong>Value:</strong> Cheaper than E2E for input-heavy logic; industry-standard for parsers and validation
+              rules.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Identify critical pure functions; Hypothesis strategies; guidelines in the developer guide (when to use
+              properties vs examples).
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~4 days (~12 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~6 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-7">
-      <h2>
-        <span class="priority-tag">P2</span>
-        E2E: HTTP scenarios against a running application
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Add a small suite of end-to-end tests that exercise the full path (HTTP client → API → database) against a
-          running stack, validating real status codes, headers, and payloads—not just mocked layers.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Unit and integration tests can miss wiring mistakes, middleware behavior, and
-          contract mismatches.<br />
-          <strong>Value:</strong> Confidence in release candidates; complements (does not replace) lower-level tests.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          httpx + pytest (or similar); separate CI job or marker <code>e2e</code>; minimal happy path plus a few
-          representative error paths; stable test data strategy.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-7">
+          <h2>
+            <span class="priority-tag">P2</span>
+            E2E: HTTP scenarios against a running application
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Add a small suite of end-to-end tests that exercise the full path (HTTP client → API → database) against a
+              running stack, validating real status codes, headers, and payloads—not just mocked layers.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Unit and integration tests can miss wiring mistakes, middleware behavior, and
+              contract mismatches.<br />
+              <strong>Value:</strong> Confidence in release candidates; complements (does not replace) lower-level tests.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              httpx + pytest (or similar); separate CI job or marker <code>e2e</code>; minimal happy path plus a few
+              representative error paths; stable test data strategy.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-8">
-      <h2>
-        <span class="priority-tag">P2</span>
-        Mutation testing pilot for critical rules
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Pilot mutation testing (e.g. cosmic-ray, mutmut) on one or two modules with idempotency or security-sensitive
-          logic to validate that tests actually kill faulty mutants—not just high line coverage.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Coverage metrics can be gamed; weak assertions leave branches untested.<br />
-          <strong>Value:</strong> Industry technique to measure test effectiveness; informs where to add assertions.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Scoped run in CI or manual report; threshold or qualitative review; ADR if adopted team-wide; avoid full-repo
-          runs initially (cost).
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-8">
+          <h2>
+            <span class="priority-tag">P2</span>
+            Mutation testing pilot for critical rules
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Pilot mutation testing (e.g. cosmic-ray, mutmut) on one or two modules with idempotency or
+              security-sensitive
+              logic to validate that tests actually kill faulty mutants—not just high line coverage.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Coverage metrics can be gamed; weak assertions leave branches untested.<br />
+              <strong>Value:</strong> Industry technique to measure test effectiveness; informs where to add assertions.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Scoped run in CI or manual report; threshold or qualitative review; ADR if adopted team-wide; avoid
+              full-repo
+              runs initially (cost).
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <!-- P3 -->
-    <article class="backlog-item" id="item-9">
-      <h2>
-        <span class="priority-tag">P3</span>
-        Distributed rate limiting with Redis (multi-instance)
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Replace per-process in-memory rate limiting with a shared store (Redis) so limits are consistent across
-          horizontally scaled API instances, with the same HTTP 429 contract clients already expect.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Per-replica counters let abusive traffic multiply by instance count; fairness breaks
-          under autoscaling.<br />
-          <strong>Value:</strong> Standard pattern for APIs behind load balancers; prerequisite for fair abuse
-          protection
-          at scale.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          ADR (algorithm: token bucket / sliding window); Redis client and adapter implementing existing limiter
-          interface; Compose profile for local dev and CI; failure modes if Redis is down (fail-open vs fail-closed)
-          documented.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~5 days (~14 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~7 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~14 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <!-- P3 -->
+        <article class="backlog-item" id="item-9">
+          <h2>
+            <span class="priority-tag">P3</span>
+            Distributed rate limiting with Redis (multi-instance)
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Replace per-process in-memory rate limiting with a shared store (Redis) so limits are consistent across
+              horizontally scaled API instances, with the same HTTP 429 contract clients already expect.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Per-replica counters let abusive traffic multiply by instance count; fairness
+              breaks
+              under autoscaling.<br />
+              <strong>Value:</strong> Standard pattern for APIs behind load balancers; prerequisite for fair abuse
+              protection
+              at scale.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              ADR (algorithm: token bucket / sliding window); Redis client and adapter implementing existing limiter
+              interface; Compose profile for local dev and CI; failure modes if Redis is down (fail-open vs fail-closed)
+              documented.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~5 days (~14 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~7 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~14 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-10">
-      <h2>
-        <span class="priority-tag">P3</span>
-        PostgreSQL as primary database and migration path from SQLite
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Standardize on PostgreSQL for staging/production (Docker-friendly), manage schema with Alembic, and define a
-          safe path to move from SQLite where it is still used—including data migration runbooks if needed.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> SQLite is excellent for dev but limits concurrency, backup story, and operational
-          tooling at production scale.<br />
-          <strong>Value:</strong> Matches typical “serious API” expectations: backups, replication, observability hooks.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          docker-compose for app + Postgres; environment profiles; SQLAlchemy compatibility checks; migration runbook;
-          cutover or dual-write strategy as appropriate.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~8 days (~24 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~12 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~24 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-10">
+          <h2>
+            <span class="priority-tag">P3</span>
+            PostgreSQL as primary database and migration path from SQLite
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Standardize on PostgreSQL for staging/production (Docker-friendly), manage schema with Alembic, and define a
+              safe path to move from SQLite where it is still used—including data migration runbooks if needed.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> SQLite is excellent for dev but limits concurrency, backup story, and operational
+              tooling at production scale.<br />
+              <strong>Value:</strong> Matches typical “serious API” expectations: backups, replication, observability
+              hooks.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              docker-compose for app + Postgres; environment profiles; SQLAlchemy compatibility checks; migration runbook;
+              cutover or dual-write strategy as appropriate.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~8 days (~24 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~12 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~24 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-11">
-      <h2>
-        <span class="priority-tag">P3</span>
-        Load testing (k6 / Locust) and SLO validation
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Add repeatable load scenarios (e.g. k6 or Locust) that measure p95 latency and error rates under defined
-          concurrency, and compare results to SLO targets—optionally as a scheduled or manual CI stage.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Production is the first load test for many teams; bottlenecks surface too
-          late.<br />
-          <strong>Value:</strong> Evidence-based capacity planning; catches regressions before traffic spikes.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Scripts under <code>ops/load/</code> or <code>tests/load/</code>; baseline profile (e.g. user CRUD); report
-          artifact; optional nightly job with thresholds; link to SLO doc.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          Python runner and scenarios under <code>tools/load_testing/</code>; Makefile targets
-          <code>run-loadtest-api</code> and <code>run-loadtest-api-serve</code> for local runs against a live API;
-          scenario docs in-repo. Optional automated CI smoke/load remains tracked under
-          <a href="#item-23">item 23</a>.
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-11">
+          <h2>
+            <span class="priority-tag">P3</span>
+            Load testing (k6 / Locust) and SLO validation
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Add repeatable load scenarios (e.g. k6 or Locust) that measure p95 latency and error rates under defined
+              concurrency, and compare results to SLO targets—optionally as a scheduled or manual CI stage.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Production is the first load test for many teams; bottlenecks surface too
+              late.<br />
+              <strong>Value:</strong> Evidence-based capacity planning; catches regressions before traffic spikes.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Scripts under <code>ops/load/</code> or <code>tests/load/</code>; baseline profile (e.g. user CRUD); report
+              artifact; optional nightly job with thresholds; link to SLO doc.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              Python runner and scenarios under <code>tools/load_testing/</code>; Makefile targets
+              <code>run-loadtest-api</code> and <code>run-loadtest-api-serve</code> for local runs against a live API;
+              scenario docs in-repo. Optional automated CI smoke/load remains tracked under
+              <a href="#item-23">item 23</a>.
+            </dd>
+          </dl>
+        </article>
 
-    <!-- P4 -->
-    <article class="backlog-item" id="item-12">
-      <h2>
-        <span class="priority-tag">P4</span>
-        Test data: seeds, fixtures, runbook
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Provide reproducible reference data and fixtures for integration and E2E tests, plus a short runbook so anyone
-          can reset or bootstrap a known state without “magic” in <code>conftest.py</code>.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Flaky or opaque test setup slows onboarding and hides real failures.<br />
-          <strong>Value:</strong> Stable CI; faster new-hire time-to-first-green-test; aligns with test data management
-          hygiene.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Single seed script or Alembic data revision; naming conventions; developer doc for when to extend seeds vs
-          factories.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~5 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~5 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <!-- P4 -->
+        <article class="backlog-item" id="item-12">
+          <h2>
+            <span class="priority-tag">P4</span>
+            Test data: seeds, fixtures, runbook
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Provide reproducible reference data and fixtures for integration and E2E tests, plus a short runbook so
+              anyone
+              can reset or bootstrap a known state without “magic” in <code>conftest.py</code>.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Flaky or opaque test setup slows onboarding and hides real failures.<br />
+              <strong>Value:</strong> Stable CI; faster new-hire time-to-first-green-test; aligns with test data
+              management
+              hygiene.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Single seed script or Alembic data revision; naming conventions; developer doc for when to extend seeds vs
+              factories.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~2 days (~5 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~5 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-13">
-      <h2>
-        <span class="priority-tag">P4</span>
-        Feature flags (safe rollout)
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Introduce a minimal feature-flag mechanism (environment and/or Redis-backed) so risky behavior can be toggled
-          without redeploying, supporting gradual rollout and fast mitigation.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Every mitigation requires a new deploy, lengthening incidents.<br />
-          <strong>Value:</strong> Industry standard for progressive delivery; enables canary-style activation and
-          instant
-          rollback of behavior.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Small provider abstraction in config; ADR on evaluation rules and caching; one non-business demo flag to prove
-          wiring; security note on who can change flags.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~10 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~5 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~10 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-13">
+          <h2>
+            <span class="priority-tag">P4</span>
+            Feature flags (safe rollout)
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Introduce a minimal feature-flag mechanism (environment and/or Redis-backed) so risky behavior can be
+              toggled
+              without redeploying, supporting gradual rollout and fast mitigation.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Every mitigation requires a new deploy, lengthening incidents.<br />
+              <strong>Value:</strong> Industry standard for progressive delivery; enables canary-style activation and
+              instant
+              rollback of behavior.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Small provider abstraction in config; ADR on evaluation rules and caching; one non-business demo flag to
+              prove
+              wiring; security note on who can change flags.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~3 days (~10 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~5 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~10 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-14">
-      <h2>
-        <span class="priority-tag">P4</span>
-        Architecture fitness: enforced layer boundaries
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Automatically enforce allowed import directions between layers (e.g. HTTP handlers must not import
-          repositories
-          directly)—using import-linter or a custom graph check in <code>make verify</code>.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Undisciplined imports create circular dependencies and blur separation of concerns
-          as
-          the team grows.<br />
-          <strong>Value:</strong> Documented architecture that stays true in code; scalable modular monolith patterns.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Rule set matching the intended layers; documented exceptions; CI failure on violation; pointer in contributor
-          guide.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~5 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~5 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-14">
+          <h2>
+            <span class="priority-tag">P4</span>
+            Architecture fitness: enforced layer boundaries
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Automatically enforce allowed import directions between layers (e.g. HTTP handlers must not import
+              repositories
+              directly)—using import-linter or a custom graph check in <code>make verify</code>.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Undisciplined imports create circular dependencies and blur separation of concerns
+              as
+              the team grows.<br />
+              <strong>Value:</strong> Documented architecture that stays true in code; scalable modular monolith patterns.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Rule set matching the intended layers; documented exceptions; CI failure on violation; pointer in
+              contributor
+              guide.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~2 days (~5 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~5 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-15">
-      <h2>
-        <span class="priority-tag">P4</span>
-        Changelog and release-time verification
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Adopt <a href="https://keepachangelog.com/" rel="noopener noreferrer">Keep a Changelog</a> for user-visible
-          and
-          breaking API changes, and optionally enforce updates in CI when release tags are created.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Consumers and support lack a single, dated record of what shipped.<br />
-          <strong>Value:</strong> Meets consumer expectations for versioned APIs; supports audit and communication
-          discipline.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          <code>CHANGELOG.md</code> structure; CONTRIBUTING rules; optional CI step on tag/release that fails if
-          changelog section is missing for the version.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~1 day (~3 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          <code>CHANGELOG.md</code> (Keep a Changelog); ADR 0013; <code>scripts/changelog_gate.py</code> and optional
-          <code>scripts/changelog_draft.py</code>; CI workflow runs the gate on PR/push to <code>main</code> /
-          <code>master</code> (see <code>.github/workflows/ci.yml</code>).
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-15">
+          <h2>
+            <span class="priority-tag">P4</span>
+            Changelog and release-time verification
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Adopt <a href="https://keepachangelog.com/" rel="noopener noreferrer">Keep a Changelog</a> for user-visible
+              and
+              breaking API changes, and optionally enforce updates in CI when release tags are created.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Consumers and support lack a single, dated record of what shipped.<br />
+              <strong>Value:</strong> Meets consumer expectations for versioned APIs; supports audit and communication
+              discipline.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              <code>CHANGELOG.md</code> structure; CONTRIBUTING rules; optional CI step on tag/release that fails if
+              changelog section is missing for the version.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~1 day (~3 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              <code>CHANGELOG.md</code> (Keep a Changelog); ADR 0013; <code>scripts/changelog_gate.py</code> and optional
+              <code>scripts/changelog_draft.py</code>; CI workflow runs the gate on PR/push to <code>main</code> /
+              <code>master</code> (see <code>.github/workflows/ci.yml</code>).
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-16">
-      <h2>
-        <span class="priority-tag">P4 — lower priority</span>
-        Repository cleanup and dead code removal
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Systematically find and remove unused modules, duplicated logic, and temporary workarounds once contracts are
-          stable—using static analysis plus targeted human review.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Dead code increases cognitive load and hides real control flow.<br />
-          <strong>Value:</strong> Smaller attack surface and faster reviews; best done after major refactors settle.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          vulture / Ruff unused-import rules; manual triage; delete only with test confidence; optional periodic job or
-          checklist in maintainers’ guide.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~4 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~4 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          ADR 0014; Ruff F401 + RUF100 and <code>per-file-ignores</code> for <code>tests/conftest.py</code> (E402);
-          <code>[tool.vulture]</code> in <code>pyproject.toml</code>; <code>make dead-code-check</code>; weekly
-          <code>.github/workflows/dead-code.yml</code>; checklist in <code>CONTRIBUTING.md</code>. Ongoing removal of
-          dead
-          code remains manual with test-backed review.
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-16">
+          <h2>
+            <span class="priority-tag">P4 — lower priority</span>
+            Repository cleanup and dead code removal
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Systematically find and remove unused modules, duplicated logic, and temporary workarounds once contracts
+              are
+              stable—using static analysis plus targeted human review.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Dead code increases cognitive load and hides real control flow.<br />
+              <strong>Value:</strong> Smaller attack surface and faster reviews; best done after major refactors settle.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              vulture / Ruff unused-import rules; manual triage; delete only with test confidence; optional periodic job
+              or
+              checklist in maintainers’ guide.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~2 days (~4 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~4 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              ADR 0014; Ruff F401 + RUF100 and <code>per-file-ignores</code> for <code>tests/conftest.py</code> (E402);
+              <code>[tool.vulture]</code> in <code>pyproject.toml</code>; <code>make dead-code-check</code>; weekly
+              <code>.github/workflows/dead-code.yml</code>; checklist in <code>CONTRIBUTING.md</code>. Ongoing removal of
+              dead
+              code remains manual with test-backed review.
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-17">
-      <h2>
-        <span class="priority-tag">P2</span>
-        Distributed tracing (OpenTelemetry) and trace context
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Instrument the API with OpenTelemetry (W3C Trace Context): HTTP server spans, outbound calls, and database
-          spans where practical; export to OTLP (local Jaeger/Tempo or a hosted backend). Link traces to logs and metrics
-          via <code>trace_id</code> / <code>span_id</code>.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Prometheus metrics and plain logs explain symptoms but not end-to-end request paths
-          across layers and replicas.<br />
-          <strong>Value:</strong> Standard in large-scale platforms for incident response, latency breakdown, and
-          dependency mapping—complements existing SLO work (ADR 0011) without replacing it.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          ADR (sampler rules, PII in attributes, env vars); FastAPI/Starlette OTel integration; optional Compose service
-          for local trace UI; developer doc: how to find a trace from a failing request.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~5 days (~16 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~8 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~16 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-17">
+          <h2>
+            <span class="priority-tag">P2</span>
+            Distributed tracing (OpenTelemetry) and trace context
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Instrument the API with OpenTelemetry (W3C Trace Context): HTTP server spans, outbound calls, and database
+              spans where practical; export to OTLP (local Jaeger/Tempo or a hosted backend). Link traces to logs and
+              metrics
+              via <code>trace_id</code> / <code>span_id</code>.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Prometheus metrics and plain logs explain symptoms but not end-to-end request
+              paths
+              across layers and replicas.<br />
+              <strong>Value:</strong> Standard in large-scale platforms for incident response, latency breakdown, and
+              dependency mapping—complements existing SLO work (ADR 0011) without replacing it.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              ADR (sampler rules, PII in attributes, env vars); FastAPI/Starlette OTel integration; optional Compose
+              service
+              for local trace UI; developer doc: how to find a trace from a failing request.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~5 days (~16 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~8 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~16 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-18">
-      <h2>
-        <span class="priority-tag">P3</span>
-        Structured logging (JSON) and request correlation IDs
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Emit machine-readable JSON logs in production (and optionally in dev), with a stable schema: timestamp,
-          level, logger, message, and correlation fields (<code>request_id</code>, later <code>trace_id</code> when
-          OpenTelemetry lands). Accept or generate <code>X-Request-Id</code> (or similar) per request.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Plain text logs are harder to query at volume and to join across services in log
-          platforms.<br />
-          <strong>Value:</strong> Aligns with how centralized logging (ELK, Cloud Logging, Datadog) expects payloads;
-          speeds up support and postmortems.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Config flag or <code>APP_ENV</code> switch; middleware for request ID; document field list; ensure PII policy
-          (no secrets in log fields).
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          <code>LOG_FORMAT</code> / <code>LOG_SERVICE_NAME</code>; NDJSON fields including <code>request_id</code>,
-          <code>trace_id</code>, <code>span_id</code> (placeholders for OTel); <code>X-Request-Id</code> middleware;
-          optional <code>docker-compose.logging.yml</code> (Elasticsearch, Kibana, Filebeat) and
-          <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-18">
+          <h2>
+            <span class="priority-tag">P3</span>
+            Structured logging (JSON) and request correlation IDs
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Emit machine-readable JSON logs in production (and optionally in dev), with a stable schema: timestamp,
+              level, logger, message, and correlation fields (<code>request_id</code>, later <code>trace_id</code> when
+              OpenTelemetry lands). Accept or generate <code>X-Request-Id</code> (or similar) per request.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Plain text logs are harder to query at volume and to join across services in log
+              platforms.<br />
+              <strong>Value:</strong> Aligns with how centralized logging (ELK, Cloud Logging, Datadog) expects payloads;
+              speeds up support and postmortems.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Config flag or <code>APP_ENV</code> switch; middleware for request ID; document field list; ensure PII
+              policy
+              (no secrets in log fields).
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              <code>LOG_FORMAT</code> / <code>LOG_SERVICE_NAME</code>; NDJSON fields including <code>request_id</code>,
+              <code>trace_id</code>, <code>span_id</code> (placeholders for OTel); <code>X-Request-Id</code> middleware;
+              optional <code>docker-compose.logging.yml</code> (Elasticsearch, Kibana, Filebeat) and
+              <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-19">
-      <h2>
-        <span class="priority-tag">P3</span>
-        CI: container image SBOM and vulnerability scan (published GHCR image)
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          After building and pushing the Docker image to GHCR, generate an SBOM (e.g. Syft), scan the image for known CVEs
-          (e.g. Trivy or Grype), upload SARIF or summary to the workflow run, and fail or warn on configurable severity
-          thresholds—documented in engineering practices.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> <code>pip-audit</code> covers Python deps; the runtime image still carries OS
-          packages and layers that need separate review.<br />
-          <strong>Value:</strong> Matches supply-chain expectations in regulated and large orgs; complements ADR 0019.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          GitHub Actions job after <code>publish-image</code> (or same workflow step with the built digest); artifact
-          retention policy; exception process for accepted CVEs.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-19">
+          <h2>
+            <span class="priority-tag">P3</span>
+            CI: container image SBOM and vulnerability scan (published GHCR image)
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              After building and pushing the Docker image to GHCR, generate an SBOM (e.g. Syft), scan the image for known
+              CVEs
+              (e.g. Trivy or Grype), upload SARIF or summary to the workflow run, and fail or warn on configurable
+              severity
+              thresholds—documented in engineering practices.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> <code>pip-audit</code> covers Python deps; the runtime image still carries OS
+              packages and layers that need separate review.<br />
+              <strong>Value:</strong> Matches supply-chain expectations in regulated and large orgs; complements ADR 0019.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              GitHub Actions job after <code>publish-image</code> (or same workflow step with the built digest); artifact
+              retention policy; exception process for accepted CVEs.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-20">
-      <h2>
-        <span class="priority-tag">P1</span>
-        OpenAPI governance: lint, semantic baseline, and strict contract test
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Treat the public HTTP contract as versioned code: automated checks for operation IDs, summaries, examples on
-          write paths and 422 responses, and guardrails against accidental breaking changes vs a checked-in baseline.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Undocumented or drifting OpenAPI confuses clients and hides incompatible changes.<br />
-          <strong>Value:</strong> Same discipline as large API platforms: contract-first visibility and safer evolution
-          within <code>/api/v1</code> (see ADR 0007).
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Lint rules; semantic compare vs <code>docs/openapi/openapi-baseline.json</code>; optional strict byte-for-byte
-          <code>contract-test</code>; documented accept workflow when changing the spec intentionally.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          <code>scripts/openapi_governance.py</code>; <code>make openapi-check</code> and <code>make contract-test</code>
-          in <code>Makefile</code>; baseline under <code>docs/openapi/openapi-baseline.json</code>; integrated into
-          <code>make verify</code> / CI (<code>.github/workflows/ci.yml</code>); ADR 0007.
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-20">
+          <h2>
+            <span class="priority-tag">P1</span>
+            OpenAPI governance: lint, semantic baseline, and strict contract test
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Treat the public HTTP contract as versioned code: automated checks for operation IDs, summaries, examples on
+              write paths and 422 responses, and guardrails against accidental breaking changes vs a checked-in baseline.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Undocumented or drifting OpenAPI confuses clients and hides incompatible
+              changes.<br />
+              <strong>Value:</strong> Same discipline as large API platforms: contract-first visibility and safer
+              evolution
+              within <code>/api/v1</code> (see ADR 0007).
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Lint rules; semantic compare vs <code>docs/openapi/openapi-baseline.json</code>; optional strict
+              byte-for-byte
+              <code>contract-test</code>; documented accept workflow when changing the spec intentionally.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~3 days (~8 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~4 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~8 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              <code>scripts/openapi_governance.py</code>; <code>make openapi-check</code> and
+              <code>make contract-test</code>
+              in <code>Makefile</code>; baseline under <code>docs/openapi/openapi-baseline.json</code>; integrated into
+              <code>make verify</code> / CI (<code>.github/workflows/ci.yml</code>); ADR 0007.
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-21">
-      <h2>
-        <span class="priority-tag">P1</span>
-        Continuous delivery: publish container image to GHCR from <code>main</code> / tags
-        <span class="status-pill status-pill--done">Done</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          After the quality gate passes, build and push a reproducible Docker artifact to GitHub Container Registry so
-          staging and tutorials can pull a known image digest.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> “Works on my machine” without a standard OCI image slows adoption of container/K8s
-          paths.<br />
-          <strong>Value:</strong> Aligns with common internal platform practice: Git commit → tested artifact → registry.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Workflow job with Buildx cache; tags for SHA, semver, and <code>latest</code> on default branch; ADR describing
-          scope (registry delivery vs full prod rollout).
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
-          </div>
-        </dd>
-        <dt>5) Delivered (to date)</dt>
-        <dd>
-          <code>publish-image</code> job in <code>.github/workflows/ci.yml</code> (GHCR, metadata tags, GHA cache);
-          <a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a>; <code>make docker-build</code>
-          for local parity.
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-21">
+          <h2>
+            <span class="priority-tag">P1</span>
+            Continuous delivery: publish container image to GHCR from <code>main</code> / tags
+            <span class="status-pill status-pill--done">Done</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              After the quality gate passes, build and push a reproducible Docker artifact to GitHub Container Registry so
+              staging and tutorials can pull a known image digest.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> “Works on my machine” without a standard OCI image slows adoption of container/K8s
+              paths.<br />
+              <strong>Value:</strong> Aligns with common internal platform practice: Git commit → tested artifact →
+              registry.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Workflow job with Buildx cache; tags for SHA, semver, and <code>latest</code> on default branch; ADR
+              describing
+              scope (registry delivery vs full prod rollout).
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+              </div>
+            </dd>
+            <dt>5) Delivered (to date)</dt>
+            <dd>
+              <code>publish-image</code> job in <code>.github/workflows/ci.yml</code> (GHCR, metadata tags, GHA cache);
+              <a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a>;
+              <code>make docker-build</code>
+              for local parity.
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-22">
-      <h2>
-        <span class="priority-tag">P2</span>
-        Single source of truth for application / OpenAPI version metadata
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Define one canonical version string (e.g. <code>[project]</code> in <code>pyproject.toml</code> or
-          <code>app/__version__.py</code>) and inject it into FastAPI metadata, OpenAPI, and release notes workflows so
-          tags and docs cannot drift from the running app.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> A hardcoded <code>FastAPI(version=…)</code> diverges from <code>CHANGELOG.md</code>
-          and git tags.<br />
-          <strong>Value:</strong> Operational clarity (support asks “which build?”) and cleaner automation.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Single import or TOML field; optional <code>/live</code> or <code>/version</code> payload field; contributor
-          note: bump process tied to release.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~1 day (~3 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
+        <article class="backlog-item" id="item-22">
+          <h2>
+            <span class="priority-tag">P2</span>
+            Single source of truth for application / OpenAPI version metadata
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Define one canonical version string (e.g. <code>[project]</code> in <code>pyproject.toml</code> or
+              <code>app/__version__.py</code>) and inject it into FastAPI metadata, OpenAPI, and release notes workflows
+              so
+              tags and docs cannot drift from the running app.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> A hardcoded <code>FastAPI(version=…)</code> diverges from
+              <code>CHANGELOG.md</code>
+              and git tags.<br />
+              <strong>Value:</strong> Operational clarity (support asks “which build?”) and cleaner automation.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Single import or TOML field; optional <code>/live</code> or <code>/version</code> payload field; contributor
+              note: bump process tied to release.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~1 day (~3 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~2 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~3 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
 
-    <article class="backlog-item" id="item-23">
-      <h2>
-        <span class="priority-tag">P2</span>
-        CI: optional HTTP smoke or load-regression job (post-<code>main</code> or nightly)
-        <span class="status-pill status-pill--todo">To do</span>
-      </h2>
-      <dl>
-        <dt>1) Summary</dt>
-        <dd>
-          Run a minimal automated scenario (health + one protected API path, or a short load profile from
-          <code>tools/load_testing/</code>) in GitHub Actions so latency and 5xx regressions surface without manual
-          <code>make run-loadtest-api</code>. Builds on local tooling already delivered under
-          <a href="#item-11">item 11</a>.
-        </dd>
-        <dt>2) Problem &amp; value</dt>
-        <dd>
-          <strong>Problem:</strong> Local load tooling (backlog item 11) does not run on every merge by default.<br />
-          <strong>Value:</strong> Catches performance and timeout issues before they reach operators; complements SLO
-          alerts.
-        </dd>
-        <dt>3) Scope &amp; deliverables</dt>
-        <dd>
-          Workflow that starts API + DB (or uses test stack), runs scripted checks with thresholds; document flakiness
-          mitigations; keep optional or <code>workflow_dispatch</code> if cost is a concern.
-        </dd>
-        <dt>4) Rough estimate (calendar days)</dt>
-        <dd>
-          <div class="time-grid">
-            <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
-            <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
-            <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
-          </div>
-        </dd>
-      </dl>
-    </article>
-  </main>
-</body>
+        <article class="backlog-item" id="item-23">
+          <h2>
+            <span class="priority-tag">P2</span>
+            CI: optional HTTP smoke or load-regression job (post-<code>main</code> or nightly)
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Run a minimal automated scenario (health + one protected API path, or a short load profile from
+              <code>tools/load_testing/</code>) in GitHub Actions so latency and 5xx regressions surface without manual
+              <code>make run-loadtest-api</code>. Builds on local tooling already delivered under
+              <a href="#item-11">item 11</a>.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Local load tooling (backlog item 11) does not run on every merge by default.<br />
+              <strong>Value:</strong> Catches performance and timeout issues before they reach operators; complements SLO
+              alerts.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Workflow that starts API + DB (or uses test stack), runs scripted checks with thresholds; document flakiness
+              mitigations; keep optional or <code>workflow_dispatch</code> if cost is a concern.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+              </div>
+            </dd>
+          </dl>
+        </article>
+      </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
+  </body>
 
 </html>

@@ -33,6 +33,7 @@
           <li><a href="#4-scoring-summary">Scoring summary</a></li>
           <li><a href="#5-gaps-refactors-and-recommendations">Gaps, refactors, and recommendations</a></li>
           <li><a href="#6-mitigation-plan-and-indicative-deadlines">Mitigation plan and indicative deadlines</a></li>
+          <li><a href="#7-actionable-checklist-top-decile-dx">Actionable checklist</a></li>
           <li><a href="#8-document-history">Document history</a></li>
         </ol>
       </section>
@@ -102,15 +103,36 @@
           <li>It does not replace usability testing with real integrators or support transcript analysis.</li>
           <li>It does not certify localization, analytics, or AI assistants — only notes typical gaps if absent.</li>
         </ul>
-      </section>
 
-      <section>
-        <h2 id="table-1-reference-practices">2. Table: Reference practices (Documentation Experience)</h2>
+        <h3 id="1-5-industry-context-and-pet-scope">1.5 Industry context, PET scope, and standards we do not chase (yet)
+        </h3>
         <p>
-          <strong>Category</strong> groups the theme; <strong>Practice</strong> is a concise name;
-          <strong>Description</strong> states expected behaviour; <strong>Typical benchmark</strong> notes who often
-          exemplifies it (patterns vary by company size).
-          <br>*A11y / i18n:</strong> Accessibility and internationalization (rows 17–18).
+          Large tech organizations often run <strong>central doc portals</strong>, <strong>search and analytics
+          programs</strong>, <strong>localization workflows</strong>, and <strong>AI assistants</strong> with dedicated
+          teams. This repository uses a lighter, git-versioned rubric (Table&nbsp;1 / Table&nbsp;2) per
+          <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR
+            0024</a>.
+          </p>
+          <p>
+            Study App’s docs are <strong>PET-scale</strong>: a static site and generated references, not a commercial
+            developer platform with org dashboards and billing. Many Table&nbsp;1 rows (e.g. multi-SDK tabs, enterprise
+            portal, DocSearch-scale search) are <strong>benchmarks</strong>, not requirements. Low scores often mean
+            “not worth building at this stage” or “explicitly English-first,” not organizational failure. High-impact
+            follow-ups for our context are listed in <a href="#5-gaps-refactors-and-recommendations">section 5</a> and
+            <a href="#6-mitigation-plan-and-indicative-deadlines">section 6</a>.
+          </p>
+        </section>
+
+        <section>
+          <h2 id="table-1-reference-practices">2. Table: Reference practices</h2>
+          <p>
+            <strong>Category</strong> groups the theme; <strong>Practice</strong> is a concise name;
+            <strong>Reference description</strong> states expected behaviour; <strong>Typical benchmark</strong> notes who
+            often exemplifies it (patterns vary by company size).
+          </p>
+          <p>
+            <strong>*A11y / i18n:</strong> Accessibility and internationalization (rows 17–18).
+          </p>
           <div style="overflow-x: auto">
             <table class="audit-ref-table">
               <thead>
@@ -384,7 +406,7 @@
         </section>
 
         <section>
-          <h2 id="table-2-study-app-scores">3. Table: Study App mapping and indicative scores</h2>
+          <h2 id="table-2-study-app-scores">3. Table: AS-IS situation</h2>
           <p>
             One row per practice in Table&nbsp;1 (rows <strong>1–25</strong>): no bundled rows. Scores are
             <strong>1–10</strong> indicative maturity (not a formal audit). Colour bands for the Score column are defined in
@@ -751,29 +773,56 @@
             </ul>
           </div>
         </section>
-      </section>
 
-      <section>
-        <h2 id="8-document-history">7. Document history</h2>
-        <div style="overflow-x: auto">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Change</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2026-04-14</td>
-                <td>Initial DX (Documentation Experience) reference assessment — HTML edition.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p><em>End of document.</em></p>
-      </section>
-    </main>
-  </body>
+        <section>
+          <h2 id="7-actionable-checklist-top-decile-dx">7. Actionable checklist (top-decile DX)</h2>
+          <p>
+            Cross-reference <a href="#table-2-study-app-scores">Table 2</a> and
+            <a href="#5-gaps-refactors-and-recommendations">section 5</a>. PET-scale does not require every row at 9–10; see
+            <a href="#1-5-industry-context-and-pet-scope">section 1.5</a>.
+          </p>
+          <ul>
+            <li>IA: tutorials / how-tos / reference / explanation are distinguishable in navigation (row 1).</li>
+            <li>Onboarding spine with verification steps and troubleshooting (row 3).</li>
+            <li>Docs-as-code with review; generated OpenAPI and API docs without silent drift (rows 4–5, 10).</li>
+            <li>CI: link check, style lint, schema validation; examples executed or clearly marked (rows 7–8).</li>
+            <li>Search with reasonable relevance across the site (row 13).</li>
+            <li>Performance: lean static pages; avoid heavy client bundles on content routes (row 15).</li>
+            <li>Accessibility: semantic HTML, keyboard paths on shared chrome; widen WCAG coverage over time (row 17).</li>
+            <li>Feedback path (Issues/PRs) and, if needed, privacy-conscious analytics (rows 22–23).</li>
+            <li>AI only with citations and policy if introduced (row 14).</li>
+          </ul>
+        </section>
 
-</html>
+        <section>
+          <h2 id="8-document-history">8. Document history</h2>
+          <div style="overflow-x: auto">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2026-04-14</td>
+                  <td>Initial DX (Documentation Experience) reference assessment — HTML edition.</td>
+                </tr>
+                <tr>
+                  <td>2026-04-14</td>
+                  <td>
+                    ADR 0024: industry/PET applicability (§1.5); fixed Table 1 intro; restored §7 checklist; §8 document
+                    history; removed erroneous section wrapper.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p><em>End of document.</em></p>
+        </section>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </body>
+
+  </html>
