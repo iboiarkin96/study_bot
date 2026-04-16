@@ -27,7 +27,7 @@
         </li>
         <li>
           <strong>Marker sync</strong> — <code>scripts/sync_docs.py</code> refreshes marker blocks in
-          <code>README.md</code>, <code>docs/system-analysis.html</code>, and
+          <code>README.md</code>, <code>docs/internal/system-design.html</code>, and
           <code>docs/engineering-practices.html</code> from the Makefile and FastAPI routes (repository tree,
           Makefile command table where present, HTTP route tables). Environment variables are documented only in
           <code>env/example</code>, not generated into the README.
@@ -67,7 +67,7 @@
             <td>Generated from sibling <code>docs/uml/**/*.puml</code> (edit PlantUML; commit PNGs after <code>docs-fix</code>).</td>
           </tr>
           <tr>
-            <td>Marker blocks in <code>README.md</code>, <code>docs/system-analysis.html</code>, <code>docs/engineering-practices.html</code></td>
+            <td>Marker blocks in <code>README.md</code>, <code>docs/internal/system-design.html</code>, <code>docs/engineering-practices.html</code></td>
             <td>Human prose outside markers; inside markers overwritten by <code>sync_docs.py</code>.</td>
           </tr>
           <tr>
@@ -125,9 +125,10 @@
         <code>docs/.nojekyll</code> so GitHub does not run Jekyll on static HTML. Project-site URLs look like
         <code>/{repo}/…</code> without a <code>/docs/</code> segment; the top nav script supports that layout.
         Example for repository <code>study_bot</code>:
-        <code>https://iboiarkin96.github.io/study_bot/system-analysis.html</code> is valid;
-        <code>https://iboiarkin96.github.io/study_bot/docs/system-analysis.html</code> is not (404), because
-        <code>system-analysis.html</code> in git is already under <code>docs/</code> and is published at the site root.
+        <code>https://iboiarkin96.github.io/study_bot/internal/system-design.html</code> is valid;
+        <code>https://iboiarkin96.github.io/study_bot/docs/internal/system-design.html</code> is not (404), because
+        with Pages rooted at <code>docs/</code>, URLs omit the <code>docs/</code> prefix — the file lives at
+        <code>docs/internal/system-design.html</code> in git.
         Python API HTML from pdoc is at <code>/{repo}/api/index.html</code> (same pattern).
       </p>
 

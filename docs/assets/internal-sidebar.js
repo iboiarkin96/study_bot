@@ -107,9 +107,8 @@
    * Paths are relative to the docs/ root (e.g. internal/README.html).
    */
   const INTERNAL_SIDEBAR_NAV = [
-    { label: "Project overview", path: "internal/README.html" },
-    { label: "Internal HTML layout (how-to)", path: "howto/internal-service-docs-layout.html" },
-    { label: "Service overview", path: "internal/service-overview.html" },
+    { label: "Overview", path: "internal/README.html" },
+    { label: "System design", path: "internal/system-design.html" },
     {
       label: "API",
       children: [

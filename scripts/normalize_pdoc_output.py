@@ -1,6 +1,9 @@
-"""Strip unstable memory addresses from pdoc HTML/search.js (function reprs).
+"""Post-process pdoc HTML under docs/api/.
 
-pdoc embeds repr() of validators, which includes ``at 0x...`` and changes between runs.
+Strip unstable memory addresses from HTML and ``search.js`` (function reprs) so
+``make api-docs`` output is diff-stable across machines and runs.
+
+pdoc output is otherwise left unchanged — no site chrome or ``docs-nav.js``.
 """
 
 from __future__ import annotations
@@ -29,6 +32,7 @@ def main() -> int:
         if new != text:
             path.write_text(new, encoding="utf-8")
             changed += 1
+
     if changed:
         print(f"Normalized unstable pdoc reprs in {changed} file(s) under docs/api/")
     return 0

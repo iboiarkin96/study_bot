@@ -1,6 +1,6 @@
 # Study App API
 
-FastAPI service for Study App domain workflows. Long-form documentation: [system analysis](docs/system-analysis.html), [engineering practices](docs/engineering-practices.html), [architecture & quality assessments](docs/audit/README.html).
+FastAPI service for Study App domain workflows. Long-form documentation: [System design](docs/internal/system-design.html), [engineering practices](docs/engineering-practices.html), [architecture & quality assessments](docs/audit/README.html).
 
 ## Contents
 
@@ -56,7 +56,7 @@ Useful: `make env-check`, `curl -s http://127.0.0.1:8000/live | jq`.
 | Contributing (verify, docs, OpenAPI, ADRs) | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Make commands & workflows (diagrams, scenarios) | [0010-make-commands-and-workflows.html](docs/developer/0010-make-commands-and-workflows.html) |
 | Engineering practices & handbook | [engineering-practices.html](docs/engineering-practices.html) |
-| System analysis & error matrix | [system-analysis.html](docs/system-analysis.html) |
+| System design & error matrix | [system-design.html](docs/internal/system-design.html) |
 | Developer guides (requirements, contracts, load testing, local dev, Docker/K8s) | [docs/developer/README.html](docs/developer/README.html) |
 | ADRs | [docs/adr/README.html](docs/adr/README.html) |
 | Architecture & quality assessments (audits) | [docs/audit/README.html](docs/audit/README.html) |

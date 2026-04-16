@@ -1,3 +1,5 @@
+@import url("docs-site-nav.css");
+
 /* Shared documentation styles */
 
 :root {
@@ -31,7 +33,7 @@ body {
   line-height: 1.55;
 }
 
-main,
+main.container,
 .container {
   max-width: 1080px;
   margin: 0 auto;
@@ -123,35 +125,6 @@ pre code {
 .lead {
   color: var(--muted);
   margin-bottom: 18px;
-}
-
-.top-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0 18px;
-}
-
-.top-nav a {
-  display: inline-block;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 0.9rem;
-  background: #f8fbff;
-  color: var(--text);
-}
-
-.top-nav a:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.top-nav a.is-active {
-  background: #e8efff;
-  border-color: #9db7ff;
-  color: #1e40af;
 }
 
 .small {
@@ -435,7 +408,7 @@ details.adr-weight-help[open] summary {
   margin: 8px 0 6px;
 }
 
-/* System analysis — Mermaid diagram chrome (vector, scalable) */
+/* System / C4 diagrams — Mermaid diagram chrome (vector, scalable) */
 .sys-diagram {
   margin: 0;
   border: 1px solid var(--line);
@@ -755,7 +728,7 @@ main.container--swagger #swagger-ui {
   margin-top: 16px;
 }
 
-/* Long-form docs: sticky “On this page” TOC (e.g. system-analysis.html) */
+/* Long-form docs: sticky “On this page” TOC (e.g. internal/system-design.html) */
 main.container.docs-page-layout {
   max-width: min(1240px, 100%);
 }
@@ -770,6 +743,11 @@ main.docs-page-layout [id] {
   grid-template-columns: min(260px, 30%) minmax(0, 1fr);
   gap: 2rem 1.75rem;
   align-items: start;
+}
+
+/* Auto TOC: pages with only h1/lead (e.g. openapi-explorer.html) have no sidebar — use full width */
+.docs-page-layout__inner--single {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 /* DOM order is article then aside; order places the sticky TOC in the first column (left). */

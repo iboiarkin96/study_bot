@@ -113,7 +113,7 @@ def _output_for(source_path: Path) -> Path:
         Destination PNG path (sequence diagrams keep stem-only names).
     """
     rel = source_path.relative_to(UML_SRC_DIR)
-    # Keep legacy names for sequence diagrams to avoid breaking docs/system-analysis.html.
+    # Keep legacy names for sequence diagrams to avoid breaking docs/internal/system-design.html.
     if rel.parts and rel.parts[0] == "sequences":
         safe_name = source_path.stem + ".png"
     else:
