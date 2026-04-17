@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ranking/runtime UI integration in `docs/assets/docs-nav.js`,
   - ADR `docs/adr/0027-client-side-docs-search-index-and-ranking.html`.
 
+
 - Docs-search telemetry ingestion and aggregation:
   - store module `app/core/docs_search_telemetry.py`,
   - API schema `app/schemas/telemetry.py`,
