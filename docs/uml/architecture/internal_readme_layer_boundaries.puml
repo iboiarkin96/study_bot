@@ -1,0 +1,49 @@
+@startuml
+title ETR Study API — request path across layers (internal overview)
+
+' Main flow is vertical; inner components per layer are stacked vertically
+' (not side-by-side) so the diagram stays narrower.
+top to bottom direction
+scale max 980 width
+
+actor "HTTP client" as Client
+
+package "API layer — app/api" as Api {
+  [FastAPI routers] as Router
+  [Pydantic request/response] as Schema
+  Router -[hidden]down- Schema
+}
+
+package "Application — app/services, app/validation" as AppLayer {
+  [Services] as Service
+  [Validation at boundary] as Val
+  Service -[hidden]down- Val
+}
+
+package "Persistence — app/repositories, app/core" as PerLayer {
+  [Repositories] as Repo
+  [Session / unit of work] as UoW
+  Repo -[hidden]down- UoW
+}
+
+database "SQLite\n(study_app.db)" as Db
+
+Client --> Router : HTTPS / JSON
+Router --> Schema : bind, validate,\nmap errors → HTTP
+Router --> Service : call use case
+Service --> Val : enforce rules\nwhere boundary checks apply
+Service --> Repo : read / write
+Repo --> UoW : ORM operations
+UoW --> Db : SQL
+
+note bottom of Router
+  Declares OpenAPI and status codes;
+  does not hold business rules.
+end note
+
+note bottom of Service
+  Business logic and orchestration;
+  keeps persistence behind repositories.
+end note
+
+@enduml

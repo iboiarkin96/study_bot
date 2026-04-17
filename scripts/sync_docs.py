@@ -1,8 +1,8 @@
 """Auto-generate documentation sections from code sources.
 
 Reads the Makefile help target and FastAPI app routes, then patches
-marker-delimited sections in README.md, docs/system-analysis.html,
-and docs/engineering-practices.html.
+marker-delimited sections in README.md, docs/internal/system-design.html,
+and docs/internal/developers.html.
 
 Markers have the form:
     <!-- BEGIN:SECTION_NAME -->
@@ -189,7 +189,7 @@ def _render_endpoints_md(routes: list[tuple[str, str, str]]) -> str:
 
 
 def _render_endpoints_html(routes: list[tuple[str, str, str]]) -> str:
-    """Render route list as HTML snippet for ``system-analysis.html`` markers.
+    """Render route list as HTML snippet for ``internal/system-design.html`` markers.
 
     Args:
         routes: Output of :func:`_get_fastapi_routes`.
@@ -317,8 +317,8 @@ def _should_include_handbook_doc(path: Path) -> bool:
 
 
 _HANDBOOK_DESCRIPTION_OVERRIDES: dict[str, str] = {
-    "system-analysis.html": "Analyst document with context, FR/NFR, architecture, API contracts, and diagrams.",
-    "engineering-practices.html": "Engineering workflow, delivery policies, and quality gates.",
+    "internal/system-design.html": "System design: context, FR/NFR, architecture, API contracts, and diagrams.",
+    "internal/developers.html": "Developers Docs: engineering workflow, policies, quality gates, and developer guides index.",
     "developer/0001-requirements.html": "Developer interpretation of requirements and done criteria.",
     "developer/0002-schemas-and-contracts.html": (
         "Rules for request/response/error contracts and backward-compatible changes."
@@ -359,8 +359,8 @@ def _handbook_doc_entries() -> list[tuple[str, str, str, str]]:
     entries: list[tuple[str, str, str, str]] = []
 
     fixed_root = [
-        docs / "system-analysis.html",
-        docs / "engineering-practices.html",
+        docs / "internal" / "system-design.html",
+        docs / "internal" / "developers.html",
     ]
     for path in fixed_root:
         if not path.exists():
@@ -371,7 +371,7 @@ def _handbook_doc_entries() -> list[tuple[str, str, str, str]]:
             rel_key, "Project-level architecture and governance document."
         )
         open_label = "Open document"
-        entries.append((title, desc, f"./{path.name}", open_label))
+        entries.append((title, desc, f"./{rel_key}", open_label))
 
     grouped_dirs = [
         (
@@ -631,8 +631,8 @@ def sync(check: bool = False) -> int:
         else:
             _info("README.md already up to date")
 
-    # --- docs/system-analysis.html ---
-    html_path = ROOT / "docs" / "system-analysis.html"
+    # --- docs/internal/system-design.html ---
+    html_path = ROOT / "docs" / "internal" / "system-design.html"
     if html_path.exists():
         html_sections: dict[str, str] = {}
         if routes:
@@ -643,15 +643,15 @@ def sync(check: bool = False) -> int:
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ docs/system-analysis.html is out of sync (run make docs-fix)")
+                print("✗ docs/internal/system-design.html is out of sync (run make docs-fix)")
             else:
                 html_path.write_text(updated)
-                _ok("docs/system-analysis.html updated")
+                _ok("docs/internal/system-design.html updated")
         else:
-            _info("docs/system-analysis.html already up to date")
+            _info("docs/internal/system-design.html already up to date")
 
-    # --- docs/engineering-practices.html ---
-    eng_path = ROOT / "docs" / "engineering-practices.html"
+    # --- docs/internal/developers.html (Developers Docs: Makefile table sync) ---
+    eng_path = ROOT / "docs" / "internal" / "developers.html"
     if eng_path.exists():
         eng_sections: dict[str, str] = {}
         if makefile_entries:
@@ -665,12 +665,12 @@ def sync(check: bool = False) -> int:
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ docs/engineering-practices.html is out of sync (run make docs-fix)")
+                print("✗ docs/internal/developers.html is out of sync (run make docs-fix)")
             else:
                 eng_path.write_text(updated)
-                _ok("docs/engineering-practices.html updated")
+                _ok("docs/internal/developers.html updated")
         else:
-            _info("docs/engineering-practices.html already up to date")
+            _info("docs/internal/developers.html already up to date")
     return stale_files
 
 

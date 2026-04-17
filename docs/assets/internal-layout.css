@@ -265,3 +265,33 @@ h1.internal-doc-h1 {
   border-color: #fca5a5;
   color: #7f1d1d;
 }
+
+/*
+ * Tables in .docs-table-scroll: global docs.css sets `width: max-content` on the inner
+ * table, which stretches layout and breaks column balance. Inside internal pages, use
+ * full width and fixed table layout so the four-column layer table formats predictably.
+ */
+.internal-layout__main .card .docs-table-scroll table {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.internal-layout__main .card .docs-table-scroll th,
+.internal-layout__main .card .docs-table-scroll td {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.internal-layout__main .card .docs-table-scroll col.layers-col-layer {
+  width: 12%;
+}
+
+.internal-layout__main .card .docs-table-scroll col.layers-col-packages {
+  width: 24%;
+}
+
+.internal-layout__main .card .docs-table-scroll col.layers-col-text {
+  width: 32%;
+}

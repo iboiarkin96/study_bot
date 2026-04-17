@@ -38,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - [ADR 0026](adr/0026-internal-service-documentation-as-source-of-truth.html): internal service HTML as the authoritative engineering narrative for documented topics; scope (business rules, HTTP mapping via `operationId`, observability expectations, async boundaries); document history tables; index at [`docs/internal/README.html`](internal/README.html).
 
-- [`docs/internal/README.html`](internal/README.html) — entry point for internal service docs; [`docs/internal/service-overview.html`](internal/service-overview.html) — high-level service overview for contributors.
+- [`docs/internal/README.html`](internal/README.html) — entry point for internal service docs (project + service overview); [`docs/internal/service-overview.html`](internal/service-overview.html) — redirect stub to the same page for old links.
 
 - [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) — internal specification for the User HTTP API (operations, idempotency, errors, logging, metrics, dependencies); lives under the User resource folder (see 2026-04-15 changelog).
 
@@ -86,7 +86,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - PlantUML under `docs/uml/`: architecture and sequence `.puml` sources include the shared style; rendered PNGs in `docs/uml/rendered/` updated to match ([ADR 0020](adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
 
-- Docs pipeline and contributor entrypoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, and `.github/ISSUE_TEMPLATE/adr_discussion.md` aligned with ADR lifecycle, UML rendering, and synced HTML companions (`docs/engineering-practices.html`, `docs/system-analysis.html`, `docs/backlog/README.html`, `docs/runbooks/README.html`, `docs/developer/0008-docs-pipeline.html`).
+- Docs pipeline and contributor entrypoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, and `.github/ISSUE_TEMPLATE/adr_discussion.md` aligned with ADR lifecycle, UML rendering, and synced HTML companions (`docs/engineering-practices.html`, `docs/internal/system-design.html`, `docs/backlog/README.html`, `docs/runbooks/README.html`, `docs/developer/0008-docs-pipeline.html`).
 
 
 ### Added

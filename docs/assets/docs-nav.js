@@ -60,7 +60,7 @@ function activeTarget(relPath) {
     return "adr/README.html";
   }
   if (relPath.startsWith("developer/")) {
-    return "developer/README.html";
+    return "internal/developers.html";
   }
   if (relPath.startsWith("backlog/")) {
     return "backlog/README.html";
@@ -70,6 +70,9 @@ function activeTarget(relPath) {
   }
   if (relPath.startsWith("audit/")) {
     return "audit/README.html";
+  }
+  if (relPath === "internal/system-design.html") {
+    return "internal/system-design.html";
   }
   if (relPath.startsWith("internal/")) {
     return "internal/README.html";
@@ -84,9 +87,28 @@ function activeTarget(relPath) {
     return "openapi-explorer.html";
   }
   if (relPath === "engineering-practices.html") {
-    return "engineering-practices.html";
+    return "internal/developers.html";
   }
-  return "system-analysis.html";
+  if (relPath === "internal/developers.html") {
+    return "internal/developers.html";
+  }
+  return "index.html";
+}
+
+function appendTopNavLinks(container, items, fromDir, active) {
+  for (const item of items) {
+    const link = document.createElement("a");
+    link.textContent = item.label;
+    link.href = relHref(fromDir, item.target);
+    if (item.className) {
+      link.className = item.className;
+    }
+    if (item.target === active) {
+      link.classList.add("is-active");
+      link.setAttribute("aria-current", "page");
+    }
+    container.appendChild(link);
+  }
 }
 
 function renderTopNav() {
@@ -98,35 +120,87 @@ function renderTopNav() {
   const relPath = currentDocsRelPath();
   const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
   const active = activeTarget(relPath);
-  const items = [
+  const internalItems = [
     { label: "Home", target: "index.html" },
-    { label: "System Analysis", target: "system-analysis.html" },
-    { label: "Engineering Practices", target: "engineering-practices.html" },
-    { label: "Developer Docs", target: "developer/README.html" },
+    { label: "Internal docs", target: "internal/README.html" },
     { label: "How-to guides", target: "howto/README.html" },
-    { label: "Backlog", target: "backlog/README.html" },
     { label: "ADR", target: "adr/README.html" },
-    { label: "Assessments", target: "audit/README.html" },
-    { label: "Internal (service)", target: "internal/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
-    { label: "API (Python)", target: "api/index.html" },
-    { label: "OpenAPI (test)", target: "openapi-explorer.html" },
+    { label: "API assessment reports", target: "audit/README.html" },
+    { label: "⭐Backlog", target: "backlog/README.html", className: "top-nav__link--backlog" },
+  ];
+  const publicItems = [
+    { label: "OpenAPI explorer", target: "openapi-explorer.html" },
+    { label: "Pdoc API docs", target: "api/index.html" },
   ];
 
   const nav = document.createElement("nav");
   nav.className = "top-nav";
   nav.setAttribute("aria-label", "Documentation navigation");
 
-  for (const item of items) {
-    const link = document.createElement("a");
-    link.textContent = item.label;
-    link.href = relHref(fromDir, item.target);
-    if (item.target === active) {
-      link.className = "is-active";
-      link.setAttribute("aria-current", "page");
-    }
-    nav.appendChild(link);
-  }
+  const groups = document.createElement("div");
+  groups.className = "top-nav__groups";
+
+  const internalSection = document.createElement("section");
+  internalSection.className = "top-nav__group top-nav__group--internal";
+  internalSection.setAttribute("aria-labelledby", "top-nav-internal-label");
+
+  const internalHead = document.createElement("div");
+  internalHead.className = "top-nav__group-head";
+  internalHead.id = "top-nav-internal-label";
+
+  const internalTitle = document.createElement("span");
+  internalTitle.className = "top-nav__group-title";
+  internalTitle.textContent = "Internal";
+
+  const internalHint = document.createElement("span");
+  internalHint.className = "top-nav__group-hint";
+  internalHint.textContent = "Team, architecture, and operations";
+
+  internalHead.appendChild(internalTitle);
+  internalHead.appendChild(internalHint);
+
+  const internalLinks = document.createElement("div");
+  internalLinks.className = "top-nav__links";
+  appendTopNavLinks(internalLinks, internalItems, fromDir, active);
+
+  internalSection.appendChild(internalHead);
+  internalSection.appendChild(internalLinks);
+
+  const split = document.createElement("div");
+  split.className = "top-nav__split";
+  split.setAttribute("aria-hidden", "true");
+
+  const publicSection = document.createElement("section");
+  publicSection.className = "top-nav__group top-nav__group--public";
+  publicSection.setAttribute("aria-labelledby", "top-nav-public-label");
+
+  const publicHead = document.createElement("div");
+  publicHead.className = "top-nav__group-head";
+  publicHead.id = "top-nav-public-label";
+
+  const publicTitle = document.createElement("span");
+  publicTitle.className = "top-nav__group-title";
+  publicTitle.textContent = "Code";
+
+  const publicHint = document.createElement("span");
+  publicHint.className = "top-nav__group-hint";
+  publicHint.textContent = "Development documentation";
+
+  publicHead.appendChild(publicTitle);
+  publicHead.appendChild(publicHint);
+
+  const publicLinks = document.createElement("div");
+  publicLinks.className = "top-nav__links";
+  appendTopNavLinks(publicLinks, publicItems, fromDir, active);
+
+  publicSection.appendChild(publicHead);
+  publicSection.appendChild(publicLinks);
+
+  groups.appendChild(internalSection);
+  groups.appendChild(split);
+  groups.appendChild(publicSection);
+  nav.appendChild(groups);
 
   /* Keep `#docs-top-nav` in the DOM — `initAutoInPageToc` and formatters anchor off this host. */
   host.replaceChildren(nav);
@@ -461,6 +535,11 @@ function initAutoInPageToc() {
   const inner = document.createElement("div");
   inner.className = "docs-page-layout__inner";
   inner.appendChild(article);
+
+  /* No h2/h3 → no aside; a single grid child would otherwise sit in the narrow first track only. */
+  if (entries.length === 0) {
+    inner.classList.add("docs-page-layout__inner--single");
+  }
 
   if (entries.length > 0) {
     const aside = document.createElement("aside");

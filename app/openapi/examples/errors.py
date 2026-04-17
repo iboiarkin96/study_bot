@@ -4,34 +4,47 @@ from __future__ import annotations
 
 from typing import Final, cast
 
-USER_EXISTS_ERROR_EXAMPLE: Final[dict[str, object]] = {
-    "code": "USER_101",
-    "key": "USER_CREATE_ALREADY_EXISTS",
-    "message": "User with this `system_user_id` and `system_uuid` already exists.",
-    "source": "business",
-}
+from app.errors.common import COMMON_400, COMMON_401, COMMON_409, COMMON_413, COMMON_429
+from app.errors.types import StableError
+from app.errors.user import (
+    USER_001,
+    USER_002,
+    USER_003,
+    USER_004,
+    USER_005,
+    USER_006,
+    USER_007,
+    USER_008,
+    USER_009,
+    USER_010,
+    USER_011,
+    USER_012,
+    USER_013,
+    USER_014,
+    USER_018,
+    USER_025,
+    USER_101,
+    USER_102,
+    USER_404,
+)
 
-USER_NOT_FOUND_ERROR_EXAMPLE: Final[dict[str, object]] = {
-    "code": "USER_404",
-    "key": "USER_NOT_FOUND",
-    "message": "User with this `system_user_id` and `system_uuid` was not found.",
-    "source": "business",
-}
+USER_EXISTS_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], USER_101.as_detail("business")
+)
 
-USER_PATCH_BODY_EMPTY_EXAMPLE: Final[dict[str, object]] = {
-    "code": "USER_102",
-    "key": "USER_PATCH_BODY_EMPTY",
-    "message": "PATCH body must include at least one field to update.",
-    "source": "business",
-}
+USER_NOT_FOUND_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], USER_404.as_detail("business")
+)
+
+USER_PATCH_BODY_EMPTY_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], USER_102.as_detail("business")
+)
 
 
 def _validation_error_example(
+    err: StableError,
     *,
     endpoint: str = "POST /api/v1/user",
-    code: str,
-    key: str,
-    message: str,
     field: str | None,
     error_type: str,
     loc: list[object],
@@ -41,10 +54,8 @@ def _validation_error_example(
     """Build one documented 422 example body for OpenAPI ``examples`` maps.
 
     Args:
+        err: Stable identity from :mod:`app.errors.user`.
         endpoint: ``endpoint`` field in the error payload (method + path).
-        code: Stable validation error code.
-        key: Machine-readable error key.
-        message: Human-readable message.
         field: Affected body field name, if any.
         error_type: Pydantic error type string.
         loc: ``loc`` path from the validation error.
@@ -59,9 +70,9 @@ def _validation_error_example(
         "endpoint": endpoint,
         "errors": [
             {
-                "code": code,
-                "key": key,
-                "message": message,
+                "code": err.code,
+                "key": err.key,
+                "message": err.message,
                 "field": field,
                 "source": "validation",
                 "details": {
@@ -79,9 +90,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "missing_system_user_id": {
         "summary": "Missing required field system_user_id",
         "value": _validation_error_example(
-            code="USER_001",
-            key="USER_CREATE_SYSTEM_USER_ID_REQUIRED",
-            message="Field `system_user_id` is required.",
+            USER_001,
             field="system_user_id",
             error_type="missing",
             loc=["body", "system_user_id"],
@@ -92,9 +101,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "empty_system_user_id": {
         "summary": "system_user_id is empty",
         "value": _validation_error_example(
-            code="USER_002",
-            key="USER_CREATE_SYSTEM_USER_ID_INVALID",
-            message="Field `system_user_id` must not be empty.",
+            USER_002,
             field="system_user_id",
             error_type="string_too_short",
             loc=["body", "system_user_id"],
@@ -105,9 +112,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "missing_full_name": {
         "summary": "Missing required field full_name",
         "value": _validation_error_example(
-            code="USER_003",
-            key="USER_CREATE_FULL_NAME_REQUIRED",
-            message="Field `full_name` is required.",
+            USER_003,
             field="full_name",
             error_type="missing",
             loc=["body", "full_name"],
@@ -122,9 +127,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "missing_system_uuid": {
         "summary": "Missing required field system_uuid",
         "value": _validation_error_example(
-            code="USER_025",
-            key="USER_CREATE_SYSTEM_UUID_REQUIRED",
-            message="Field `system_uuid` is required.",
+            USER_025,
             field="system_uuid",
             error_type="missing",
             loc=["body", "system_uuid"],
@@ -135,9 +138,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "empty_full_name": {
         "summary": "full_name is empty",
         "value": _validation_error_example(
-            code="USER_004",
-            key="USER_CREATE_FULL_NAME_TOO_SHORT",
-            message="Field `full_name` must not be empty.",
+            USER_004,
             field="full_name",
             error_type="string_too_short",
             loc=["body", "full_name"],
@@ -148,9 +149,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "full_name_too_long": {
         "summary": "full_name exceeds max length",
         "value": _validation_error_example(
-            code="USER_005",
-            key="USER_CREATE_FULL_NAME_TOO_LONG",
-            message="Field `full_name` exceeds max length.",
+            USER_005,
             field="full_name",
             error_type="string_too_long",
             loc=["body", "full_name"],
@@ -161,9 +160,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "username_too_long": {
         "summary": "username exceeds max length",
         "value": _validation_error_example(
-            code="USER_006",
-            key="USER_CREATE_USERNAME_TOO_LONG",
-            message="Field `username` exceeds max length.",
+            USER_006,
             field="username",
             error_type="string_too_long",
             loc=["body", "username"],
@@ -174,9 +171,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "invalid_timezone": {
         "summary": "Invalid timezone name",
         "value": _validation_error_example(
-            code="USER_007",
-            key="USER_CREATE_TIMEZONE_INVALID",
-            message="Field `timezone` must be a valid IANA timezone.",
+            USER_007,
             field="timezone",
             error_type="value_error",
             loc=["body", "timezone"],
@@ -187,9 +182,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "timezone_too_long": {
         "summary": "timezone exceeds max length",
         "value": _validation_error_example(
-            code="USER_008",
-            key="USER_CREATE_TIMEZONE_TOO_LONG",
-            message="Field `timezone` exceeds max length.",
+            USER_008,
             field="timezone",
             error_type="string_too_long",
             loc=["body", "timezone"],
@@ -200,9 +193,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "invalid_system_uuid": {
         "summary": "system_uuid is not a UUID",
         "value": _validation_error_example(
-            code="USER_009",
-            key="USER_CREATE_SYSTEM_UUID_INVALID",
-            message="Field `system_uuid` must be a valid UUID.",
+            USER_009,
             field="system_uuid",
             error_type="uuid_parsing",
             loc=["body", "system_uuid"],
@@ -215,9 +206,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "invalid_invalidation_reason_uuid": {
         "summary": "invalidation_reason_uuid is not a UUID",
         "value": _validation_error_example(
-            code="USER_010",
-            key="USER_CREATE_INVALIDATION_REASON_UUID_INVALID",
-            message="Field `invalidation_reason_uuid` must be a valid UUID.",
+            USER_010,
             field="invalidation_reason_uuid",
             error_type="uuid_parsing",
             loc=["body", "invalidation_reason_uuid"],
@@ -230,9 +219,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "is_row_invalid_not_int": {
         "summary": "is_row_invalid has wrong type",
         "value": _validation_error_example(
-            code="USER_011",
-            key="USER_CREATE_IS_ROW_INVALID_TYPE",
-            message="Field `is_row_invalid` must be an integer.",
+            USER_011,
             field="is_row_invalid",
             error_type="int_parsing",
             loc=["body", "is_row_invalid"],
@@ -243,9 +230,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "is_row_invalid_too_small": {
         "summary": "is_row_invalid is below minimum",
         "value": _validation_error_example(
-            code="USER_012",
-            key="USER_CREATE_IS_ROW_INVALID_MIN",
-            message="Field `is_row_invalid` must be >= 0.",
+            USER_012,
             field="is_row_invalid",
             error_type="greater_than_equal",
             loc=["body", "is_row_invalid"],
@@ -256,9 +241,7 @@ USER_CREATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "is_row_invalid_too_large": {
         "summary": "is_row_invalid is above maximum",
         "value": _validation_error_example(
-            code="USER_013",
-            key="USER_CREATE_IS_ROW_INVALID_MAX",
-            message="Field `is_row_invalid` must be <= 1.",
+            USER_013,
             field="is_row_invalid",
             error_type="less_than_equal",
             loc=["body", "is_row_invalid"],
@@ -276,10 +259,8 @@ USER_UPDATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "missing_full_name": {
         "summary": "Missing required field full_name (update)",
         "value": _validation_error_example(
+            USER_014,
             endpoint=_USER_UPDATE_EP,
-            code="USER_014",
-            key="USER_UPDATE_FULL_NAME_REQUIRED",
-            message="Field `full_name` is required.",
             field="full_name",
             error_type="missing",
             loc=["body", "full_name"],
@@ -290,10 +271,8 @@ USER_UPDATE_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "invalid_timezone": {
         "summary": "Invalid timezone name (update)",
         "value": _validation_error_example(
+            USER_018,
             endpoint=_USER_UPDATE_EP,
-            code="USER_018",
-            key="USER_UPDATE_TIMEZONE_INVALID",
-            message="Field `timezone` must be a valid IANA timezone.",
             field="timezone",
             error_type="value_error",
             loc=["body", "timezone"],
@@ -307,10 +286,8 @@ USER_PATCH_VALIDATION_ERROR_EXAMPLES: Final[dict[str, dict[str, object]]] = {
     "invalid_timezone": {
         "summary": "Invalid timezone name (patch)",
         "value": _validation_error_example(
+            USER_018,
             endpoint=_USER_PATCH_EP,
-            code="USER_018",
-            key="USER_UPDATE_TIMEZONE_INVALID",
-            message="Field `timezone` must be a valid IANA timezone.",
             field="timezone",
             error_type="value_error",
             loc=["body", "timezone"],
@@ -327,37 +304,22 @@ USER_CREATE_REQUIRED_FIELD_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
     dict[str, object], USER_CREATE_VALIDATION_ERROR_EXAMPLES["missing_system_user_id"]["value"]
 )
 
-SECURITY_AUTH_REQUIRED_ERROR_EXAMPLE: Final[dict[str, object]] = {
-    "code": "COMMON_401",
-    "key": "SECURITY_AUTH_REQUIRED",
-    "message": "Missing or invalid API key in header `X-API-Key`.",
-    "source": "security",
-}
+SECURITY_AUTH_REQUIRED_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], COMMON_401.as_detail("security")
+)
 
-SECURITY_RATE_LIMIT_EXCEEDED_ERROR_EXAMPLE: Final[dict[str, object]] = {
-    "code": "COMMON_429",
-    "key": "SECURITY_RATE_LIMIT_EXCEEDED",
-    "message": "Too many requests. Retry later.",
-    "source": "security",
-}
+SECURITY_RATE_LIMIT_EXCEEDED_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], COMMON_429.as_detail("security")
+)
 
-SECURITY_BODY_TOO_LARGE_ERROR_EXAMPLE: Final[dict[str, object]] = {
-    "code": "COMMON_413",
-    "key": "SECURITY_REQUEST_BODY_TOO_LARGE",
-    "message": "Request body exceeds configured maximum size.",
-    "source": "security",
-}
+SECURITY_BODY_TOO_LARGE_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], COMMON_413.as_detail("security")
+)
 
-IDEMPOTENCY_KEY_REQUIRED_ERROR_EXAMPLE: Final[dict[str, object]] = {
-    "code": "COMMON_400",
-    "key": "IDEMPOTENCY_KEY_REQUIRED",
-    "message": "Missing required `Idempotency-Key` header for write operation.",
-    "source": "business",
-}
+IDEMPOTENCY_KEY_REQUIRED_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], COMMON_400.as_detail("business")
+)
 
-IDEMPOTENCY_KEY_CONFLICT_ERROR_EXAMPLE: Final[dict[str, object]] = {
-    "code": "COMMON_409",
-    "key": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
-    "message": "Idempotency key was already used with another payload.",
-    "source": "business",
-}
+IDEMPOTENCY_KEY_CONFLICT_ERROR_EXAMPLE: Final[dict[str, object]] = cast(
+    dict[str, object], COMMON_409.as_detail("business")
+)

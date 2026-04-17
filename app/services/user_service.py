@@ -7,6 +7,7 @@ from typing import Any, cast
 
 from fastapi import HTTPException
 
+from app.errors.user import USER_101, USER_102, USER_404
 from app.models.core.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreateRequest, UserPatchRequest, UserUpdateRequest
@@ -62,14 +63,7 @@ class UserService:
             )
             raise HTTPException(
                 status_code=400,
-                detail={
-                    "code": "USER_101",
-                    "key": "USER_CREATE_ALREADY_EXISTS",
-                    "message": (
-                        "User with this `system_user_id` and `system_uuid` already exists."
-                    ),
-                    "source": "business",
-                },
+                detail=USER_101.as_detail("business"),
             )
 
         user = User(
@@ -152,12 +146,7 @@ class UserService:
             )
             raise HTTPException(
                 status_code=400,
-                detail={
-                    "code": "USER_102",
-                    "key": "USER_PATCH_BODY_EMPTY",
-                    "message": "PATCH body must include at least one field to update.",
-                    "source": "business",
-                },
+                detail=USER_102.as_detail("business"),
             )
         if "username" in data:
             user.username = cast(Any, data["username"])
@@ -202,11 +191,6 @@ class UserService:
             )
             raise HTTPException(
                 status_code=404,
-                detail={
-                    "code": "USER_404",
-                    "key": "USER_NOT_FOUND",
-                    "message": ("User with this `system_user_id` and `system_uuid` was not found."),
-                    "source": "business",
-                },
+                detail=USER_404.as_detail("business"),
             )
         return user

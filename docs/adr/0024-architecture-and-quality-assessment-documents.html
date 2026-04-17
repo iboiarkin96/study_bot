@@ -10,8 +10,8 @@
   </head>
 
   <body>
-    <main class="container" data-adr-weight="1">
-      <h1>ADR 0024: Architecture and quality assessment documents (audit format)</h1>
+    <main class="container" data-adr-weight="8">
+      <h1>ADR 0024: Architecture and quality assessment documents(audit format)</h1>
       <div id="docs-top-nav"></div>
       <details class="adr-weight-help">
         <summary>ADR status on this page</summary>
@@ -40,7 +40,8 @@
         <strong>Why this matters:</strong> Architecture Decision Records (<a href="./README.html">ADRs</a>) answer
         <em>what we chose</em> and <em>why</em>. Runbooks answer <em>how to recover when something breaks</em>. Neither
         format fits a third need: <strong>periodic, evidence-based evaluation</strong> of how well a subsystem matches
-        external reference practices — producing a dated snapshot (scope, methodology, scored dimensions, gaps, mitigation)
+        external reference practices — producing a dated snapshot (scope, methodology, scored dimensions, gaps,
+        mitigation)
         that can be revisited after refactors or releases.
       </p>
       <p>
@@ -127,7 +128,8 @@
 
       <h3>How repository assessments map to that landscape</h3>
       <p>
-        Our format is a <strong>lightweight, versioned rubric</strong>: Table&nbsp;1 states reference practices; Table&nbsp;2
+        Our format is a <strong>lightweight, versioned rubric</strong>: Table&nbsp;1 states reference practices;
+        Table&nbsp;2
         scores this codebase against them and points to evidence. That is analogous in <em>spirit</em> to internal
         maturity conversations and launch readiness themes, but it is <strong>not</strong> a substitute for organizational
         gates, headcount review boards, or automated org-wide scorecards. It is cheap to maintain for a small service and
@@ -144,7 +146,8 @@
       </p>
       <p>
         Each assessment should make that explicit in <strong>Scope and methodology</strong> (see
-        <a href="#published-assessment-backbone">published backbone</a>): name the deployment assumptions, call out rows that
+        <a href="#published-assessment-backbone">published backbone</a>): name the deployment assumptions, call out rows
+        that
         are <strong>intentionally out of scope</strong> for now, and use <strong>5.3 Nice-to-have</strong> (or equivalent)
         for product-dependent items. Readers should never infer that every row must reach 9–10 for the project to be
         legitimate.
@@ -179,7 +182,8 @@
           document, and tied to rows in a reference table. They are not performance ratings for individuals.
         </li>
         <li>
-          <strong>History.</strong> Each file includes a short <strong>Document history</strong> table so readers know what
+          <strong>History.</strong> Each file includes a short <strong>Document history</strong> table so readers know
+          what
           changed between revisions without relying on git archaeology alone.
         </li>
       </ol>
@@ -221,7 +225,9 @@
               </li>
             </ul>
           </aside>
-          <p><strong>Score column CSS classes</strong> (apply to <code>&lt;td&gt;</code> in <code>table.audit-score-table</code>):</p>
+          <p><strong>Score column CSS classes</strong> (apply to <code>&lt;td&gt;</code> in
+            <code>table.audit-score-table</code>):
+          </p>
           <table>
             <thead>
               <tr>
@@ -245,16 +251,18 @@
                 <td><code>score-needs-attention</code></td>
                 <td>1–6</td>
                 <td>Needs attention — gaps vs reference bar. (<code>score-neutral</code> is a legacy alias; prefer
-                  <code>score-needs-attention</code>.)</td>
-                </tr>
-              </tbody>
-            </table>
+                  <code>score-needs-attention</code>.)
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-            <h2 id="published-assessment-backbone">Published assessment backbone (normative)</h2>
-            <p>
-              The working templates in this repository are
-              <a href="../audit/2026-04-14-api-assessment.html"><code>2026-04-14-api-assessment.html</code></a> and
-              <a href="../audit/2026-04-14-documentation-experience-assessment.html"><code>2026-04-14-documentation-experience-assessment.html</code></a>.
+          <h2 id="published-assessment-backbone">Published assessment backbone (normative)</h2>
+          <p>
+            The working templates in this repository are
+            <a href="../audit/2026-04-14-api-assessment.html"><code>2026-04-14-api-assessment.html</code></a> and
+            <a
+              href="../audit/2026-04-14-documentation-experience-assessment.html"><code>2026-04-14-documentation-experience-assessment.html</code></a>.
               New assessments should match their <strong>section order and intent</strong> (anchors and numbering may differ
               slightly, e.g. optional “beyond baseline” only where useful).
             </p>
@@ -267,7 +275,8 @@
               <li>
                 <strong>Scope and methodology</strong> — what was examined, method (often a short numbered list), what the
                 assessment is not, and a short <strong>industry / PET applicability</strong> subsection (why some reference
-                practices are deferred or not targeted — see <a href="#industry-context-and-study-app">Industry context and applicability</a> above).
+                practices are deferred or not targeted — see <a href="#industry-context-and-study-app">Industry context and
+                applicability</a> above).
               </li>
               <li>
                 <strong>Table 1 — Reference practices.</strong> Neutral rubric: #, Category, Practice, Reference description,
@@ -289,114 +298,122 @@
                 only repeat Table&nbsp;1.
               </li>
               <li><strong>Actionable checklist</strong> — concise bullets tied to rows or sections for backlog/issues.</li>
-              <li><strong>Document history</strong> — <strong>Date | Change</strong>; substantive edits only (not trivial typos).</li>
-            </ol>
+              <li><strong>Document history</strong> — <strong>Date | Change</strong>; substantive edits only (not trivial
+                typos).</li>
+              </ol>
 
-            <h2>Scope of this ADR</h2>
-            <ul>
-              <li>
-                <strong>In scope:</strong> Files under <code>docs/audit/</code> that follow this backbone; cross-links from
-                <code>docs/index.html</code> or ADRs when an assessment is cited.
-              </li>
-              <li>
-                <strong>Out of scope:</strong> Confidential penetration-test reports (keep non-sensitive summaries elsewhere if
-                needed). Incident postmortems follow the incident process, not this ADR.
-              </li>
-            </ul>
+              <h2>Scope of this ADR</h2>
+              <ul>
+                <li>
+                  <strong>In scope:</strong> Files under <code>docs/audit/</code> that follow this backbone; cross-links from
+                  <code>docs/index.html</code> or ADRs when an assessment is cited.
+                </li>
+                <li>
+                  <strong>Out of scope:</strong> Confidential penetration-test reports (keep non-sensitive summaries elsewhere if
+                  needed). Incident postmortems follow the incident process, not this ADR.
+                </li>
+              </ul>
 
-            <h2>Goals and process</h2>
-            <p>
-              <strong>Goals:</strong> institutional memory; shared vocabulary from Table&nbsp;1; prioritization via Table&nbsp;2
-              and mitigations; onboarding without a live walkthrough; traceability via lead + history.
-            </p>
-            <ul>
-              <li>
-                <strong>When to refresh:</strong> Major releases, security or API reviews, annual hygiene — or whenever scores or
-                conclusions change (update document history).
-              </li>
-              <li>
-                <strong>Ownership:</strong> The lead or an early section should imply an owner for follow-up triage (items may
-                land in <a href="../backlog/README.html">backlog</a>).
-              </li>
-              <li>
-                <strong>Linking:</strong> Prefer ADRs and runbooks over duplicating policy; assessments summarize and map.
-              </li>
-              <li>
-                <strong>Changelog:</strong> Add <code>docs/CHANGELOG.md</code> when adding or materially revising an assessment
-                (<a href="./0013-changelog-and-release-notes.html">ADR 0013</a>).
-              </li>
-            </ul>
+              <h2>Goals and process</h2>
+              <p>
+                <strong>Goals:</strong> institutional memory; shared vocabulary from Table&nbsp;1; prioritization via Table&nbsp;2
+                and mitigations; onboarding without a live walkthrough; traceability via lead + history.
+              </p>
+              <ul>
+                <li>
+                  <strong>When to refresh:</strong> Major releases, security or API reviews, annual hygiene — or whenever scores
+                  or
+                  conclusions change (update document history).
+                </li>
+                <li>
+                  <strong>Ownership:</strong> The lead or an early section should imply an owner for follow-up triage (items may
+                  land in <a href="../backlog/README.html">backlog</a>).
+                </li>
+                <li>
+                  <strong>Linking:</strong> Prefer ADRs and runbooks over duplicating policy; assessments summarize and map.
+                </li>
+                <li>
+                  <strong>Changelog:</strong> Add <code>docs/CHANGELOG.md</code> when adding or materially revising an assessment
+                  (<a href="./0013-changelog-and-release-notes.html">ADR 0013</a>).
+                </li>
+              </ul>
 
-            <h2>Alternatives considered</h2>
-            <ol>
-              <li>
-                <strong>Markdown-only in <code>docs/</code>.</strong> Faster to draft; this site is HTML-first for many
-                handbooks. Companions are OK per <a href="../developer/0008-docs-pipeline.html">developer guide 0008</a>; the
-                <strong>canonical published assessment</strong> is HTML under <code>docs/audit/</code>.
-              </li>
-              <li>
-                <strong>Wiki or external tool only.</strong> Weakens docs-as-code review and exact commit/ADR linkage.
-              </li>
-              <li>
-                <strong>No separate assessments (ADRs only).</strong> ADRs do not naturally hold “we scored N practices”;
-                mixing would blur decisions vs evaluations.
-              </li>
-            </ol>
+              <h2>Alternatives considered</h2>
+              <ol>
+                <li>
+                  <strong>Markdown-only in <code>docs/</code>.</strong> Faster to draft; this site is HTML-first for many
+                  handbooks. Companions are OK per <a href="../developer/0008-docs-pipeline.html">developer guide 0008</a>; the
+                  <strong>canonical published assessment</strong> is HTML under <code>docs/audit/</code>.
+                </li>
+                <li>
+                  <strong>Wiki or external tool only.</strong> Weakens docs-as-code review and exact commit/ADR linkage.
+                </li>
+                <li>
+                  <strong>No separate assessments (ADRs only).</strong> ADRs do not naturally hold “we scored N practices”;
+                  mixing would blur decisions vs evaluations.
+                </li>
+              </ol>
 
-            <h2>Consequences</h2>
-            <h3>Positive</h3>
-            <ul>
-              <li>Clear place and shape for maturity snapshots.</li>
-              <li>Easier prioritization with a visible rubric.</li>
-              <li>Consistent reader experience next to other <code>docs/</code> pages.</li>
-            </ul>
-            <h3>Trade-offs</h3>
-            <ul>
-              <li>Authors must maintain tables and history or the document misleads.</li>
-              <li>Scores invite debate; mitigate with scale definition, evidence, and no person-level use.</li>
-            </ul>
+              <h2>Consequences</h2>
+              <h3>Positive</h3>
+              <ul>
+                <li>Clear place and shape for maturity snapshots.</li>
+                <li>Easier prioritization with a visible rubric.</li>
+                <li>Consistent reader experience next to other <code>docs/</code> pages.</li>
+              </ul>
+              <h3>Trade-offs</h3>
+              <ul>
+                <li>Authors must maintain tables and history or the document misleads.</li>
+                <li>Scores invite debate; mitigate with scale definition, evidence, and no person-level use.</li>
+              </ul>
 
-            <h2>Compatibility and migration</h2>
-            <p>
-              No runtime impact. Existing <code>docs/audit/</code> files should converge on this backbone when edited. Rollback:
-              revert this ADR; assessments remain ordinary HTML.
-            </p>
+              <h2>Compatibility and migration</h2>
+              <p>
+                No runtime impact. Existing <code>docs/audit/</code> files should converge on this backbone when edited. Rollback:
+                revert this ADR; assessments remain ordinary HTML.
+              </p>
 
-            <h2>Rollout and validation</h2>
-            <ul>
-              <li>Link this ADR from the ADR index; link <a href="../audit/README.html"><code>docs/audit/README.html</code></a> from <code>docs/index.html</code> and other doc hubs so readers can browse all assessments.</li>
-              <li>New assessments: copy a current audit file and replace Table&nbsp;1/2 and narrative sections.</li>
-              <li><strong>Technical:</strong> <code>make docs-check</code> passes after HTML changes.</li>
-              <li>
-                <strong>Human:</strong> A new reader can state what was reviewed, top gaps, and next steps from the assessment and
-                linked ADRs alone.
-              </li>
-              <li><strong>Documentation:</strong> <code>docs/CHANGELOG.md</code> updated for new or materially revised assessments.</li>
-            </ul>
+              <h2>Rollout and validation</h2>
+              <ul>
+                <li>Link this ADR from the ADR index; link <a href="../audit/README.html"><code>docs/audit/README.html</code></a>
+                  from <code>docs/index.html</code> and other doc hubs so readers can browse all assessments.</li>
+                  <li>New assessments: copy a current audit file and replace Table&nbsp;1/2 and narrative sections.</li>
+                  <li><strong>Technical:</strong> <code>make docs-check</code> passes after HTML changes.</li>
+                  <li>
+                    <strong>Human:</strong> A new reader can state what was reviewed, top gaps, and next steps from the assessment
+                    and
+                    linked ADRs alone.
+                  </li>
+                  <li><strong>Documentation:</strong> <code>docs/CHANGELOG.md</code> updated for new or materially revised
+                    assessments.</li>
+                  </ul>
 
-            <h2>References</h2>
-            <ul>
-              <li><a href="./0001-docs-as-code.html">ADR 0001</a> — Docs as Code.</li>
-              <li><a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> — ADR lifecycle and ratification.</li>
-              <li><a href="./0013-changelog-and-release-notes.html">ADR 0013</a> — Changelog policy (root vs docs).</li>
-              <li><a href="../developer/0008-docs-pipeline.html">Developer guide 0008</a> — Documentation pipeline.</li>
-              <li><a href="../assets/audit-score-legend-fragment.html">audit-score-legend-fragment.html</a> — legend markup (injected via <code>.audit-score-legend-include</code> in <code>docs-nav.js</code>).</li>
-              <li><a href="../assets/docs-nav.js"><code>docs-nav.js</code></a> — loads the fragment into assessment pages.</li>
-              <li><code>docs/assets/docs.css</code> — <code>--audit-score-*</code> and <code>.audit-score-*</code> rules.</li>
-              <li><a href="../audit/2026-04-14-api-assessment.html">API assessment</a> — reference layout.</li>
-              <li><a href="../audit/2026-04-14-documentation-experience-assessment.html">DX assessment</a> — same backbone, Documentation Experience topic.</li>
-            </ul>
+                  <h2>References</h2>
+                  <ul>
+                    <li><a href="./0001-docs-as-code.html">ADR 0001</a> — Docs as Code.</li>
+                    <li><a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> — ADR lifecycle and ratification.
+                    </li>
+                    <li><a href="./0013-changelog-and-release-notes.html">ADR 0013</a> — Changelog policy (root vs docs).</li>
+                    <li><a href="../developer/0008-docs-pipeline.html">Developer guide 0008</a> — Documentation pipeline.</li>
+                    <li><a href="../assets/audit-score-legend-fragment.html">audit-score-legend-fragment.html</a> — legend markup
+                      (injected via <code>.audit-score-legend-include</code> in <code>docs-nav.js</code>).</li>
+                      <li><a href="../assets/docs-nav.js"><code>docs-nav.js</code></a> — loads the fragment into assessment pages.</li>
+                      <li><code>docs/assets/docs.css</code> — <code>--audit-score-*</code> and <code>.audit-score-*</code> rules.</li>
+                      <li><a href="../audit/2026-04-14-api-assessment.html">API assessment</a> — reference layout.</li>
+                      <li><a href="../audit/2026-04-14-documentation-experience-assessment.html">DX assessment</a> — same backbone,
+                        Documentation Experience topic.</li>
+                      </ul>
 
-            <h2>HTML formatting note (repository tooling)</h2>
-            <p>
-              This ADR, <code>docs/assets/audit-score-legend-fragment.html</code>, and the assessment HTML files under
-              <code>docs/audit/</code> may be listed in <code>SKIP_HTML_INDENT_NORMALIZE</code> in
-              <code>scripts/format_docs_html.py</code> so the line-based HTML indenter does not rewrite them. That indenter can
-              mis-count nesting when block tags span multiple lines. Stylesheet and nav normalization still apply when you run
-              <code>make docs-fix</code> / <code>format_docs_html.py</code>.
-            </p>
-            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-          </main>
-        </body>
+                      <h2>HTML formatting note (repository tooling)</h2>
+                      <p>
+                        This ADR, <code>docs/assets/audit-score-legend-fragment.html</code>, and the assessment HTML files under
+                        <code>docs/audit/</code> may be listed in <code>SKIP_HTML_INDENT_NORMALIZE</code> in
+                        <code>scripts/format_docs_html.py</code> so the line-based HTML indenter does not rewrite them. That indenter can
+                        mis-count nesting when block tags span multiple lines. Stylesheet and nav normalization still apply when you run
+                        <code>make docs-fix</code> / <code>format_docs_html.py</code>.
+                      </p>
+                      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                    </main>
+                  </body>
 
-      </html>
+                </html>

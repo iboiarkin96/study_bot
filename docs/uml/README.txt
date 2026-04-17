@@ -22,4 +22,4 @@ Verify committed PNGs match sources (no writes)
   # or:
   .venv/bin/python scripts/regenerate_docs.py --check
 
-HTML pages (e.g. docs/system-analysis.html) reference ./uml/rendered/<name>.png only.
+HTML pages (e.g. docs/internal/system-design.html) reference ../uml/rendered/<name>.png from that folder.

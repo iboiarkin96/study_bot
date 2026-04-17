@@ -28,6 +28,31 @@
 
 
 
+            <h2>API Documentation</h2>
+                <ul class="memberlist">
+            <li>
+                    <a class="class" href="#StableError">StableError</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#StableError.__init__">StableError</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#StableError.code">code</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#StableError.key">key</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#StableError.message">message</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#StableError.as_detail">as_detail</a>
+                        </li>
+                </ul>
+
+            </li>
+    </ul>
+
 
 
         <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev" target="_blank">
@@ -42,23 +67,157 @@
                     <h1 class="modulename">
 <a href="./../app.html">app</a><wbr>.errors    </h1>
 
-                        <div class="docstring"><p>Error mapping and normalization utilities.</p>
+                        <div class="docstring"><p>Central catalog of stable API error codes.</p>
 
-<p>Placeholder package for shared helpers related to API error payloads and stable codes.</p>
+<p>Import concrete identities from <code>app.errors.common</code> and <code>app.errors.user</code>
+(or <code>~<a href="#StableError">app.errors.types.StableError</a></code>) instead of scattering string literals.</p>
+
+<p>Validation mapping dicts live in <code>app.errors.user</code> and are consumed by
+<code><a href="validation.html">app.validation</a></code>.</p>
 </div>
 
                         <input id="mod-errors-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-errors-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a><span class="sd">&quot;&quot;&quot;Error mapping and normalization utilities.</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos">2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="sd">Placeholder package for shared helpers related to API error payloads and stable codes.</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a><span class="sd">&quot;&quot;&quot;</span>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">&quot;&quot;&quot;Central catalog of stable API error codes.</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">Import concrete identities from :mod:`app.errors.common` and :mod:`app.errors.user`</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="sd">(or :class:`~app.errors.types.StableError`) instead of scattering string literals.</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">Validation mapping dicts live in :mod:`app.errors.user` and are consumed by</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">:mod:`app.validation`.</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.errors.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">StableError</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;StableError&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
             </section>
+                <section id="StableError">
+                            <input id="StableError-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr class">
+                    <div class="decorator decorator-dataclass">@dataclass(frozen=True, slots=True)</div>
+
+    <span class="def">class</span>
+    <span class="name">StableError</span>:
+
+                <label class="view-source-button" for="StableError-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#StableError"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="StableError-9"><a href="#StableError-9"><span class="linenos"> 9</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="StableError-10"><a href="#StableError-10"><span class="linenos">10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">StableError</span><span class="p">:</span>
+</span><span id="StableError-11"><a href="#StableError-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;One published error identity: stable ``code`` + ``key`` + default English ``message``.&quot;&quot;&quot;</span>
+</span><span id="StableError-12"><a href="#StableError-12"><span class="linenos">12</span></a>
+</span><span id="StableError-13"><a href="#StableError-13"><span class="linenos">13</span></a>    <span class="n">code</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="StableError-14"><a href="#StableError-14"><span class="linenos">14</span></a>    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="StableError-15"><a href="#StableError-15"><span class="linenos">15</span></a>    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="StableError-16"><a href="#StableError-16"><span class="linenos">16</span></a>
+</span><span id="StableError-17"><a href="#StableError-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">as_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span id="StableError-18"><a href="#StableError-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the JSON ``detail`` object for HTTP error responses.</span>
+</span><span id="StableError-19"><a href="#StableError-19"><span class="linenos">19</span></a>
+</span><span id="StableError-20"><a href="#StableError-20"><span class="linenos">20</span></a><span class="sd">        Args:</span>
+</span><span id="StableError-21"><a href="#StableError-21"><span class="linenos">21</span></a><span class="sd">            source: Contract layer (``validation``, ``business``, ``security``).</span>
+</span><span id="StableError-22"><a href="#StableError-22"><span class="linenos">22</span></a><span class="sd">            message: Optional override; defaults to :attr:`message`.</span>
+</span><span id="StableError-23"><a href="#StableError-23"><span class="linenos">23</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="StableError-24"><a href="#StableError-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="p">{</span>
+</span><span id="StableError-25"><a href="#StableError-25"><span class="linenos">25</span></a>            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+</span><span id="StableError-26"><a href="#StableError-26"><span class="linenos">26</span></a>            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span id="StableError-27"><a href="#StableError-27"><span class="linenos">27</span></a>            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">message</span><span class="p">,</span>
+</span><span id="StableError-28"><a href="#StableError-28"><span class="linenos">28</span></a>            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
+</span><span id="StableError-29"><a href="#StableError-29"><span class="linenos">29</span></a>        <span class="p">}</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>One published error identity: stable <code><a href="#StableError.code">code</a></code> + <code><a href="#StableError.key">key</a></code> + default English <code><a href="#StableError.message">message</a></code>.</p>
+</div>
+
+
+                            <div id="StableError.__init__" class="classattr">
+                                <div class="attr function">
+            
+        <span class="name">StableError</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">code</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="n">key</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="n">message</span><span class="p">:</span> <span class="nb">str</span></span>)</span>
+
+        
+    </div>
+    <a class="headerlink" href="#StableError.__init__"></a>
+    
+    
+
+                            </div>
+                            <div id="StableError.code" class="classattr">
+                                <div class="attr variable">
+            <span class="name">code</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#StableError.code"></a>
+    
+    
+
+                            </div>
+                            <div id="StableError.key" class="classattr">
+                                <div class="attr variable">
+            <span class="name">key</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#StableError.key"></a>
+    
+    
+
+                            </div>
+                            <div id="StableError.message" class="classattr">
+                                <div class="attr variable">
+            <span class="name">message</span><span class="annotation">: str</span>
+
+        
+    </div>
+    <a class="headerlink" href="#StableError.message"></a>
+    
+    
+
+                            </div>
+                            <div id="StableError.as_detail" class="classattr">
+                                        <input id="StableError.as_detail-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">as_detail</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">source</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="o">*</span>, </span><span class="param"><span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></span><span class="return-annotation">) -> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>:</span></span>
+
+                <label class="view-source-button" for="StableError.as_detail-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#StableError.as_detail"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="StableError.as_detail-17"><a href="#StableError.as_detail-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">as_detail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span id="StableError.as_detail-18"><a href="#StableError.as_detail-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the JSON ``detail`` object for HTTP error responses.</span>
+</span><span id="StableError.as_detail-19"><a href="#StableError.as_detail-19"><span class="linenos">19</span></a>
+</span><span id="StableError.as_detail-20"><a href="#StableError.as_detail-20"><span class="linenos">20</span></a><span class="sd">        Args:</span>
+</span><span id="StableError.as_detail-21"><a href="#StableError.as_detail-21"><span class="linenos">21</span></a><span class="sd">            source: Contract layer (``validation``, ``business``, ``security``).</span>
+</span><span id="StableError.as_detail-22"><a href="#StableError.as_detail-22"><span class="linenos">22</span></a><span class="sd">            message: Optional override; defaults to :attr:`message`.</span>
+</span><span id="StableError.as_detail-23"><a href="#StableError.as_detail-23"><span class="linenos">23</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="StableError.as_detail-24"><a href="#StableError.as_detail-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="p">{</span>
+</span><span id="StableError.as_detail-25"><a href="#StableError.as_detail-25"><span class="linenos">25</span></a>            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+</span><span id="StableError.as_detail-26"><a href="#StableError.as_detail-26"><span class="linenos">26</span></a>            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span id="StableError.as_detail-27"><a href="#StableError.as_detail-27"><span class="linenos">27</span></a>            <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">message</span><span class="p">,</span>
+</span><span id="StableError.as_detail-28"><a href="#StableError.as_detail-28"><span class="linenos">28</span></a>            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
+</span><span id="StableError.as_detail-29"><a href="#StableError.as_detail-29"><span class="linenos">29</span></a>        <span class="p">}</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Build the JSON <code>detail</code> object for HTTP error responses.</p>
+
+<p>Args:
+    source: Contract layer (<code>validation</code>, <code>business</code>, <code>security</code>).
+    message: Optional override; defaults to <code><a href="#StableError.message">message</a></code>.</p>
+</div>
+
+
+                            </div>
+                </section>
     </main>
 <script>
     function escapeHTML(html) {
