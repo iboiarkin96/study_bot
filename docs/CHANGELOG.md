@@ -4,6 +4,19 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-04-17
+
+### Added
+
+- Shared favicon asset [`docs/assets/favicon.svg`](assets/favicon.svg) and favicon links across all documentation HTML pages under `docs/`.
+
+### Changed
+
+- Favicon handling is now automated for generated docs outputs:
+  - [`scripts/render_docs_html.py`](../scripts/render_docs_html.py) injects favicon links for rendered markdown companion pages.
+  - [`scripts/normalize_pdoc_output.py`](../scripts/normalize_pdoc_output.py) injects favicon links into pdoc-generated API reference pages under `docs/api/`.
+  - [`scripts/inject_docs_favicon.py`](../scripts/inject_docs_favicon.py) provides a one-shot repo-wide backfill/normalization for docs HTML files missing a favicon tag.
+
 ## 2026-04-15
 
 ### Removed
