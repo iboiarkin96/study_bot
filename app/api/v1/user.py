@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db_session
 from app.core.idempotency import build_payload_hash
+from app.errors.common import COMMON_400, COMMON_409
 from app.openapi.examples import (
     USER_CREATE_REQUEST_EXAMPLES,
     USER_CREATE_VALIDATION_ERROR_EXAMPLES,
@@ -129,12 +130,7 @@ def create_user(
     if not idempotency_key:
         raise HTTPException(
             status_code=400,
-            detail={
-                "code": "COMMON_400",
-                "key": "IDEMPOTENCY_KEY_REQUIRED",
-                "message": "Missing required `Idempotency-Key` header for write operation.",
-                "source": "business",
-            },
+            detail=COMMON_400.as_detail("business"),
         )
 
     payload_dump = payload.model_dump(mode="json")
@@ -148,12 +144,7 @@ def create_user(
         if record.payload_hash != payload_hash:
             raise HTTPException(
                 status_code=409,
-                detail={
-                    "code": "COMMON_409",
-                    "key": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
-                    "message": "Idempotency key was already used with another payload.",
-                    "source": "business",
-                },
+                detail=COMMON_409.as_detail("business"),
             )
         logger.info("create_user_idempotent_replay key=%s", idempotency_key)
         return UserCreateResponse.model_validate(record.response_body)
@@ -328,12 +319,7 @@ def update_user(
     if not idempotency_key:
         raise HTTPException(
             status_code=400,
-            detail={
-                "code": "COMMON_400",
-                "key": "IDEMPOTENCY_KEY_REQUIRED",
-                "message": "Missing required `Idempotency-Key` header for write operation.",
-                "source": "business",
-            },
+            detail=COMMON_400.as_detail("business"),
         )
 
     payload_dump = payload.model_dump(mode="json")
@@ -348,12 +334,7 @@ def update_user(
         if record.payload_hash != payload_hash:
             raise HTTPException(
                 status_code=409,
-                detail={
-                    "code": "COMMON_409",
-                    "key": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
-                    "message": "Idempotency key was already used with another payload.",
-                    "source": "business",
-                },
+                detail=COMMON_409.as_detail("business"),
             )
         logger.info("update_user_idempotent_replay key=%s", idempotency_key)
         return UserCreateResponse.model_validate(record.response_body)
@@ -474,12 +455,7 @@ def patch_user(
     if not idempotency_key:
         raise HTTPException(
             status_code=400,
-            detail={
-                "code": "COMMON_400",
-                "key": "IDEMPOTENCY_KEY_REQUIRED",
-                "message": "Missing required `Idempotency-Key` header for write operation.",
-                "source": "business",
-            },
+            detail=COMMON_400.as_detail("business"),
         )
 
     payload_dump = payload.model_dump(mode="json", exclude_unset=True)
@@ -494,12 +470,7 @@ def patch_user(
         if record.payload_hash != payload_hash:
             raise HTTPException(
                 status_code=409,
-                detail={
-                    "code": "COMMON_409",
-                    "key": "IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD",
-                    "message": "Idempotency key was already used with another payload.",
-                    "source": "business",
-                },
+                detail=COMMON_409.as_detail("business"),
             )
         logger.info("patch_user_idempotent_replay key=%s", idempotency_key)
         return UserCreateResponse.model_validate(record.response_body)

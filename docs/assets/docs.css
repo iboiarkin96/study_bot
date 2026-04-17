@@ -377,7 +377,9 @@ p.adr-track-branch-note {
 }
 
 /* ADR template: collapsible weight instructions (<details> in 0000-template.html) */
-details.adr-weight-help {
+/* docs-theory-help: same chrome for optional “theory background” blocks (e.g. internal README). */
+details.adr-weight-help,
+details.docs-theory-help {
   margin: 0 0 18px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -385,13 +387,15 @@ details.adr-weight-help {
   background: #fff;
 }
 
-details.adr-weight-help summary {
+details.adr-weight-help summary,
+details.docs-theory-help summary {
   cursor: pointer;
   font-weight: 600;
   color: #334155;
 }
 
-details.adr-weight-help[open] summary {
+details.adr-weight-help[open] summary,
+details.docs-theory-help[open] summary {
   margin-bottom: 8px;
   border-bottom: 1px solid var(--line);
   padding-bottom: 8px;

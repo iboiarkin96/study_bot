@@ -30,8 +30,13 @@
 
       <h2>2. Where to define reusable responses</h2>
       <ul>
+        <li>
+          <code>app/errors/common.py</code> and <code>app/errors/user.py</code> — single source of truth for
+          stable <code>code</code>, <code>key</code>, and default <code>message</code> (plus Pydantic mapping dicts for
+          user validation). Runtime code and OpenAPI examples import from here; do not duplicate literals.
+        </li>
         <li><code>app/openapi/responses.py</code> - shared response blocks for routers.</li>
-        <li><code>app/openapi/examples/errors.py</code> - canonical example payload values.</li>
+        <li><code>app/openapi/examples/errors.py</code> - OpenAPI example payloads (built from the catalog above).</li>
         <li><code>app/api/v1/*.py</code> - endpoint-level assembly of common + entity responses.</li>
       </ul>
 

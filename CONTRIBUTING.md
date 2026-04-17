@@ -59,4 +59,4 @@
 
 ## Further reading
 
-- Developer guides index: [docs/developer/README.html](docs/developer/README.html)
+- Developers Docs (engineering practices and guides index): [docs/internal/developers.html](docs/internal/developers.html)

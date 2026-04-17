@@ -11,25 +11,21 @@ from fastapi import Request
 from starlette.responses import JSONResponse, Response
 
 from app.core.config import Settings
+from app.errors.common import COMMON_401, COMMON_500
+from app.errors.types import StableError
 
 
-def build_security_error_payload(code: str, key: str, message: str) -> dict[str, str]:
+def build_security_error_payload(err: StableError, *, message: str | None = None) -> dict[str, str]:
     """Build the ``detail`` object for security-related HTTP error responses.
 
     Args:
-        code: Stable HTTP-layer error code (e.g. ``COMMON_401``).
-        key: Machine-readable identifier for clients and logs.
-        message: Human-readable explanation.
+        err: Stable identity from :mod:`app.errors.common` (or another catalog module).
+        message: Optional override; defaults to ``err.message``.
 
     Returns:
         Dict with keys ``code``, ``key``, ``message``, and fixed ``source="security"``.
     """
-    return {
-        "code": code,
-        "key": key,
-        "message": message,
-        "source": "security",
-    }
+    return err.as_detail("security", message=message)
 
 
 @dataclass(frozen=True)
@@ -182,8 +178,7 @@ def authenticate_request(request: Request, settings: Settings) -> JSONResponse |
             status_code=401,
             content={
                 "detail": build_security_error_payload(
-                    code="COMMON_401",
-                    key="SECURITY_AUTH_REQUIRED",
+                    COMMON_401,
                     message=(f"Missing or invalid API key in header `{settings.api_auth_header}`."),
                 )
             },
@@ -193,8 +188,7 @@ def authenticate_request(request: Request, settings: Settings) -> JSONResponse |
         status_code=500,
         content={
             "detail": build_security_error_payload(
-                code="COMMON_500",
-                key="SECURITY_AUTH_STRATEGY_INVALID",
+                COMMON_500,
                 message=f"Unsupported auth strategy: `{settings.api_auth_strategy}`.",
             )
         },

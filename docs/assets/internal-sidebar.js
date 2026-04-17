@@ -108,6 +108,7 @@
    */
   const INTERNAL_SIDEBAR_NAV = [
     { label: "Overview", path: "internal/README.html" },
+    { label: "Developers Docs", path: "internal/developers.html" },
     { label: "System design", path: "internal/system-design.html" },
     {
       label: "API",

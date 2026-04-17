@@ -39,6 +39,7 @@ from app.core.security import (
     extract_client_id,
     is_protected_api_request,
 )
+from app.errors.common import COMMON_413, COMMON_429
 from app.schemas.system import LiveResponse, ReadyResponse
 from app.validation.user import build_validation_error_payload
 
@@ -163,8 +164,7 @@ async def request_body_limit_middleware(request: Request, call_next) -> Response
             status_code=413,
             content={
                 "detail": build_security_error_payload(
-                    code="COMMON_413",
-                    key="SECURITY_REQUEST_BODY_TOO_LARGE",
+                    COMMON_413,
                     message=f"Request body exceeds limit of {settings.api_body_max_bytes} bytes.",
                 )
             },
@@ -199,11 +199,7 @@ async def auth_and_rate_limit_middleware(request: Request, call_next) -> Respons
             response = JSONResponse(
                 status_code=429,
                 content={
-                    "detail": build_security_error_payload(
-                        code="COMMON_429",
-                        key="SECURITY_RATE_LIMIT_EXCEEDED",
-                        message="Too many requests. Retry later.",
-                    )
+                    "detail": build_security_error_payload(COMMON_429),
                 },
             )
             response.headers["Retry-After"] = str(rate_result.retry_after_seconds)

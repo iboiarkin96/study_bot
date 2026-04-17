@@ -60,7 +60,7 @@ function activeTarget(relPath) {
     return "adr/README.html";
   }
   if (relPath.startsWith("developer/")) {
-    return "developer/README.html";
+    return "internal/developers.html";
   }
   if (relPath.startsWith("backlog/")) {
     return "backlog/README.html";
@@ -87,7 +87,10 @@ function activeTarget(relPath) {
     return "openapi-explorer.html";
   }
   if (relPath === "engineering-practices.html") {
-    return "engineering-practices.html";
+    return "internal/developers.html";
+  }
+  if (relPath === "internal/developers.html") {
+    return "internal/developers.html";
   }
   return "index.html";
 }
@@ -120,17 +123,16 @@ function renderTopNav() {
   const internalItems = [
     { label: "Home", target: "index.html" },
     { label: "Internal docs", target: "internal/README.html" },
-    { label: "System design", target: "internal/system-design.html" },
-    { label: "Engineering Practices", target: "engineering-practices.html" },
-    { label: "Developer Docs", target: "developer/README.html" },
     { label: "How-to guides", target: "howto/README.html" },
     { label: "ADR", target: "adr/README.html" },
     { label: "Runbooks", target: "runbooks/README.html" },
-    { label: "Pdoc API docs", target: "api/index.html" },
     { label: "API assessment reports", target: "audit/README.html" },
     { label: "⭐Backlog", target: "backlog/README.html", className: "top-nav__link--backlog" },
   ];
-  const publicItems = [{ label: "OpenAPI explorer", target: "openapi-explorer.html" }];
+  const publicItems = [
+    { label: "OpenAPI explorer", target: "openapi-explorer.html" },
+    { label: "Pdoc API docs", target: "api/index.html" },
+  ];
 
   const nav = document.createElement("nav");
   nav.className = "top-nav";
@@ -179,11 +181,11 @@ function renderTopNav() {
 
   const publicTitle = document.createElement("span");
   publicTitle.className = "top-nav__group-title";
-  publicTitle.textContent = "Public";
+  publicTitle.textContent = "Code";
 
   const publicHint = document.createElement("span");
   publicHint.className = "top-nav__group-hint";
-  publicHint.textContent = "API contract for integrators";
+  publicHint.textContent = "Development documentation";
 
   publicHead.appendChild(publicTitle);
   publicHead.appendChild(publicHint);
