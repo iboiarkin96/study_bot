@@ -11,8 +11,11 @@ import os
 import subprocess
 import sys
 
-USER_FACING_PREFIXES = ("app/", "docs/openapi/")
+CODE_PREFIXES = ("app/",)
+DOCS_PREFIXES = ("docs/openapi/",)
 ROOT_TRIGGER_FILES = frozenset({"README.md"})
+ROOT_CHANGELOG = "CHANGELOG.md"
+DOCS_CHANGELOG = "docs/CHANGELOG.md"
 SKIP_SUBSTRINGS = ("[skip changelog]", "skip-changelog")
 
 
@@ -31,17 +34,28 @@ def _is_all_zeros(ref: str) -> bool:
     return s == "0" * len(s) and len(s) >= 40
 
 
-def _paths_trigger(paths: list[str]) -> bool:
+def _classify_triggers(paths: list[str]) -> tuple[bool, bool]:
+    """Return trigger flags for code-facing and docs-facing changes.
+
+    Args:
+        paths: Changed paths in git diff range.
+
+    Returns:
+        Tuple ``(needs_root_changelog, needs_docs_changelog)``.
+    """
+    needs_root = False
+    needs_docs = False
     for p in paths:
         p = p.replace("\\", "/").strip()
         if not p:
             continue
         if p in ROOT_TRIGGER_FILES:
-            return True
-        for prefix in USER_FACING_PREFIXES:
-            if p.startswith(prefix):
-                return True
-    return False
+            needs_root = True
+        if any(p.startswith(prefix) for prefix in CODE_PREFIXES):
+            needs_root = True
+        if any(p.startswith(prefix) for prefix in DOCS_PREFIXES):
+            needs_docs = True
+    return needs_root, needs_docs
 
 
 def _skip_in_text(text: str) -> bool:
@@ -78,12 +92,24 @@ def main() -> int:
         return 0
 
     paths = _changed_files(args.base, args.head)
-    if not _paths_trigger(paths):
+    needs_root, needs_docs = _classify_triggers(paths)
+    if not (needs_root or needs_docs):
         print("changelog_gate: ok (no user-facing paths in range)")
         return 0
 
-    if "CHANGELOG.md" in {x.replace("\\", "/") for x in paths}:
-        print("changelog_gate: ok (CHANGELOG.md updated)")
+    changed_paths = {x.replace("\\", "/") for x in paths}
+    has_root_changelog = ROOT_CHANGELOG in changed_paths
+    has_docs_changelog = DOCS_CHANGELOG in changed_paths
+
+    missing: list[str] = []
+    if needs_root and not has_root_changelog:
+        missing.append(ROOT_CHANGELOG)
+    if needs_docs and not (has_docs_changelog or has_root_changelog):
+        # Allow root changelog as an override for docs/openapi changes.
+        missing.append(DOCS_CHANGELOG)
+
+    if not missing:
+        print("changelog_gate: ok (required changelog file(s) updated)")
         return 0
 
     if args.event == "pr":
@@ -96,10 +122,14 @@ def main() -> int:
             print("changelog_gate: ok (skip token in commit message(s))")
             return 0
 
+    print("changelog_gate: missing required changelog update(s):", file=sys.stderr)
+    for path in missing:
+        print(f"  - {path}", file=sys.stderr)
     print(
-        "changelog_gate: CHANGELOG.md must be updated when app/, docs/openapi/, or "
-        "root README.md changes, unless you use [skip changelog] or skip-changelog "
-        "in the PR title (PR) or commit messages (push).",
+        "Rules: app/ and root README.md require CHANGELOG.md; docs/openapi/ "
+        f"requires {DOCS_CHANGELOG} (or {ROOT_CHANGELOG}). "
+        "You can bypass via [skip changelog] or skip-changelog in PR title "
+        "(PR) or commit messages (push).",
         file=sys.stderr,
     )
     return 1

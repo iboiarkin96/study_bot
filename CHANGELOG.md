@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
--
+### Changed
+
+- Documentation HTML pages now use a shared favicon (`docs/assets/favicon.svg`), including `docs/openapi/openapi-explorer.html`, with generation/backfill scripts keeping favicon links consistent across regenerated docs output.
 
 ## [1.1.1] — 2026-04-17
 
