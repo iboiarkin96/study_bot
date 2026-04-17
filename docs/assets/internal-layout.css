@@ -52,12 +52,27 @@
   margin: 0 0 10px;
 }
 
+@property --internal-toggle-border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .internal-layout__sidebar-toggle {
+  --internal-toggle-border-angle: 0deg;
   display: inline-block;
   margin: 0 0 12px;
-  border: 1px solid var(--line, #dbe3ef);
+  border: 2px solid transparent;
   border-radius: 999px;
-  background: #ffffff;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    conic-gradient(
+      from var(--internal-toggle-border-angle),
+      #1d4ed8 0deg 58deg,
+      #bfdbfe 58deg 182deg,
+      #1d4ed8 182deg 242deg,
+      #bfdbfe 242deg 360deg
+    ) border-box;
   color: #475569;
   font-size: 0.78rem;
   line-height: 1.2;
@@ -65,11 +80,23 @@
   cursor: pointer;
   position: relative;
   isolation: isolate;
+  animation: internal-toggle-border-sweep 2.6s linear infinite;
 }
 
 .internal-layout__sidebar-toggle:hover {
-  border-color: var(--accent, #2563eb);
-  color: var(--accent, #2563eb);
+  color: #1e40af;
+}
+
+@keyframes internal-toggle-border-sweep {
+  to {
+    --internal-toggle-border-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .internal-layout__sidebar-toggle {
+    animation: none;
+  }
 }
 
 .internal-layout__shell.is-sidebar-collapsed {

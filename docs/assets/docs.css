@@ -302,16 +302,29 @@ p.adr-track-branch-note {
 }
 
 /* ADR: current status + linear status log (docs-nav.js, data-adr-weight on <main>) */
+@property --adr-status-border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .adr-current-status {
+  --adr-status-border-angle: 0deg;
   margin: 0 0 12px;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 12px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(#f8fafc, #f8fafc) padding-box;
   position: sticky;
   top: 0;
   z-index: 6;
   font-size: 0.95rem;
+  animation: adr-status-border-sweep 2.8s linear infinite;
 }
 
 .adr-current-status__label {
@@ -324,32 +337,73 @@ p.adr-track-branch-note {
 }
 
 .adr-current-status--draft {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background:
+    linear-gradient(#f1f5f9, #f1f5f9) padding-box,
+    conic-gradient(
+      from var(--adr-status-border-angle),
+      #64748b 0deg 65deg,
+      #cbd5e1 65deg 180deg,
+      #64748b 180deg 245deg,
+      #cbd5e1 245deg 360deg
+    ) border-box;
 }
 
 .adr-current-status--ongoing {
-  background: #fffbeb;
-  border-color: #fcd34d;
+  background:
+    linear-gradient(#fffbeb, #fffbeb) padding-box,
+    conic-gradient(
+      from var(--adr-status-border-angle),
+      #b45309 0deg 65deg,
+      #fcd34d 65deg 180deg,
+      #b45309 180deg 245deg,
+      #fcd34d 245deg 360deg
+    ) border-box;
 }
 
 .adr-current-status--declined {
-  background: #fef2f2;
-  border-color: #fca5a5;
+  background:
+    linear-gradient(#fef2f2, #fef2f2) padding-box,
+    conic-gradient(
+      from var(--adr-status-border-angle),
+      #b91c1c 0deg 65deg,
+      #fca5a5 65deg 180deg,
+      #b91c1c 180deg 245deg,
+      #fca5a5 245deg 360deg
+    ) border-box;
 }
 
 .adr-current-status--declined .adr-current-status__value {
   color: #7f1d1d;
+  font-weight: 700;
 }
 
 .adr-current-status--done {
-  background: #dcfce7;
-  border-color: #86efac;
+  background:
+    linear-gradient(#f0fdf4, #f0fdf4) padding-box,
+    conic-gradient(
+      from var(--adr-status-border-angle),
+      #15803d 0deg 65deg,
+      #86efac 65deg 180deg,
+      #15803d 180deg 245deg,
+      #86efac 245deg 360deg
+    ) border-box;
 }
 
 .adr-current-status--done .adr-current-status__value {
   color: #14532d;
   font-weight: 700;
+}
+
+@keyframes adr-status-border-sweep {
+  to {
+    --adr-status-border-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adr-current-status {
+    animation: none;
+  }
 }
 
 .adr-status-log {

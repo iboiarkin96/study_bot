@@ -179,57 +179,61 @@
                 <h2>Telemetry events and storage</h2>
                 <h3>Client events</h3>
                 <ul>
-                  <li><code>search_query</code>: one emitted query execution with query length, token count, result count, latency, and top-N impressions.</li>
-                  <li><code>search_result_click</code>: click-through on a result (mouse/keyboard), including rank and URL.</li>
-                  <li><code>search_success</code>: first successful click in a search session; includes time-to-success and time-to-click.</li>
-                  <li><code>search_query_error</code>: client-side index-load failure for observability and diagnostics.</li>
-                </ul>
-                <h3>Persistence model</h3>
-                <ul>
-                  <li>All events are written append-only to <code>docs_search_events</code> in the current application SQLite DB.</li>
-                  <li>Telemetry data and business data share one DB file to simplify local setup.</li>
-                  <li>SQLite runs in WAL mode to reduce writer contention for frequent event inserts.</li>
-                </ul>
-              </section>
-              <section class="card">
-                <h2>Metric definitions (canonical formulas)</h2>
-                <p>
-                  Let <code>Q</code> be all <code>search_query</code> events in a time window, and <code>S</code> be first
-                  <code>search_success</code> per session in the same window.
-                </p>
-                <h3>Zero-result rate</h3>
-                <pre><code>zero_result_rate = count(q in Q where q.results_count = 0) / count(Q)</code></pre>
-                <h3>Query CTR</h3>
-                <pre><code>query_ctr = count(distinct query_id in Q with at least one search_result_click) / count(Q)</code></pre>
-                <h3>Time-to-first-success</h3>
-                <pre><code>TTFS = distribution of s.time_to_success_ms for s in S
-                  reported as p50 and p75</code></pre>
-                  <p>
-                    For this ADR, dashboard defaults are: <strong>p50</strong> and <strong>p75</strong> over the selected rolling window.
-                  </p>
-                </section>
-                <section class="card">
-                  <h2>Validation</h2>
-                  <ul>
-                    <li>Run <code>make docs-fix</code> and verify index generation step succeeds.</li>
-                    <li>Smoke-test queries across ADR/internal/developer/runbooks/api paths.</li>
-                    <li>Verify keyboard UX: up/down/enter/escape.</li>
-                    <li>Track payload size and first-query latency after docs growth.</li>
-                    <li>Send a search event and verify row creation in telemetry DB (<code>docs_search_events</code>).</li>
-                    <li>Call <code>GET /internal/telemetry/docs-search/metrics</code> and verify non-zero aggregates.</li>
-                  </ul>
-                </section>
-                <section class="card">
-                  <h2>References</h2>
-                  <ul>
-                    <li><a href="./0001-docs-as-code.html">ADR 0001</a></li>
-                    <li><a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a></li>
-                    <li><a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a></li>
-                    <li><a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a></li>
-                    <li><a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a></li>
-                  </ul>
-                </section>
-                <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-              </main>
+                  <li><code>search_query</code>: one emitted query execution with query length, token count, result count,
+                    latency, and top-N impressions.</li>
+                    <li><code>search_result_click</code>: click-through on a result (mouse/keyboard), including rank and URL.</li>
+                    <li><code>search_success</code>: first successful click in a search session; includes time-to-success and
+                      time-to-click.</li>
+                      <li><code>search_query_error</code>: client-side index-load failure for observability and diagnostics.</li>
+                    </ul>
+                    <h3>Persistence model</h3>
+                    <ul>
+                      <li>All events are written append-only to <code>docs_search_events</code> in the current application SQLite DB.
+                      </li>
+                      <li>Telemetry data and business data share one DB file to simplify local setup.</li>
+                      <li>SQLite runs in WAL mode to reduce writer contention for frequent event inserts.</li>
+                    </ul>
+                  </section>
+                  <section class="card">
+                    <h2>Metric definitions (canonical formulas)</h2>
+                    <p>
+                      Let <code>Q</code> be all <code>search_query</code> events in a time window, and <code>S</code> be first
+                      <code>search_success</code> per session in the same window.
+                    </p>
+                    <h3>Zero-result rate</h3>
+                    <pre><code>zero_result_rate = count(q in Q where q.results_count = 0) / count(Q)</code></pre>
+                    <h3>Query CTR</h3>
+                    <pre><code>query_ctr = count(distinct query_id in Q with at least one search_result_click) / count(Q)</code></pre>
+                    <h3>Time-to-first-success</h3>
+                    <pre><code>TTFS = distribution of s.time_to_success_ms for s in S
+                      reported as p50 and p75</code></pre>
+                      <p>
+                        For this ADR, dashboard defaults are: <strong>p50</strong> and <strong>p75</strong> over the selected rolling
+                        window.
+                      </p>
+                    </section>
+                    <section class="card">
+                      <h2>Validation</h2>
+                      <ul>
+                        <li>Run <code>make docs-fix</code> and verify index generation step succeeds.</li>
+                        <li>Smoke-test queries across ADR/internal/developer/runbooks/api paths.</li>
+                        <li>Verify keyboard UX: up/down/enter/escape.</li>
+                        <li>Track payload size and first-query latency after docs growth.</li>
+                        <li>Send a search event and verify row creation in telemetry DB (<code>docs_search_events</code>).</li>
+                        <li>Call <code>GET /internal/telemetry/docs-search/metrics</code> and verify non-zero aggregates.</li>
+                      </ul>
+                    </section>
+                    <section class="card">
+                      <h2>References</h2>
+                      <ul>
+                        <li><a href="./0001-docs-as-code.html">ADR 0001</a></li>
+                        <li><a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a></li>
+                        <li><a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a></li>
+                        <li><a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a></li>
+                        <li><a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a></li>
+                      </ul>
+                    </section>
+                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                  </main>
 
-            </body></html>
+                </body></html>

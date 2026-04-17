@@ -114,34 +114,9 @@ const DOCS_SEARCH_MAX_RESULTS = 10;
 const DOCS_SEARCH_DEBOUNCE_MS = 120;
 const DOCS_SEARCH_MAX_PREFIX_EXPANSIONS = 24;
 const DOCS_SEARCH_SUCCESS_WINDOW_MS = 60_000;
-const TOP_NAV_INTERNAL_COLLAPSED_STORAGE_KEY = "docs.nav.internal.collapsed";
 let docsSearchIndexPromise = null;
 let docsSearchSessionId = null;
 let docsSearchQuerySeq = 0;
-
-function isInternalNavCollapsedPreferred(relPath) {
-  const isInternalPage = relPath.startsWith("internal/");
-  try {
-    const raw = window.localStorage.getItem(TOP_NAV_INTERNAL_COLLAPSED_STORAGE_KEY);
-    if (raw === "1") {
-      return true;
-    }
-    if (raw === "0") {
-      return false;
-    }
-  } catch {
-    // Storage can be unavailable in hardened environments; fallback below.
-  }
-  return !isInternalPage;
-}
-
-function persistInternalNavCollapsed(isCollapsed) {
-  try {
-    window.localStorage.setItem(TOP_NAV_INTERNAL_COLLAPSED_STORAGE_KEY, isCollapsed ? "1" : "0");
-  } catch {
-    // Ignore persistence errors and keep current page behavior functional.
-  }
-}
 
 function docsSearchTelemetryConfig() {
   const meta = document.querySelector('meta[name="docs-search-telemetry-endpoint"]');
@@ -195,7 +170,7 @@ function emitDocsSearchTelemetry(eventName, payload) {
     body: serialized,
     credentials: "same-origin",
     keepalive: true,
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 function docsSearchIndexUrl(fromDir) {
@@ -607,7 +582,7 @@ function mountDocsSearch(nav, fromDir) {
   }
 
   input.addEventListener("focus", () => {
-    loadDocsSearchIndex(fromDir).catch(() => {});
+    loadDocsSearchIndex(fromDir).catch(() => { });
   });
 
   input.addEventListener("input", () => {
@@ -735,40 +710,13 @@ function renderTopNav() {
   internalHint.className = "top-nav__group-hint";
   internalHint.textContent = "Team, architecture, and operations";
 
-  const internalControls = document.createElement("div");
-  internalControls.className = "top-nav__group-controls";
-
-  const internalToggle = document.createElement("button");
-  internalToggle.type = "button";
-  internalToggle.className = "top-nav__toggle";
-
   internalHead.appendChild(internalTitle);
   internalHead.appendChild(internalHint);
-  internalControls.appendChild(internalToggle);
-  internalHead.appendChild(internalControls);
 
   const internalLinks = document.createElement("div");
   internalLinks.className = "top-nav__links";
   internalLinks.id = "top-nav-internal-links";
   appendTopNavLinks(internalLinks, internalItems, fromDir, active);
-
-  internalToggle.setAttribute("aria-controls", internalLinks.id);
-
-  function applyInternalCollapsedState(isCollapsed) {
-    internalSection.classList.toggle("is-collapsed", isCollapsed);
-    internalLinks.hidden = isCollapsed;
-    internalToggle.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
-    internalToggle.textContent = isCollapsed ? "Show links" : "Hide links";
-  }
-
-  let internalCollapsed = isInternalNavCollapsedPreferred(relPath);
-  applyInternalCollapsedState(internalCollapsed);
-
-  internalToggle.addEventListener("click", () => {
-    internalCollapsed = !internalCollapsed;
-    applyInternalCollapsedState(internalCollapsed);
-    persistInternalNavCollapsed(internalCollapsed);
-  });
 
   internalSection.appendChild(internalHead);
   internalSection.appendChild(internalLinks);
