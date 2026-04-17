@@ -107,13 +107,12 @@
    * Paths are relative to the docs/ root (e.g. internal/README.html).
    */
   const INTERNAL_SIDEBAR_NAV = [
-    { label: "Overview", path: "internal/README.html" },
-    { label: "ADR", path: "adr/README.html" },
-    { label: "Runbooks", path: "runbooks/README.html" },
-    { label: "Developers Docs", path: "internal/developers.html" },
+    { label: "Welcome", path: "internal/README.html" },
+    { label: "Methodology", path: "internal/methodology.html" },
     { label: "System design", path: "internal/system-design.html" },
+    { label: "Developers Docs", path: "internal/developers.html" },
     {
-      label: "Kafka",
+      label: "Kafka (just example)",
       children: [
         { label: "Overview", path: "kafka/README.html" },
         { label: "Topics", path: "kafka/topics.html" },
@@ -126,6 +125,7 @@
     {
       label: "API documentation",
       children: [
+        { label: "Errors", path: "internal/api/errors.html" },
         {
           label: "User",
           expand: "after-api-hub",

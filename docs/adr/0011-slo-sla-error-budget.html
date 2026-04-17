@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0011: SLOs, SLAs, Error Budget, and Monitoring Alerts</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0011: SLOs, SLAs, Error Budget, and Monitoring Alerts</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0011: SLOs, SLAs, Error Budget, and Monitoring Alerts</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0011: SLOs, SLAs, Error Budget, and Monitoring Alerts</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -30,6 +30,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> Dashboards alone do not answer “are we allowed to ship today?” <strong>Service
@@ -44,6 +46,8 @@
         arbitrary thresholds.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <h3>Service level indicators (SLIs)</h3>
       <ul>
@@ -82,8 +86,8 @@
           </tr>
           <tr>
             <td>API latency (p95)</td>
-            <td>95% of in-scope requests complete in under 500&nbsp;ms</td>
-            <td>Measured as histogram p95 over 5&nbsp;min rate windows for alerting; SLO is a monthly/rolling intent.</td>
+            <td>95% of in-scope requests complete in under 500 ms</td>
+            <td>Measured as histogram p95 over 5 min rate windows for alerting; SLO is a monthly/rolling intent.</td>
           </tr>
           <tr>
             <td>Readiness probe</td>
@@ -120,6 +124,8 @@
         for notifications is a follow-up.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Implementation</h2>
       <ul>
         <li><code>ops/prometheus/rules/study_app_slo.yml</code> — recording and alert rules.</li>
@@ -134,6 +140,8 @@
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -145,7 +153,8 @@
         <li>Low-traffic environments can make 30-day windows noisy or flat; tune evaluation windows for non-prod if needed.</li>
         <li>Blackbox adds a container and requires the API reachable from Docker (same defaults as Prometheus scrape).</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

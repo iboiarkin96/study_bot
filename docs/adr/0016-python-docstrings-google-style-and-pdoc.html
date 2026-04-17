@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0016: Python Docstrings (Google Style) and pdoc</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0016: Python Docstrings (Google Style) and pdoc</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0016: Python Docstrings (Google Style) and pdoc</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0016: Python Docstrings (Google Style) and pdoc</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -30,6 +30,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> OpenAPI describes HTTP; it does not replace module-level intent for internal
@@ -41,6 +43,8 @@
         when touching Python under <code>app/</code>, <code>scripts/</code>, <code>tests/</code>, and <code>tools/</code>.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <ol>
         <li>
@@ -69,12 +73,16 @@
         </li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Scope</h2>
       <ul>
         <li>In scope: docstrings, module-level <code>"""..."""</code> for packages, ADR and editor rules.</li>
         <li>Out of scope: replacing OpenAPI descriptions; changing Ruff/mypy rules solely for docstrings.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Templates (copy from here)</h2>
       <h3>Module</h3>
       <pre><code>"""One-line summary of the module responsibility.
@@ -107,6 +115,8 @@
             <h3>Method / property</h3>
             <p>Same as function; use <code>Args</code> including <code>self</code> only when non-obvious.</p>
 
+          </section>
+          <section class="card">
             <h2>Checklist for humans and LLM agents</h2>
             <ul>
               <li>After changing behavior, update the docstring in the same PR.</li>
@@ -120,6 +130,8 @@
                     <li>Run <code>make api-docs</code> locally when changing public <code>app</code> APIs to verify rendering.</li>
                   </ul>
 
+                </section>
+                <section class="card">
                   <h2>Alternatives considered</h2>
                   <ol>
                     <li>
@@ -138,6 +150,8 @@
                     </li>
                   </ol>
 
+                </section>
+                <section class="card">
                   <h2>Consequences</h2>
                   <h3>Positive</h3>
                   <ul>
@@ -148,7 +162,8 @@
                   <ul>
                     <li>Existing files may still carry older phrasing until touched; opportunistic updates are welcome.</li>
                   </ul>
-                  <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                </main>
-              </body>
-            </html>
+                </section>
+                <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+              </main>
+
+            </body></html>

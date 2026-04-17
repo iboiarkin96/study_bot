@@ -1,26 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0022: Embedded Swagger — static validation (superseded)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0022: Embedded Swagger — static validation (superseded)</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container" data-adr-weight="2">
-      <h1>ADR 0022: Embedded Swagger — static OpenAPI validation (superseded)</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<body>
+  <main class="container" data-adr-weight="2">
+    <h1>ADR 0022: Embedded Swagger — static OpenAPI validation (superseded)</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         This ADR records a <strong>superseded</strong> decision (see below). The last merge updated the supersession
@@ -32,6 +31,8 @@
         <li>Accepted: 2026-04-12</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context (historical)</h2>
       <p>
         <strong>Why this record exists:</strong> We tried to combine static Swagger UI with client-side JSON validation
@@ -46,6 +47,8 @@
         validation</strong> of JSON bodies (Ajv, interceptors, no live HTTP from that page).
       </p>
 
+    </section>
+    <section class="card">
       <h2>Superseded decision</h2>
       <p>
         The approach described in earlier drafts of this ADR — <strong>static validation</strong> of
@@ -55,9 +58,11 @@
         not deliver a reliable experience.
       </p>
 
+    </section>
+    <section class="card">
       <h2>What was implemented instead</h2>
       <p>
-        <code>docs/openapi-explorer.html</code> is labeled <strong>OpenAPI (test)</strong> in the docs nav. It loads
+        <code>docs/openapi/openapi-explorer.html</code> is labeled <strong>OpenAPI (test)</strong> in the docs nav. It loads
         <strong>Swagger UI</strong> from the CDN and points at the committed <code>openapi-baseline.json</code> for
         <strong>visual exploration only</strong>: operations, schemas, and documentation text. <strong>Try it out</strong>
         is <strong>disabled</strong> on this page. <strong>No validation</strong> runs in the browser; there is no
@@ -68,6 +73,8 @@
         <code>/docs</code> (configure CORS for your browser origin).
       </p>
 
+    </section>
+    <section class="card">
       <h2>On hold</h2>
       <p>
         A future iteration may revisit <strong>browser-side or docs-integrated contract validation</strong> (static or
@@ -76,6 +83,8 @@
         this page.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <ul>
         <li>Readers still get a quick visual view of the OpenAPI snapshot from the static site.</li>
@@ -83,6 +92,8 @@
         <li>ADR 0007 / governance of the baseline file is unchanged.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>References</h2>
       <ul>
         <li>
@@ -90,10 +101,10 @@
           <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>,
           <a href="./0001-docs-as-code.html">ADR 0001</a>.
         </li>
-        <li>Page: <code>docs/openapi-explorer.html</code> (OpenAPI test).</li>
+        <li>Page: <code>docs/openapi/openapi-explorer.html</code> (OpenAPI test).</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-</html>
+</body></html>

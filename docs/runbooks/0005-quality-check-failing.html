@@ -1,27 +1,31 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: Quality Check Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: Quality Check Failing</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: Quality Check Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: Quality Check Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li><code>make verify</code> fails locally.</li>
         <li>CI quality gate fails on lint/type/test/docs sync stage.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Fast triage</h2>
       <ol>
         <li>Run full gate once: <code>make verify</code>.</li>
         <li>Identify failing step: <code>lint-check</code>, <code>type-check</code>, <code>test</code>, <code>docs-fix</code>.</li>
         <li>Re-run only failing step to shorten feedback loop.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Most common causes</h2>
       <ul>
         <li>Lint/type errors after refactor.</li>
@@ -29,6 +33,8 @@
         <li>Docs not synchronized after endpoint/config changes.</li>
         <li>New file not included in expected imports/exports.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Recovery steps by stage</h2>
       <h3>1) Lint fails</h3>
       <ul>
@@ -50,23 +56,30 @@
         <li>Run <code>make docs-fix</code>.</li>
         <li>Commit generated updates if valid.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Final recovery sequence</h2>
       <ol>
         <li><code>make verify</code></li>
         <li><code>make release-check</code></li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Exit criteria</h2>
       <ul>
         <li><code>make verify</code> passes end-to-end.</li>
         <li><code>make release-check</code> passes.</li>
         <li>Diff contains only intentional code/docs changes.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Follow-up</h2>
       <ul>
         <li>If failure source is process/policy ambiguity, update developer docs or runbooks.</li>
         <li>If it changes architecture/governance, record in ADR.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

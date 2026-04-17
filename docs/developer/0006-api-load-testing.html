@@ -1,20 +1,20 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>API load testing (step-by-step)</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>API load testing (step-by-step)</h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        Practical guide to synthetic traffic for checking metrics, limits, and SLOs. Policy reference:
-        <a href="../adr/0012-testing-strategy-and-load-testing.html">ADR 0012</a>.
-      </p>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API load testing (step-by-step)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>API load testing (step-by-step)</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      Practical guide to synthetic traffic for checking metrics, limits, and SLOs. Policy reference:
+      <a href="../adr/0012-testing-strategy-and-load-testing.html">ADR 0012</a>.
+    </p>
+    <section class="card">
 
       <h2>1. Why run load-style traffic</h2>
       <ul>
@@ -27,6 +27,8 @@
           scenarios <strong>write to the database</strong>.
         </li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>2. Environment setup</h2>
       <ol>
@@ -43,6 +45,8 @@
           <code>1.0</code> per user group.
         </li>
       </ol>
+    </section>
+    <section class="card">
 
       <h2>3. Simulating HTTP 500 (local / non-prod only)</h2>
       <p>
@@ -54,6 +58,8 @@
         After restarting the app, only the internal route <code>GET /__loadtest/http500</code> is available (hidden from
         OpenAPI). Do not enable this flag in production.
       </p>
+    </section>
+    <section class="card">
 
       <h2>4. Starting the API</h2>
       <p>From the repository root (adjust the path):</p>
@@ -67,6 +73,8 @@
           <a href="./0007-local-development.html">Local development</a>.
         </p>
         <p>In a <strong>second</strong> terminal, run the traffic generator (see below).</p>
+      </section>
+      <section class="card">
 
         <h2>5. Generator configuration (Python)</h2>
         <p>
@@ -79,6 +87,8 @@
           <li>Validation failures for user create are typically <strong>422</strong> — see <code>user_payload.py</code> and <code>user/create.py</code>.</li>
           <li>HTTP 500 without touching the DB: small share via <code>scenarios/observability/http500.py</code> and <code>LOADTEST_HTTP_500=true</code>.</li>
         </ul>
+      </section>
+      <section class="card">
 
         <h2>6. Commands</h2>
         <p>Plan only (no network):</p>
@@ -87,6 +97,8 @@
         <pre><code>python -m tools.load_testing.runner --total-requests 200</code></pre>
         <p>Optional delay between requests:</p>
         <pre><code>python -m tools.load_testing.runner --total-requests 200 --delay-ms 50</code></pre>
+      </section>
+      <section class="card">
 
         <h2>7. Layout</h2>
         <pre><code>tools/load_testing/
@@ -98,6 +110,8 @@
           user/get.py          # optional; set ROTATE_SYSTEM_USER_IDS
           observability/http500.py
           conspectus/README.txt</code></pre>
+        </section>
+        <section class="card">
 
           <h2>8. Observability</h2>
           <p>
@@ -105,6 +119,8 @@
             After the traffic run, open Grafana (port from <code>.env</code>, default 3001) and the Study App Observability
             dashboard; in Prometheus, <code>/alerts</code> when SLO rules are configured.
           </p>
+        </section>
+        <section class="card">
 
           <h2>9. Common issues</h2>
           <ul>
@@ -116,6 +132,8 @@
             <li><strong>Expected 200, got 404</strong> on user GET — fix <code>ROTATE_SYSTEM_USER_IDS</code> in <code>user/get.py</code>.</li>
             <li><strong>429 Too Many Requests</strong> — lower intensity (<code>--delay-ms</code>) or raise the dev rate limit.</li>
           </ul>
+        </section>
+        <section class="card">
 
           <h2>See also</h2>
           <ul>
@@ -124,7 +142,8 @@
             <li><a href="./0007-local-development.html">Local development</a></li>
             <li><a href="./README.html">Developer docs index</a></li>
           </ul>
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </body>
-    </html>
+        </section>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+
+    </body></html>

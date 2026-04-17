@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Make commands — Internal docs — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+</head>
+
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Make commands</h1>
+        <div id="docs-top-nav"></div>
+        <p class="lead">
+          Single page to discover what `make` can do in this project: daily workflows, release gates, and full
+          command inventory from the `Makefile`.
+        </p>
+
+        <nav aria-labelledby="toc">
+          <h2 id="toc">Contents</h2>
+          <ol>
+            <li><a href="#workflow">Canonical workflows</a></li>
+            <li><a href="#inventory">Full command inventory</a></li>
+            <li><a href="#related">Related docs</a></li>
+          </ol>
+        </nav>
+
+        <section id="workflow" class="card">
+          <h2>Canonical workflows</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Workflow</th>
+                <th>Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Autofix loop</td>
+                <td><code>make fix</code></td>
+                <td>Apply formatting, lint, and docs autofixes.</td>
+              </tr>
+              <tr>
+                <td>Local quality gate</td>
+                <td><code>make verify</code></td>
+                <td>Run lint, typing, OpenAPI checks, contract tests, tests, and docs sync.</td>
+              </tr>
+              <tr>
+                <td>CI-equivalent gate</td>
+                <td><code>make verify-ci</code></td>
+                <td>Run stricter non-mutating checks including <code>docs-check</code>.</td>
+              </tr>
+              <tr>
+                <td>Release gate</td>
+                <td><code>make release-check</code></td>
+                <td>Validate environment and full gate before deployment.</td>
+              </tr>
+              <tr>
+                <td>Release command</td>
+                <td><code>make release DEPLOY_CMD="..."</code></td>
+                <td>Run release checks first, then execute the deployment command.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small">
+            For command taxonomy and rationale, see
+            <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>.
+          </p>
+        </section>
+
+        <section id="inventory" class="card">
+          <h2>Full command inventory</h2>
+          <p class="small">Auto-generated from `Makefile` help output (source of truth).</p>
+          <!-- BEGIN:MAKEFILE_COMMANDS -->
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>make api-docs</code></td>
+                <td>Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)</td>
+              </tr>
+              <tr>
+                <td><code>make changelog-draft</code></td>
+                <td>Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)</td>
+              </tr>
+              <tr>
+                <td><code>make container-start</code></td>
+                <td>Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env)</td>
+              </tr>
+              <tr>
+                <td><code>make contract-test</code></td>
+                <td>Stricter: generated OpenAPI must equal baseline JSON exactly</td>
+              </tr>
+              <tr>
+                <td><code>make dead-code-check</code></td>
+                <td>Run Vulture (unused code; see ADR 0014; not in verify-ci)</td>
+              </tr>
+              <tr>
+                <td><code>make deps-audit</code></td>
+                <td>Scan requirements.txt with pip-audit (OSV); fails on known CVEs</td>
+              </tr>
+              <tr>
+                <td><code>make docker-build</code></td>
+                <td>Build image study-app-api:local (requires Docker)</td>
+              </tr>
+              <tr>
+                <td><code>make docs-check</code></td>
+                <td>Verify docs are already in sync (fails on drift)</td>
+              </tr>
+              <tr>
+                <td><code>make docs-fix</code></td>
+                <td>Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API)</td>
+              </tr>
+              <tr>
+                <td><code>make env-check</code></td>
+                <td>Verify env, deps, and DB connectivity</td>
+              </tr>
+              <tr>
+                <td><code>make env-init</code></td>
+                <td>Create .env from env/example (once per machine)</td>
+              </tr>
+              <tr>
+                <td><code>make fix</code></td>
+                <td>Run auto-fixes (format-fix + lint-fix + docs-fix)</td>
+              </tr>
+              <tr>
+                <td><code>make format-check</code></td>
+                <td>Verify code formatting (no changes)</td>
+              </tr>
+              <tr>
+                <td><code>make format-fix</code></td>
+                <td>Auto-format Python code</td>
+              </tr>
+              <tr>
+                <td><code>make install</code></td>
+                <td>Install dependencies</td>
+              </tr>
+              <tr>
+                <td><code>make k8s-apply</code></td>
+                <td>kubectl apply manifests (requires kubectl; see guide)</td>
+              </tr>
+              <tr>
+                <td><code>make k8s-render-configmap</code></td>
+                <td>Render k8s/configmap.yaml from k8s/app.env (same as docs-fix step)</td>
+              </tr>
+              <tr>
+                <td><code>make lint-check</code></td>
+                <td>Run Ruff lint checks</td>
+              </tr>
+              <tr>
+                <td><code>make lint-fix</code></td>
+                <td>Run Ruff with auto-fixes</td>
+              </tr>
+              <tr>
+                <td><code>make llm-ping</code></td>
+                <td>Smoke-test LLM API (same env as changelog-draft)</td>
+              </tr>
+              <tr>
+                <td><code>make logging-down</code></td>
+                <td>Stop logging stack</td>
+              </tr>
+              <tr>
+                <td><code>make logging-es-query</code></td>
+                <td>Query ES for study-app logs (optional QUERY=&lt;uuid&gt;)</td>
+              </tr>
+              <tr>
+                <td><code>make logging-reset</code></td>
+                <td>Stop stack, delete ES volume + ./logs/*.log (clean slate)</td>
+              </tr>
+              <tr>
+                <td><code>make logging-smoke</code></td>
+                <td>Check Elasticsearch and Kibana URLs</td>
+              </tr>
+              <tr>
+                <td><code>make logging-up</code></td>
+                <td>Start ES/Kibana/Filebeat (use LOG_FORMAT=json, ./logs)</td>
+              </tr>
+              <tr>
+                <td><code>make migrate</code></td>
+                <td>Apply all Alembic migrations</td>
+              </tr>
+              <tr>
+                <td><code>make migration name=…</code></td>
+                <td>Auto-generate new Alembic migration</td>
+              </tr>
+              <tr>
+                <td><code>make observability-down</code></td>
+                <td>Stop Prometheus/Grafana stack</td>
+              </tr>
+              <tr>
+                <td><code>make observability-smoke</code></td>
+                <td>Check observability links return HTTP 200</td>
+              </tr>
+              <tr>
+                <td><code>make observability-up</code></td>
+                <td>Start Prometheus/Grafana stack with Docker Compose</td>
+              </tr>
+              <tr>
+                <td><code>make openapi-accept-changes</code></td>
+                <td>Overwrite baseline with current app.openapi() (commit the file)</td>
+              </tr>
+              <tr>
+                <td><code>make openapi-check</code></td>
+                <td>Lint (operationId, summary, write+422 examples) + breaking-change</td>
+              </tr>
+              <tr>
+                <td><code>make pre-commit-check</code></td>
+                <td>Run all pre-commit hooks</td>
+              </tr>
+              <tr>
+                <td><code>make pre-commit-install</code></td>
+                <td>Install git pre-commit hooks</td>
+              </tr>
+              <tr>
+                <td><code>make release DEPLOY_CMD='…'</code></td>
+                <td>Run release-check then deploy command</td>
+              </tr>
+              <tr>
+                <td><code>make release-check</code></td>
+                <td>Run env-check + deps-audit + verify before deploy</td>
+              </tr>
+              <tr>
+                <td><code>make requirements</code></td>
+                <td>Auto-generate requirements.txt from .venv</td>
+              </tr>
+              <tr>
+                <td><code>make run</code></td>
+                <td>Start FastAPI dev server</td>
+              </tr>
+              <tr>
+                <td><code>make run-loadtest-api</code></td>
+                <td>Start API (high rate limit) → run tools.load_testing.runner → stop</td>
+              </tr>
+              <tr>
+                <td><code>make run-loadtest-api-serve</code></td>
+                <td>Like run, but high API rate limit (foreground; use in 2nd terminal with runner)</td>
+              </tr>
+              <tr>
+                <td><code>make run-project</code></td>
+                <td>Start observability stack (Prometheus/Grafana/…) + FastAPI</td>
+              </tr>
+              <tr>
+                <td><code>make test</code></td>
+                <td>Run full test suite (pytest + coverage per pyproject.toml)</td>
+              </tr>
+              <tr>
+                <td><code>make test-one path=…</code></td>
+                <td>Run one test file or node</td>
+              </tr>
+              <tr>
+                <td><code>make test-warnings</code></td>
+                <td>Run tests with full warning details</td>
+              </tr>
+              <tr>
+                <td><code>make type-check</code></td>
+                <td>Run mypy type checks</td>
+              </tr>
+              <tr>
+                <td><code>make uml-check</code></td>
+                <td>Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes)</td>
+              </tr>
+              <tr>
+                <td><code>make venv</code></td>
+                <td>Create virtual environment</td>
+              </tr>
+              <tr>
+                <td><code>make verify</code></td>
+                <td>Run lint-check + type-check + openapi-check + contract-test + test + docs-fix</td>
+              </tr>
+              <tr>
+                <td><code>make verify-ci</code></td>
+                <td>Run deps-audit + lint-check + type-check + openapi-check + contract-test + test + docs-check</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- END:MAKEFILE_COMMANDS -->
+        </section>
+
+        <section id="related" class="card">
+          <h2>Related docs</h2>
+          <ul>
+            <li><a href="./developers.html">Developers Docs</a></li>
+            <li><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></li>
+            <li><a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a></li>
+            <li><a href="./README.html">Internal docs index</a></li>
+          </ul>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

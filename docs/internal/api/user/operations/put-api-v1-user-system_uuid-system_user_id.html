@@ -1,145 +1,139 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PUT /api/v1/user/{system_uuid}/{system_user_id} — User — Study App</title>
+  <link rel="stylesheet" href="../../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../../assets/internal-layout.css">
+  <script defer src="../../../../assets/docs-nav.js"></script>
+  <script defer src="../../../../assets/internal-sidebar.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PUT /api/v1/user/{system_uuid}/{system_user_id} — User — Study App</title>
-    <link rel="stylesheet" href="../../../../assets/docs.css" />
-    <link rel="stylesheet" href="../../../../assets/internal-layout.css" />
-    <script defer src="../../../../assets/docs-nav.js"></script>
-    <script defer src="../../../../assets/internal-sidebar.js"></script>
-  </head>
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <div id="docs-top-nav"></div>
+        <p class="internal-doc-entity">User</p>
+        <h1 class="internal-doc-h1">
+          <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="PUT /api/v1/user/{system_uuid}/{system_user_id}">
+            <span class="badge badge--method-put">PUT</span>
+            <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
+          </span>
+        </h1>
+        <p class="lead">
+          Full replacement of mutable user fields for an existing row. Normative narrative per
+          <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; OpenAPI
+          <code>operationId</code>: <code>updateUserBySystemUserId</code>.
+        </p>
+        <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>updateUserBySystemUserId</code></p>
 
-  <body class="internal-layout">
-    <div class="internal-layout__shell">
-      <aside class="internal-layout__sidebar">
-        <p class="internal-layout__sidebar-title">Internal docs</p>
-        <div id="internal-sidebar-mount"></div>
-      </aside>
-      <div class="internal-layout__main">
-        <div class="container">
-          <div id="docs-top-nav"></div>
-          <p class="internal-doc-entity">User</p>
-          <h1 class="internal-doc-h1">
-            <span
-              class="internal-http-tablet internal-http-tablet--stacked"
-              aria-label="PUT /api/v1/user/{system_uuid}/{system_user_id}"
-              >
-              <span class="badge badge--method-put">PUT</span>
-              <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
-            </span>
-          </h1>
-          <p class="lead">
-            Full replacement of mutable user fields for an existing row. Normative narrative per
-            <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; OpenAPI
-            <code>operationId</code>: <code>updateUserBySystemUserId</code>.
+        <section class="card">
+          <h2>Request path and behavior</h2>
+          <p>
+            Protected route; middleware per ADR 0005. Handler replaces the mutable projection (full body semantics for
+            declared fields). Flow: idempotency gate → <code>UserService</code> update → repository commit. Success:
+            <code>200 OK</code> with updated user body.
           </p>
-          <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>updateUserBySystemUserId</code></p>
+        </section>
 
-          <div class="card">
-            <h2>Request path and behavior</h2>
-            <p>
-              Protected route; middleware per ADR 0005. Handler replaces the mutable projection (full body semantics for
-              declared fields). Flow: idempotency gate → <code>UserService</code> update → repository commit. Success:
-              <code>200 OK</code> with updated user body.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Idempotency</h2>
-            <p>
-              <code>Idempotency-Key</code> <strong>required</strong> (same rules as POST). Endpoint key uses the literal route
-              path with resolved UUIDs: <code>/api/v1/user/{system_uuid}/{system_user_id}</code>. Body hash uses the full
-              JSON dump for comparison. Mismatch and missing-key outcomes match POST; see
-              <a href="../index.html#idempotency">Unified spec — Idempotency</a>.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Errors</h2>
-            <p class="small">Envelope per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>.</p>
-            <table>
-              <thead>
-                <tr>
-                  <th>HTTP</th>
-                  <th>Code / key</th>
-                  <th>When</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>404</code></td>
-                  <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
-                  <td>No user for composite key — <code>get_user_not_found</code> at <strong>warning</strong>.</td>
-                </tr>
-                <tr>
-                  <td><code>400</code></td>
-                  <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
-                  <td>Missing idempotency header.</td>
-                </tr>
-                <tr>
-                  <td><code>409</code></td>
-                  <td><code>COMMON_409</code> / idempotency mismatch</td>
-                  <td>Same key, different payload hash.</td>
-                </tr>
-                <tr>
-                  <td><code>422</code></td>
-                  <td>Validation</td>
-                  <td>Body or path validation — <code>validation_error</code> at <strong>warning</strong>.</td>
-                </tr>
-                <tr>
-                  <td><code>413</code></td>
-                  <td><code>COMMON_413</code></td>
-                  <td>Body too large — middleware.</td>
-                </tr>
-                <tr>
-                  <td><code>401</code> / <code>429</code></td>
-                  <td>—</td>
-                  <td>Middleware.</td>
-                </tr>
-                <tr>
-                  <td><code>500</code></td>
-                  <td>—</td>
-                  <td>Uncaught exception logging.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="card">
-            <h2>Logging</h2>
-            <p>
-              <code>request_done …</code> (info); <code>request_id</code> per ADR 0023. Router:
-              <code>update_user_idempotent_replay</code> (info, replay),
-              <code>update_user_requested</code> (info, <code>system_user_id</code>, <code>system_uuid</code>). Service
-              warnings before domain errors align with unified spec.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Metrics</h2>
-            <p>
-              Labels include <code>path_template=/api/v1/user/{system_uuid}/{system_user_id}</code>, <code>method=PUT</code>.
-              <a href="../index.html#observability">Unified spec — Metrics</a>.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Single-file deep spec</h2>
-            <p>
-              <a href="../index.html#user-op-updateUserBySystemUserId">Unified internal spec — this operation</a>.
-            </p>
-          </div>
-
-          <p class="small">
-            <a href="../index.html">← User resource hub</a>
+        <section class="card">
+          <h2>Idempotency</h2>
+          <p>
+            <code>Idempotency-Key</code> <strong>required</strong> (same rules as POST). Endpoint key uses the literal route
+            path with resolved UUIDs: <code>/api/v1/user/{system_uuid}/{system_user_id}</code>. Body hash uses the full
+            JSON dump for comparison. Mismatch and missing-key outcomes match POST; see
+            <a href="../index.html#idempotency">Unified spec — Idempotency</a>.
           </p>
+        </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </div>
-      </div>
+        <section class="card">
+          <h2>Errors</h2>
+          <p class="small">Envelope per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>HTTP</th>
+                <th>Code / key</th>
+                <th>When</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>404</code></td>
+                <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
+                <td>No user for composite key — <code>get_user_not_found</code> at <strong>warning</strong>.</td>
+              </tr>
+              <tr>
+                <td><code>400</code></td>
+                <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                <td>Missing idempotency header.</td>
+              </tr>
+              <tr>
+                <td><code>409</code></td>
+                <td><code>COMMON_409</code> / idempotency mismatch</td>
+                <td>Same key, different payload hash.</td>
+              </tr>
+              <tr>
+                <td><code>422</code></td>
+                <td>Validation</td>
+                <td>Body or path validation — <code>validation_error</code> at <strong>warning</strong>.</td>
+              </tr>
+              <tr>
+                <td><code>413</code></td>
+                <td><code>COMMON_413</code></td>
+                <td>Body too large — middleware.</td>
+              </tr>
+              <tr>
+                <td><code>401</code> / <code>429</code></td>
+                <td>—</td>
+                <td>Middleware.</td>
+              </tr>
+              <tr>
+                <td><code>500</code></td>
+                <td>—</td>
+                <td>Uncaught exception logging.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <h2>Logging</h2>
+          <p>
+            <code>request_done …</code> (info); <code>request_id</code> per ADR 0023. Router:
+            <code>update_user_idempotent_replay</code> (info, replay),
+            <code>update_user_requested</code> (info, <code>system_user_id</code>, <code>system_uuid</code>). Service
+            warnings before domain errors align with unified spec.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>Metrics</h2>
+          <p>
+            Labels include <code>path_template=/api/v1/user/{system_uuid}/{system_user_id}</code>, <code>method=PUT</code>.
+            <a href="../index.html#observability">Unified spec — Metrics</a>.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>Single-file deep spec</h2>
+          <p>
+            <a href="../index.html#user-op-updateUserBySystemUserId">Unified internal spec — this operation</a>.
+          </p>
+        </section>
+
+        <p class="small">
+          <a href="../index.html">← User resource hub</a>
+        </p>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
     </div>
-  </body>
+  </div>
 
-</html>
+</body></html>

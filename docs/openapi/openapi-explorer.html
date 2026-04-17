@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study App API — OpenAPI (test)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.18.2/swagger-ui.min.css">
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+
+<body>
+  <main class="container container--swagger">
+    <h1>Study App API — OpenAPI (test)</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      Swagger UI against the committed contract <code>docs/openapi/openapi-baseline.json</code>. This page is for
+      <strong>browsing the spec only</strong> — <strong>Try it out</strong> is disabled here. It does
+      <strong>not</strong> perform request-body validation in the browser.
+    </p>
+    <p class="small">
+      Serve <code>docs/</code> over HTTP if relative loading fails (e.g.
+      <code>cd docs &amp;&amp; python -m http.server 8765</code>). For interactive calls against a running API, use the
+      application’s <code>/docs</code> (with CORS configured for your origin). See
+      <a href="../adr/0022-embedded-swagger-ui-openapi-sandbox.html">ADR 0022</a> for the superseded validation approach.
+    </p>
+
+    <div id="swagger-ui" aria-label="OpenAPI test explorer"></div>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.18.2/swagger-ui-bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    (function () {
+    var specUrl = new URL("openapi-baseline.json", window.location.href).href;
+    function mount() {
+    if (typeof window.SwaggerUIBundle !== "function") {
+    document.getElementById("swagger-ui").innerHTML =
+    '<section class="card" role="alert"><h2>Could not load Swagger UI</h2><p>SwaggerUIBundle missing.</p></section>';
+    return;
+    }
+    window.ui = window.SwaggerUIBundle({
+    dom_id: "#swagger-ui",
+    url: specUrl,
+    deepLinking: true,
+    displayRequestDuration: false,
+    tryItOutEnabled: false,
+    persistAuthorization: false,
+    filter: true,
+    });
+    }
+    if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+    } else {
+    mount();
+    }
+    })();
+  </script>
+
+</body></html>

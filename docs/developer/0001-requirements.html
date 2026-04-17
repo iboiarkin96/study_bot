@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Developer Requirements Guide</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Developer Requirements Guide</h1>
-      <div id="docs-top-nav"></div>
-      <p>This file is the developer-facing source for requirements.</p>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Developer Requirements Guide</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Developer Requirements Guide</h1>
+    <div id="docs-top-nav"></div>
+    <p>This file is the developer-facing source for requirements.</p>
+    <section class="card">
       <h2>1. Functional requirements</h2>
       <p>Use <code>docs/internal/system-design.html</code> section **Functional Requirements** as product-level source.</p>
       <p>Developer interpretation:</p>
@@ -23,6 +23,8 @@
         <li>API contract and persistence behavior must be aligned.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>2. Non-functional requirements (NFR)</h2>
       <p>Primary source:</p>
       <ul>
@@ -46,6 +48,8 @@
         <li>Write idempotency: critical write operations must be safe for retry with deterministic dedup behavior.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>3. Requirement-to-implementation mapping</h2>
       <p>When implementing a new endpoint, ensure:</p>
       <ol>
@@ -62,6 +66,8 @@
         <li>Write endpoints include idempotency contract (<code>Idempotency-Key</code>, replay, conflict semantics).
         </li>
       </ol>
+    </section>
+    <section class="card">
       <h2>4. Done criteria (requirements)</h2>
       <p>Change is complete only if:</p>
       <ul>
@@ -74,7 +80,8 @@
         <li>docs are synchronized (<code>make docs-fix</code>).
         </li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0005: API Security Defaults</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0005: API Security Defaults</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0005: API Security Defaults</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0005: API Security Defaults</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -30,6 +30,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> Security is not a single feature—it is a bundle of defaults: who may call the
@@ -42,6 +44,8 @@
         and makes later upgrades to production identity a configuration change—not a redesign.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <p>Protected routes under <code>/api/v1/*</code> share one security baseline:</p>
       <ol>
@@ -52,6 +56,8 @@
         <li>Basic auth strategy is required in all environments; current default is mock API-key auth.</li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Configuration</h2>
       <ul>
         <li><code>API_RATE_LIMIT_REQUESTS</code>, <code>API_RATE_LIMIT_WINDOW_SECONDS</code></li>
@@ -60,6 +66,8 @@
         <li><code>API_AUTH_STRATEGY</code>, <code>API_MOCK_API_KEY</code>, <code>API_AUTH_HEADER</code>, <code>API_PROTECTED_PREFIX</code></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Contract impact</h2>
       <ul>
         <li>Unauthorized requests return <code>401</code> with stable security error payload.</li>
@@ -68,6 +76,8 @@
         <li>Protected endpoint docs must include these responses in OpenAPI.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -81,13 +91,16 @@
         <li>In-memory rate-limit is process-local and not distributed (acceptable for current stage).</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Implementation Notes</h2>
       <ul>
         <li>Security middleware is part of application startup defaults.</li>
         <li>Analyst-facing constraints are documented in <code>docs/internal/system-design.html</code>.</li>
         <li>Developer checklist is documented in <code>docs/internal/developers.html</code>.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

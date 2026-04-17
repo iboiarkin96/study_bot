@@ -1,27 +1,29 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0008: Make Command Taxonomy and Workflow Entrypoints</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0008: Make Command Taxonomy and Workflow Entrypoints</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0008: Make Command Taxonomy and Workflow Entrypoints</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0008: Make Command Taxonomy and Workflow Entrypoints</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
-        Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
+        Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate
+        ratification
         trail was required then. The audit trail is the git history for this file on <code>main</code>.
       </p>
       <ul>
@@ -30,11 +32,14 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> A long <code>Makefile</code> lists many targets; without naming rules, every
         developer invents a personal script. That fragments onboarding (“how do I run what CI runs?”) and makes
-        documentation brittle. Clear <strong>atomic</strong> commands (one job each) plus a few <strong>scenario</strong>
+        documentation brittle. Clear <strong>atomic</strong> commands (one job each) plus a few
+        <strong>scenario</strong>
         entrypoints (fix → verify → release) match how people actually work.
       </p>
       <p>
@@ -42,6 +47,8 @@
         during every fix or release.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <p>We use two levels of Make targets:</p>
       <ol>
@@ -56,62 +63,74 @@
         <li><code>make release DEPLOY_CMD='...'</code> - canonical release execution flow.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Operational reference (diagrams and scenarios)</h2>
       <p>
         For grouped targets, PlantUML pipeline figures (sources under <code>docs/uml/make/</code>), and
         <strong>if → then</strong> onboarding flows, see the developer guide
-        <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows (onboarding)</a>.
+        <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>.
         It does not replace <code>make help</code>; it explains how composite targets relate for day-to-day use.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Command taxonomy</h2>
       <h3>Atomic commands</h3>
       <ul>
-        <li>Environment: <code>venv</code>, <code>install</code>, <code>requirements</code>, <code>env-check</code>.</li>
-        <li>Code quality: <code>format-fix</code>, <code>format-check</code>, <code>lint-fix</code>, <code>lint-check</code>, <code>dead-code-check</code>, <code>type-check</code>.</li>
-        <li>Contracts: <code>openapi-check</code>, <code>contract-test</code>, <code>openapi-accept-changes</code>.</li>
-        <li>Tests: <code>test</code>, <code>test-one</code>, <code>test-warnings</code>.</li>
-        <li>Docs: <code>docs-fix</code>, <code>docs-check</code>.</li>
-        <li>
-          Local Docker stacks (optional): metrics —
-          <code>observability-up</code>, <code>observability-down</code>, <code>observability-smoke</code>; structured logs
-          —
-          <code>logging-up</code>, <code>logging-down</code>, <code>logging-reset</code>, <code>logging-smoke</code>,
-          <code>logging-es-query</code> (<a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>).
+        <li>Environment: <code>venv</code>, <code>install</code>, <code>requirements</code>, <code>env-check</code>.
         </li>
-        <li>Deploy primitive: external deployment command passed via <code>DEPLOY_CMD</code>.</li>
-      </ul>
+        <li>Code quality: <code>format-fix</code>, <code>format-check</code>, <code>lint-fix</code>,
+          <code>lint-check</code>, <code>dead-code-check</code>, <code>type-check</code>.</li>
+          <li>Contracts: <code>openapi-check</code>, <code>contract-test</code>, <code>openapi-accept-changes</code>.</li>
+          <li>Tests: <code>test</code>, <code>test-one</code>, <code>test-warnings</code>.</li>
+          <li>Docs: <code>docs-fix</code>, <code>docs-check</code>.</li>
+          <li>
+            Local Docker stacks (optional): metrics —
+            <code>observability-up</code>, <code>observability-down</code>, <code>observability-smoke</code>; structured
+            logs
+            —
+            <code>logging-up</code>, <code>logging-down</code>, <code>logging-reset</code>, <code>logging-smoke</code>,
+            <code>logging-es-query</code> (<a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>).
+          </li>
+          <li>Deploy primitive: external deployment command passed via <code>DEPLOY_CMD</code>.</li>
+        </ul>
 
-      <h3>Scenario entrypoints</h3>
-      <ul>
-        <li>Fix loop: <code>make fix</code>.</li>
-        <li>Local verification: <code>make verify</code>.</li>
-        <li>Pre-push alignment with CI (dependency audit + strict docs sync): <code>make verify-ci</code>.</li>
-        <li>Release gate: <code>make release-check</code>.</li>
-        <li>Release execution: <code>make release DEPLOY_CMD='...'</code>.</li>
-      </ul>
+        <h3>Scenario entrypoints</h3>
+        <ul>
+          <li>Fix loop: <code>make fix</code>.</li>
+          <li>Local verification: <code>make verify</code>.</li>
+          <li>Pre-push alignment with CI (dependency audit + strict docs sync): <code>make verify-ci</code>.</li>
+          <li>Release gate: <code>make release-check</code>.</li>
+          <li>Release execution: <code>make release DEPLOY_CMD='...'</code>.</li>
+        </ul>
 
-      <h2>Implementation rules</h2>
-      <ol>
-        <li>Keep one canonical command per workflow; avoid duplicate aliases with identical behavior.</li>
-        <li>When adding a new atomic target, update <code>make help</code> under Atomic commands.</li>
-        <li>When adding a new multi-step process, expose it as scenario entrypoint in <code>make help</code>.</li>
-        <li>Keep release flow explicit and parameterized via <code>DEPLOY_CMD</code>.</li>
-      </ol>
+      </section>
+      <section class="card">
+        <h2>Implementation rules</h2>
+        <ol>
+          <li>Keep one canonical command per workflow; avoid duplicate aliases with identical behavior.</li>
+          <li>When adding a new atomic target, update <code>make help</code> under Atomic commands.</li>
+          <li>When adding a new multi-step process, expose it as scenario entrypoint in <code>make help</code>.</li>
+          <li>Keep release flow explicit and parameterized via <code>DEPLOY_CMD</code>.</li>
+        </ol>
 
-      <h2>Consequences</h2>
-      <h3>Positive</h3>
-      <ul>
-        <li>Lower onboarding and day-to-day cognitive load.</li>
-        <li>Clear separation between reusable primitives and operational workflows.</li>
-        <li>More consistent local and CI usage patterns.</li>
-      </ul>
-      <h3>Trade-offs</h3>
-      <ul>
-        <li>Existing local habits may require migration to new canonical command names.</li>
-        <li>Help text must stay curated when targets evolve.</li>
-      </ul>
+      </section>
+      <section class="card">
+        <h2>Consequences</h2>
+        <h3>Positive</h3>
+        <ul>
+          <li>Lower onboarding and day-to-day cognitive load.</li>
+          <li>Clear separation between reusable primitives and operational workflows.</li>
+          <li>More consistent local and CI usage patterns.</li>
+        </ul>
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>Existing local habits may require migration to new canonical command names.</li>
+          <li>Help text must stay curated when targets evolve.</li>
+        </ul>
+      </section>
       <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
     </main>
-  </body>
-</html>
+
+  </body></html>

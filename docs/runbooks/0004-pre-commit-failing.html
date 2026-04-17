@@ -1,27 +1,31 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: Pre-commit Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: Pre-commit Failing</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: Pre-commit Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: Pre-commit Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li><code>make pre-commit-check</code> fails</li>
         <li><code>git commit</code> fails on pre-commit hooks</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Fast triage</h2>
       <ol>
         <li>Run hooks explicitly: <code>make pre-commit-check</code></li>
         <li>Check which hook failed (ruff, format, mypy, hygiene hooks).</li>
         <li>Re-run only after fixes; pre-commit often auto-modifies files.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Most common causes</h2>
       <ul>
         <li><code>ruff-format</code> changed files and commit was attempted with unstaged changes.</li>
@@ -29,6 +33,8 @@
         <li>Hygiene hooks found trailing spaces/EOF/line endings.</li>
         <li>Merge conflict markers accidentally committed.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Recovery steps</h2>
       <ol>
         <li>Apply auto-fixes: <code>make lint-fix</code>, <code>make format-fix</code>.</li>
@@ -36,6 +42,8 @@
         <li>Re-run hooks: <code>make pre-commit-check</code>.</li>
         <li>If <code>mypy</code> still fails, run <code>make type-check</code> and fix typing issues.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Special case: unstaged changes conflict</h2>
       <p>If commit output shows stash/rollback conflict:</p>
       <ul>
@@ -43,18 +51,23 @@
         <li>Run <code>make pre-commit-check</code>.</li>
         <li>Commit again.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Exit criteria</h2>
       <ul>
         <li><code>make pre-commit-check</code> passes.</li>
         <li>No auto-modified files remain unstaged.</li>
         <li>Commit succeeds without hook rollback.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Follow-up</h2>
       <ul>
         <li>If hook set is insufficient/too strict, adjust <code>.pre-commit-config.yaml</code> centrally.</li>
         <li>Document recurring failure patterns in this runbook.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

@@ -1,27 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0025: External and internal API documentation</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0025: External and internal API documentation</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
+<body>
+  <main class="container" data-adr-weight="1">
+    <h1>ADR 0025: External and internal API documentation</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
 
-  <body>
-    <main class="container" data-adr-weight="1">
-      <h1>ADR 0025: External and internal API documentation</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
-
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         This ADR records a <strong>documentation architecture decision</strong>: how we separate material aimed at
@@ -34,6 +33,8 @@
         <li>Accepted: 2026-04-14</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> One audience needs a <strong>stable, machine-readable contract</strong> and
@@ -50,6 +51,8 @@
         <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>).
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <ol>
         <li>
@@ -64,7 +67,7 @@
         </li>
         <li>
           <strong>External discovery aids.</strong> Swagger UI at <code>/docs</code> (when the app runs) and the static
-          <code>docs/openapi-explorer.html</code> page are <strong>views</strong> on that contract; they are not
+          <code>docs/openapi/openapi-explorer.html</code> page are <strong>views</strong> on that contract; they are not
           independent sources of truth. If explorer text disagrees with the committed baseline after a merge, the fix is to
           align code and baseline (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>), not to
           treat the browser copy as authoritative.
@@ -88,6 +91,8 @@
         </li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Scope</h2>
       <ul>
         <li>
@@ -100,6 +105,8 @@
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Relationship to other artifacts</h2>
       <table>
         <thead>
@@ -133,6 +140,8 @@
         </tbody>
       </table>
 
+    </section>
+    <section class="card">
       <h2>Alternatives considered</h2>
       <ol>
         <li>
@@ -151,6 +160,8 @@
         </li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -161,8 +172,8 @@
       <ul>
         <li>Two maintained surfaces (OpenAPI + internal HTML) require discipline; internal pages must link to operations and PRs when they change behavior.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-</html>
+</body></html>

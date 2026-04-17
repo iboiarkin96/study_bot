@@ -1,23 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Error Matrix By Status</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Error Matrix By Status</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container">
-      <h1>Error Matrix By Status</h1>
-      <div id="docs-top-nav"></div>
-      <p>
-        This guide explains how to split error responses into a shared <code>COMMON_*</code> pool and
-        entity-specific matrices (for example <code>USER_*</code>), and how to review endpoint contracts by
-        HTTP status.
-      </p>
+<body>
+  <main class="container">
+    <h1>Error Matrix By Status</h1>
+    <div id="docs-top-nav"></div>
+    <p>
+      This guide explains how to split error responses into a shared <code>COMMON_*</code> pool and
+      entity-specific matrices (for example <code>USER_*</code>), and how to review endpoint contracts by
+      HTTP status.
+    </p>
+    <section class="card">
 
       <h2>1. Rule of thumb</h2>
       <ul>
@@ -27,6 +26,8 @@
         <li>Do not change meaning of published <code>code</code> + <code>key</code> pairs.</li>
         <li>Document all declared responses in OpenAPI examples and tests.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>2. Where to define reusable responses</h2>
       <ul>
@@ -39,9 +40,11 @@
         <li><code>app/openapi/examples/errors.py</code> - OpenAPI example payloads (built from the catalog above).</li>
         <li><code>app/api/v1/*.py</code> - endpoint-level assembly of common + entity responses.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>3. Service-wide common pool (recommended baseline)</h2>
-      <div class="card">
+      <section class="card">
         <table>
           <thead>
             <tr>
@@ -84,10 +87,12 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </section>
+    </section>
+    <section class="card">
 
       <h2>4. Entity matrix example: user</h2>
-      <div class="card">
+      <section class="card">
         <table>
           <thead>
             <tr>
@@ -150,7 +155,9 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </section>
+    </section>
+    <section class="card">
 
       <h2>5. Router review checklist (status-first)</h2>
       <ol>
@@ -160,14 +167,16 @@
         <li>Ensure ENTITY statuses use entity-prefixed code space and mapped examples.</li>
         <li>Validate with tests and <code>make verify</code>.</li>
       </ol>
+    </section>
+    <section class="card">
 
       <h2>6. Related governance docs</h2>
       <ul>
         <li><a href="../adr/0003-error-contract-governance.html">ADR 0003: Error Contract Governance</a></li>
         <li><a href="./0002-schemas-and-contracts.html">Schemas and Contracts Guide</a></li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-</html>
+</body></html>

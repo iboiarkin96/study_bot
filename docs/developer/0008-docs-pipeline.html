@@ -1,23 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentation pipeline (docs-as-code)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Documentation pipeline (docs-as-code)</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container">
-      <h1>Documentation pipeline (docs-as-code)</h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        How generated documentation is produced, which paths are owned by automation, and how
-        <code>make docs-check</code> enforces that committed artifacts match the pipeline.
-        See also <a href="../adr/0001-docs-as-code.html">ADR 0001: Adopt Docs as Code</a>.
-      </p>
+<body>
+  <main class="container">
+    <h1>Documentation pipeline (docs-as-code)</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      How generated documentation is produced, which paths are owned by automation, and how
+      <code>make docs-check</code> enforces that committed artifacts match the pipeline.
+      See also <a href="../adr/0001-docs-as-code.html">ADR 0001: Adopt Docs as Code</a>.
+    </p>
+    <section class="card">
 
       <h2>1. <code>make docs-fix</code> stages</h2>
       <ol>
@@ -52,6 +51,8 @@
           and <a href="https://pages.github.com/">GitHub Pages</a> (linked from <code>docs/index.html</code>).
         </li>
       </ol>
+    </section>
+    <section class="card">
 
       <h2>2. Generated and managed paths</h2>
       <table>
@@ -96,6 +97,8 @@
           </tr>
         </tbody>
       </table>
+    </section>
+    <section class="card">
 
       <h2>3. <code>make docs-check</code> (CI)</h2>
       <p>
@@ -108,6 +111,8 @@
         Uncommitted edits in paths that <code>docs-fix</code> does not touch are left unchanged; the before/after
         full-tree diff stays identical when generated docs already match HEAD.
       </p>
+    </section>
+    <section class="card">
 
       <h2>4. Optional published doc site</h2>
       <p>
@@ -131,6 +136,8 @@
         <code>docs/internal/system-design.html</code> in git.
         Python API HTML from pdoc is at <code>/{repo}/api/index.html</code> (same pattern).
       </p>
+    </section>
+    <section class="card">
 
       <h2>5. Documentation versioning (policy)</h2>
       <p>
@@ -161,6 +168,8 @@
         <a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> (roadmap/backlog pills and branch
         names are separate).
       </p>
+    </section>
+    <section class="card">
 
       <h2>6. Python API reference (<code>make api-docs</code>)</h2>
       <p>
@@ -176,6 +185,8 @@
         API HTML). Output is under <code>docs/api/</code>; commit it with other doc updates so GitHub Pages serves
         <code>api/index.html</code>. The site home <code>docs/index.html</code> and top nav link to it.
       </p>
+    </section>
+    <section class="card">
 
       <h2>7. Optional CI: versioned prose sites or extra artifacts</h2>
       <p>
@@ -188,6 +199,8 @@
         deploy alongside or instead of raw <code>docs/</code> browsing; the Makefile pipeline remains the source of
         committed UML and marker-synced content until you migrate those steps.
       </p>
+    </section>
+    <section class="card">
 
       <h2 id="in-page-on-this-page-sidebar">8. In-page “On this page” sidebar (HTML docs)</h2>
       <p>
@@ -217,8 +230,8 @@
         <code>&lt;nav class="top-nav"&gt;</code> inside it). If the sticky block is missing, see
         <a href="../runbooks/0010-in-page-toc-missing.html">Runbook: In-page “On this page” sidebar missing or empty</a>.
       </p>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-</html>
+</body></html>

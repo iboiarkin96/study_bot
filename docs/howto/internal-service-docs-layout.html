@@ -1,73 +1,117 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Internal service docs — layout and how to add pages</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Internal service docs — layout and how to add pages</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
+<body>
+  <main class="container">
+    <h1>How to add a new resource to the internal service documentation</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      This guide explains how to add a new resource to the internal service documentation.
+    </p>
 
-  <body>
-    <main class="container">
-      <h1>How to add a new resource to the internal service documentation</h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        This guide explains how to add a new resource to the internal service documentation.
-      </p>
+    <section class="card">
+      <h2>Directory tree</h2>
+      <pre style="white-space: pre; overflow-x: auto;"><code>docs/internal/
+        ├── README.html                 # Entry: overview, service scope, ADRs, links (API hub, etc.)
+        ├── STRUCTURE.md                # Stub → links to this page (howto)
+        ├── service-overview.html       # Redirect stub → README.html (bookmarks)
+        └── api/
+        ├── README.html             # HTTP API hub — list of resources
+        └── user/                   # One folder per API resource name
+        ├── index.html          # Hub: business, contract, technical spec, method index
+        ├── user-http-api.html  # Optional redirect stub → index.html (bookmarks)
+        └── operations/         # One HTML file per HTTP endpoint (not per operationId)
+        ├── post-api-v1-user.html
+        ├── get-api-v1-user-system_uuid-system_user_id.html
+        ├── put-api-v1-user-system_uuid-system_user_id.html
+        └── patch-api-v1-user-system_uuid-system_user_id.html</code></pre>
+      </section>
 
-      <div class="card">
-        <h2>Directory tree</h2>
-        <pre style="white-space: pre; overflow-x: auto;"><code>docs/internal/
-          ├── README.html                 # Entry: overview, service scope, ADRs, links (API hub, etc.)
-          ├── STRUCTURE.md                # Stub → links to this page (howto)
-          ├── service-overview.html       # Redirect stub → README.html (bookmarks)
-          └── api/
-          ├── README.html             # HTTP API hub — list of resources
-          └── user/                   # One folder per API resource name
-          ├── index.html          # Hub: business, contract, technical spec, method index
-          ├── user-http-api.html  # Optional redirect stub → index.html (bookmarks)
-          └── operations/         # One HTML file per HTTP endpoint (not per operationId)
-          ├── post-api-v1-user.html
-          ├── get-api-v1-user-system_uuid-system_user_id.html
-          ├── put-api-v1-user-system_uuid-system_user_id.html
-          └── patch-api-v1-user-system_uuid-system_user_id.html</code></pre>
-        </div>
-
-        <div class="card">
-          <h2>Shared chrome</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Asset</th>
-                <th>Role</th>
+      <section class="card">
+        <h2>Shared chrome</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="../assets/internal-layout.css"><code>docs/assets/internal-layout.css</code></a></td>
+              <td>Two-column layout + sidebar chrome + HTTP “tablet” on operation pages</td>
+            </tr>
+            <tr>
+              <td><a href="../assets/internal-sidebar.js"><code>docs/assets/internal-sidebar.js</code></a></td>
+              <td><strong>Single source of truth</strong> for the left nav — edit <code>INTERNAL_SIDEBAR_NAV</code> when
+                adding pages</td>
               </tr>
-            </thead>
-            <tbody>
               <tr>
-                <td><a href="../assets/internal-layout.css"><code>docs/assets/internal-layout.css</code></a></td>
-                <td>Two-column layout + sidebar chrome + HTTP “tablet” on operation pages</td>
+                <td><a href="../assets/docs-nav.js"><code>docs/assets/docs-nav.js</code></a></td>
+                <td>Top “pill” navigation across all docs</td>
               </tr>
-              <tr>
-                <td><a href="../assets/internal-sidebar.js"><code>docs/assets/internal-sidebar.js</code></a></td>
-                <td><strong>Single source of truth</strong> for the left nav — edit <code>INTERNAL_SIDEBAR_NAV</code> when
-                  adding pages</td>
-                </tr>
-                <tr>
-                  <td><a href="../assets/docs-nav.js"><code>docs/assets/docs-nav.js</code></a></td>
-                  <td>Top “pill” navigation across all docs</td>
-                </tr>
-              </tbody>
-            </table>
-            <p>
-              Every internal page that should show the sidebar: load <code>internal-layout.css</code> +
-              <code>internal-sidebar.js</code>, include <code>#internal-sidebar-mount</code>, and use the shell markup (see
-              <a href="../internal/README.html"><code>internal/README.html</code></a>).
-            </p>
-          </div>
+            </tbody>
+          </table>
+          <p>
+            Every internal page that should show the sidebar: load <code>internal-layout.css</code> +
+            <code>internal-sidebar.js</code>, include <code>#internal-sidebar-mount</code>, and use the shell markup (see
+            <a href="../internal/README.html"><code>internal/README.html</code></a>).
+          </p>
+        </section>
 
-          <div class="card">
+        <section class="card" id="page-structure">
+          <h2>Page structure (Contents, Overview, sections)</h2>
+          <p>
+            Multi-section pages that use the internal sidebar layout should follow one predictable skeleton so navigation
+            and scanning stay consistent. Canonical example:
+            <a href="../internal/README.html"><code>docs/internal/README.html</code></a>.
+          </p>
+          <p><strong>Recommended order inside <code>.container</code></strong></p>
+          <ol>
+            <li>
+              <code>&lt;h1&gt;</code> — page title. If this file is the sidebar entry labeled <strong>Overview</strong>
+              (<code>internal/README.html</code>), prefer a title that matches that role (e.g. “Welcome — Internal docs”).
+            </li>
+            <li><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> — top “pill” navigation (from
+              <code>docs-nav.js</code>).</li>
+              <li>
+                Optional <code>&lt;p class="lead"&gt;</code> — one short paragraph when the page needs a hook before the table
+                of contents.
+              </li>
+              <li>
+                <strong>Contents</strong> — <code>&lt;nav aria-labelledby="toc"&gt;</code> with
+                <code>&lt;h2 id="toc"&gt;Contents&lt;/h2&gt;</code> and an <code>&lt;ol&gt;</code> of anchors to in-page
+                sections (<code>&lt;a href="#your-section-id"&gt;</code>). Keep every <code>href</code> in sync with a
+                matching
+                <code>&lt;section id="..."&gt;</code> (or other target) on the same page.
+              </li>
+              <li>
+                <strong>Overview</strong> — on hub / landing pages, the first substantive block is usually
+                <code>&lt;section id="overview" class="card"&gt;</code> with <code>&lt;h2&gt;Overview&lt;/h2&gt;</code>: who
+                the
+                page is for, what to open next, and links to System design, Developers Docs, API hub, OpenAPI, etc. Omit or
+                replace with a different first <code>&lt;h2&gt;</code> when the document is not a map (e.g. System design uses
+                numbered top-level sections).
+              </li>
+              <li>
+                Additional topics — more <code>&lt;section id="..." class="card"&gt;</code> blocks, one main subject per card.
+              </li>
+              <li>
+                Optional <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near the
+                end
+                of the container — injects an auto-generated mini-TOC from headings; redundant with manual Contents if both
+                are present, so use on purpose.
+              </li>
+            </ol>
+          </section>
+
+          <section class="card">
             <h2>How to add a new resource (e.g. <code>Order</code>)</h2>
             <ol>
               <li>Create <code>docs/internal/api/&lt;resource&gt;/index.html</code> (hub) and
@@ -87,9 +131,9 @@
                 (same PR as behavior changes).
               </li>
             </ol>
-          </div>
+          </section>
 
-          <div class="card">
+          <section class="card">
             <h2>How to edit existing pages</h2>
             <ul>
               <li><strong>Sidebar</strong>: change labels or paths in <code>INTERNAL_SIDEBAR_NAV</code> in
@@ -101,9 +145,9 @@
               <li><strong>Page body</strong>: edit the HTML file; run <code>make docs-fix</code> if your workflow includes
                 doc sync and format checks.</li>
               </ul>
-            </div>
+            </section>
 
-            <div class="card">
+            <section class="card">
               <h2>Removed / obsolete</h2>
               <ul>
                 <li><strong><code>docs/internal/user/</code></strong> — removed; the canonical User hub is
@@ -114,11 +158,12 @@
                   <li><strong><code>internal-doc-demo.css</code> / <code>internal-doc-nav.js</code></strong> — removed; they only
                     served a deleted prototype page.</li>
                   </ul>
-                </div>
+                </section>
 
-                <div class="card">
+                <section class="card">
                   <h2>Related</h2>
                   <ul>
+                    <li><a href="#page-structure">Page structure (Contents, Overview, sections)</a> — on this page</li>
                     <li><a href="../internal/README.html">Internal service documentation — index</a></li>
                     <li><a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> — external vs internal API
                       documentation</li>
@@ -126,10 +171,9 @@
                         narrative as source of truth</li>
                         <li><a href="./README.html">How-to guides — index</a></li>
                       </ul>
-                    </div>
+                    </section>
 
                     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
                   </main>
-                </body>
 
-              </html>
+                </body></html>

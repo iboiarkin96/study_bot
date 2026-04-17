@@ -1,16 +1,16 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: Error Budget Exhaustion and SLO Alerts</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: Error Budget Exhaustion and SLO Alerts</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: Error Budget Exhaustion and SLO Alerts</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: Error Budget Exhaustion and SLO Alerts</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li>
@@ -21,6 +21,8 @@
         <li>Grafana SLO panels show HTTP error budget burn above 1, or sustained high 5xx rate, or readiness probe at 0.</li>
         <li>External SLA breach or customer-visible outage correlated with the above.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>What “error budget exhausted” means</h2>
       <p>
@@ -33,6 +35,8 @@
         Policy details and SLI definitions:
         <a href="../adr/0011-slo-sla-error-budget.html">ADR 0011: SLOs, SLAs, error budget, and monitoring alerts</a>.
       </p>
+    </section>
+    <section class="card">
 
       <h2>Fast triage (order)</h2>
       <ol>
@@ -61,6 +65,8 @@
           clear 5xx spikes.
         </li>
       </ol>
+    </section>
+    <section class="card">
 
       <h2>Response when budget is exhausted or critical</h2>
       <ul>
@@ -80,18 +86,22 @@
           processes defined for that SLA.
         </li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Useful links (local defaults)</h2>
       <p>
         Grafana:
-        <a href="http://127.0.0.1:3001/d/study-app-observability/study-app-observability?orgId=1">Study App Observability</a><br />
+        <a href="http://127.0.0.1:3001/d/study-app-observability/study-app-observability?orgId=1">Study App Observability</a><br>
         Prometheus alerts:
-        <a href="http://127.0.0.1:9090/alerts">http://127.0.0.1:9090/alerts</a><br />
+        <a href="http://127.0.0.1:9090/alerts">http://127.0.0.1:9090/alerts</a><br>
         ADR 0011:
-        <a href="../adr/0011-slo-sla-error-budget.html">SLOs, SLAs, error budget</a><br />
+        <a href="../adr/0011-slo-sla-error-budget.html">SLOs, SLAs, error budget</a><br>
         Observability baseline:
         <a href="../adr/0009-health-readiness-and-observability.html">ADR 0009</a>
       </p>
+    </section>
+    <section class="card">
 
       <h2>Exit criteria</h2>
       <ul>
@@ -99,7 +109,8 @@
         <li>5xx rate and latency panels are back within SLO targets on the Grafana dashboard.</li>
         <li>Error budget burn is trending down or a new window policy is agreed in writing.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

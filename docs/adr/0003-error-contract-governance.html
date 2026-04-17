@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0003: Error Contract Governance</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0003: Error Contract Governance</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0003: Error Contract Governance</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0003: Error Contract Governance</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -30,6 +30,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> Clients cannot rely on free-text messages—they change with wording and
@@ -42,6 +44,8 @@
         domain-specific matrices for each entity, documented next to OpenAPI and tests.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <p>We use a single, versioned error contract implemented in code and OpenAPI:</p>
       <ol>
@@ -58,21 +62,25 @@
         </li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Contract model</h2>
       <ul>
         <li>Business error shape:
           <ul>
-            <li><code>{&quot;code&quot;:&quot;...&quot;,&quot;key&quot;:&quot;...&quot;,&quot;message&quot;:&quot;...&quot;,&quot;source&quot;:&quot;business&quot;}</code></li>
+            <li><code>{"code":"...","key":"...","message":"...","source":"business"}</code></li>
           </ul>
         </li>
         <li>Validation error shape:
           <ul>
-            <li><code>{&quot;error_type&quot;:&quot;validation_error&quot;,&quot;endpoint&quot;:&quot;...&quot;,&quot;errors&quot;:[...]}</code></li>
+            <li><code>{"error_type":"validation_error","endpoint":"...","errors":[...]}</code></li>
             <li>each <code>errors[]</code> item: <code>code</code>, <code>key</code>, <code>message</code>, <code>field</code>, <code>source</code>, <code>details</code></li>
           </ul>
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Error catalog structure</h2>
       <h3>1) Common reusable pool (service-wide)</h3>
       <p>Use <code>COMMON_*</code> for errors that should be reused consistently across all endpoints.</p>
@@ -90,6 +98,8 @@
         <li>Rule: each entity matrix must be reflected in OpenAPI examples and tests.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Implementation in this repository</h2>
       <ul>
         <li>Shared OpenAPI response blocks:
@@ -119,6 +129,8 @@
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -132,6 +144,8 @@
         <li>Expanding error catalog requires ongoing curation.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Operating rules</h2>
       <ol>
         <li>Add new codes; do not repurpose old ones.</li>
@@ -141,7 +155,8 @@
         <li>Update OpenAPI examples and docs in the same change.</li>
         <li>Ensure <code>make docs-fix</code> and <code>make release-check</code> pass before release.</li>
       </ol>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

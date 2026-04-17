@@ -1,57 +1,54 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTTP API — internal documentation hub — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HTTP API — internal documentation hub — Study App</title>
-    <link rel="stylesheet" href="../../assets/docs.css" />
-    <link rel="stylesheet" href="../../assets/internal-layout.css" />
-    <script defer src="../../assets/docs-nav.js"></script>
-    <script defer src="../../assets/internal-sidebar.js"></script>
-  </head>
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>HTTP API (internal)</h1>
+        <div id="docs-top-nav"></div>
+        <p class="lead">
+          Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page (business
+          context, data contract, links to methods), and each <code>operationId</code> has its own page so readers are
+          not overloaded with a single endless scroll.
+        </p>
 
-  <body class="internal-layout">
-    <div class="internal-layout__shell">
-      <aside class="internal-layout__sidebar">
-        <p class="internal-layout__sidebar-title">Internal docs</p>
-        <div id="internal-sidebar-mount"></div>
-      </aside>
-      <div class="internal-layout__main">
-        <div class="container">
-          <h1>HTTP API (internal)</h1>
-          <div id="docs-top-nav"></div>
-          <p class="lead">
-            Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page (business
-            context, data contract, links to methods), and each <code>operationId</code> has its own page so readers are
-            not overloaded with a single endless scroll.
+        <section class="card">
+          <h2>Resources</h2>
+          <ul>
+            <li>
+              <a href="./user/index.html">User</a> — identity under <code>/api/v1/user</code>; the
+              <a href="./user/index.html">resource hub</a> is the single entry point (business context, contract summary,
+              technical depth); per-method pages link back to anchors on that page.
+            </li>
+          </ul>
+          <p class="small">Add a new list entry here when another router gains an internal hub.</p>
+        </section>
+
+        <section class="card">
+          <h2>External contract</h2>
+          <p>
+            Paths, schemas, and declared errors: <code>docs/openapi/openapi-baseline.json</code> and
+            <a href="../../openapi/openapi-explorer.html">OpenAPI (test)</a>. Internal pages add narrative and operational
+            semantics per <a href="../../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>.
           </p>
+        </section>
 
-          <div class="card">
-            <h2>Resources</h2>
-            <ul>
-              <li>
-                <a href="./user/index.html">User</a> — identity under <code>/api/v1/user</code>; the
-                <a href="./user/index.html">resource hub</a> is the single entry point (business context, contract summary,
-                technical depth); per-method pages link back to anchors on that page.
-              </li>
-            </ul>
-            <p class="small">Add a new list entry here when another router gains an internal hub.</p>
-          </div>
-
-          <div class="card">
-            <h2>External contract</h2>
-            <p>
-              Paths, schemas, and declared errors: <code>docs/openapi/openapi-baseline.json</code> and
-              <a href="../../openapi-explorer.html">OpenAPI (test)</a>. Internal pages add narrative and operational
-              semantics per <a href="../../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>.
-            </p>
-          </div>
-
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </div>
-      </div>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
     </div>
-  </body>
+  </div>
 
-</html>
+</body></html>

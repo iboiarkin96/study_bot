@@ -1,124 +1,118 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GET /api/v1/user/{system_uuid}/{system_user_id} — User — Study App</title>
+  <link rel="stylesheet" href="../../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../../assets/internal-layout.css">
+  <script defer src="../../../../assets/docs-nav.js"></script>
+  <script defer src="../../../../assets/internal-sidebar.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GET /api/v1/user/{system_uuid}/{system_user_id} — User — Study App</title>
-    <link rel="stylesheet" href="../../../../assets/docs.css" />
-    <link rel="stylesheet" href="../../../../assets/internal-layout.css" />
-    <script defer src="../../../../assets/docs-nav.js"></script>
-    <script defer src="../../../../assets/internal-sidebar.js"></script>
-  </head>
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <div id="docs-top-nav"></div>
+        <p class="internal-doc-entity">User</p>
+        <h1 class="internal-doc-h1">
+          <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="GET /api/v1/user/{system_uuid}/{system_user_id}">
+            <span class="badge badge--method-get">GET</span>
+            <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
+          </span>
+        </h1>
+        <p class="lead">
+          Read a single user by composite key. Normative internal narrative per
+          <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; external
+          contract: <a href="../../../../openapi/openapi-explorer.html">OpenAPI</a>
+          (<code>operationId</code>: <code>getUserBySystemUserId</code>).
+        </p>
+        <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>getUserBySystemUserId</code></p>
 
-  <body class="internal-layout">
-    <div class="internal-layout__shell">
-      <aside class="internal-layout__sidebar">
-        <p class="internal-layout__sidebar-title">Internal docs</p>
-        <div id="internal-sidebar-mount"></div>
-      </aside>
-      <div class="internal-layout__main">
-        <div class="container">
-          <div id="docs-top-nav"></div>
-          <p class="internal-doc-entity">User</p>
-          <h1 class="internal-doc-h1">
-            <span
-              class="internal-http-tablet internal-http-tablet--stacked"
-              aria-label="GET /api/v1/user/{system_uuid}/{system_user_id}"
-              >
-              <span class="badge badge--method-get">GET</span>
-              <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
-            </span>
-          </h1>
-          <p class="lead">
-            Read a single user by composite key. Normative internal narrative per
-            <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; external
-            contract: <a href="../../../../openapi-explorer.html">OpenAPI</a>
-            (<code>operationId</code>: <code>getUserBySystemUserId</code>).
+        <section class="card">
+          <h2>Request path and behavior</h2>
+          <p>
+            Same middleware stack as other protected routes (ADR 0005). Route template
+            <code>/api/v1/user/{system_uuid}/{system_user_id}</code>; path parameters validated, then
+            <code>UserService.get_or_404</code> → repository read. <strong>No idempotency</strong> — read-only.
           </p>
-          <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>getUserBySystemUserId</code></p>
+          <p><strong>Success:</strong> <code>200 OK</code> with user body. ETag / caching semantics (if enabled) are
+            described in the unified spec.</p>
+          </section>
 
-          <div class="card">
-            <h2>Request path and behavior</h2>
-            <p>
-              Same middleware stack as other protected routes (ADR 0005). Route template
-              <code>/api/v1/user/{system_uuid}/{system_user_id}</code>; path parameters validated, then
-              <code>UserService.get_or_404</code> → repository read. <strong>No idempotency</strong> — read-only.
-            </p>
-            <p><strong>Success:</strong> <code>200 OK</code> with user body. ETag / caching semantics (if enabled) are
-              described in the unified spec.</p>
-            </div>
-
-            <div class="card">
-              <h2>Errors</h2>
-              <p class="small">Envelope per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>.</p>
-              <table>
-                <thead>
-                  <tr>
-                    <th>HTTP</th>
-                    <th>Code / key</th>
-                    <th>When</th>
+          <section class="card">
+            <h2>Errors</h2>
+            <p class="small">Envelope per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>HTTP</th>
+                  <th>Code / key</th>
+                  <th>When</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>404</code></td>
+                  <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
+                  <td>No row for <code>(system_uuid, system_user_id)</code> — <code>get_user_not_found</code> at
+                    <strong>warning</strong> in <code>UserService.get_or_404</code>.</td>
                   </tr>
-                </thead>
-                <tbody>
                   <tr>
-                    <td><code>404</code></td>
-                    <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
-                    <td>No row for <code>(system_uuid, system_user_id)</code> — <code>get_user_not_found</code> at
-                      <strong>warning</strong> in <code>UserService.get_or_404</code>.</td>
-                    </tr>
-                    <tr>
-                      <td><code>422</code></td>
-                      <td>Validation</td>
-                      <td>Invalid path parameter shapes — logged as validation errors at <strong>warning</strong>.</td>
-                    </tr>
-                    <tr>
-                      <td><code>401</code> / <code>429</code></td>
-                      <td>—</td>
-                      <td>Middleware (ADR 0005).</td>
-                    </tr>
-                    <tr>
-                      <td><code>500</code></td>
-                      <td>—</td>
-                      <td>Uncaught: <code>request_failed</code> with stack.</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                    <td><code>422</code></td>
+                    <td>Validation</td>
+                    <td>Invalid path parameter shapes — logged as validation errors at <strong>warning</strong>.</td>
+                  </tr>
+                  <tr>
+                    <td><code>401</code> / <code>429</code></td>
+                    <td>—</td>
+                    <td>Middleware (ADR 0005).</td>
+                  </tr>
+                  <tr>
+                    <td><code>500</code></td>
+                    <td>—</td>
+                    <td>Uncaught: <code>request_failed</code> with stack.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
 
-              <div class="card">
-                <h2>Logging</h2>
-                <p>
-                  <code>request_done … path=…</code> on every completed request (info). <code>request_id</code> in context per
-                  ADR 0023. UserService emits <code>get_user_not_found</code> at <strong>warning</strong> before
-                  <code>404</code>. No idempotency replay logs on GET.
-                </p>
-              </div>
-
-              <div class="card">
-                <h2>Metrics</h2>
-                <p>
-                  <code>http_requests_total</code> / duration with <code>path_template=/api/v1/user/{system_uuid}/{system_user_id}</code>,
-                  <code>method=GET</code>, status label. See
-                  <a href="../index.html#observability">Unified spec — Metrics</a>.
-                </p>
-              </div>
-
-              <div class="card">
-                <h2>Single-file deep spec</h2>
-                <p>
-                  <a href="../index.html#user-op-getUserBySystemUserId">Unified internal spec — this operation</a>.
-                </p>
-              </div>
-
-              <p class="small">
-                <a href="../index.html">← User resource hub</a>
+            <section class="card">
+              <h2>Logging</h2>
+              <p>
+                <code>request_done … path=…</code> on every completed request (info). <code>request_id</code> in context per
+                ADR 0023. UserService emits <code>get_user_not_found</code> at <strong>warning</strong> before
+                <code>404</code>. No idempotency replay logs on GET.
               </p>
+            </section>
 
-              <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-            </div>
-          </div>
+            <section class="card">
+              <h2>Metrics</h2>
+              <p>
+                <code>http_requests_total</code> / duration with <code>path_template=/api/v1/user/{system_uuid}/{system_user_id}</code>,
+                <code>method=GET</code>, status label. See
+                <a href="../index.html#observability">Unified spec — Metrics</a>.
+              </p>
+            </section>
+
+            <section class="card">
+              <h2>Single-file deep spec</h2>
+              <p>
+                <a href="../index.html#user-op-getUserBySystemUserId">Unified internal spec — this operation</a>.
+              </p>
+            </section>
+
+            <p class="small">
+              <a href="../index.html">← User resource hub</a>
+            </p>
+
+            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+          </main>
         </div>
-      </body>
+      </div>
 
-    </html>
+    </body></html>

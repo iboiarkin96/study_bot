@@ -83,11 +83,8 @@ function activeTarget(relPath) {
   if (relPath.startsWith("api/")) {
     return "api/index.html";
   }
-  if (relPath === "openapi-explorer.html") {
-    return "openapi-explorer.html";
-  }
-  if (relPath === "engineering-practices.html") {
-    return "internal/developers.html";
+  if (relPath === "openapi-explorer.html" || relPath === "openapi/openapi-explorer.html") {
+    return "openapi/openapi-explorer.html";
   }
   if (relPath === "internal/developers.html") {
     return "internal/developers.html";
@@ -130,7 +127,7 @@ function renderTopNav() {
     { label: "⭐Backlog", target: "backlog/README.html", className: "top-nav__link--backlog" },
   ];
   const publicItems = [
-    { label: "OpenAPI explorer", target: "openapi-explorer.html" },
+    { label: "OpenAPI explorer", target: "openapi/openapi-explorer.html" },
     { label: "Pdoc API docs", target: "api/index.html" },
   ];
 

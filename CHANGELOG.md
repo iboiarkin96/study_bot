@@ -7,16 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Documentation
-
-- **Assessment HTML (`docs/audit/`, 2026-04-14):** [`2026-04-14-api-assessment.html`](docs/audit/2026-04-14-api-assessment.html) — completed with §8 actionable checklist, §9 document history, and TOC anchors for sections 7–9. [`2026-04-14-documentation-experience-assessment.html`](docs/audit/2026-04-14-documentation-experience-assessment.html) — restructured to the same backbone (scope/methodology, Tables 1–2 with shared score legend, scoring summary, gaps §5.1–5.3, mitigation phases, checklist, document history); fixed markup and removed redundant sections.
-- **[ADR 0024](docs/adr/0024-architecture-and-quality-assessment-documents.html)** (assessment / audit format): normative **published assessment backbone** (`#published-assessment-backbone`) aligned with those pages; Table 2 score scale, legend fragment injection, and `docs/assets/docs.css` bands; consolidated rollout/validation and references. See also [`docs/CHANGELOG.md`](docs/CHANGELOG.md) (2026-04-14).
-- **ADR 0024 + audits:** industry context (large-org parallels vs this repo’s rubric), **PET-scale** non-goals; API §1.6 / DX §1.5; [`docs/audit/README.html`](docs/audit/README.html) explainer card.
-
-- **Internal service documentation:** [`docs/internal/`](docs/internal/) (HTML entry [`docs/internal/README.html`](docs/internal/README.html) — project and service overview; [`service-overview.html`](docs/internal/service-overview.html) redirects there for bookmarks). [ADR 0025](docs/adr/0025-external-and-internal-api-documentation.html) — OpenAPI as the sole external HTTP contract; internal docs for engineering narrative. [ADR 0026](docs/adr/0026-internal-service-documentation-as-source-of-truth.html) — norms and authority for `docs/internal/`. Top nav **Internal (service)**; see [`docs/CHANGELOG.md`](docs/CHANGELOG.md) (2026-04-14).
-
-- **User HTTP API (internal):** [`docs/internal/api/user/index.html`](docs/internal/api/user/index.html) — capability spec: endpoints, idempotency, errors, logging, metrics, PostgreSQL dependency (see `docs/CHANGELOG.md` 2026-04-15).
-
 ## [1.1.1] — 2026-04-12
 
 ### Added
@@ -29,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - GitHub Actions: **CD** job **`publish-image`** builds the [`Dockerfile`](Dockerfile) and pushes to **GHCR** (`ghcr.io/<owner>/<repo>`) on successful **`quality`** (and **`changelog`** when that job runs) after push to **`main`** / **`master`** or **`v*`** tags. Uses the default **`GITHUB_TOKEN`** (`packages: write`); image tags include **short SHA**, **`latest`** on the default branch, and **semver** labels on version tags.
 
-- **Embedded Swagger UI:** [docs/openapi-explorer.html](docs/openapi-explorer.html) loads the committed OpenAPI snapshot (`docs/openapi/openapi-baseline.json`) with **Try it out**; top nav link **Swagger UI**; linked from docs index, developer index, and README.
+- **Embedded Swagger UI:** [docs/openapi/openapi-explorer.html](docs/openapi/openapi-explorer.html) loads the committed OpenAPI snapshot (`docs/openapi/openapi-baseline.json`) with **Try it out**; top nav link **Swagger UI**; linked from docs index, developer index, and README.
 
 - **Structured logging and optional local Elasticsearch:** NDJSON (`LOG_FORMAT=json`, or leave unset — application default is **json**), `LOG_SERVICE_NAME`, `X-Request-Id` middleware, `docker-compose.logging.yml` (Elasticsearch, Kibana, Filebeat), `make logging-up` / `logging-down` / `logging-smoke` / `logging-reset` / `logging-es-query`, and [ADR 0023](docs/adr/0023-structured-logging-and-local-elasticsearch.html). `trace_id` / `span_id` are reserved in JSON logs for future OpenTelemetry.
 
@@ -47,9 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Documentation pipeline and contributor touchpoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/adr_discussion.md`, and synced HTML pages (e.g. engineering practices, system design, backlog, runbooks, developer docs) brought in line with ADR lifecycle and UML generation.
 
-- **OpenAPI (test):** **`docs/openapi-explorer.html`** — Swagger UI against `openapi-baseline.json` for browsing only (**Try it out** disabled). Browser-side Ajv validation and **`docs/assets/openapi-sandbox.js`** removed. **[ADR 0022](docs/adr/0022-embedded-swagger-ui-openapi-sandbox.html)** marked superseded; validation approach on hold. **`docs/openapi-live.html`** removed (use app **`/docs`** for Try it out). README and indexes updated.
+- **OpenAPI (test):** **`docs/openapi/openapi-explorer.html`** — Swagger UI against `openapi-baseline.json` for browsing only (**Try it out** disabled). Browser-side Ajv validation and **`docs/assets/openapi-sandbox.js`** removed. **[ADR 0022](docs/adr/0022-embedded-swagger-ui-openapi-sandbox.html)** marked superseded; validation approach on hold. **`docs/openapi-live.html`** removed (use app **`/docs`** for Try it out). README and indexes updated.
 
-- **CORS (`env/example`):** comment clarifies static `openapi-explorer.html` does not call the API; origins for `:8765` remain for browser access to the API from the same docs origin (e.g. FastAPI `/docs`).
+- **CORS (`env/example`):** comment clarifies static `docs/openapi/openapi-explorer.html` does not call the API; origins for `:8765` remain for browser access to the API from the same docs origin (e.g. FastAPI `/docs`).
 
 ## [1.1.1] — 2026-04-11
 
@@ -74,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `requirements.txt` to include dependencies required by the new LLM scripts.
 - Refactored `scripts/changelog_draft.py` to integrate LLM generation logic and improve draft creation.
 - `CHANGELOG.md`, `README.md`, and `CONTRIBUTING.md` updated for container/Kubernetes workflows and discovery of new docs.
-- `docs/adr/README.html`, `docs/developer/README.html`, and `docs/engineering-practices.html` link to ADR 0015 and the Docker/Kubernetes developer guide.
+- `docs/adr/README.html`, `docs/developer/README.html`, and `docs/internal/developers.html` link to ADR 0015 and the Docker/Kubernetes developer guide.
 - `env/example`, `requirements.txt`, and `.gitignore` adjusted for new tooling and generated paths.
 - `scripts/format_docs_html.py` and `scripts/sync_docs.py` updated alongside the documentation pipeline.
 - `docs/developer/0008-docs-pipeline.html` updated (versioning notes, pdoc output path `docs/api/`, optional CI).

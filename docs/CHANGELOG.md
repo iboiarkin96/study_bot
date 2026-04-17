@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
-- Legacy [`docs/internal/user/index.html`](internal/user/index.html) (superseded by [`internal/api/user/index.html`](internal/api/user/index.html)); orphan assets `internal-doc-demo.css`, `internal-doc-nav.js`; unused `details.internal-doc-map` rules in [`docs/assets/docs.css`](assets/docs.css).
+- Legacy `docs/internal/user/index.html` (superseded by [`internal/api/user/index.html`](internal/api/user/index.html)); orphan assets `internal-doc-demo.css`, `internal-doc-nav.js`; unused `details.internal-doc-map` rules in [`docs/assets/docs.css`](assets/docs.css).
 
 ### Added
 
@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - [`docs/assets/docs-nav.js`](assets/docs-nav.js): top nav item **How-to guides** (`howto/README.html`) and `activeTarget` for `howto/*` paths.
 
-- [`docs/internal/user-http-api.html`](internal/user-http-api.html) moved to [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) (resource-scoped layout); sidebar and inbound links updated.
+- `docs/internal/user-http-api.html` moved to [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) (resource-scoped layout); sidebar and inbound links updated.
 
 - Full User internal specification merged into [`docs/internal/api/user/index.html`](internal/api/user/index.html) (single entry point). [`docs/internal/api/user/user-http-api.html`](internal/api/user/user-http-api.html) is a redirect stub to `index.html` with hash preserved; per-method pages link to `../index.html#…`.
 
@@ -52,7 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - [`scripts/format_docs_html.py`](../scripts/format_docs_html.py): optional skip list `SKIP_HTML_INDENT_NORMALIZE` so the line-based indenter does not corrupt long HTML pages with multiline list items (ADR 0024 registered).
 
-- [Developer guide 0010](developer/0010-make-commands-and-workflows.html): Make commands and workflows — PlantUML sources under [`docs/uml/make/`](uml/make/) (rendered PNGs via `make docs-fix`), composite pipeline and run/observability figures, tables of atomic targets by theme, if-then onboarding scenarios; linked from [docs index](index.html), [developer README](developer/README.html), [CONTRIBUTING](../CONTRIBUTING.md), [ADR 0008](adr/0008-make-command-taxonomy-and-workflow-entrypoints.html), [engineering-practices](engineering-practices.html), and [local development](developer/0007-local-development.html).
+- [Developer guide 0010](developer/0010-make-commands-and-workflows.html): Make commands and workflows — PlantUML sources under [`docs/uml/make/`](uml/make/) (rendered PNGs via `make docs-fix`), composite pipeline and run/observability figures, tables of atomic targets by theme, if-then onboarding scenarios; linked from [docs index](index.html), [developer README](developer/README.html), [CONTRIBUTING](../CONTRIBUTING.md), [ADR 0008](adr/0008-make-command-taxonomy-and-workflow-entrypoints.html), [developers docs](internal/developers.html), and [local development](developer/0007-local-development.html).
 
 ### Changed
 
@@ -74,7 +74,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - [ADR 0019](adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html): implementation marked **Done** (`data-adr-weight="7"`). [Backlog item-4](backlog/README.html#item-4) marked **Done**; `Makefile` **`verify-ci`** now includes **`deps-audit`** (engineering-practices table synced).
 
-- [ADR 0022](adr/0022-embedded-swagger-ui-openapi-sandbox.html) superseded: browser validation cancelled; `openapi-explorer.html` is OpenAPI (test), Swagger browse-only; task on hold. Removed `openapi-live.html` (use app `/docs` for Try it out).
+- [ADR 0022](adr/0022-embedded-swagger-ui-openapi-sandbox.html) superseded: browser validation cancelled; `openapi/openapi-explorer.html` is OpenAPI (test), Swagger browse-only; task on hold. Removed `openapi-live.html` (use app `/docs` for Try it out).
 
 - All numbered ADRs (`0001`–`0017`): replaced legacy **Status** badge blocks with `data-adr-weight="7"` on `<main>` and a **Ratification** note for pre–ADR-0018 adoption; UI status comes from `docs/assets/docs-nav.js` per [ADR 0018](adr/0018-adr-lifecycle-ratification-and-badges.html). [ADR 0018](adr/0018-adr-lifecycle-ratification-and-badges.html) and [ADR 0019](adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html) include the collapsible weight help from the [ADR template](adr/0000-template.html).
 
@@ -86,7 +86,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - PlantUML under `docs/uml/`: architecture and sequence `.puml` sources include the shared style; rendered PNGs in `docs/uml/rendered/` updated to match ([ADR 0020](adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
 
-- Docs pipeline and contributor entrypoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, and `.github/ISSUE_TEMPLATE/adr_discussion.md` aligned with ADR lifecycle, UML rendering, and synced HTML companions (`docs/engineering-practices.html`, `docs/internal/system-design.html`, `docs/backlog/README.html`, `docs/runbooks/README.html`, `docs/developer/0008-docs-pipeline.html`).
+- Docs pipeline and contributor entrypoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, and `.github/ISSUE_TEMPLATE/adr_discussion.md` aligned with ADR lifecycle, UML rendering, and synced HTML companions (`docs/internal/developers.html`, `docs/internal/system-design.html`, `docs/backlog/README.html`, `docs/runbooks/README.html`, `docs/developer/0008-docs-pipeline.html`).
 
 
 ### Added

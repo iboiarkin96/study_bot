@@ -1,25 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guide For Beginners: Add `POST /api/v1/contract`</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Guide For Beginners: Add `POST /api/v1/contract`</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container">
-      <h1>Guide For Beginners: Add <code>POST /api/v1/contract</code></h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        Canonical path: <code>docs/howto/0004-how-to-add-post-contract.html</code> (moved from
-        <code>docs/developer/0004-how-to-add-post-contract.html</code>; the old URL redirects here).
-      </p>
-      <p>This guide explains <strong>what to add, where to add it, and in what order</strong>.</p>
-      <p>The endpoint itself is not implemented here; this is an execution plan.</p>
-      <hr />
+<body>
+  <main class="container">
+    <h1>Guide For Beginners: Add <code>POST /api/v1/contract</code></h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      Canonical path: <code>docs/howto/0004-how-to-add-post-contract.html</code> (moved from
+      <code>docs/developer/0004-how-to-add-post-contract.html</code>; the old URL redirects here).
+    </p>
+    <p>This guide explains <strong>what to add, where to add it, and in what order</strong>.</p>
+    <p>The endpoint itself is not implemented here; this is an execution plan.</p>
+    <hr>
+    <section class="card">
       <h2>0. Goal and scope</h2>
       <p>Target endpoint:</p>
       <ul>
@@ -39,7 +38,9 @@
         <li>tests/documentation/quality checks pass.
         </li>
       </ul>
-      <hr />
+      <hr>
+    </section>
+    <section class="card">
       <h2>1. Prepare domain model and DB (if needed)</h2>
       <p>If <code>contract</code> requires new table/columns:</p>
       <ol>
@@ -61,7 +62,9 @@
           </li>
         </ol>
         <p>If DB schema does not change, skip migration steps.</p>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>2. Add repository layer</h2>
         <p>Create repository for persistence operations:</p>
         <ul>
@@ -84,7 +87,9 @@
           <li>no FastAPI imports.
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>3. Add service layer (business logic)</h2>
         <p>Create service:</p>
         <ul>
@@ -108,7 +113,9 @@
             <code>CONTRACT_101</code>.
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>4. Add request/response schemas</h2>
         <p>Create schemas:</p>
         <ul>
@@ -131,7 +138,9 @@
           <li>stable names for OpenAPI.
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>5. Add validation mapping for entity</h2>
         <p>Create validation mapper:</p>
         <ul>
@@ -160,7 +169,9 @@
           <li>a small registry (<code>endpoint -&gt; mapper</code>) in <code>app/validation/__init__.py</code>.
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>6. Add OpenAPI examples</h2>
         <p>Add examples:</p>
         <ul>
@@ -178,7 +189,9 @@
           <li>validation error examples.
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>7. Add API router</h2>
         <p>Create router:</p>
         <ul>
@@ -187,9 +200,9 @@
         </ul>
         <p>Router should:</p>
         <ul>
-          <li>define <code>APIRouter(prefix=&quot;/contract&quot;, tags=[&quot;Contract&quot;])</code>,
+          <li>define <code>APIRouter(prefix="/contract", tags=["Contract"])</code>,
           </li>
-          <li>add <code>@router.post(&quot;&quot;)</code>,
+          <li>add <code>@router.post("")</code>,
           </li>
           <li>use request/response schemas,
           </li>
@@ -202,10 +215,12 @@
         </ul>
         <p>Then include router in app:</p>
         <ul>
-          <li>update <code>app/main.py</code> with <code>app.include_router(..., prefix=&quot;/api/v1&quot;)</code>.
+          <li>update <code>app/main.py</code> with <code>app.include_router(..., prefix="/api/v1")</code>.
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>8. Add tests</h2>
         <p>Create tests:</p>
         <ul>
@@ -230,14 +245,18 @@
           <li><code>tests/conftest.py</code>
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>9. Update docs</h2>
         <p>Run docs sync:</p>
         <ul>
           <li><code>make docs-fix</code>
           </li>
         </ul>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>10. Run quality gates</h2>
         <p>Before commit:</p>
         <ol>
@@ -259,7 +278,9 @@
           <li><code>make release-check</code>
           </li>
         </ol>
-        <hr />
+        <hr>
+      </section>
+      <section class="card">
         <h2>11. Final checklist</h2>
         <ul>
           <li>[ ] endpoint registered and visible in Swagger
@@ -283,8 +304,8 @@
           <li>[ ] quality gates pass
           </li>
         </ul>
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </body>
+      </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
 
-  </html>
+  </body></html>

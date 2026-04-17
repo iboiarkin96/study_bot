@@ -1,28 +1,32 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: Tests Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: Tests Failing</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: Tests Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: Tests Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li><code>make test</code> fails.</li>
         <li><code>make verify</code> fails on test stage.</li>
         <li>CI pipeline reports failing tests.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Fast triage</h2>
       <ol>
         <li>Run full suite: <code>make test</code>.</li>
         <li>Run failing file/node only: <code>make test-one path=tests/...</code>.</li>
         <li>Check static checks: <code>make lint-check</code>, <code>make type-check</code>.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Most common causes</h2>
       <ul>
         <li>Changed API contract but tests expect old payload/keys.</li>
@@ -30,6 +34,8 @@
         <li>Migration not applied to local DB before tests.</li>
         <li>Nondeterministic test order/state leakage.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Recovery steps</h2>
       <ol>
         <li>Ensure DB state is up to date: <code>make migrate</code>.</li>
@@ -38,18 +44,23 @@
         <li>Align assertions with current error contract (<code>code</code>, <code>key</code>, <code>source</code>).</li>
         <li>Re-run full suite: <code>make test</code>.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Exit criteria</h2>
       <ul>
         <li><code>make test</code> passes locally.</li>
         <li><code>make verify</code> passes.</li>
         <li>Any changed behavior is reflected in docs/examples.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Follow-up</h2>
       <ul>
         <li>If failure source is policy-level (contract/versioning/testing rules), add/update ADR.</li>
         <li>If failure source is operational routine, update this runbook with the new case.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

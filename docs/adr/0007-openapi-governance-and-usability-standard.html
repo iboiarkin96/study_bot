@@ -1,26 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0007: OpenAPI Governance and Usability Standard</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0007: OpenAPI Governance and Usability Standard</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0007: OpenAPI Governance and Usability Standard</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0007: OpenAPI Governance and Usability Standard</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -32,6 +31,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> OpenAPI is not just a pretty page—it is the contract machine-readable clients
@@ -43,11 +44,15 @@
         between related operations, snapshot tests so the contract cannot drift silently, and CI checks that treat the spec
         as seriously as application code.
       </p>
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <p>
         We adopt an OpenAPI governance standard: strict operation metadata, complete examples for errors and writes,
         response links where workflows exist, and automated contract checks in the pipeline.
       </p>
+    </section>
+    <section class="card">
       <h2>Scope</h2>
       <ul>
         <li>In scope: OpenAPI schema quality, endpoint docs usability, examples, links, response contracts, CI checks.
@@ -55,6 +60,8 @@
         <li>Out of scope: Public API monetization policies, external developer portal platform migration.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Alternatives considered</h2>
       <ol>
         <li>Keep current docs and improve ad-hoc.
@@ -74,6 +81,8 @@
           </ul>
         </li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -91,6 +100,8 @@
         <li>Need to keep CI checks and governance rules current.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Standard requirements</h2>
       <ul>
         <li>Every operation has stable <code>operationId</code>, clear summary, and response model.
@@ -110,6 +121,8 @@
         <li>Snapshot contract tests are required to detect accidental changes in fields, error codes, and schema types.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Implementation plan</h2>
       <ol>
         <li>Phase 1 (implemented): improve user endpoints with complete 422 examples, links, operation IDs, code
@@ -124,6 +137,8 @@
         <li>Phase 4: expand code samples and external docs links for operational recovery/runbooks.
         </li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Validation</h2>
       <ul>
         <li>Technical checks: <code>make type-check</code>, <code>make test</code>, <code>make contract-test</code>, <code>make docs-fix</code>.
@@ -133,23 +148,25 @@
         <li>Documentation updates: ADR index and generated handbook table via docs sync pipeline.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>References</h2>
       <ul>
         <li>
-          Related ADRs:<br />
-          <a href="../adr/0003-error-contract-governance.html"><code>0003-error-contract-governance</code></a><br />
-          <a href="../adr/0004-api-versioning-policy.html"><code>0004-api-versioning-policy</code></a><br />
-          <a href="../adr/0005-api-security-defaults.html"><code>0005-api-security-defaults</code></a><br />
+          Related ADRs:<br>
+          <a href="../adr/0003-error-contract-governance.html"><code>0003-error-contract-governance</code></a><br>
+          <a href="../adr/0004-api-versioning-policy.html"><code>0004-api-versioning-policy</code></a><br>
+          <a href="../adr/0005-api-security-defaults.html"><code>0005-api-security-defaults</code></a><br>
           <a href="../adr/0006-idempotency-write-operations.html"><code>0006-idempotency-write-operations</code></a>
         </li>
         <li>
-          Related runbooks:<br />
-          <a href="../runbooks/0006-api-security-failing.html"><code>0006-api-security-failing</code></a><br />
+          Related runbooks:<br>
+          <a href="../runbooks/0006-api-security-failing.html"><code>0006-api-security-failing</code></a><br>
           <a href="../runbooks/0007-openapi-contract-test-failing.html"><code>0007-openapi-contract-test-failing</code></a>
         </li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-</html>
+</body></html>

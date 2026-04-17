@@ -1,26 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0019: Python dependency security, pip-audit, and pinning policy</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0019: Python dependency security, pip-audit, and pinning policy</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0019: Python dependency security, pip-audit, and pinning policy</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0019: Python dependency security, pip-audit, and pinning policy</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted and merged under <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link a
@@ -32,6 +31,8 @@
         <li>Accepted: 2026-04-12</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> Applications depend on thousands of lines of other people’s code. Unpinned
@@ -45,6 +46,8 @@
         guidance (for example OWASP and NIST SSDF).
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
 
       <h3>1. Pinning and single source of truth</h3>
@@ -125,6 +128,8 @@
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Scope</h2>
       <ul>
         <li>
@@ -138,6 +143,8 @@
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Alternatives considered</h2>
       <ol>
         <li>
@@ -157,6 +164,8 @@
           </li>
         </ol>
 
+      </section>
+      <section class="card">
         <h2>Consequences</h2>
         <h3>Positive</h3>
         <ul>
@@ -169,6 +178,8 @@
           <li>pip-audit depends on advisory completeness; false negatives are possible for unreported issues.</li>
         </ul>
 
+      </section>
+      <section class="card">
         <h2>Compatibility and migration</h2>
         <ul>
           <li>Backward-compatibility impact: none for API consumers; dependency upgrades follow normal release notes.</li>
@@ -178,6 +189,8 @@
             <li>Rollback strategy: revert the failing upgrade commit or temporarily document an exception with expiry.</li>
           </ul>
 
+        </section>
+        <section class="card">
           <h2>Implementation plan</h2>
           <ol>
             <li>Add pip-audit to the project’s install surface (for example <code>requirements.txt</code> or a documented CI
@@ -188,6 +201,8 @@
                 <li>Reference this ADR from contributor or engineering-practices documentation.</li>
               </ol>
 
+            </section>
+            <section class="card">
               <h2>Validation</h2>
               <ul>
                 <li>Technical checks: <code>make deps-audit</code> passes on a clean tree after upgrades; CI job green.</li>
@@ -195,6 +210,8 @@
                 <li>Documentation updates: this ADR, backlog item, and developer docs cross-links.</li>
               </ul>
 
+            </section>
+            <section class="card">
               <h2>References</h2>
               <ul>
                 <li>Related ADRs: <a href="./0015-container-image-and-local-kubernetes.html">ADR 0015</a> (container image).</li>
@@ -202,8 +219,8 @@
                 </li>
                 <li>pip-audit: <a href="https://pypi.org/project/pip-audit/" rel="noopener noreferrer">PyPI</a>.</li>
               </ul>
-              <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-            </main>
-          </body>
+            </section>
+            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+          </main>
 
-        </html>
+        </body></html>

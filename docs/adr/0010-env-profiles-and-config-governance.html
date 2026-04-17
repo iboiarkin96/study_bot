@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0010: Environment Profiles and Config Governance</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0010: Environment Profiles and Config Governance</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0010: Environment Profiles and Config Governance</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0010: Environment Profiles and Config Governance</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -30,6 +30,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> Twelve-factor style apps read config from the environment so the same build
@@ -41,17 +43,21 @@
         validation that rejects unsafe combinations in non-dev environments.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <ul>
         <li>Adopt explicit environment profiles: <code>dev</code>, <code>qa</code>, <code>prod</code> only.</li>
         <li>Single committed template: <code>env/example</code> (copy to <code>.env</code> via <code>make env-init</code>).</li>
-        <li>Load configuration in layers: <code>.env</code> -> <code>env/&lt;APP_ENV&gt;</code> -> optional <code>ENV_FILE</code>.</li>
+        <li>Load configuration in layers: <code>.env</code> -&gt; <code>env/&lt;APP_ENV&gt;</code> -&gt; optional <code>ENV_FILE</code>.</li>
         <li>Automated tests use <code>APP_ENV=qa</code> (not a separate profile). Legacy <code>APP_ENV=test</code> maps to <code>qa</code>.</li>
-        <li>Normalize legacy aliases (for example <code>local</code> -> <code>dev</code>).</li>
+        <li>Normalize legacy aliases (for example <code>local</code> -&gt; <code>dev</code>).</li>
         <li>Expose effective profile in <code>GET /live</code> as <code>app_env</code>.</li>
         <li>Enforce strict runtime validation for unsafe settings in <code>qa/prod</code>.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Validation Rules</h2>
       <ul>
         <li><code>qa/prod</code>: <code>API_AUTH_STRATEGY=disabled</code> is forbidden.</li>
@@ -61,6 +67,8 @@
         <li><code>prod</code>: <code>LOG_LEVEL=DEBUG</code> is forbidden.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Implementation</h2>
       <ul>
         <li>Profile-aware loader and validation are implemented in <code>app/core/config.py</code>.</li>
@@ -68,6 +76,8 @@
         <li>Observability compose stack is env-driven for ports, scrape target, and Grafana credentials.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -80,7 +90,8 @@
         <li>More env variables and templates to maintain.</li>
         <li>Startup can fail fast when policy validations detect invalid runtime config.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

@@ -1,22 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: Observability Scrape Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: Observability Scrape Failing</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: Observability Scrape Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: Observability Scrape Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li>Prometheus target is <code>DOWN</code>.</li>
         <li><code>/metrics</code> endpoint returns non-200 or empty payload.</li>
         <li>Grafana dashboard panels show <code>No data</code>.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Fast triage</h2>
       <ol>
@@ -27,23 +29,25 @@
         <li>Open Prometheus targets page and inspect scrape error details.</li>
       </ol>
       <p>
-        Useful links:<br />
+        Useful links:<br>
         Prometheus targets:
-        <a href="http://127.0.0.1:9090/targets">http://127.0.0.1:9090/targets</a><br />
+        <a href="http://127.0.0.1:9090/targets">http://127.0.0.1:9090/targets</a><br>
         Grafana dashboard:
         <a href="http://127.0.0.1:3001/d/study-app-observability/study-app-observability?orgId=1">http://127.0.0.1:3001/d/study-app-observability/study-app-observability?orgId=1</a>
       </p>
       <p>
-        Quick Prometheus queries:<br />
+        Quick Prometheus queries:<br>
         RPS:
-        <a href="http://127.0.0.1:9090/graph?g0.expr=sum%28rate%28http_requests_total%5B1m%5D%29%29&amp;g0.tab=0">open</a><br />
+        <a href="http://127.0.0.1:9090/graph?g0.expr=sum%28rate%28http_requests_total%5B1m%5D%29%29&amp;g0.tab=0">open</a><br>
         Error rate:
-        <a href="http://127.0.0.1:9090/graph?g0.expr=100%20*%20sum%28rate%28http_requests_total%7Bstatus_code%3D~%225..%7C4..%22%7D%5B5m%5D%29%29%20%2F%20sum%28rate%28http_requests_total%5B5m%5D%29%29&amp;g0.tab=0">open</a><br />
+        <a href="http://127.0.0.1:9090/graph?g0.expr=100%20*%20sum%28rate%28http_requests_total%7Bstatus_code%3D~%225..%7C4..%22%7D%5B5m%5D%29%29%20%2F%20sum%28rate%28http_requests_total%5B5m%5D%29%29&amp;g0.tab=0">open</a><br>
         API p95:
-        <a href="http://127.0.0.1:9090/graph?g0.expr=1000%20*%20histogram_quantile%280.95%2C%20sum%28rate%28http_request_duration_seconds_bucket%5B5m%5D%29%29%20by%20%28le%29%29&amp;g0.tab=0">open</a><br />
+        <a href="http://127.0.0.1:9090/graph?g0.expr=1000%20*%20histogram_quantile%280.95%2C%20sum%28rate%28http_request_duration_seconds_bucket%5B5m%5D%29%29%20by%20%28le%29%29&amp;g0.tab=0">open</a><br>
         DB p95:
         <a href="http://127.0.0.1:9090/graph?g0.expr=1000%20*%20histogram_quantile%280.95%2C%20sum%28rate%28db_operation_duration_seconds_bucket%5B5m%5D%29%29%20by%20%28le%29%29&amp;g0.tab=0">open</a>
       </p>
+    </section>
+    <section class="card">
 
       <h2>Most common causes</h2>
       <ul>
@@ -52,6 +56,8 @@
         <li>Wrong scrape target in <code>ops/prometheus/prometheus.tpl.yml</code> (rendered to <code>ops/prometheus/prometheus.yml</code>).</li>
         <li>Docker Desktop does not resolve <code>host.docker.internal</code> in your environment.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Recovery steps</h2>
       <h3>1) Endpoint-level checks</h3>
@@ -64,7 +70,7 @@
       <ul>
         <li>Open <code>http://127.0.0.1:9090/targets</code>.</li>
         <li>If target is down, inspect <code>PROMETHEUS_SCRAPE_TARGET</code>, then re-run <code>make observability-up</code> to render and apply config.</li>
-        <li>Restart stack: <code>make observability-down && make observability-up</code>.</li>
+        <li>Restart stack: <code>make observability-down &amp;&amp; make observability-up</code>.</li>
       </ul>
 
       <h3>3) Grafana checks</h3>
@@ -72,8 +78,10 @@
         <li>Open Grafana (<code>http://127.0.0.1:3001</code>) and verify Prometheus datasource is healthy.</li>
         <li>Generate test traffic to create fresh metrics:</li>
       </ul>
-      <pre><code>for i in {1..20}; do curl -s http://127.0.0.1:8000/live > /dev/null; done
-        for i in {1..20}; do curl -s http://127.0.0.1:8000/ready > /dev/null; done</code></pre>
+      <pre><code>for i in {1..20}; do curl -s http://127.0.0.1:8000/live &gt; /dev/null; done
+        for i in {1..20}; do curl -s http://127.0.0.1:8000/ready &gt; /dev/null; done</code></pre>
+      </section>
+      <section class="card">
 
         <h2>Exit criteria</h2>
         <ul>
@@ -81,7 +89,8 @@
           <li><code>/metrics</code> returns expected metrics.</li>
           <li>Grafana dashboard panels show non-empty time-series data.</li>
         </ul>
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </body>
-  </html>
+      </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
+
+  </body></html>

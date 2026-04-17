@@ -1,41 +1,65 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Developers Docs — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Developers Docs — Study App</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <link rel="stylesheet" href="../assets/internal-layout.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-    <script defer src="../assets/internal-sidebar.js"></script>
-  </head>
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Developers Docs</h1>
+        <div id="docs-top-nav"></div>
+        <nav aria-labelledby="toc">
+          <h2 id="toc">Contents</h2>
+          <ol>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#quick-start">Quick start</a></li>
+            <li><a href="#developer-guides">Developer guides by topic</a></li>
+            <li><a href="#engineering-standards">Engineering standards (mandatory)</a></li>
+            <li><a href="#versioning-policy">API versioning policy</a></li>
+            <li><a href="#related-hubs">Related hubs</a></li>
+          </ol>
+        </nav>
 
-  <body class="internal-layout">
-    <div class="internal-layout__shell">
-      <aside class="internal-layout__sidebar">
-        <p class="internal-layout__sidebar-title">Internal docs</p>
-        <div id="internal-sidebar-mount"></div>
-      </aside>
-      <div class="internal-layout__main">
-        <div class="container">
-          <h1>Developers Docs</h1>
-          <div id="docs-top-nav"></div>
-          <p class="lead">
-            Engineering workflow, delivery rules, policy governance, and operational discipline—plus the index of
-            hands-on guides under <code>docs/developer/</code>. Single entry point for implementation work in this repo.
-          </p>
-
-          <section id="developer-guides-index" class="card">
-            <h2>Developer guides</h2>
-            <p>
-              Hands-on guides under <code>docs/developer/</code>. This section replaces the former standalone
-              <code>developer/README.html</code> index.
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>One entry point for engineering workflow: where to start, which guides to read, and which quality gates are
+            mandatory before release.</p>
+          </section>
+          <section id="quick-start" class="card">
+            <h2>Quick start</h2>
+            <p>Recommended day-to-day path for contributors.</p>
+            <ol>
+              <li>Install environment once: <code>make env-init</code> and <code>make install</code>.</li>
+              <li>Run local API: <code>make run</code> (or <code>make run-project</code> for observability stack).</li>
+              <li>Before commit/PR: <code>make verify</code>.</li>
+              <li>Before deployment: <code>make release-check</code> or <code>make release DEPLOY_CMD="..."</code>.</li>
+            </ol>
+            <p class="small">
+              Full command taxonomy and rationale: <a href="../developer/0010-make-commands-and-workflows.html">Make
+              commands and workflows</a>.
             </p>
+          </section>
+
+          <section id="developer-guides" class="card">
+            <h2>Developer guides by topic</h2>
+            <p>Primary guides from <code>docs/developer/</code> grouped by purpose.</p>
+
+            <h3>Core architecture and contracts</h3>
             <table>
               <thead>
                 <tr>
-                  <th>Document</th>
+                  <th>Guide</th>
                   <th>Description</th>
                   <th>Open</th>
                 </tr>
@@ -43,643 +67,149 @@
               <tbody>
                 <tr>
                   <td>Requirements guide</td>
-                  <td>Developer interpretation of functional and non-functional requirements.</td>
-                  <td><a href="../developer/0001-requirements.html">Open guide</a></td>
+                  <td>Functional and non-functional requirements interpretation for developers.</td>
+                  <td><a href="../developer/0001-requirements.html">Open</a></td>
                 </tr>
                 <tr>
+                  <td>Schemas and contracts</td>
+                  <td>Safe request/response/error evolution rules.</td>
+                  <td><a href="../developer/0002-schemas-and-contracts.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>Business logic guide</td>
+                  <td>Layer boundaries, processing order, and service responsibilities.</td>
+                  <td><a href="../developer/0003-business-logic.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>Error matrix by status</td>
+                  <td>COMMON vs domain-specific error contracts.</td>
+                  <td><a href="../developer/0005-error-matrix-by-status.html">Open</a></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>Delivery workflow and operations</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Guide</th>
+                  <th>Description</th>
+                  <th>Open</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
                   <td>Make commands and workflows</td>
-                  <td>Onboarding: grouped <code>Makefile</code> targets and pipelines; see
-                    <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>.</td>
-                    <td><a href="../developer/0010-make-commands-and-workflows.html">Open guide</a></td>
-                  </tr>
-                  <tr>
-                    <td>Schemas and contracts</td>
-                    <td>API request/response/error contracts and safe evolution.</td>
-                    <td><a href="../developer/0002-schemas-and-contracts.html">Open guide</a></td>
-                  </tr>
-                  <tr>
-                    <td>Business logic guide</td>
-                    <td>Layering model and service responsibilities.</td>
-                    <td><a href="../developer/0003-business-logic.html">Open guide</a></td>
-                  </tr>
-                  <tr>
-                    <td>Beginner endpoint guide</td>
-                    <td>Adding <code>POST /api/v1/contract</code>; canonical:
-                      <a href="../howto/0004-how-to-add-post-contract.html">howto guide</a>.</td>
-                      <td><a href="../howto/0004-how-to-add-post-contract.html">Open guide</a></td>
-                    </tr>
-                    <tr>
-                      <td>Error matrix by status</td>
-                      <td>COMMON vs entity-specific error contracts.</td>
-                      <td><a href="../developer/0005-error-matrix-by-status.html">Open guide</a></td>
-                    </tr>
-                    <tr>
-                      <td>API load testing</td>
-                      <td><code>tools.load_testing.runner</code>, scenarios, Grafana.</td>
-                      <td><a href="../developer/0006-api-load-testing.html">Open guide</a></td>
-                    </tr>
-                    <tr>
-                      <td>Local development</td>
-                      <td><code>make run</code>, observability stack, ports.</td>
-                      <td><a href="../developer/0007-local-development.html">Open guide</a></td>
-                    </tr>
-                    <tr>
-                      <td>Documentation pipeline</td>
-                      <td><code>docs-fix</code>, pdoc, <code>docs-check</code>.</td>
-                      <td><a href="../developer/0008-docs-pipeline.html">Open guide</a></td>
-                    </tr>
-                    <tr>
-                      <td>Docker &amp; local Kubernetes</td>
-                      <td>Image build, kubectl, manifests.</td>
-                      <td><a href="../developer/0009-docker-and-kubernetes-local.html">Open guide</a></td>
-                    </tr>
-                    <tr>
-                      <td>Internal service documentation</td>
-                      <td><code>docs/internal/</code> (this site).</td>
-                      <td><a href="./README.html">Open index</a></td>
-                    </tr>
-                    <tr>
-                      <td>Runbooks index</td>
-                      <td>Incident procedures.</td>
-                      <td><a href="../runbooks/README.html">Open index</a></td>
-                    </tr>
-                    <tr>
-                      <td>Product &amp; quality backlog</td>
-                      <td>Roadmap (HTML).</td>
-                      <td><a href="../backlog/README.html">Open index</a></td>
-                    </tr>
-                    <tr>
-                      <td>Python API reference (pdoc)</td>
-                      <td>Generated modules.</td>
-                      <td><a href="../api/index.html">Open API docs</a></td>
-                    </tr>
-                    <tr>
-                      <td>OpenAPI (test)</td>
-                      <td>Swagger UI vs baseline JSON.</td>
-                      <td><a href="../openapi-explorer.html">OpenAPI (test)</a></td>
-                    </tr>
-                    <tr>
-                      <td>ADR index</td>
-                      <td>Architecture decisions.</td>
-                      <td><a href="../adr/README.html">Open index</a></td>
-                    </tr>
-                    <tr>
-                      <td>Python docstrings &amp; pdoc</td>
-                      <td>Contributor checklist.</td>
-                      <td><a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">Open ADR 0016</a></td>
-                    </tr>
-                    <tr>
-                      <td>Branches &amp; repo workflow</td>
-                      <td>Trunk, tags, hotfixes.</td>
-                      <td><a href="../adr/0017-branch-naming-and-repository-workflow.html">Open ADR 0017</a></td>
-                    </tr>
-                    <tr>
-                      <td>Architecture &amp; quality assessments</td>
-                      <td>Audit reports; <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.</td>
-                      <td><a href="../audit/README.html">Open audit index</a></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
+                  <td>Canonical quality gates and grouped commands.</td>
+                  <td><a href="../developer/0010-make-commands-and-workflows.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>Make commands reference (internal)</td>
+                  <td>Project command catalog with workflows and full `Makefile` inventory.</td>
+                  <td><a href="./make-commands.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>Local development</td>
+                  <td>Runtime setup, ports, observability stack, and daily loop.</td>
+                  <td><a href="../developer/0007-local-development.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>Docker and local Kubernetes</td>
+                  <td>Image build, manifests, and local cluster workflow.</td>
+                  <td><a href="../developer/0009-docker-and-kubernetes-local.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>API load testing</td>
+                  <td>Load-test scenarios and local execution workflow.</td>
+                  <td><a href="../developer/0006-api-load-testing.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>Documentation pipeline</td>
+                  <td>How <code>docs-fix</code>, generated docs, and sync checks work.</td>
+                  <td><a href="../developer/0008-docs-pipeline.html">Open</a></td>
+                </tr>
+              </tbody>
+            </table>
 
-              <div class="card">
-                <h2 id="architecture-quality-assessments">Architecture &amp; quality assessments</h2>
-                <p>
-                  Periodic audit-style reports (API, documentation experience, …) live under <code>docs/audit/</code> with a
-                  shared format described in <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
-                  <a href="../audit/README.html">Browse all assessment reports</a>.
-                </p>
-              </div>
+            <h3>How-to and onboarding</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Guide</th>
+                  <th>Description</th>
+                  <th>Open</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Beginner endpoint guide</td>
+                  <td>Step-by-step endpoint implementation example.</td>
+                  <td><a href="../howto/0004-how-to-add-post-contract.html">Open</a></td>
+                </tr>
+                <tr>
+                  <td>Python docstrings and pdoc</td>
+                  <td>Contributor rules for API docs generation.</td>
+                  <td><a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a></td>
+                </tr>
+                <tr>
+                  <td>Branches and repository workflow</td>
+                  <td>Branch naming, trunk strategy, releases, and hotfix flow.</td>
+                  <td><a href="../adr/0017-branch-naming-and-repository-workflow.html">ADR 0017</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
 
-              <div class="card">
-                <h2 id="internal-service-documentation">Internal service documentation</h2>
-                <p>
-                  Engineering-facing behavior, business rules, and operational meaning for the HTTP API are documented under
-                  <code>docs/internal/</code> (HTML). External integrators rely on OpenAPI and the root changelog; the split and
-                  authority rules are fixed in
-                  <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> and
-                  <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
-                  <a href="./README.html">Browse internal service documentation</a>.
-                </p>
-              </div>
-
-              <section>
-                <h2 id="dev-guide">1. Development Guide</h2>
-                <div class="card">
-                  <h3>1.1 Project Philosophy</h3>
-                  <ul>
-                    <li>API contract is the product: request/response/error rules must always match runtime behavior.</li>
-                    <li>Documentation evolves with code in the same change set.</li>
-                    <li>Centralized source-of-truth files prevent drift as API scales.</li>
-                  </ul>
-
-                  <h3>1.2 Validation Standards (General)</h3>
-                  <ul>
-                    <li>Validate external input at API boundary (schemas/types/validators).</li>
-                    <li>Do not duplicate request-shape validation in service/repository layers.</li>
-                    <li>Normalize validation failures into stable error codes and keys.</li>
-                    <li>Return consistent machine-readable payloads across endpoints.</li>
-                  </ul>
-
-                  <h3>1.3 Error Governance and Expansion</h3>
-                  <ul>
-                    <li>Error <code>code</code> + <code>key</code> are immutable public contracts.</li>
-                    <li>Add new codes, do not repurpose existing ones.</li>
-                    <li>Keep a fallback code path for unmapped validation failures.</li>
-                    <li>Every endpoint should declare explicit error responses in Swagger.</li>
-                  </ul>
-
-                  <h3>1.4 Documentation Workflow at Scale</h3>
-                  <ul>
-                    <li>Maintain source of truth in:
-                      <code>app/errors/</code> (catalog) and <code>app/validation/</code>,
-                      <code>app/schemas/errors.py</code>,
-                      <code>app/openapi/examples/errors.py</code>,
-                      router <code>responses</code>.
-                    </li>
-                    <li>After API changes run <code>make docs-fix</code>; verify marker blocks only are auto-updated.</li>
-                    <li>Keep documentation concise: explain standards and extension path, not full per-code dumps.</li>
-                  </ul>
-
-                  <h3>1.5 Testing Policy (Mandatory)</h3>
-                  <ul>
-                    <li>API changes without tests are considered incomplete and should not be released.</li>
-                    <li>For each endpoint, keep at least one success and one failure-path test.</li>
-                    <li>Contract testing is mandatory: run OpenAPI snapshot contract test to detect accidental API drift.</li>
-                    <li>Contract test must guard response fields, error codes, and schema types via baseline diff.</li>
-                    <li>Keep tests deterministic and isolated from mutable local state.</li>
-                    <li>Use <code>make test</code> for full run and <code>make test-one path=...</code> for targeted checks.</li>
-                  </ul>
-
-                  <h3>1.6 Release-Gate Procedure (Mandatory)</h3>
-                  <ul>
-                    <li>Before deployment, run <code>make release-check</code> as a quality gate.</li>
-                    <li>Pipeline order: <code>make env-check</code>, <code>make deps-audit</code>, <code>make verify</code> (lint,
-                      types, OpenAPI, contract test, tests, then <code>docs-fix</code> — do not run <code>docs-fix</code> again
-                      separately). See
-                      <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>.
-                    </li>
-                    <li>Deployment must be blocked if any step fails.</li>
-                    <li>Use <code>make release DEPLOY_CMD="..."</code> to enforce release gate before real deployment command.
-                    </li>
-                  </ul>
-
-                  <h3>1.7 Code Formatting and Linting</h3>
-                  <ul>
-                    <li>Use <code>make format-fix</code> to keep code style consistent before review.</li>
-                    <li>Use <code>make lint-check</code> and <code>make type-check</code> as mandatory static checks.</li>
-                    <li>Use <code>make verify</code> for combined lint + typecheck + OpenAPI contract + tests + docs sync.</li>
-                    <li>Install hooks once with <code>make pre-commit-install</code> and run with
-                      <code>make pre-commit-check</code>.
-                    </li>
-                    <li>Continuous integration: on push and pull requests, GitHub Actions runs <code>make verify</code> (lint,
-                      types,
-                      OpenAPI, contract tests, tests, then <code>docs-fix</code>) and then
-                      <code>pre-commit run --all-files</code>. You must still run <code>make verify-ci</code> locally before push:
-                      CI does not assert that your <strong>commits</strong> match <code>docs-fix</code> output, but
-                      <code>docs-check</code> (in <code>verify-ci</code>) does—otherwise GitHub Pages and other clones can show
-                      stale
-                      generated docs while the build stays green.
-                      Standard hosted runners are free for public repositories; private repos receive a monthly Actions allowance
-                      on
-                      free plans.
-                    </li>
-                  </ul>
-
-                  <h3>1.8 API Security by Default (Mandatory)</h3>
-                  <ul>
-                    <li>Every protected route under <code>/api/v1</code> must pass auth, rate-limit, body-limit, and
-                      security-header checks.</li>
-                      <li>Auth strategy is configured via <code>API_AUTH_STRATEGY</code>; default mode is <code>mock_api_key</code>.
+          <section id="engineering-standards" class="card">
+            <h2>Engineering standards (mandatory)</h2>
+            <ul>
+              <li><strong>Contract-first:</strong> API behavior must match request/response/error contracts.</li>
+              <li><strong>Validation boundaries:</strong> validate at API boundary, avoid duplicated shape validation in
+                inner layers.</li>
+                <li><strong>Error governance:</strong> existing <code>code</code> and <code>key</code> values are immutable;
+                  add, do not repurpose.</li>
+                  <li><strong>Testing policy:</strong> API changes require success + failure tests and OpenAPI contract
+                    checks.</li>
+                    <li><strong>Security baseline:</strong> protected endpoints must keep auth, limits, and security headers
+                      enabled.</li>
+                      <li><strong>Observability baseline:</strong> maintain <code>/live</code>, <code>/ready</code>,
+                        <code>/metrics</code>, and request correlation IDs.
                       </li>
-                      <li>Any endpoint contract must explicitly document <code>401</code>, <code>413</code>, and <code>429</code>
-                        responses when applicable.</li>
-                        <li>Do not bypass CORS allowlist or increase limits without decision record in ADR.</li>
-                        <li>Security-related config changes require docs update in the same change set.</li>
+                      <li><strong>Config governance:</strong> use explicit <code>APP_ENV</code> profiles and block insecure
+                        production defaults.</li>
                       </ul>
+                    </section>
 
-                      <h3>1.9 Idempotency for Write Operations (Mandatory)</h3>
+                    <section id="versioning-policy" class="card">
+                      <h2>API versioning policy</h2>
                       <ul>
-                        <li>Critical write endpoints must support idempotent retries with <code>Idempotency-Key</code>.</li>
-                        <li>Reuse of key with same payload must replay original success response.</li>
-                        <li>Reuse of key with different payload must fail with explicit conflict response.</li>
-                        <li>Idempotency rules and examples must be visible in OpenAPI docs and tests.</li>
-                        <li>Policy-level changes are captured in ADR before rollout.</li>
-                      </ul>
+                        <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
+                        <li>Breaking changes are not allowed in the same major version.</li>
+                        <li>Breaking examples: remove/rename endpoints or fields, change field semantics or requiredness, repurpose
+                          existing error meanings.</li>
+                          <li>Allowed within current major: new endpoints, optional fields, and additive error codes.</li>
+                        </ul>
+                        <p class="small">
+                          Formal policy: <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
+                        </p>
+                      </section>
 
-                      <h3>1.10 Observability and Readiness (Mandatory)</h3>
-                      <ul>
-                        <li>Service must expose <code>/live</code> and <code>/ready</code> probes.</li>
-                        <li><code>/live</code> reflects process liveness only; dependency checks belong to <code>/ready</code>.</li>
-                        <li><code>/metrics</code> must expose Prometheus metrics for API latency, error rate, and DB latency.</li>
-                        <li>Use low-cardinality metric labels only (method, route template, status class/code, operation type).</li>
-                        <li>Run <code>make contract-test</code> and <code>make verify</code> before release to protect API contract.
-                        </li>
-                        <li>
-                          <strong>Structured logs and correlation:</strong> file logs support <code>LOG_FORMAT=text|json</code>; the
-                          process default when <code>LOG_FORMAT</code> is unset is <strong>NDJSON (<code>json</code>)</strong> with
-                          stable fields including <code>request_id</code>. <code>trace_id</code> and <code>span_id</code> are reserved
-                          for future OpenTelemetry. Every response carries <code>X-Request-Id</code> (echo or generate); OpenAPI and
-                          CORS <code>expose_headers</code> must stay aligned so integrators and browser clients can read the header.
-                          Policy and local Elasticsearch: <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
-                        </li>
-                        <li>
-                          <strong>Optional local log search:</strong> Docker stack Elasticsearch + Kibana + Filebeat
-                          (<code>make logging-up</code>, <code>make logging-down</code>, …) is for developer debugging only—not a CI
-                          or production requirement. See <a href="../developer/0007-local-development.html">Local development</a>.
-                        </li>
-                      </ul>
+                      <section id="related-hubs" class="card">
+                        <h2>Related hubs</h2>
+                        <ul>
+                          <li><a href="./README.html">Internal docs index</a></li>
+                          <li><a href="./api/README.html">Internal HTTP API hub</a></li>
+                          <li><a href="./make-commands.html">Make commands</a></li>
+                          <li><a href="../openapi/openapi-explorer.html">OpenAPI (test)</a> and <a href="../api/index.html">Python API
+                            reference</a></li>
+                            <li><a href="../adr/README.html">ADR index</a></li>
+                            <li><a href="../runbooks/README.html">Runbooks</a>, <a href="../audit/README.html">Audit reports</a>, <a href="../backlog/README.html">Backlog</a></li>
+                          </ul>
+                        </section>
 
-                      <h3>1.11 Environment Profiles and Config Governance (Mandatory)</h3>
-                      <ul>
-                        <li>Use explicit app profiles: <code>APP_ENV=dev|qa|prod</code>. Automated tests run under <code>qa</code>
-                          rules.</li>
-                          <li>Single committed template: <code>env/example</code> → copy to <code>.env</code> once
-                            (<code>make env-init</code>).</li>
-                            <li>Base config is loaded from <code>.env</code>; profile overrides are loaded from
-                              <code>env/&lt;APP_ENV&gt;</code> (e.g. <code>env/dev</code>).
-                            </li>
-                            <li>Optional <code>ENV_FILE</code> applies last for deployment-specific secrets/config.</li>
-                            <li><code>GET /live</code> must expose effective <code>app_env</code> for operators to verify the running
-                              profile.</li>
-                              <li>In <code>qa/prod</code>, insecure defaults are blocked (disabled auth, default API key, metrics disabled).
-                              </li>
-                              <li>In <code>prod</code>, localhost CORS and <code>LOG_LEVEL=DEBUG</code> are blocked by startup validation.
-                              </li>
-                            </ul>
-
-                            <section>
-                              <h2 id="dev-docs-as-code">2. Docs as Code Workflow</h2>
-                              <div class="card">
-                                <p>Documentation is treated as production artifact and evolves together with application code.</p>
-                                <h3>2.1 Source of Truth</h3>
-                                <ul>
-                                  <li>Service behavior and contracts: <code>app/</code></li>
-                                  <li>Error mapping: <code>app/validation/user.py</code></li>
-                                  <li>OpenAPI examples: <code>app/openapi/examples/</code></li>
-                                  <li>UML sources: <code>docs/uml/**/*.puml</code></li>
-                                  <li>Generated sections: marker blocks in <code>README.md</code> and
-                                    <code>docs/internal/system-design.html</code>
-                                  </li>
-                                </ul>
-
-                                <h3>2.2 Required Commands (Grouped)</h3>
-                                <h4>Daily Flows</h4>
-                                <p>
-                                  Start with these workflow commands in day-to-day development. Each command delegates to canonical
-                                  targets and executes the listed atomic commands.
-                                </p>
-                                <table>
-                                  <thead>
-                                    <tr>
-                                      <th>Workflow</th>
-                                      <th>Command</th>
-                                      <th>When to use</th>
-                                      <th>Atomic commands executed</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td>Fix loop</td>
-                                      <td><code>make fix</code></td>
-                                      <td>Apply automatic fixes before validation.</td>
-                                      <td><code>format-fix</code> + <code>lint-fix</code> + <code>docs-fix</code></td>
-                                    </tr>
-                                    <tr>
-                                      <td>Local verification</td>
-                                      <td><code>make verify</code></td>
-                                      <td>Run the full local quality gate before commit/PR.</td>
-                                      <td><code>lint-check</code> + <code>type-check</code> + <code>openapi-check</code> +
-                                        <code>contract-test</code> + <code>test</code> + <code>docs-fix</code>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td>Release gate</td>
-                                      <td><code>make release-check</code></td>
-                                      <td>Validate environment and quality gate before deployment.</td>
-                                      <td><code>env-check</code> + <code>verify</code></td>
-                                    </tr>
-                                    <tr>
-                                      <td>Release execution</td>
-                                      <td><code>make release DEPLOY_CMD="..."</code></td>
-                                      <td>Run release checks and execute deployment command.</td>
-                                      <td><code>release-check</code> + <code>DEPLOY_CMD</code></td>
-                                    </tr>
-                                    <tr>
-                                      <td>Git hook checks</td>
-                                      <td><code>make pre-commit-check</code></td>
-                                      <td>Run hook checks manually before commit (or in CI validation).</td>
-                                      <td><code>pre-commit run --all-files</code> (configured hooks)</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                                <p class="small">
-                                  Subsections below group related <code>make</code> targets (quality, docs, release, containers, and
-                                  Kubernetes). The complete inventory is the auto-generated table at the end of section 2.2 (synced from
-                                  the <code>Makefile</code>).
-                                </p>
-                              </div>
-                            </section>
-                            <p class="small">
-                              Use one entrypoint for local gate: <code>make verify</code>. Avoid switching between equivalent aliases.
-                            </p>
-
-                            <h4>Atomic quality commands</h4>
-                            <ul>
-                              <li>Formatting: <code>make format-fix</code>, <code>make format-check</code>.</li>
-                              <li>Lint/type checks: <code>make lint-fix</code>, <code>make lint-check</code>,
-                                <code>make type-check</code>.
-                              </li>
-                              <li>Tests and contracts: <code>make test</code>, <code>make test-one path=...</code>,
-                                <code>make openapi-check</code>, <code>make contract-test</code>.
-                              </li>
-                            </ul>
-
-                            <h4>Documentation and contract governance</h4>
-                            <ul>
-                              <li><code>make docs-fix</code> - full docs pipeline (UML render + marker sync + HTML render/format).</li>
-                              <li><code>make uml-check</code> - verify <code>docs/uml/rendered/*.png</code> match <code>docs/uml/**/*.puml</code>
-                                (and shared <code>include/style.puml</code>) without writing files.</li>
-                                <li><code>make openapi-accept-changes</code> - update OpenAPI baseline for accepted contract updates.</li>
-                              </ul>
-
-                              <h4>Release safety</h4>
-                              <ul>
-                                <li><code>make env-check</code> - validate local environment prerequisites.</li>
-                                <li><code>make release-check</code> - enforce release gate before deployment.</li>
-                                <li><code>make pre-commit-check</code> - run configured git hook checks manually.</li>
-                              </ul>
-
-                              <h4>Container, observability, and local Kubernetes</h4>
-                              <ul>
-                                <li><code>make container-start</code> — same migrate + Uvicorn as the Docker image
-                                  (<code>scripts/container_entrypoint.sh</code>).
-                                </li>
-                                <li><code>make docker-build</code> — build image <code>study-app-api:local</code> (Docker).</li>
-                                <li><code>make observability-up</code>, <code>make observability-down</code>,
-                                  <code>make observability-smoke</code> — Prometheus/Grafana stack (Docker Compose).
-                                </li>
-                                <li><code>make run-project</code> — observability stack, then FastAPI dev server.</li>
-                                <li><code>make k8s-render-configmap</code> — render <code>k8s/configmap.yaml</code> from
-                                  <code>k8s/app.env</code>.
-                                </li>
-                                <li><code>make k8s-apply</code> — apply namespace, ConfigMap, workload, and Service manifests
-                                  (<code>kubectl</code>).
-                                </li>
-                              </ul>
-                              <p class="small">
-                                Walkthrough and prerequisites:
-                                <a href="../developer/0009-docker-and-kubernetes-local.html">Docker and Kubernetes (local)</a>.
-                              </p>
-                              <p class="small">
-                                Auto-generated from <code>Makefile</code> help output (source of truth):
-                              </p>
-                              <p class="small">
-                                Note: the table may include compatibility aliases. For local gate flow, use <code>make verify</code> as
-                                the
-                                canonical command.
-                              </p>
-                              <!-- BEGIN:MAKEFILE_COMMANDS -->
-                              <table>
-                                <thead>
-                                  <tr>
-                                    <th>Command</th>
-                                    <th>Purpose</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td><code>make api-docs</code></td>
-                                    <td>Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make changelog-draft</code></td>
-                                    <td>Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make container-start</code></td>
-                                    <td>Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make contract-test</code></td>
-                                    <td>Stricter: generated OpenAPI must equal baseline JSON exactly</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make dead-code-check</code></td>
-                                    <td>Run Vulture (unused code; see ADR 0014; not in verify-ci)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make deps-audit</code></td>
-                                    <td>Scan requirements.txt with pip-audit (OSV); fails on known CVEs</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make docker-build</code></td>
-                                    <td>Build image study-app-api:local (requires Docker)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make docs-check</code></td>
-                                    <td>Verify docs are already in sync (fails on drift)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make docs-fix</code></td>
-                                    <td>Auto-update docs (UML + markers + k8s ConfigMap + md→html + format + pdoc API)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make env-check</code></td>
-                                    <td>Verify env, deps, and DB connectivity</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make env-init</code></td>
-                                    <td>Create .env from env/example (once per machine)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make fix</code></td>
-                                    <td>Run auto-fixes (format-fix + lint-fix + docs-fix)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make format-check</code></td>
-                                    <td>Verify code formatting (no changes)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make format-fix</code></td>
-                                    <td>Auto-format Python code</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make install</code></td>
-                                    <td>Install dependencies</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make k8s-apply</code></td>
-                                    <td>kubectl apply manifests (requires kubectl; see guide)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make k8s-render-configmap</code></td>
-                                    <td>Render k8s/configmap.yaml from k8s/app.env (same as docs-fix step)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make lint-check</code></td>
-                                    <td>Run Ruff lint checks</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make lint-fix</code></td>
-                                    <td>Run Ruff with auto-fixes</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make llm-ping</code></td>
-                                    <td>Smoke-test LLM API (same env as changelog-draft)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make logging-down</code></td>
-                                    <td>Stop logging stack</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make logging-es-query</code></td>
-                                    <td>Query ES for study-app logs (optional QUERY=&lt;uuid&gt;)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make logging-reset</code></td>
-                                    <td>Stop stack, delete ES volume + ./logs/*.log (clean slate)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make logging-smoke</code></td>
-                                    <td>Check Elasticsearch and Kibana URLs</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make logging-up</code></td>
-                                    <td>Start ES/Kibana/Filebeat (use LOG_FORMAT=json, ./logs)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make migrate</code></td>
-                                    <td>Apply all Alembic migrations</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make migration name=…</code></td>
-                                    <td>Auto-generate new Alembic migration</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make observability-down</code></td>
-                                    <td>Stop Prometheus/Grafana stack</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make observability-smoke</code></td>
-                                    <td>Check observability links return HTTP 200</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make observability-up</code></td>
-                                    <td>Start Prometheus/Grafana stack with Docker Compose</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make openapi-accept-changes</code></td>
-                                    <td>Overwrite baseline with current app.openapi() (commit the file)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make openapi-check</code></td>
-                                    <td>Lint (operationId, summary, write+422 examples) + breaking-change</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make pre-commit-check</code></td>
-                                    <td>Run all pre-commit hooks</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make pre-commit-install</code></td>
-                                    <td>Install git pre-commit hooks</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make release DEPLOY_CMD=&#x27;…&#x27;</code></td>
-                                    <td>Run release-check then deploy command</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make release-check</code></td>
-                                    <td>Run env-check + deps-audit + verify before deploy</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make requirements</code></td>
-                                    <td>Auto-generate requirements.txt from .venv</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make run</code></td>
-                                    <td>Start FastAPI dev server</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make run-loadtest-api</code></td>
-                                    <td>Start API (high rate limit) → run tools.load_testing.runner → stop</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make run-loadtest-api-serve</code></td>
-                                    <td>Like run, but high API rate limit (foreground; use in 2nd terminal with runner)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make run-project</code></td>
-                                    <td>Start observability stack (Prometheus/Grafana/…) + FastAPI</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make test</code></td>
-                                    <td>Run full test suite (pytest + coverage per pyproject.toml)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make test-one path=…</code></td>
-                                    <td>Run one test file or node</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make test-warnings</code></td>
-                                    <td>Run tests with full warning details</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make type-check</code></td>
-                                    <td>Run mypy type checks</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make uml-check</code></td>
-                                    <td>Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes)</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make venv</code></td>
-                                    <td>Create virtual environment</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make verify</code></td>
-                                    <td>Run lint-check + type-check + openapi-check + contract-test + test + docs-fix</td>
-                                  </tr>
-                                  <tr>
-                                    <td><code>make verify-ci</code></td>
-                                    <td>Run deps-audit + lint-check + type-check + openapi-check + contract-test + test + docs-check</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                              <!-- END:MAKEFILE_COMMANDS -->
-                            </div>
-                          </section>
-
-                          <section>
-                            <h2 id="dev-versioning">3. API Versioning Policy (Required)</h2>
-                            <div class="card">
-                              <h3>3.1 Version Model</h3>
-                              <ul>
-                                <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
-                                <li>Current major is backward-compatible by default.</li>
-                                <li>Breaking changes are released only in a new major version (for example <code>/api/v2</code>).</li>
-                              </ul>
-
-                              <h3>3.2 Breaking Changes (Not Allowed in Same Major)</h3>
-                              <ul>
-                                <li>Removing or renaming endpoints, fields, or enum values.</li>
-                                <li>Changing field type or semantic meaning.</li>
-                                <li>Changing requiredness of existing request fields (<code>optional -> required</code>).</li>
-                                <li>Repurposing existing error <code>code</code>/<code>key</code> semantics.</li>
-                              </ul>
-
-                              <h3>3.3 Allowed Non-Breaking Changes</h3>
-                              <ul>
-                                <li>Adding new endpoints.</li>
-                                <li>Adding optional fields in request/response payloads.</li>
-                                <li>Adding new error codes without changing existing ones.</li>
-                              </ul>
-                            </div>
-                          </section>
-                          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                        </div>
-                      </div>
+                        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                      </main>
                     </div>
-                  </body>
+                  </div>
 
-                </html>
+                </body></html>

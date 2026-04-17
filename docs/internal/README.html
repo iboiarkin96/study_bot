@@ -1,335 +1,202 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome — Internal docs — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Internal service documentation — Study App</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <link rel="stylesheet" href="../assets/internal-layout.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-    <script defer src="../assets/internal-sidebar.js"></script>
-  </head>
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Welcome — Internal docs</h1>
+        <div id="docs-top-nav"></div>
+        <nav aria-labelledby="toc">
+          <h2 id="toc">Contents</h2>
+          <ol>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#onboarding">Onboarding path (first setup to endpoint + docs)</a></li>
+            <li><a href="#boundaries">Request path and layering</a></li>
+            <li><a href="#contract">Contract and integrators</a></li>
+            <li><a href="#observability">Observability and operations</a></li>
+            <li><a href="#history">Document history</a></li>
+          </ol>
+        </nav>
 
-  <body class="internal-layout">
-    <div class="internal-layout__shell">
-      <aside class="internal-layout__sidebar">
-        <p class="internal-layout__sidebar-title">Internal docs</p>
-        <div id="internal-sidebar-mount"></div>
-      </aside>
-      <div class="internal-layout__main">
-        <div class="container">
-          <h1>Internal service documentation</h1>
-          <div id="docs-top-nav"></div>
-          <p class="lead">
-            These pages explain the <strong>ETR Study API</strong> for people working in this repo: what the service does,
-            how it is structured, and how it relates to OpenAPI and ADRs. OpenAPI alone does not carry all of that context
-            —
-            you will find it here.
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This project is all about the <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API. If you're
+            working on this project, this page will help you find
+            where things
+            live and show you where to
+            learn more.
           </p>
+          <ul>
+            <li>
+              <strong>What is this API?</strong>
+              The <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API provides a set of endpoints designed to
+              help you build systems—like a study app—that
+              support knowledge review using effective retrieval and scheduling methods.
+            </li>
+            <li>
+              <strong>Want to know how the system is designed?</strong>
+              See the <a href="./system-design.html">System Design</a> page for the big picture, diagrams, and project
+              goals.
+            </li>
+            <li>
+              <strong>Learning methodology (ideas only, not the API):</strong>
+              <a href="./methodology.html">Methodology</a> — <abbr title="Extract–Transform–Retrieve">ETR</abbr>
+              methodology explanation.
 
-          <nav aria-labelledby="toc">
-            <h2 id="toc">Contents</h2>
-            <ol>
-              <li><a href="#role">Role and scope</a></li>
-              <li><a href="#boundaries">Architectural boundaries</a></li>
-              <li><a href="#contract">Contract and integrators</a></li>
-              <li><a href="#observability">Observability and operations</a></li>
-              <li><a href="#next">Where to go next</a></li>
-              <li><a href="#adrs">ADRs that govern this documentation</a></li>
-              <li><a href="#authority">Audience and authority</a></li>
-              <li><a href="#related">Related</a></li>
-              <li><a href="#history">Document history</a></li>
-            </ol>
-          </nav>
+            </li>
+            <li>
+              <strong>Looking for developer info and how to work on the code?</strong>
+              Find guides, setup steps, and technical notes in the <a href="./developers.html">Developers Docs</a>.
+            </li>
+            <li>
+              <strong>Need onboarding from zero to first endpoint and docs?</strong>
+              Start with
+              <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding guide (setup → endpoint → docs)</a>.
+            </li>
+            <li>
+              <strong>Interested in the API itself?</strong>
+              See the <a href="./api/README.html">HTTP API (internal)</a> for endpoints and examples.
+            </li>
+            <li>
+              <strong>Need full error contract details?</strong>
+              Open <a href="./api/errors.html">Error matrix</a> for complete <code>COMMON_*</code> /
+              <code>USER_*</code> matrices and sync process.
+            </li>
+            <li>
+              <strong>Need the official API reference?</strong>
+              Check the <a href="../openapi/openapi-baseline.json"><code>OpenAPI baseline</code></a> or <a href="../openapi/openapi-explorer.html">OpenAPI Explorer</a>.
+              If the app is running, visit <code>/docs</code> for live docs.
+            </li>
+            <li>
+              <strong>Want more details?</strong>
+              Explore the sidebar for more topics, or follow any link above to go deeper into the topic you need.
+            </li>
+          </ul>
+        </section>
 
-          <section id="role" class="card">
-            <h2>Role and scope</h2>
-            <p>
-              The <strong>ETR Study API</strong> is a FastAPI application that provides a stable, documented HTTP surface
-              for clients.
-            </p>
-          </section>
+        <section id="onboarding" class="card">
+          <h2>Onboarding path (first setup to endpoint + docs)</h2>
+          <p>
+            Canonical onboarding flow for new contributors:
+          </p>
+          <ol>
+            <li>Local startup and first successful API call.</li>
+            <li>Add one endpoint through schema, repository, service, and router layers.</li>
+            <li>Update internal docs and navigation where required.</li>
+            <li>Run <code>make verify</code> and <code>make verify-ci</code> before push.</li>
+          </ol>
+          <p>
+            Open the full step-by-step guide:
+            <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
+          </p>
+        </section>
 
-          <section id="boundaries" class="card">
-            <h2>Architectural boundaries</h2>
-            <details class="docs-theory-help" id="layered-architecture-theory">
-              <summary>Layered architecture — theoretical background</summary>
-              <div class="small">
-                <p>
-                  <strong>Layered architecture</strong> groups the system into <strong>horizontal layers</strong>. Each
-                  layer
-                  exposes a narrow set of capabilities to the layer above and depends on the layer below. The usual
-                  dependency rule is: <strong>inward-only dependencies</strong> — inner layers (domain rules, persistence
-                  abstractions) must not depend on outer concerns (HTTP framework details, transport), so business logic
-                  stays testable and replaceable.
-                </p>
-                <p>
-                  This pattern is related to <strong>ports and adapters</strong> (hexagonal architecture): the
-                  “application”
-                  core defines what the system does; adapters (HTTP, SQL) translate between the outside world and that
-                  core.
-                </p>
-                <p>
-                  <strong>Contract-first</strong> means the HTTP surface is described explicitly (OpenAPI) before or
-                  alongside implementation; code must conform. That fits layered boundaries because the outer “adapter” is
-                  governed by a stable contract rather than growing ad hoc.
-                </p>
-              </div>
-            </details>
-            <p>
-              We use <strong>layers</strong>: HTTP routes, then business logic, then the database. The public API is
-              described
-              first in <strong>OpenAPI</strong> (“contract-first”): what you see in the spec is what callers should rely
-              on.
-            </p>
-            <p><strong>Where checks happen</strong> (in order):</p>
-            <ol>
-              <li>
-                Field rules for JSON bodies are defined in <strong>Pydantic</strong> models under
-                <code>app/schemas/</code>
-                (required fields, types, max length, and so on).
-              </li>
-              <li>
-                When a request arrives, <strong>FastAPI</strong> runs those checks <strong>before</strong> code in
-                <code>app/api/</code> runs. Handlers usually receive data that already passed this step.
-              </li>
-              <li>
-                If a check fails, <code>app/validation/</code> maps the failure to our standard <code>422</code> response
-                (<code>code</code>, <code>key</code>, <code>message</code>). It does <strong>not</strong> redefine the
-                rules—only the error shape for clients. That wiring is registered in <code>app/main.py</code>.
-              </li>
-              <li>
-                Rules that need the database—such as “this user already exists”—are enforced in <code>app/services/</code>
+        <section id="boundaries" class="card">
+          <h2>Request path and layering</h2>
+          <p>
+            The typical request flow is: <strong>API → services → repositories → database</strong>.
+            Request bodies are validated using Pydantic (<code>app/schemas/</code>) before they reach handler code.
+            Validation errors are converted in <code>app/validation/</code> to the standard <code>422</code> response
+            format.
+            Business rules that require database access are enforced in <code>app/services/</code>
+            (see <a href="../adr/0003-error-contract-governance.html">ADR 0003</a>).
+          </p>
+          <p>
+            For details, see:
+          </p>
+          <ul>
+          <li>
+            Layering model, processing order, and business rule overview:
+            <a href="../developer/0003-business-logic.html">Business Logic Guide</a>
+          </li>
+          <li>
+            Schema evolution and contract safety:
+            <a href="../developer/0002-schemas-and-contracts.html">Schemas and contracts</a>
+          </li>
+          <li>
+            System architecture (C4 diagrams, containers, observability stack):
+            <a href="./system-design.html#architectural-decomposition">System design §3</a>
+          </li>
+          </ul>
+        </section>
+
+      <section id="contract" class="card">
+        <h2>Contract and integrators</h2>
+        <p>
+          External developers must use the <strong>OpenAPI document</strong> as the contract: committed snapshot at
+          <code>docs/openapi/openapi-baseline.json</code>, explorer at
+          <a href="../openapi/openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at <code>/docs</code>.
+          Release-to-release changes are summarized in the repository root <code>CHANGELOG.md</code>
+          (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
+        </p>
+        <p>
+          Versioning rules (URL major version, additive changes within a major) follow
+          <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
+        </p>
+      </section>
+
+      <section id="observability" class="card">
+        <h2>Observability and operations</h2>
+        <p>
+          Health, readiness, and metrics expectations follow
+          <a href="../adr/0009-health-readiness-and-observability.html">ADR 0009</a>. Non-functional detail (including
+          <code>/metrics</code> and Prometheus) is summarized under
+          <a href="./system-design.html#dev-nfr">System design — Non-Functional Requirements</a> (NFR-5). Structured
+          logging follows
+          <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>. Operational recovery
+          steps belong in <a href="../runbooks/README.html">Runbooks</a> when they are procedural.
+        </p>
+      </section>
+
+      <section id="history" class="card">
+        <h2>Document history</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026-04-17</td>
+              <td>Overview IA (layering/observability, merged cards, sidebar “Overview”); added
+                <a href="./methodology.html"><code>methodology.html</code></a> for human <abbr title="Extract–Transform–Retrieve">ETR</abbr> workflow (idea-discovery
+                only), sidebar link, System design §2 pointer.
+              </td>
+            </tr>
+            <tr>
+              <td>2026-04-16</td>
+              <td>Merged former <code>service-overview.html</code> into this page; one overview for project context
                 and
-                surface as business client errors, not as “invalid JSON field” / schema validation. See
-                <a href="../adr/0003-error-contract-governance.html">ADR 0003</a>.
-              </li>
-            </ol>
-            <p>
-              Under normal operation the call chain is: <strong>API → services → repositories → database</strong>. The
-              table
-              lists who does what; the diagram below is a simplified picture of that path.
-            </p>
-            <div class="docs-table-scroll" role="region" aria-label="Layer responsibilities">
-              <table>
-                <colgroup>
-                  <col class="layers-col-layer" />
-                  <col class="layers-col-packages" />
-                  <col class="layers-col-text" />
-                  <col class="layers-col-text" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th scope="col">Layer</th>
-                    <th scope="col">Packages</th>
-                    <th scope="col">Responsibility</th>
-                    <th scope="col">Contract and constraints</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">HTTP API</th>
-                    <td><code>app/api/</code></td>
-                    <td>FastAPI routers: declare paths, dependencies, and Pydantic-typed bodies/responses from
-                      <code>app/schemas/</code>; call services. Handlers stay thin (no duplicate field validation logic
-                      here).
-                    </td>
-                    <td>Must match OpenAPI (operations, declared responses, examples). Maps successful outcomes and
-                      framework-level HTTP concerns to the right status codes.</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Schemas &amp; 422 contract</th>
-                      <td><code>app/schemas/</code>, <code>app/validation/</code>, handlers in <code>app/main.py</code></td>
-                      <td><code>app/schemas/</code>: Pydantic models and field constraints. <code>app/validation/</code>:
-                        translates Pydantic/FastAPI validation failures into the canonical <code>422</code> payload shape
-                        for
-                        clients. Registration of exception handlers lives next to app setup in <code>app/main.py</code>.
-                      </td>
-                      <td>Error catalog and examples in OpenAPI; alignment between Pydantic error kinds and documented
-                        <code>code</code>/<code>key</code> values.
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Application</th>
-                      <td><code>app/services/</code></td>
-                      <td>Use cases and business invariants (for example “duplicate composite key”) implemented with domain
-                        logic; raises <code>HTTPException</code> with business error payloads when rules fail.</td>
-                        <td>Business errors must match the governed contract. Layering detail:
-                          <a href="./developers.html">Developers Docs</a>.
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">Persistence</th>
-                        <td><code>app/repositories/</code>, DB session in <code>app/core/</code></td>
-                        <td>Load and persist entities via SQLAlchemy; Alembic migrations for schema changes.</td>
-                        <td>Storage details stay out of the public HTTP model; DB constraints remain consistent with what the
-                          API
-                          promises.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                service scope.</td>
+              </tr>
+              <tr>
+                <td>2026-04-14</td>
+                <td>Initial internal service overview page; ADR 0025/0026 establish <code>docs/internal/</code> norms.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-                  <figure class="sys-diagram" aria-labelledby="internal-layers-title">
-                    <div class="sys-diagram__head">
-                      <span class="sys-diagram__badge">Layers</span>
-                      <div class="sys-diagram__titles">
-                        <h3 id="internal-layers-title" class="sys-diagram__title">Typical request path</h3>
-                        <p class="sys-diagram__sub">
-                          Simplified flow (routers → services → repositories). Pydantic validation runs inside the FastAPI stack
-                          using <code>app/schemas/</code> before the handler body; the diagram does not show the separate
-                          <code>422</code> mapping in <code>app/validation/</code>. See the
-                          <a href="./api/user/index.html">User</a> resource for a full walkthrough.
-                        </p>
-                      </div>
-                    </div>
-                    <div class="sys-diagram__canvas">
-                      <img class="diagram diagram--uml" src="../uml/rendered/architecture__internal_readme_layer_boundaries.png"
-                      alt="Diagram: HTTP client to API layer, application layer, persistence layer, then SQLite"
-                      decoding="async" loading="lazy" />
-                    </div>
-                    <figcaption class="sys-diagram__foot">
-                      <strong>Source (PlantUML):</strong>
-                      <code>docs/uml/architecture/internal_readme_layer_boundaries.puml</code>.
-                    </figcaption>
-                  </figure>
-                </section>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
-                <section id="contract" class="card">
-                  <h2>Contract and integrators</h2>
-                  <p>
-                    External developers must use the <strong>OpenAPI document</strong> as the contract: committed snapshot at
-                    <code>docs/openapi/openapi-baseline.json</code>, explorer at
-                    <a href="../openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at <code>/docs</code>.
-                    Release-to-release changes are summarized in the repository root <code>CHANGELOG.md</code>
-                    (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
-                  </p>
-                  <p>
-                    Versioning rules (URL major version, additive changes within a major) follow
-                    <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
-                  </p>
-                </section>
-
-                <section id="observability" class="card">
-                  <h2>Observability and operations</h2>
-                  <p>
-                    Health and metrics expectations follow <a href="../adr/0009-health-readiness-and-observability.html">ADR
-                    0009</a>.
-                    Structured logging and request correlation follow
-                    <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
-                  </p>
-                  <p>
-                    <strong>Metrics</strong> in this project are exposed via the <code>/metrics</code> endpoint and are
-                    compatible with Prometheus.
-                    We collect application-level and HTTP endpoint metrics using <code>prometheus_fastapi_instrumentator</code>.
-                    Examples of captured metrics include:
-                    <ul>
-                      <li>Request counts and response time histograms per endpoint and HTTP method</li>
-                      <li>HTTP error and exception rates</li>
-                      <li>Process uptime, memory, and basic resource usage</li>
-                    </ul>
-                    <p>
-                      Key metrics are scraped by the Prometheus server configured per environment. These include both high-level
-                      health and detailed per-handler operations, which are used for real-time monitoring, SLA checks, and
-                      alerting.
-                      Metric labels (endpoint/method/status code) enable dashboards and queries for per-route trends and
-                      troubleshooting.
-                      For metric customizations or additions, see <code>app/observability/metrics.py</code> (or equivalent).
-                    </p>
-                  </p>
-                  <p>
-                    Operational recovery steps belong in <a href="../runbooks/README.html">Runbooks</a> when they are
-                    procedural.
-                  </p>
-                </section>
-              </section>
-
-              <div class="card">
-                <h2 id="next">Where to go next</h2>
-                <ul>
-                  <li><a href="./system-design.html">System design</a> — context, requirements, architecture diagrams,
-                    API contracts, ADR pointers.</li>
-                    <li><a href="./api/README.html">HTTP API (internal hub)</a> — resources and links to per-resource pages.
-                    </li>
-                    <li><a href="../howto/internal-service-docs-layout.html">How to add a new resource to the internal service
-                      documentation</a> — layout, tree, and contributor steps.</li>
-                    </ul>
-                  </div>
-
-                  <div class="card">
-                    <h2 id="adrs">ADRs that govern this documentation</h2>
-                    <p class="small">Policy stays in ADRs; narrative here must not contradict them.</p>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>ADR</th>
-                          <th>Topic</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a></td>
-                          <td>External vs internal API documentation — OpenAPI vs engineering narrative.</td>
-                        </tr>
-                        <tr>
-                          <td><a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a></td>
-                          <td>Internal service documentation as source of truth for described behavior.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div class="card">
-                    <h2 id="authority">Audience and authority</h2>
-                    <p>
-                      <strong>Who this is for:</strong> contributors and maintainers in this repository. External integrators
-                      should
-                      rely on OpenAPI and the root changelog.
-                    </p>
-                    <p>
-                      <strong>Authority:</strong> For topics documented under <code>docs/internal/</code>, these pages are the
-                      normative narrative where they explicitly describe behavior. Global policies remain in ADRs.
-                    </p>
-                  </div>
-
-                  <div class="card">
-                    <h2 id="related">Related</h2>
-                    <ul>
-                      <li><a href="./developers.html">Developers Docs</a> — engineering practices and developer guides index.</li>
-                      <li><a href="../openapi-explorer.html">OpenAPI (test)</a> — Swagger UI for the API contract.</li>
-                    </ul>
-                  </div>
-
-                  <section id="history" class="card">
-                    <h2>Document history</h2>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Summary</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>2026-04-16</td>
-                          <td>Merged former <code>service-overview.html</code> into this page; one overview for project context
-                            and
-                            service scope.</td>
-                          </tr>
-                          <tr>
-                            <td>2026-04-14</td>
-                            <td>Initial internal service overview page; ADR 0025/0026 establish <code>docs/internal/</code> norms.
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </section>
-
-                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                  </div>
-                </div>
-              </div>
-            </body>
-
-          </html>
+</body></html>

@@ -1,22 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: OpenAPI Contract-Test Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: OpenAPI Contract-Test Failing</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: OpenAPI Contract-Test Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: OpenAPI Contract-Test Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li><code>make contract-test</code> fails.</li>
         <li><code>make verify</code> fails on the <code>contract-test</code> stage.</li>
         <li>CI reports OpenAPI snapshot drift vs baseline.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Fast triage</h2>
       <ol>
@@ -25,6 +27,8 @@
         <li>If accidental, revert/fix API contract changes in code.</li>
         <li>If intentional, validate compatibility and docs, then accept baseline update.</li>
       </ol>
+    </section>
+    <section class="card">
 
       <h2>Most common causes</h2>
       <ul>
@@ -34,6 +38,8 @@
         <li>Requiredness changed for existing fields/parameters.</li>
         <li>OpenAPI examples or router response declarations diverged from implementation.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Recovery paths</h2>
       <h3>1) Unintentional contract drift</h3>
@@ -50,6 +56,8 @@
         <li>Accept new baseline: <code>make openapi-accept-changes</code>.</li>
         <li>Re-run <code>make contract-test</code> and <code>make verify</code>.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Final recovery sequence</h2>
       <ol>
@@ -57,6 +65,8 @@
         <li><code>make contract-test</code></li>
         <li><code>make verify</code></li>
       </ol>
+    </section>
+    <section class="card">
 
       <h2>Exit criteria</h2>
       <ul>
@@ -64,13 +74,16 @@
         <li><code>make verify</code> passes end-to-end.</li>
         <li>Baseline update (if any) is explicit and justified in the change.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Follow-up</h2>
       <ul>
         <li>If policy/compatibility boundary changed, update ADR and developer docs.</li>
         <li>If this incident repeats, add stronger lint rules in <code>scripts/openapi_governance.py</code>.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Schemas and Contracts Guide</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Schemas and Contracts Guide</h1>
-      <div id="docs-top-nav"></div>
-      <p>This file describes where API schemas/contracts live and how to evolve them safely.</p>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Schemas and Contracts Guide</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Schemas and Contracts Guide</h1>
+    <div id="docs-top-nav"></div>
+    <p>This file describes where API schemas/contracts live and how to evolve them safely.</p>
+    <section class="card">
       <h2>1. Where schemas live</h2>
       <ul>
         <li>Request/response schemas: <code>app/schemas/</code>
@@ -23,6 +23,8 @@
         <li>Router contract (<code>responses</code>, summary, description): <code>app/api/v1/</code>
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>2. Contract rules</h2>
       <ul>
         <li>API contract is public interface.
@@ -36,6 +38,8 @@
         <li>Critical write endpoints define idempotency contract via <code>Idempotency-Key</code> header.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>3. Idempotency contract for writes</h2>
       <ul>
         <li>Same key + same payload -&gt; replay original success response.
@@ -45,15 +49,17 @@
         <li>Missing key (for required write endpoint) -&gt; explicit business validation error.
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>4. Error contract</h2>
       <p>Business error shape:</p>
       <ul>
-        <li><code>{&quot;code&quot;:&quot;...&quot;,&quot;key&quot;:&quot;...&quot;,&quot;message&quot;:&quot;...&quot;,&quot;source&quot;:&quot;business&quot;}</code>
+        <li><code>{"code":"...","key":"...","message":"...","source":"business"}</code>
         </li>
       </ul>
       <p>Validation error shape:</p>
       <ul>
-        <li><code>{&quot;error_type&quot;:&quot;validation_error&quot;,&quot;endpoint&quot;:&quot;...&quot;,&quot;errors&quot;:[...]}</code>
+        <li><code>{"error_type":"validation_error","endpoint":"...","errors":[...]}</code>
         </li>
       </ul>
       <p>Validation rules source:</p>
@@ -63,6 +69,8 @@
         <li>Status-first governance matrix: <a href="./0005-error-matrix-by-status.html">Error Matrix By Status</a>
         </li>
       </ul>
+    </section>
+    <section class="card">
       <h2>5. How to evolve schemas</h2>
       <ol>
         <li>Update schema classes in <code>app/schemas/</code>.
@@ -80,6 +88,8 @@
         <li>Run <code>make verify</code> and <code>make docs-fix</code>.
         </li>
       </ol>
+    </section>
+    <section class="card">
       <h2>6. Anti-patterns</h2>
       <ul>
         <li>Inline hardcoded examples in routers/schemas duplicated in many files.
@@ -91,7 +101,8 @@
         <li>Accepting retried write requests without idempotency contract.
         </li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

@@ -1,189 +1,186 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>POST /api/v1/user — User — Study App</title>
+  <link rel="stylesheet" href="../../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../../assets/internal-layout.css">
+  <script defer src="../../../../assets/docs-nav.js"></script>
+  <script defer src="../../../../assets/internal-sidebar.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>POST /api/v1/user — User — Study App</title>
-    <link rel="stylesheet" href="../../../../assets/docs.css" />
-    <link rel="stylesheet" href="../../../../assets/internal-layout.css" />
-    <script defer src="../../../../assets/docs-nav.js"></script>
-    <script defer src="../../../../assets/internal-sidebar.js"></script>
-  </head>
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <div id="docs-top-nav"></div>
+        <p class="internal-doc-entity">User</p>
+        <h1 class="internal-doc-h1">
+          <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="POST /api/v1/user">
+            <span class="badge badge--method-post">POST</span>
+            <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
+          </span>
+        </h1>
+        <p class="lead">
+          Create a new <strong>User</strong> row for the authenticated tenant. This page is the normative internal
+          description for this endpoint per
+          <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; the
+          external
+          contract is <a href="../../../../openapi/openapi-explorer.html">OpenAPI</a>
+          (<code>operationId</code>: <code>createUser</code>).
+        </p>
+        <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>createUser</code></p>
 
-  <body class="internal-layout">
-    <div class="internal-layout__shell">
-      <aside class="internal-layout__sidebar">
-        <p class="internal-layout__sidebar-title">Internal docs</p>
-        <div id="internal-sidebar-mount"></div>
-      </aside>
-      <div class="internal-layout__main">
-        <div class="container">
-          <div id="docs-top-nav"></div>
-          <p class="internal-doc-entity">User</p>
-          <h1 class="internal-doc-h1">
-            <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="POST /api/v1/user">
-              <span class="badge badge--method-post">POST</span>
-              <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
-            </span>
-          </h1>
-          <p class="lead">
-            Create a new <strong>User</strong> row for the authenticated tenant. This page is the normative internal
-            description for this endpoint per
-            <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; the
-            external
-            contract is <a href="../../../../openapi-explorer.html">OpenAPI</a>
-            (<code>operationId</code>: <code>createUser</code>).
+        <section class="card">
+          <h2>Request path and behavior</h2>
+          <p>
+            Request enters the FastAPI stack in <code>app/main.py</code> (metrics, body size limit, API key + rate limit
+            per
+            <a href="../../../../adr/0005-api-security-defaults.html">ADR 0005</a>, security headers, request ID), then
+            <code>app/api/v1/user.py</code>. The handler validates the body against the OpenAPI schema, enforces
+            <strong>idempotency</strong> for writes per
+            <a href="../../../../adr/0006-idempotency-write-operations.html">ADR 0006</a>, and delegates to
+            <code>UserService.create</code> → <code>UserRepository</code> (PostgreSQL). Successful writes may record an
+            idempotency row for replay.
           </p>
-          <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>createUser</code></p>
+          <p>
+            <strong>Success:</strong> <code>201 Created</code> with the created user body (includes generated
+            <code>client_uuid</code>). On idempotent replay (same key + same payload hash), the stored success response
+            is
+            returned with the <strong>original</strong> status code.
+          </p>
+        </section>
 
-          <div class="card">
-            <h2>Request path and behavior</h2>
-            <p>
-              Request enters the FastAPI stack in <code>app/main.py</code> (metrics, body size limit, API key + rate limit
-              per
-              <a href="../../../../adr/0005-api-security-defaults.html">ADR 0005</a>, security headers, request ID), then
-              <code>app/api/v1/user.py</code>. The handler validates the body against the OpenAPI schema, enforces
-              <strong>idempotency</strong> for writes per
-              <a href="../../../../adr/0006-idempotency-write-operations.html">ADR 0006</a>, and delegates to
-              <code>UserService.create</code> → <code>UserRepository</code> (PostgreSQL). Successful writes may record an
-              idempotency row for replay.
-            </p>
-            <p>
-              <strong>Success:</strong> <code>201 Created</code> with the created user body (includes generated
-              <code>client_uuid</code>). On idempotent replay (same key + same payload hash), the stored success response
-              is
-              returned with the <strong>original</strong> status code.
-            </p>
-          </div>
+        <section class="card">
+          <h2>Idempotency</h2>
+          <p>
+            <code>Idempotency-Key</code> header is <strong>required</strong>: printable ASCII, length 1–128. The handler
+            uses <code>endpoint_path = "/api/v1/user"</code> with the key and a SHA-256 hash of the canonical JSON body
+            for
+            lookup and replay. Hash mismatch → <code>409</code>
+            <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>; missing header → <code>400</code>
+            <code>IDEMPOTENCY_KEY_REQUIRED</code>. Full rules:
+            <a href="../index.html#idempotency">Unified spec — Idempotency</a>.
+          </p>
+        </section>
 
-          <div class="card">
-            <h2>Idempotency</h2>
-            <p>
-              <code>Idempotency-Key</code> header is <strong>required</strong>: printable ASCII, length 1–128. The handler
-              uses <code>endpoint_path = "/api/v1/user"</code> with the key and a SHA-256 hash of the canonical JSON body
-              for
-              lookup and replay. Hash mismatch → <code>409</code>
-              <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>; missing header → <code>400</code>
-              <code>IDEMPOTENCY_KEY_REQUIRED</code>. Full rules:
-              <a href="../index.html#idempotency">Unified spec — Idempotency</a>.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Errors</h2>
-            <p class="small">
-              Envelope shape per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>
-              (<code>code</code>,
-              <code>key</code>, <code>message</code>, <code>source</code>).
-            </p>
-            <table>
-              <thead>
-                <tr>
-                  <th>HTTP</th>
-                  <th>Code / key</th>
-                  <th>When</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>400</code></td>
-                  <td><code>USER_101</code> / <code>USER_CREATE_ALREADY_EXISTS</code></td>
-                  <td>Duplicate natural key <code>(system_user_id, system_uuid)</code> — logged at
-                    <strong>warning</strong> as
-                    <code>create_user_duplicate</code> in <code>UserService</code>.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>400</code></td>
-                  <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
-                  <td>Write without <code>Idempotency-Key</code>.</td>
-                </tr>
-                <tr>
-                  <td><code>409</code></td>
-                  <td><code>COMMON_409</code> / <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
-                  <td>Same idempotency key, different body hash.</td>
-                </tr>
-                <tr>
-                  <td><code>422</code></td>
-                  <td>Validation</td>
-                  <td>Pydantic / OpenAPI validation — global handler logs <code>validation_error</code> at
-                    <strong>warning</strong>.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>413</code></td>
-                  <td><code>COMMON_413</code></td>
-                  <td>Body over limit — middleware; <code>request_body_limit_exceeded</code> at <strong>warning</strong>.
-                  </td>
-                </tr>
-                <tr>
-                  <td><code>401</code> / <code>429</code></td>
-                  <td>—</td>
-                  <td>API key / rate limit — before handler; see ADR 0005.</td>
-                </tr>
-                <tr>
-                  <td><code>500</code></td>
-                  <td>—</td>
-                  <td>Uncaught: <code>request_failed</code> with <code>logger.exception</code>.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="card">
-            <h2>Logging</h2>
-            <p>
-              Baseline: every request completes with an info line from HTTP middleware —
-              <code>request_done method=… path=… status=… elapsed_ms=…</code>. <code>request_id</code> is propagated from
-              <code>X-Request-Id</code> per
-              <a href="../../../../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>
-              (<code>app/core/logging.py</code>).
-            </p>
-            <p><strong>User router</strong> (<code>app.api.v1.user</code>), create path:</p>
-            <ul>
-              <li><code>create_user_idempotent_replay</code> — <strong>info</strong> when replaying a stored success (key
-                only).
-              </li>
-              <li><code>create_user_requested</code> — <strong>info</strong>, <code>system_user_id</code>,
-                <code>system_uuid</code>.
-              </li>
-              <li><code>create_user_succeeded</code> — <strong>info</strong> after persist; <code>client_uuid</code>
-                included.
-              </li>
-            </ul>
-            <p>
-              <strong>UserService:</strong> <code>create_user_duplicate</code> at <strong>warning</strong> before raising;
-              <code>create_user_persisted</code> at <strong>info</strong> after insert.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Metrics</h2>
-            <p>
-              <code>http_requests_total</code> and <code>http_request_duration_seconds</code> with labels including
-              <code>path_template=/api/v1/user</code>, <code>method=POST</code>, and HTTP status. Database timing via
-              <code>db_operation_duration_seconds</code> where applicable. Details:
-              <a href="../index.html#observability">Unified spec — Metrics</a>.
-            </p>
-          </div>
-
-          <div class="card">
-            <h2>Single-file deep spec</h2>
-            <p>
-              Cross-cutting sections (layers, full error catalog context, dependencies):
-              <a href="../index.html#user-op-createUser">Unified internal spec — this operation</a>.
-            </p>
-          </div>
-
+        <section class="card">
+          <h2>Errors</h2>
           <p class="small">
-            <a href="../index.html">← User resource hub</a>
+            Envelope shape per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>
+            (<code>code</code>,
+            <code>key</code>, <code>message</code>, <code>source</code>).
           </p>
+          <table>
+            <thead>
+              <tr>
+                <th>HTTP</th>
+                <th>Code / key</th>
+                <th>When</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>400</code></td>
+                <td><code>USER_101</code> / <code>USER_CREATE_ALREADY_EXISTS</code></td>
+                <td>Duplicate natural key <code>(system_user_id, system_uuid)</code> — logged at
+                  <strong>warning</strong> as
+                  <code>create_user_duplicate</code> in <code>UserService</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>400</code></td>
+                <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                <td>Write without <code>Idempotency-Key</code>.</td>
+              </tr>
+              <tr>
+                <td><code>409</code></td>
+                <td><code>COMMON_409</code> / <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                <td>Same idempotency key, different body hash.</td>
+              </tr>
+              <tr>
+                <td><code>422</code></td>
+                <td>Validation</td>
+                <td>Pydantic / OpenAPI validation — global handler logs <code>validation_error</code> at
+                  <strong>warning</strong>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>413</code></td>
+                <td><code>COMMON_413</code></td>
+                <td>Body over limit — middleware; <code>request_body_limit_exceeded</code> at <strong>warning</strong>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>401</code> / <code>429</code></td>
+                <td>—</td>
+                <td>API key / rate limit — before handler; see ADR 0005.</td>
+              </tr>
+              <tr>
+                <td><code>500</code></td>
+                <td>—</td>
+                <td>Uncaught: <code>request_failed</code> with <code>logger.exception</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </div>
-      </div>
+        <section class="card">
+          <h2>Logging</h2>
+          <p>
+            Baseline: every request completes with an info line from HTTP middleware —
+            <code>request_done method=… path=… status=… elapsed_ms=…</code>. <code>request_id</code> is propagated from
+            <code>X-Request-Id</code> per
+            <a href="../../../../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>
+            (<code>app/core/logging.py</code>).
+          </p>
+          <p><strong>User router</strong> (<code>app.api.v1.user</code>), create path:</p>
+          <ul>
+            <li><code>create_user_idempotent_replay</code> — <strong>info</strong> when replaying a stored success (key
+              only).
+            </li>
+            <li><code>create_user_requested</code> — <strong>info</strong>, <code>system_user_id</code>,
+              <code>system_uuid</code>.
+            </li>
+            <li><code>create_user_succeeded</code> — <strong>info</strong> after persist; <code>client_uuid</code>
+              included.
+            </li>
+          </ul>
+          <p>
+            <strong>UserService:</strong> <code>create_user_duplicate</code> at <strong>warning</strong> before raising;
+            <code>create_user_persisted</code> at <strong>info</strong> after insert.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>Metrics</h2>
+          <p>
+            <code>http_requests_total</code> and <code>http_request_duration_seconds</code> with labels including
+            <code>path_template=/api/v1/user</code>, <code>method=POST</code>, and HTTP status. Database timing via
+            <code>db_operation_duration_seconds</code> where applicable. Details:
+            <a href="../index.html#observability">Unified spec — Metrics</a>.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>Single-file deep spec</h2>
+          <p>
+            Cross-cutting sections (layers, full error catalog context, dependencies):
+            <a href="../index.html#user-op-createUser">Unified internal spec — this operation</a>.
+          </p>
+        </section>
+
+        <p class="small">
+          <a href="../index.html">← User resource hub</a>
+        </p>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
     </div>
-  </body>
+  </div>
 
-</html>
+</body></html>

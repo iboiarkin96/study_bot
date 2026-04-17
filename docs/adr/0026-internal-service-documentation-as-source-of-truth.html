@@ -1,27 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0026: Internal service documentation as source of truth</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0026: Internal service documentation as source of truth</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
+<body>
+  <main class="container" data-adr-weight="1">
+    <h1>ADR 0026: Internal service documentation as source of truth</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
 
-  <body>
-    <main class="container" data-adr-weight="1">
-      <h1>ADR 0026: Internal service documentation as source of truth</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
-
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         This ADR records <strong>norms for internal HTML documentation</strong> under <code>docs/internal/</code>: what
@@ -38,223 +37,245 @@
           <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>
           (<a href="../internal/STRUCTURE.md"><code>STRUCTURE.md</code></a> stub links there), and how-to index at
           <a href="../howto/README.html"><code>docs/howto/README.html</code></a>.</li>
-        </ul>
+          <li>Record updated: 2026-04-17 — standardized docs block semantics for how-to and ADR index pages: use
+            <code>&lt;section class="card"&gt;</code> for content blocks (avoid extra <code>&lt;div class="card"&gt;</code>
+            wrappers) to keep visual hierarchy and HTML semantics consistent across docs.</li>
+          </ul>
 
-        <h2>Context</h2>
-        <p>
-          <strong>Why this matters:</strong> External integrators rely on OpenAPI
-          (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Internally, we still need a
-          <strong>single, reviewable place</strong> for rules that span layers: business invariants, when an error is
-          considered operational vs validation, how a flow is expected to be monitored, and how HTTP handlers relate to
-          domain services and (if any) asynchronous boundaries. Without that, disagreements default to “read the
-          implementation,” which is slow and version-ambiguous.
-        </p>
-        <p>
-          This ADR makes <code>docs/internal/</code> the <strong>authoritative narrative for engineering</strong> for those
-          topics. It does not duplicate OpenAPI field lists; it <strong>interprets and binds</strong> them to behavior and
-          operations.
-        </p>
+        </section>
+        <section class="card">
+          <h2>Context</h2>
+          <p>
+            <strong>Why this matters:</strong> External integrators rely on OpenAPI
+            (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Internally, we still need a
+            <strong>single, reviewable place</strong> for rules that span layers: business invariants, when an error is
+            considered operational vs validation, how a flow is expected to be monitored, and how HTTP handlers relate to
+            domain services and (if any) asynchronous boundaries. Without that, disagreements default to “read the
+            implementation,” which is slow and version-ambiguous.
+          </p>
+          <p>
+            This ADR makes <code>docs/internal/</code> the <strong>authoritative narrative for engineering</strong> for those
+            topics. It does not duplicate OpenAPI field lists; it <strong>interprets and binds</strong> them to behavior and
+            operations.
+          </p>
 
-        <h2>Decision</h2>
-        <ol>
-          <li>
-            <strong>Location and format.</strong> Internal service documentation lives under <code>docs/internal/</code> as
-            static <strong>English</strong> <strong>HTML</strong>. All such pages use the shared site stylesheet
-            <code>docs/assets/docs.css</code> and top navigation <code>docs/assets/docs-nav.js</code>. Multi-page internal
-            docs (API hubs, resource hubs, per-method pages) additionally use <code>docs/assets/internal-layout.css</code>
-            and <code>docs/assets/internal-sidebar.js</code> for the two-column shell and left navigation (see
-            <a href="#navigation-and-chrome">Navigation and chrome</a>). New or changed pages are added or updated in the
-            same pull request as the behavior change when the change is user-visible or alters invariants described here.
-          </li>
-          <li>
-            <strong>Source of truth for engineering disputes.</strong> For topics explicitly covered in
-            <code>docs/internal/</code>, the written page (on <code>main</code> after merge) is the <strong>normative
-            reference</strong> for how the team intends the system to work. If code disagrees, either the code or the doc
-            must be fixed in a follow-up; silent divergence is treated as a defect. Topics not yet documented remain
-            governed by ADRs, runbooks, and code until a page exists.
-          </li>
-          <li>
-            <strong>What to document (non-exhaustive).</strong> Pages should cover, as applicable:
-            <ul>
-              <li><strong>Capability or domain slice</strong> — purpose, boundaries, key entities.</li>
-              <li><strong>HTTP mapping</strong> — reference <code>operationId</code>s or paths that implement the slice; link
-                to OpenAPI rather than copying schemas.</li>
-                <li><strong>Business rules</strong> — invariants, ordering assumptions, idempotency and conflict behavior (see
-                  also <a href="./0006-idempotency-write-operations.html">ADR 0006</a>).</li>
-                  <li><strong>Errors and observability</strong> — which codes or signals warrant alerts vs expected client
-                    mistakes; correlation with logs and metrics (see
-                    <a href="./0003-error-contract-governance.html">ADR 0003</a>,
-                    <a href="./0009-health-readiness-and-observability.html">ADR 0009</a>,
-                    <a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>).</li>
-                    <li><strong>Async and integration</strong> — message topics, consumers, outbox patterns, or external systems,
-                      when present.</li>
-                    </ul>
-                  </li>
-                  <li>
-                    <strong>History and traceability.</strong> Material pages include a short <strong>Document history</strong>
-                    subsection (table: date, author optional, summary of change). Git history remains the full audit trail; the
-                    table is for human scanning. Breaking behavioral changes also appear in root <code>CHANGELOG.md</code> per
-                    <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>.
-                  </li>
-                  <li>
-                    <strong>Entry points.</strong>
-                    <a href="../internal/README.html"><code>docs/internal/README.html</code></a> is the top-level index (teams,
-                    practices, links into HTTP docs). The directory tree and contributor checklist live in
-                    <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>;
-                    <a href="../internal/STRUCTURE.md"><code>docs/internal/STRUCTURE.md</code></a> is a short pointer to that page and
-                    should stay aligned when the tree changes.
-                  </li>
-                  <li>
-                    <strong>Relationship to ADRs.</strong> Cross-cutting policy (versioning, security, idempotency) stays in ADRs.
-                    <code>docs/internal/</code> applies those policies to <strong>concrete flows and entities</strong>. If a new
-                    policy is needed, add or update an ADR; do not bury policy-only decisions in internal prose alone.
-                  </li>
-                </ol>
+        </section>
+        <section class="card">
+          <h2>Decision</h2>
+          <ol>
+            <li>
+              <strong>Location and format.</strong> Internal service documentation lives under <code>docs/internal/</code> as
+              static <strong>English</strong> <strong>HTML</strong>. All such pages use the shared site stylesheet
+              <code>docs/assets/docs.css</code> and top navigation <code>docs/assets/docs-nav.js</code>. Multi-page internal
+              docs (API hubs, resource hubs, per-method pages) additionally use <code>docs/assets/internal-layout.css</code>
+              and <code>docs/assets/internal-sidebar.js</code> for the two-column shell and left navigation (see
+              <a href="#navigation-and-chrome">Navigation and chrome</a>). In documentation indexes and guides
+              (for example under <code>docs/howto/</code> and <code>docs/adr/</code>), use semantic
+              <code>&lt;section class="card"&gt;</code> blocks for major content groups, without nested
+              <code>&lt;div class="card"&gt;</code> wrappers. New or changed pages are added or updated in the same pull
+              request as the behavior change when the change is user-visible or alters invariants described here.
+            </li>
+            <li>
+              <strong>Source of truth for engineering disputes.</strong> For topics explicitly covered in
+              <code>docs/internal/</code>, the written page (on <code>main</code> after merge) is the <strong>normative
+              reference</strong> for how the team intends the system to work. If code disagrees, either the code or the doc
+              must be fixed in a follow-up; silent divergence is treated as a defect. Topics not yet documented remain
+              governed by ADRs, runbooks, and code until a page exists.
+            </li>
+            <li>
+              <strong>What to document (non-exhaustive).</strong> Pages should cover, as applicable:
+              <ul>
+                <li><strong>Capability or domain slice</strong> — purpose, boundaries, key entities.</li>
+                <li><strong>HTTP mapping</strong> — reference <code>operationId</code>s or paths that implement the slice; link
+                  to OpenAPI rather than copying schemas.</li>
+                  <li><strong>Business rules</strong> — invariants, ordering assumptions, idempotency and conflict behavior (see
+                    also <a href="./0006-idempotency-write-operations.html">ADR 0006</a>).</li>
+                    <li><strong>Errors and observability</strong> — which codes or signals warrant alerts vs expected client
+                      mistakes; correlation with logs and metrics (see
+                      <a href="./0003-error-contract-governance.html">ADR 0003</a>,
+                      <a href="./0009-health-readiness-and-observability.html">ADR 0009</a>,
+                      <a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>).</li>
+                      <li><strong>Async and integration</strong> — message topics, consumers, outbox patterns, or external systems,
+                        when present.</li>
+                      </ul>
+                    </li>
+                    <li>
+                      <strong>History and traceability.</strong> Material pages include a short <strong>Document history</strong>
+                      subsection (table: date, author optional, summary of change). Git history remains the full audit trail; the
+                      table is for human scanning. Breaking behavioral changes also appear in root <code>CHANGELOG.md</code> per
+                      <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>.
+                    </li>
+                    <li>
+                      <strong>Entry points.</strong>
+                      <a href="../internal/README.html"><code>docs/internal/README.html</code></a> is the top-level index (teams,
+                      practices, links into HTTP docs). The directory tree and contributor checklist live in
+                      <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>;
+                      <a href="../internal/STRUCTURE.md"><code>docs/internal/STRUCTURE.md</code></a> is a short pointer to that page and
+                      should stay aligned when the tree changes.
+                    </li>
+                    <li>
+                      <strong>Relationship to ADRs.</strong> Cross-cutting policy (versioning, security, idempotency) stays in ADRs.
+                      <code>docs/internal/</code> applies those policies to <strong>concrete flows and entities</strong>. If a new
+                      policy is needed, add or update an ADR; do not bury policy-only decisions in internal prose alone.
+                    </li>
+                  </ol>
 
-                <h2 id="repository-layout">Repository layout under <code>docs/internal/</code></h2>
-                <p>
-                  Internal docs are organized so readers can move from <strong>product context</strong> → <strong>HTTP surface</strong>
-                  → <strong>one resource</strong> → <strong>one endpoint</strong>, without a single monolithic HTML file for
-                  everything.
-                </p>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Path (under <code>docs/internal/</code>)</th>
-                      <th>Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>README.html</code></td>
-                      <td>Single entry: project context, service role and boundaries, contract and observability summary, links to ADRs and the HTTP API area. (Former <code>service-overview.html</code> content merged here.)</td>
-                    </tr>
-                    <tr>
-                      <td><code>STRUCTURE.md</code> + <code>docs/howto/internal-service-docs-layout.html</code></td>
-                      <td>Full tree outline and contributor checklist in the how-to HTML page; <code>STRUCTURE.md</code> links there.
-                        Update both when adding resources or renaming paths.</td>
+                </section>
+                <section class="card">
+                  <h2 id="repository-layout">Repository layout under <code>docs/internal/</code></h2>
+                  <p>
+                    Internal docs are organized so readers can move from <strong>product context</strong> → <strong>HTTP surface</strong>
+                    → <strong>one resource</strong> → <strong>one endpoint</strong>, without a single monolithic HTML file for
+                    everything.
+                  </p>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Path (under <code>docs/internal/</code>)</th>
+                        <th>Role</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>README.html</code></td>
+                        <td>Single entry: project context, service role and boundaries, contract and observability summary, links to ADRs and the HTTP API area. (Former <code>service-overview.html</code> content merged here.)</td>
                       </tr>
                       <tr>
-                        <td><code>api/README.html</code></td>
-                        <td>HTTP API hub: lists documented resources and points to each resource hub.</td>
-                      </tr>
-                      <tr>
-                        <td><code>api/&lt;resource&gt;/index.html</code></td>
-                        <td>
-                          <strong>Single entry point per resource</strong> — business context, contract summary, governance, technical
-                          depth (layers, idempotency, errors, logging, metrics, dependencies), endpoint index, and stable fragment
-                          identifiers (e.g. <code>#user-op-createUser</code>) for deep links from per-method pages.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td><code>api/&lt;resource&gt;/operations/*.html</code></td>
-                        <td>One page per HTTP endpoint, named from <strong>method + path template</strong> (not from Python
-                          <code>operationId</code>), focused on call semantics; each page links back to anchors on the resource
-                          <code>index.html</code>.</td>
+                        <td><code>STRUCTURE.md</code> + <code>docs/howto/internal-service-docs-layout.html</code></td>
+                        <td>Full tree outline and contributor checklist in the how-to HTML page; <code>STRUCTURE.md</code> links there.
+                          Update both when adding resources or renaming paths.</td>
                         </tr>
                         <tr>
-                          <td><code>api/&lt;resource&gt;/…</code> redirect stubs (optional)</td>
-                          <td>Legacy filenames may remain as minimal HTML that redirect to <code>index.html</code> with hash preserved,
-                            so old bookmarks keep working.</td>
+                          <td><code>api/README.html</code></td>
+                          <td>HTTP API hub: lists documented resources and points to each resource hub.</td>
+                        </tr>
+                        <tr>
+                          <td><code>api/&lt;resource&gt;/index.html</code></td>
+                          <td>
+                            <strong>Single entry point per resource</strong> — business context, contract summary, governance, technical
+                            depth (layers, idempotency, errors, logging, metrics, dependencies), endpoint index, and stable fragment
+                            identifiers (e.g. <code>#user-op-createUser</code>) for deep links from per-method pages.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>api/&lt;resource&gt;/operations/*.html</code></td>
+                          <td>One page per HTTP endpoint, named from <strong>method + path template</strong> (not from Python
+                            <code>operationId</code>), focused on call semantics; each page links back to anchors on the resource
+                            <code>index.html</code>.</td>
                           </tr>
-                        </tbody>
-                      </table>
+                          <tr>
+                            <td><code>api/&lt;resource&gt;/…</code> redirect stubs (optional)</td>
+                            <td>Legacy filenames may remain as minimal HTML that redirect to <code>index.html</code> with hash preserved,
+                              so old bookmarks keep working.</td>
+                            </tr>
+                          </tbody>
+                        </table>
 
-                      <h2 id="navigation-and-chrome">Navigation and chrome</h2>
-                      <ul>
-                        <li>
-                          <strong>Top nav.</strong> <code>docs/assets/docs-nav.js</code> provides the global “pill” navigation across
-                          <code>docs/</code> (ADRs, developer guides, internal docs, and so on).
-                        </li>
-                        <li>
-                          <strong>Left sidebar.</strong> <code>docs/assets/internal-sidebar.js</code> defines the tree for internal pages
-                          in the array <code>INTERNAL_SIDEBAR_NAV</code>. Paths are expressed relative to the <code>docs/</code> root (for
-                          example <code>internal/api/user/index.html</code>). <strong>This array is the single source of truth</strong> for
-                          which internal pages appear in the sidebar; adding or renaming a page requires updating it (and the how-to layout
-                          page / <code>STRUCTURE.md</code> stub) alongside the HTML.
-                        </li>
-                        <li>
-                          <strong>Labels.</strong> Operation entries in the sidebar use short, HTTP-first labels (e.g. action + method).
-                          The full path belongs on the per-method page hero, not duplicated in the nav.
-                        </li>
-                        <li>
-                          <strong>Markup.</strong> Pages that use the sidebar include the shell from existing internal templates: aside with
-                          <code>#internal-sidebar-mount</code>, main column, and the scripts above. Follow
-                          <a href="../internal/README.html"><code>README.html</code></a> as a reference.
-                        </li>
-                      </ul>
+                      </section>
+                      <section class="card">
+                        <h2 id="navigation-and-chrome">Navigation and chrome</h2>
+                        <ul>
+                          <li>
+                            <strong>Top nav.</strong> <code>docs/assets/docs-nav.js</code> provides the global “pill” navigation across
+                            <code>docs/</code> (ADRs, developer guides, internal docs, and so on).
+                          </li>
+                          <li>
+                            <strong>Left sidebar.</strong> <code>docs/assets/internal-sidebar.js</code> defines the tree for internal pages
+                            in the array <code>INTERNAL_SIDEBAR_NAV</code>. Paths are expressed relative to the <code>docs/</code> root (for
+                            example <code>internal/api/user/index.html</code>). <strong>This array is the single source of truth</strong> for
+                            which internal pages appear in the sidebar; adding or renaming a page requires updating it (and the how-to layout
+                            page / <code>STRUCTURE.md</code> stub) alongside the HTML.
+                          </li>
+                          <li>
+                            <strong>Labels.</strong> Operation entries in the sidebar use short, HTTP-first labels (e.g. action + method).
+                            The full path belongs on the per-method page hero, not duplicated in the nav.
+                          </li>
+                          <li>
+                            <strong>Markup.</strong> Pages that use the sidebar include the shell from existing internal templates: aside with
+                            <code>#internal-sidebar-mount</code>, main column, and the scripts above. Follow
+                            <a href="../internal/README.html"><code>README.html</code></a> as a reference.
+                          </li>
+                        </ul>
 
-                      <h2 id="contributor-workflow">Contributor workflow</h2>
-                      <p>When documenting or changing HTTP behavior:</p>
-                      <ol>
-                        <li>Keep OpenAPI (<code>docs/openapi/</code>) and contract tests aligned per <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>.</li>
-                        <li>Update the resource <code>api/&lt;resource&gt;/index.html</code> if business narrative, invariants, or
-                          cross-cutting technical behavior (idempotency, logging, metrics) change.</li>
-                          <li>Update affected <code>operations/*.html</code> pages when endpoint-specific detail changes.</li>
-                          <li>Update <code>INTERNAL_SIDEBAR_NAV</code> when adding routes or pages; add a row to <strong>Document history</strong>
-                            on substantive hub updates.</li>
-                            <li>Reflect notable doc-tree changes in <code>docs/CHANGELOG.md</code> when the documentation set itself is part of
-                              the deliverable.</li>
-                            </ol>
-                            <p class="small">
-                              The checklist in
-                              <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>
-                              mirrors this workflow for new resources (new folder under <code>api/</code>, naming convention for operation files,
-                              link from <code>api/README.html</code>).
-                            </p>
+                      </section>
+                      <section class="card">
+                        <h2 id="contributor-workflow">Contributor workflow</h2>
+                        <p>When documenting or changing HTTP behavior:</p>
+                        <ol>
+                          <li>Keep OpenAPI (<code>docs/openapi/</code>) and contract tests aligned per <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>.</li>
+                          <li>Update the resource <code>api/&lt;resource&gt;/index.html</code> if business narrative, invariants, or
+                            cross-cutting technical behavior (idempotency, logging, metrics) change.</li>
+                            <li>Update affected <code>operations/*.html</code> pages when endpoint-specific detail changes.</li>
+                            <li>Update <code>INTERNAL_SIDEBAR_NAV</code> when adding routes or pages; add a row to <strong>Document history</strong>
+                              on substantive hub updates.</li>
+                              <li>Reflect notable doc-tree changes in <code>docs/CHANGELOG.md</code> when the documentation set itself is part of
+                                the deliverable.</li>
+                              </ol>
+                              <p class="small">
+                                The checklist in
+                                <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>
+                                mirrors this workflow for new resources (new folder under <code>api/</code>, naming convention for operation files,
+                                link from <code>api/README.html</code>).
+                              </p>
 
-                            <h2>Scope</h2>
-                            <ul>
-                              <li>
-                                <strong>In scope:</strong> Structure, authority, minimum expectations, navigation ownership, and extension process
-                                for <code>docs/internal/</code> HTML (and the linked how-to / <code>STRUCTURE.md</code> stub).
-                              </li>
-                              <li>
-                                <strong>Out of scope:</strong> Replacing OpenAPI, replacing pdoc under <code>docs/api/</code>, or duplicating
-                                runbook procedures (link to <code>docs/runbooks/</code> instead).
-                              </li>
-                            </ul>
+                            </section>
+                            <section class="card">
+                              <h2>Scope</h2>
+                              <ul>
+                                <li>
+                                  <strong>In scope:</strong> Structure, authority, minimum expectations, navigation ownership, and extension process
+                                  for <code>docs/internal/</code> HTML (and the linked how-to / <code>STRUCTURE.md</code> stub).
+                                </li>
+                                <li>
+                                  <strong>Out of scope:</strong> Replacing OpenAPI, replacing pdoc under <code>docs/api/</code>, or duplicating
+                                  runbook procedures (link to <code>docs/runbooks/</code> instead).
+                                </li>
+                              </ul>
 
-                            <h2>Alternatives considered</h2>
-                            <ol>
-                              <li>
-                                <strong>Wiki or external tool.</strong>
-                                <ul>
-                                  <li>Pros: rich editors, permissions.</li>
-                                  <li>Cons: not versioned with the same PR as code; harder to enforce review alongside behavior changes.</li>
-                                </ul>
-                              </li>
-                              <li>
-                                <strong>Markdown only under <code>docs/internal/</code>.</strong>
-                                <ul>
-                                  <li>Pros: faster to write.</li>
-                                  <li>Cons: this site’s published docs are HTML-first; one stack keeps nav and styling consistent.</li>
-                                </ul>
-                              </li>
-                              <li>
-                                <strong>One very long HTML file per resource.</strong>
-                                <ul>
-                                  <li>Pros: single URL for everything.</li>
-                                  <li>Cons: poor scanability; heavy merge conflicts; we instead use a hub plus per-method pages with reciprocal
-                                    anchor links.</li>
+                            </section>
+                            <section class="card">
+                              <h2>Alternatives considered</h2>
+                              <ol>
+                                <li>
+                                  <strong>Wiki or external tool.</strong>
+                                  <ul>
+                                    <li>Pros: rich editors, permissions.</li>
+                                    <li>Cons: not versioned with the same PR as code; harder to enforce review alongside behavior changes.</li>
                                   </ul>
                                 </li>
-                              </ol>
+                                <li>
+                                  <strong>Markdown only under <code>docs/internal/</code>.</strong>
+                                  <ul>
+                                    <li>Pros: faster to write.</li>
+                                    <li>Cons: this site’s published docs are HTML-first; one stack keeps nav and styling consistent.</li>
+                                  </ul>
+                                </li>
+                                <li>
+                                  <strong>One very long HTML file per resource.</strong>
+                                  <ul>
+                                    <li>Pros: single URL for everything.</li>
+                                    <li>Cons: poor scanability; heavy merge conflicts; we instead use a hub plus per-method pages with reciprocal
+                                      anchor links.</li>
+                                    </ul>
+                                  </li>
+                                </ol>
 
-                              <h2>Consequences</h2>
-                              <h3>Positive</h3>
-                              <ul>
-                                <li>Engineers can resolve “what did we agree?” without inferring from code alone for documented areas.</li>
-                                <li>Onboarding gains a bounded reading path: internal README → API hub → resource hub → method page.</li>
-                                <li>Navigation has an explicit owner (<code>INTERNAL_SIDEBAR_NAV</code>), reducing orphan pages.</li>
-                              </ul>
-                              <h3>Trade-offs</h3>
-                              <ul>
-                                <li>Ongoing maintenance: hubs, operation pages, sidebar, and the how-to layout page (plus <code>STRUCTURE.md</code>)
-                                  must move together when the HTTP surface changes, or authority of the doc set erodes.</li>
+                              </section>
+                              <section class="card">
+                                <h2>Consequences</h2>
+                                <h3>Positive</h3>
+                                <ul>
+                                  <li>Engineers can resolve “what did we agree?” without inferring from code alone for documented areas.</li>
+                                  <li>Onboarding gains a bounded reading path: internal README → API hub → resource hub → method page.</li>
+                                  <li>Navigation has an explicit owner (<code>INTERNAL_SIDEBAR_NAV</code>), reducing orphan pages.</li>
                                 </ul>
+                                <h3>Trade-offs</h3>
+                                <ul>
+                                  <li>Ongoing maintenance: hubs, operation pages, sidebar, and the how-to layout page (plus <code>STRUCTURE.md</code>)
+                                    must move together when the HTTP surface changes, or authority of the doc set erodes.</li>
+                                  </ul>
+                                </section>
                                 <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
                               </main>
-                            </body>
 
-                          </html>
+                            </body></html>

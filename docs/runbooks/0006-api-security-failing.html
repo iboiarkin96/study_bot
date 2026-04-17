@@ -1,16 +1,16 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: API Security Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: API Security Failing</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: API Security Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: API Security Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li><code>401</code> responses for protected endpoints even with expected credentials.</li>
@@ -18,6 +18,8 @@
         <li><code>413</code> responses after payload changes.</li>
         <li>CORS errors in browser or missing expected security headers in responses.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Fast triage</h2>
       <ol>
         <li>Check current env values for security settings in <code>.env</code>.</li>
@@ -25,6 +27,8 @@
         <li>Reproduce with one endpoint: <code>POST /api/v1/user</code>.</li>
         <li>Inspect application logs for security middleware warnings.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Most common causes</h2>
       <ul>
         <li>Wrong <code>API_MOCK_API_KEY</code> or wrong header name.</li>
@@ -33,6 +37,8 @@
         <li>Frontend origin missing in <code>CORS_ALLOW_ORIGINS</code>.</li>
         <li>Middleware order/behavior changed without ADR + test updates.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Recovery steps by category</h2>
       <h3>1) Auth failures (<code>401</code>)</h3>
       <ul>
@@ -58,24 +64,31 @@
         <li>Verify response headers include CSP and frame/content-type protections.</li>
         <li>Confirm browser preflight (<code>OPTIONS</code>) behavior is not blocked by auth/rate-limit.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Final recovery sequence</h2>
       <ol>
         <li><code>make test</code></li>
         <li><code>make verify</code></li>
         <li><code>make docs-fix</code></li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Exit criteria</h2>
       <ul>
         <li>Protected endpoints behave as expected for auth, rate limit, and body size.</li>
         <li>CORS and security headers are present and validated.</li>
         <li>All automated checks pass, and docs reflect current policy.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Follow-up</h2>
       <ul>
         <li>Policy-level security changes must be captured in ADR.</li>
         <li>Update this runbook with new recurring incident patterns.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

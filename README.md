@@ -49,18 +49,7 @@ Useful: `make env-check`, `curl -s http://127.0.0.1:8000/live | jq`.
 
 ## Documentation and workflows
 
-| Topic | Link |
-| ----- | ---- |
-| Интерактивная документация API (Swagger UI; нужен запущенный `make run`) | [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) |
-| Changelog | [CHANGELOG.md](CHANGELOG.md) |
-| Contributing (verify, docs, OpenAPI, ADRs) | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Make commands & workflows (diagrams, scenarios) | [0010-make-commands-and-workflows.html](docs/developer/0010-make-commands-and-workflows.html) |
-| Developers Docs (engineering practices + developer guides index) | [developers.html](docs/internal/developers.html) |
-| System design & error matrix | [system-design.html](docs/internal/system-design.html) |
-| ADRs | [docs/adr/README.html](docs/adr/README.html) |
-| Architecture & quality assessments (audits) | [docs/audit/README.html](docs/audit/README.html) |
-| Runbooks | [docs/runbooks/README.html](docs/runbooks/README.html) |
-| OpenAPI (test) — Swagger UI for the baseline spec (browse only; no in-browser validation) | [docs/openapi-explorer.html](docs/openapi-explorer.html) |
+**Full docs** is located at `docs/index.html`.
 
 **Daily workflow:** prefer `make` targets (`make help`).
 1) Common flows: `make fix`, `make verify`, `make verify-ci` before push, `make release-check`.
@@ -77,12 +66,10 @@ Stack: **Prometheus**, **Grafana**, **Blackbox exporter** (`docker-compose.obser
 
 | What | URL | Notes |
 | ---- | --- | ----- |
-| API | [http://127.0.0.1:8000](http://127.0.0.1:8000) | `APP_HOST` / `APP_PORT` |
-| Liveness / readiness / metrics | `/live`, `/ready`, `/metrics` | |
 | Prometheus UI | [http://127.0.0.1:9090](http://127.0.0.1:9090) | [Targets](http://127.0.0.1:9090/targets) |
 | Grafana | [http://127.0.0.1:3001](http://127.0.0.1:3001) | maps host **3001** → container 3000; login `admin` / `admin` |
 | Blackbox exporter | [http://127.0.0.1:9115](http://127.0.0.1:9115) | probe metrics for Prometheus |
-| Dashboard (imported) | [Study App Observability](http://127.0.0.1:3001/d/study-app-observability/study-app-observability?orgId=1) | Grafana |
+| Dashboard (imported) | [<abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API Observability](http://127.0.0.1:3001/d/study-app-observability/study-app-observability?orgId=1) | Grafana |
 
 Override host/port labels for docs and smoke checks: `OBS_API_*`, `OBS_PROM_*`, `OBS_GRAF_*` (see `env/example`).
 

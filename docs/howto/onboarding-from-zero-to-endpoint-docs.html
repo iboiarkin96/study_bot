@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Onboarding: from zero to endpoint and docs — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Onboarding: from zero to endpoint and docs</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      End-to-end onboarding path: start the project locally, add one endpoint through all layers, and publish matching
+      documentation in the same workflow.
+    </p>
+
+    <nav aria-labelledby="toc">
+      <h2 id="toc">Contents</h2>
+      <ol>
+        <li><a href="#goal">Goal and expected outcome</a></li>
+        <li><a href="#phase-1">Phase 1. Local setup and first successful call</a></li>
+        <li><a href="#phase-2">Phase 2. Implement one endpoint across layers</a></li>
+        <li><a href="#phase-3">Phase 3. Document the endpoint and behavior</a></li>
+        <li><a href="#phase-4">Phase 4. Quality gates and ready-to-review state</a></li>
+        <li><a href="#related">Related guides</a></li>
+      </ol>
+    </nav>
+
+    <section id="goal" class="card">
+      <h2>Goal and expected outcome</h2>
+      <p>After this guide you should have:</p>
+      <ul>
+        <li>running API locally with a successful health call;</li>
+        <li>a new endpoint implemented in router, schema, service, and repository layers;</li>
+        <li>updated OpenAPI and internal HTML docs for the endpoint;</li>
+        <li>a clean local quality gate before opening a PR.</li>
+      </ul>
+    </section>
+
+    <section id="phase-1" class="card">
+      <h2>Phase 1. Local setup and first successful call</h2>
+      <ol>
+        <li>
+          Create environment and install dependencies:
+          <pre><code>make venv &amp;&amp; make install</code></pre>
+          Expected: command ends with <code>Dependencies installed</code>.
+        </li>
+        <li>
+          Initialize local config:
+          <pre><code>make env-init</code></pre>
+          Expected: <code>.env created from env/example</code> (if it already exists, continue with current file).
+        </li>
+        <li>
+          Apply migrations:
+          <pre><code>make migrate</code></pre>
+          Expected: <code>Migrations applied</code>.
+        </li>
+        <li>
+          Start API:
+          <pre><code>make run</code></pre>
+          Expected: Uvicorn running on <code>127.0.0.1:8000</code> (or your <code>.env</code> host/port).
+        </li>
+        <li>
+          In a second terminal, verify first success:
+          <pre><code>curl -i http://127.0.0.1:8000/live</code></pre>
+          Expected: <code>HTTP/1.1 200 OK</code> and JSON status body.
+        </li>
+      </ol>
+    </section>
+
+    <section id="phase-2" class="card">
+      <h2>Phase 2. Implement one endpoint across layers</h2>
+      <p>Use this order so changes are reviewable and consistent with project layering.</p>
+      <ol>
+        <li>Create/update DB structures and migration if needed.</li>
+        <li>Add request/response models in <code>app/schemas/</code>.</li>
+        <li>Add repository data-access methods in <code>app/repositories/</code>.</li>
+        <li>Add service logic and business checks in <code>app/services/</code>.</li>
+        <li>Add router handler in <code>app/api/v1/</code> with validation + response mapping.</li>
+        <li>Update OpenAPI examples where relevant (<code>app/openapi/examples/</code>).</li>
+      </ol>
+      <p>
+        For a concrete beginner walkthrough, follow:
+        <a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code></a>.
+      </p>
+    </section>
+
+    <section id="phase-3" class="card">
+      <h2>Phase 3. Document the endpoint and behavior</h2>
+      <ol>
+        <li>
+          Update internal API hub/resource pages under <code>docs/internal/api/</code>
+          (resource <code>index.html</code> and operation pages as needed).
+        </li>
+        <li>
+          If you add or rename internal pages, update sidebar source
+          <code>docs/assets/internal-sidebar.js</code>.
+        </li>
+        <li>
+          Keep docs structure consistent with:
+          <a href="./internal-service-docs-layout.html">internal service docs layout guide</a>.
+        </li>
+        <li>
+          Sync generated fragments and docs artifacts:
+          <pre><code>make docs-fix</code></pre>
+        </li>
+      </ol>
+    </section>
+
+    <section id="phase-4" class="card">
+      <h2>Phase 4. Quality gates and ready-to-review state</h2>
+      <ol>
+        <li>
+          Run full local gate (mutating docs):
+          <pre><code>make verify</code></pre>
+        </li>
+        <li>
+          Before push, run CI-like gate:
+          <pre><code>make verify-ci</code></pre>
+          This includes docs drift check and baseline docs accessibility checks.
+        </li>
+        <li>
+          Confirm changed files include both code and docs for the new endpoint.
+        </li>
+      </ol>
+    </section>
+
+    <section id="related" class="card">
+      <h2>Related guides</h2>
+      <ul>
+        <li><a href="./README.html">How-to index</a></li>
+        <li><a href="./0004-how-to-add-post-contract.html">Beginner endpoint walkthrough</a></li>
+        <li><a href="./internal-service-docs-layout.html">Internal docs layout and navigation</a></li>
+        <li><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows (onboarding)</a></li>
+        <li><a href="../internal/developers.html">Developers Docs hub</a></li>
+      </ul>
+    </section>
+
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

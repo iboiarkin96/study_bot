@@ -1,90 +1,87 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Architecture &amp; quality assessments — index</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Architecture &amp; quality assessments — index</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
+<body>
+  <main class="container">
+    <h1>Architecture &amp; quality assessments</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      Stand-alone <strong>maturity assessments</strong> for this repository: each report maps the Study App to a neutral
+      catalogue of reference practices (Table 1), scores evidence and gaps (Table 2), and records mitigations
+      and checklists. They complement ADRs (which capture <em>decisions</em>) with a dated snapshot of <em>how we
+      compare</em> to common industry expectations.
+    </p>
 
-  <body>
-    <main class="container">
-      <h1>Architecture &amp; quality assessments</h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        Stand-alone <strong>maturity assessments</strong> for this repository: each report maps the Study App to a neutral
-        catalogue of reference practices (Table&nbsp;1), scores evidence and gaps (Table&nbsp;2), and records mitigations
-        and checklists. They complement ADRs (which capture <em>decisions</em>) with a dated snapshot of <em>how we
-        compare</em> to common industry expectations.
+    <section class="card">
+      <h2>Format and location</h2>
+      <p>
+        Files live under <code>docs/audit/</code> as static HTML, named
+        <code><var>YYYY-MM-DD</var>-<var>topic</var>-assessment.html</code>. Conventions, scoring bands, and the shared
+        Table 2 legend are defined in
+        <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
       </p>
+    </section>
 
-      <div class="card">
-        <h2>Format and location</h2>
-        <p>
-          Files live under <code>docs/audit/</code> as static HTML, named
-          <code><var>YYYY-MM-DD</var>-<var>topic</var>-assessment.html</code>. Conventions, scoring bands, and the shared
-          Table&nbsp;2 legend are defined in
-          <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
+    <section class="card">
+      <h2>Industry context</h2>
+      <p>
+        Large product organizations often combine formal <strong>design/RFC reviews</strong>, <strong>launch
+        readiness</strong> checklists, <strong>security programs</strong>, and <strong>central developer
+        portals</strong>.
+        This repository uses a <strong>lighter, versioned rubric</strong> in git: reference practices (Table 1),
+        evidence and scores (Table 2), gaps and mitigations — aligned in spirit with maturity conversations at
+        scale,
+        but without replacing automated tests, ADRs, or org-wide approval gates.
+      </p>
+      <p>
+        Assessments are written for <strong>PET-scale</strong> scope unless stated otherwise: a low score on a row often
+        means “deferred” or “not cost-effective yet,” not that the team must chase platform-scale features. See
+        <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR 0024
+          —
+          Industry context and applicability</a>.
         </p>
-      </div>
+      </section>
 
-      <div class="card">
-        <h2>Industry context</h2>
-        <p>
-          Large product organizations often combine formal <strong>design/RFC reviews</strong>, <strong>launch
-          readiness</strong> checklists, <strong>security programs</strong>, and <strong>central developer
-          portals</strong>.
-          This repository uses a <strong>lighter, versioned rubric</strong> in git: reference practices (Table&nbsp;1),
-          evidence and scores (Table&nbsp;2), gaps and mitigations — aligned in spirit with maturity conversations at
-          scale,
-          but without replacing automated tests, ADRs, or org-wide approval gates.
-        </p>
-        <p>
-          Assessments are written for <strong>PET-scale</strong> scope unless stated otherwise: a low score on a row often
-          means “deferred” or “not cost-effective yet,” not that the team must chase platform-scale features. See
-          <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR 0024
-            —
-            Industry context and applicability</a>.
+      <section class="card">
+        <h2>All published assessments</h2>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Assessment</th>
+              <th scope="col">Date</th>
+              <th scope="col">Focus</th>
+              <th scope="col">Open</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>REST API assessment</td>
+              <td>2026-04-14</td>
+              <td>HTTP API, OpenAPI governance, idempotency, security headers, observability hooks, CI contract checks.
+              </td>
+              <td><a href="./2026-04-14-api-assessment.html">Open</a></td>
+            </tr>
+            <tr>
+              <td>Documentation Experience (DX) assessment</td>
+              <td>2026-04-14</td>
+              <td>Information architecture, docs-as-code, discovery, API docs UX, accessibility, feedback, and related DX
+                themes.</td>
+                <td><a href="./2026-04-14-documentation-experience-assessment.html">Open</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            New assessments should be listed here when added. Changes to this index or to assessment files are worth noting
+            in <a href="../CHANGELOG.md">docs/CHANGELOG.md</a>.
           </p>
-        </div>
+        </section>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
 
-        <div class="card">
-          <h2>All published assessments</h2>
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Assessment</th>
-                <th scope="col">Date</th>
-                <th scope="col">Focus</th>
-                <th scope="col">Open</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>REST API assessment</td>
-                <td>2026-04-14</td>
-                <td>HTTP API, OpenAPI governance, idempotency, security headers, observability hooks, CI contract checks.
-                </td>
-                <td><a href="./2026-04-14-api-assessment.html">Open</a></td>
-              </tr>
-              <tr>
-                <td>Documentation Experience (DX) assessment</td>
-                <td>2026-04-14</td>
-                <td>Information architecture, docs-as-code, discovery, API docs UX, accessibility, feedback, and related DX
-                  themes.</td>
-                  <td><a href="./2026-04-14-documentation-experience-assessment.html">Open</a></td>
-                </tr>
-              </tbody>
-            </table>
-            <p>
-              New assessments should be listed here when added. Changes to this index or to assessment files are worth noting
-              in <a href="../CHANGELOG.md">docs/CHANGELOG.md</a>.
-            </p>
-          </div>
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </body>
-
-    </html>
+    </body></html>

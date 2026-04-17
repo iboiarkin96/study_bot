@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0004: API Versioning Policy</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0004: API Versioning Policy</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0004: API Versioning Policy</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0004: API Versioning Policy</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -30,6 +30,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> A public API is a promise. If you rename a field or change an error code’s
@@ -42,6 +44,8 @@
         additive vs breaking changes and a deprecation window keep trust with integrators.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <p>We use path-based major versions and prefer additive, backward-compatible changes within a major version:</p>
       <ol>
@@ -52,6 +56,8 @@
         <li>Deprecated contract elements must keep a migration window of at least 90 days (or two release cycles, whichever is longer).</li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Compatibility Rules</h2>
       <h3>Breaking changes (forbidden inside same major)</h3>
       <ul>
@@ -69,6 +75,8 @@
         <li>Documentation/example improvements without runtime behavior change.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Deprecation Policy</h2>
       <p>When deprecating behavior, document migration path and timeline in:</p>
       <ul>
@@ -80,9 +88,11 @@
       <ul>
         <li><code>Deprecation: true</code></li>
         <li><code>Sunset: &lt;date&gt;</code></li>
-        <li><code>Link: &lt;migration-guide&gt;; rel=&quot;deprecation&quot;</code></li>
+        <li><code>Link: &lt;migration-guide&gt;; rel="deprecation"</code></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Implementation Guidance</h2>
       <p>For contract-related changes:</p>
       <ol>
@@ -93,6 +103,8 @@
         <li>Record policy-level decisions in ADR.</li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -105,7 +117,8 @@
         <li>Additional governance overhead for API changes.</li>
         <li>Longer lifecycle for deprecated behavior support.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

@@ -1,26 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0020: C4 views, PlantUML conventions, and shared diagram style</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0020: C4 views, PlantUML conventions, and shared diagram style</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0020: C4 views, PlantUML conventions, and shared diagram style</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0020: C4 views, PlantUML conventions, and shared diagram style</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted and merged under <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link a
@@ -32,6 +31,8 @@
         <li>Accepted: 2026-04-12</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         This section explains <strong>what</strong> we are standardizing (C4 thinking, PlantUML, shared visuals) and
@@ -116,6 +117,8 @@
         contributors know what “good” looks like and why.
       </p>
 
+    </section>
+    <section class="card">
       <h2 id="decision-heading">Decision</h2>
       <p>
         All architecture and interaction diagrams that live under <code>docs/uml/</code> are authored in
@@ -202,11 +205,11 @@
           wrapping clutter.
         </li>
         <li>
-          <strong>Primary dependencies:</strong> solid arrows <code>--></code> with a short verb or protocol on the arrow
+          <strong>Primary dependencies:</strong> solid arrows <code>--&gt;</code> with a short verb or protocol on the arrow
           (for example <code>HTTPS / JSON</code>, <code>SQL</code>).
         </li>
         <li>
-          <strong>Secondary or optional links:</strong> dotted arrows <code>..></code> (metrics, probes, optional deploy,
+          <strong>Secondary or optional links:</strong> dotted arrows <code>..&gt;</code> (metrics, probes, optional deploy,
           non-blocking integrations).
         </li>
         <li>
@@ -215,7 +218,7 @@
         <li>
           <strong>Layout hints:</strong> Use hidden links (for example <code>-[hidden]down-</code>,
           <code>-[hidden]right-</code>) to align ranks or stack layered components; express real dependencies only with
-          <code>--></code> or <code>..></code>.
+          <code>--&gt;</code> or <code>..&gt;</code>.
         </li>
       </ul>
 
@@ -310,6 +313,8 @@
                       <code>make uml-check</code> or <code>scripts/regenerate_docs.py --check</code>.
                     </p>
 
+                  </section>
+                  <section class="card">
                     <h2>Scope</h2>
                     <ul>
                       <li>
@@ -322,6 +327,8 @@
                       </li>
                     </ul>
 
+                  </section>
+                  <section class="card">
                     <h2>Alternatives considered</h2>
                     <ol>
                       <li>
@@ -348,6 +355,8 @@
                         </li>
                       </ol>
 
+                    </section>
+                    <section class="card">
                       <h2>Consequences</h2>
                       <h3>Positive</h3>
                       <ul>
@@ -361,6 +370,8 @@
                         <li>Large diagrams may need splitting or zoom-level discipline—C4 exists partly to avoid a single giant canvas.</li>
                       </ul>
 
+                    </section>
+                    <section class="card">
                       <h2>Compatibility and migration</h2>
                       <ul>
                         <li>Backward-compatibility impact: none for runtime systems; documentation-only.</li>
@@ -369,6 +380,8 @@
                           <li>Rollback strategy: revert ADR and skin changes; regenerate PNGs from previous commits.</li>
                         </ul>
 
+                      </section>
+                      <section class="card">
                         <h2>Implementation plan</h2>
                         <ol>
                           <li>Keep <code>style.puml</code> and <code>regenerate_docs.py</code> in sync; any new global skinparam belongs in
@@ -378,12 +391,16 @@
                               <li>Cross-link this ADR from engineering or system-design docs when those pages are updated.</li>
                             </ol>
 
+                          </section>
+                          <section class="card">
                             <h2>Validation</h2>
                             <ul>
                               <li>Technical checks: <code>make uml-check</code> passes after changes; Kroki renders without errors.</li>
                               <li>Documentation: HTML references <code>docs/uml/rendered/&lt;name&gt;.png</code> paths that match generated files.</li>
                             </ul>
 
+                          </section>
+                          <section class="card">
                             <h2>References</h2>
                             <ul>
                               <li>C4 model: <a href="https://c4model.com/" rel="noopener noreferrer">c4model.com</a>.</li>
@@ -391,8 +408,8 @@
                               <li>Repository: <code>docs/uml/README.txt</code>, <code>docs/uml/include/style.puml</code>.</li>
                               <li>Related ADRs: <a href="./0001-docs-as-code.html">ADR 0001</a> (docs as code).</li>
                             </ul>
-                            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                          </main>
-                        </body>
+                          </section>
+                          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                        </main>
 
-                      </html>
+                      </body></html>

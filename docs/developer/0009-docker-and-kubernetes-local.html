@@ -1,24 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docker image and local Kubernetes</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Docker image and local Kubernetes</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container">
-      <h1>Docker image and local Kubernetes</h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        This guide explains how the API is packaged as a container, how that maps to Kubernetes objects,
-        and how to run the stack on a <strong>local</strong> cluster for learning and integration tests.
-        Production hardening (registry scanning, multi-replica SQLite constraints, ingress TLS) is out of
-        scope here; see <a href="../adr/0015-container-image-and-local-kubernetes.html">ADR 0015</a>.
-      </p>
+<body>
+  <main class="container">
+    <h1>Docker image and local Kubernetes</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      This guide explains how the API is packaged as a container, how that maps to Kubernetes objects,
+      and how to run the stack on a <strong>local</strong> cluster for learning and integration tests.
+      Production hardening (registry scanning, multi-replica SQLite constraints, ingress TLS) is out of
+      scope here; see <a href="../adr/0015-container-image-and-local-kubernetes.html">ADR 0015</a>.
+    </p>
+    <section class="card">
 
       <h2 id="optional-and-daily-workflow">Optional tooling and daily development</h2>
       <p>
@@ -73,6 +72,8 @@
         Local <code>k8s/</code> manifests are a <strong>learning and smoke-test</strong> baseline; production clusters add
         namespaces, quotas, network policies, monitoring, and often Helm or GitOps — all outside this guide.
       </p>
+    </section>
+    <section class="card">
 
       <h2 id="prerequisites">0. What you need installed</h2>
       <p>Before building the image or applying manifests, install the following on your machine.</p>
@@ -107,6 +108,8 @@
         Point <code>kubectl</code> at your cluster (<code>kubectl config current-context</code> should show the context you expect)
         before running the steps below.
       </p>
+    </section>
+    <section class="card">
 
       <h2>1. Docker in one minute</h2>
       <p>
@@ -133,6 +136,8 @@
             non-default API keys and stricter CORS apply (<code>app/core/config.py</code>).
           </li>
         </ul>
+      </section>
+      <section class="card">
 
         <h2>2. Configuration: one place for Kubernetes</h2>
         <p>
@@ -152,6 +157,8 @@
           is unset. For <code>APP_ENV=qa</code>, you must supply a non-default key via a Kubernetes <strong>Secret</strong> and add
           a <code>secretRef</code> on the Deployment — see <code>k8s/secret.example.yaml</code>.
         </p>
+      </section>
+      <section class="card">
 
         <h2>3. Kubernetes mental model</h2>
         <p>
@@ -197,6 +204,8 @@
             Traffic from your browser does not hit the Service directly until you add an <strong>Ingress</strong> or use
             <code>kubectl port-forward</code> (below).
           </p>
+        </section>
+        <section class="card">
 
           <h2>4. Build the image and make it visible to the cluster</h2>
           <ul>
@@ -207,6 +216,8 @@
                 <li><strong>kind</strong>: <code>make docker-build</code> then
                   <code>kind load docker-image study-app-api:local --name &lt;cluster&gt;</code>.</li>
                 </ul>
+              </section>
+              <section class="card">
 
                 <h2>5. Apply manifests</h2>
                 <p>
@@ -221,6 +232,8 @@
                   kubectl apply -f k8s/pvc.yaml
                   kubectl apply -f k8s/deployment.yaml
                   kubectl apply -f k8s/service.yaml</code></pre>
+                </section>
+                <section class="card">
 
                   <h2>6. Reach the API from your machine</h2>
                   <pre><code>kubectl -n study-app port-forward svc/study-app-api 8000:8000</code></pre>
@@ -228,6 +241,8 @@
                     Then: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>. For protected routes, send
                     <code>X-API-Key</code> with the dev default (<code>local-dev-key</code>) unless you override via Secret.
                   </p>
+                </section>
+                <section class="card">
 
                   <h2>7. SQLite and replicas</h2>
                   <p>
@@ -235,6 +250,8 @@
                     <strong>one</strong> replica with this setup; for horizontal scaling you would move to a shared database
                     (for example PostgreSQL) — a future architectural change.
                   </p>
+                </section>
+                <section class="card">
 
                   <h2>See also</h2>
                   <ul>
@@ -244,8 +261,8 @@
                     <li><a href="../adr/0009-health-readiness-and-observability.html">ADR 0009 — Health and readiness</a></li>
                     <li><a href="./README.html">Developer docs index</a></li>
                   </ul>
-                  <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                </main>
-              </body>
+                </section>
+                <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+              </main>
 
-            </html>
+            </body></html>

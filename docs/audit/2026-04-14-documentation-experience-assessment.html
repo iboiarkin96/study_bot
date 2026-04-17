@@ -1,30 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentation Experience (DX) Assessment — Study App (14 Apr 2026)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Documentation Experience (DX) Assessment — Study App (14 Apr 2026)</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
+<body>
+  <main class="container">
+    <h1>Documentation Experience (DX) Assessment — Study App</h1>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      <strong>Assessment date:</strong> 14 April 2026<br>
+      <strong>Stack:</strong> Static HTML under <code>docs/</code>, shared CSS, automated doc sync (see
+      <a href="../developer/0008-docs-pipeline.html">docs pipeline</a>)<br>
+      <strong>Scope:</strong> Documentation Experience (DX) for this repository — how readers find, understand, trust,
+      and
+      act on technical documentation (guides, ADRs, generated API reference, runbooks).<br>
+      <strong>Document purpose:</strong> Map industry reference practices to Study App’s current posture, score maturity
+      (Table 2), prioritize gaps, and record a mitigation path plus checklist.
+    </p>
 
-  <body>
-    <main class="container">
-      <h1>Documentation Experience (DX) Assessment — Study App</h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        <strong>Assessment date:</strong> 14 April 2026<br />
-        <strong>Stack:</strong> Static HTML under <code>docs/</code>, shared CSS, automated doc sync (see
-        <a href="../developer/0008-docs-pipeline.html">docs pipeline</a>)<br />
-        <strong>Scope:</strong> Documentation Experience (DX) for this repository — how readers find, understand, trust,
-        and
-        act on technical documentation (guides, ADRs, generated API reference, runbooks).<br />
-        <strong>Document purpose:</strong> Map industry reference practices to Study App’s current posture, score maturity
-        (Table&nbsp;2), prioritize gaps, and record a mitigation path plus checklist.
-      </p>
-
-      <section>
+    <section>
+      <section class="card">
         <h2 id="table-of-contents">Table of contents</h2>
         <ol>
           <li><a href="#1-scope-and-methodology">Scope and methodology</a></li>
@@ -39,18 +38,20 @@
       </section>
 
       <section>
+      </section>
+      <section class="card">
         <h2 id="1-scope-and-methodology">1. Scope and methodology</h2>
 
         <h3 id="1-1-scope">1.1 Scope</h3>
         <p>
           <strong>Documentation Experience (DX)</strong> here means the end-to-end experience of consuming technical
           documentation: navigation, search, examples, API reference, operational runbooks, and trust signals (changelog,
-          errors). This assessment is <strong>stack-agnostic</strong> in Table&nbsp;1; Table&nbsp;2 is specific to Study
+          errors). This assessment is <strong>stack-agnostic</strong> in Table 1; Table 2 is specific to Study
           App’s published <code>docs/</code> tree and automation.
         </p>
         <p>
           The review targets a <strong>PET-scale</strong> service: a documentation site and repo workflows, not a
-          full commercial developer portal with billing and org management unless Table&nbsp;1 rows explicitly call for
+          full commercial developer portal with billing and org management unless Table 1 rows explicitly call for
           that pattern.
         </p>
 
@@ -58,18 +59,16 @@
         <p>The review proceeds in four steps:</p>
         <ol>
           <li>
-            <strong>Reference catalogue</strong> — Table&nbsp;1 lists DX practices with neutral descriptions (what “good”
+            <strong>Reference catalogue</strong> — Table 1 lists DX practices with neutral descriptions (what “good”
             usually means). Rows <strong>17–18</strong> are grouped under “A11y / i18n*” (accessibility and
             internationalization).
           </li>
           <li>
-            <strong>Implementation mapping</strong> — Table&nbsp;2 scores each practice (1–10) against the
+            <strong>Implementation mapping</strong> — Table 2 scores each practice (1–10) against the
             <strong>current</strong> repository, with evidence pointers (paths, ADRs, tooling).
           </li>
           <li>
-            <strong>Synthesis</strong> — overall score, gaps grouped by priority (<a
-            href="#5-gaps-refactors-and-recommendations">section 5</a>), and a mitigation timeline (<a
-            href="#6-mitigation-plan-and-indicative-deadlines">section 6</a>).
+            <strong>Synthesis</strong> — overall score, gaps grouped by priority (<a href="#5-gaps-refactors-and-recommendations">section 5</a>), and a mitigation timeline (<a href="#6-mitigation-plan-and-indicative-deadlines">section 6</a>).
           </li>
           <li>
             <strong>Follow-ups</strong> — actionable checklist (<a href="#7-actionable-checklist-top-decile-dx">section
@@ -109,13 +108,13 @@
         <p>
           Large tech organizations often run <strong>central doc portals</strong>, <strong>search and analytics
           programs</strong>, <strong>localization workflows</strong>, and <strong>AI assistants</strong> with dedicated
-          teams. This repository uses a lighter, git-versioned rubric (Table&nbsp;1 / Table&nbsp;2) per
+          teams. This repository uses a lighter, git-versioned rubric (Table 1 / Table 2) per
           <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR
             0024</a>.
           </p>
           <p>
             Study App’s docs are <strong>PET-scale</strong>: a static site and generated references, not a commercial
-            developer platform with org dashboards and billing. Many Table&nbsp;1 rows (e.g. multi-SDK tabs, enterprise
+            developer platform with org dashboards and billing. Many Table 1 rows (e.g. multi-SDK tabs, enterprise
             portal, DocSearch-scale search) are <strong>benchmarks</strong>, not requirements. Low scores often mean
             “not worth building at this stage” or “explicitly English-first,” not organizational failure. High-impact
             follow-ups for our context are listed in <a href="#5-gaps-refactors-and-recommendations">section 5</a> and
@@ -124,6 +123,8 @@
         </section>
 
         <section>
+        </section>
+        <section class="card">
           <h2 id="table-1-reference-practices">2. Table: Reference practices</h2>
           <p>
             <strong>Category</strong> groups the theme; <strong>Practice</strong> is a concise name;
@@ -406,9 +407,11 @@
         </section>
 
         <section>
+        </section>
+        <section class="card">
           <h2 id="table-2-study-app-scores">3. Table: AS-IS situation</h2>
           <p>
-            One row per practice in Table&nbsp;1 (rows <strong>1–25</strong>): no bundled rows. Scores are
+            One row per practice in Table 1 (rows <strong>1–25</strong>): no bundled rows. Scores are
             <strong>1–10</strong> indicative maturity (not a formal audit). Colour bands for the Score column are defined in
             <code>docs/assets/docs.css</code> (see
             <a href="../adr/0024-architecture-and-quality-assessment-documents.html#assessment-score-scale">ADR 0024</a>).
@@ -428,7 +431,7 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Practice (Table&nbsp;1)</th>
+                  <th scope="col">Practice (Table 1)</th>
                   <th scope="col">Study App evidence / notes</th>
                   <th scope="col">Score</th>
                 </tr>
@@ -537,7 +540,7 @@
                   <td>11</td>
                   <td>Interactive “try it”</td>
                   <td>
-                    Swagger UI at <code>/docs</code> and static <code>docs/openapi-explorer.html</code> against the
+                    Swagger UI at <code>/docs</code> and static <code>docs/openapi/openapi-explorer.html</code> against the
                     committed
                     snapshot; users must supply their own keys and understand environment risk. Rate limits and auth are
                     documented in OpenAPI and prose.
@@ -678,11 +681,13 @@
         </section>
 
         <section>
+        </section>
+        <section class="card">
           <h2 id="4-scoring-summary">4. Scoring summary</h2>
           <p>
             <strong>Overall (subjective, PET-scale docs site):</strong> approximately <strong>8 / 10</strong> on the 1–10
             scale.
-            <br />
+            <br>
             <strong>To approach top decile:</strong> explicit Diátaxis labels, one golden onboarding path, full-site search,
             prose lint and link checking in CI, and (optionally) citation-grounded AI — see
             <a href="#5-gaps-refactors-and-recommendations">section 5</a>.
@@ -690,6 +695,8 @@
         </section>
 
         <section>
+        </section>
+        <section class="card">
           <h2 id="5-gaps-refactors-and-recommendations">5. Gaps, refactors, and recommendations</h2>
           <p>
             Grouped by implementation priority. Row numbers refer to
@@ -697,7 +704,7 @@
           </p>
 
           <h3 id="5-1-should-add">5.1 Should add</h3>
-          <p><em>High impact for moderate effort; closes visible gaps in Table&nbsp;2.</em></p>
+          <p><em>High impact for moderate effort; closes visible gaps in Table 2.</em></p>
           <ol>
             <li>
               <strong>Explicit Diátaxis labels</strong> (row 1): e.g. tag or group pages as tutorial / how-to / reference /
@@ -750,10 +757,12 @@
         </section>
 
         <section>
+        </section>
+        <section class="card">
           <h2 id="6-mitigation-plan-and-indicative-deadlines">6. Mitigation plan and indicative deadlines</h2>
           <p>Dates are <strong>indicative</strong>; preserve ordering if timelines slip.</p>
 
-          <div class="card">
+          <section class="card">
             <h3 id="phase-a-dx">Phase A — by <strong>30 April 2026</strong></h3>
             <ul>
               <li>Add Diátaxis labels (or equivalent IA cues) on <code>docs/index.html</code> and section entry points.</li>
@@ -762,19 +771,21 @@
                 3).
               </li>
             </ul>
-          </div>
+          </section>
 
-          <div class="card">
+          <section class="card">
             <h3 id="phase-b-dx">Phase B — by <strong>30 June 2026</strong></h3>
             <ul>
               <li>Introduce full-site search (e.g. Pagefind) or document why deferred (row 13).</li>
               <li>Add prose lint and link checking for hand-maintained HTML paths in CI (row 7).</li>
-              <li>Revisit Table&nbsp;2 scores after changes; update this document’s history.</li>
+              <li>Revisit Table 2 scores after changes; update this document’s history.</li>
             </ul>
-          </div>
+          </section>
         </section>
 
         <section>
+        </section>
+        <section class="card">
           <h2 id="7-actionable-checklist-top-decile-dx">7. Actionable checklist (top-decile DX)</h2>
           <p>
             Cross-reference <a href="#table-2-study-app-scores">Table 2</a> and
@@ -795,6 +806,8 @@
         </section>
 
         <section>
+        </section>
+        <section class="card">
           <h2 id="8-document-history">8. Document history</h2>
           <div style="overflow-x: auto">
             <table>
@@ -821,8 +834,8 @@
           </div>
           <p><em>End of document.</em></p>
         </section>
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </body>
+      </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
 
-  </html>
+  </body></html>

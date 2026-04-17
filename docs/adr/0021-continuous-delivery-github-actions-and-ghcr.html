@@ -1,26 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0021: Continuous delivery — GitHub Actions and GitHub Container Registry</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0021: Continuous delivery — GitHub Actions and GitHub Container Registry</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0021: Continuous delivery — GitHub Actions and GitHub Container Registry</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0021: Continuous delivery — GitHub Actions and GitHub Container Registry</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted and merged under <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link a
@@ -32,6 +31,8 @@
         <li>Accepted: 2026-04-12</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2 id="context-heading">Context</h2>
       <p>
         This ADR explains <strong>why</strong> we automate publishing a container image from Git, <strong>what
@@ -116,6 +117,8 @@
         local development with <code>make run</code>; it complements packaging for downstream environments.
       </p>
 
+    </section>
+    <section class="card">
       <h2 id="decision-heading">Decision</h2>
       <ul>
         <li>
@@ -154,6 +157,8 @@
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Scope</h2>
       <ul>
         <li>
@@ -169,6 +174,8 @@
         </li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Alternatives considered</h2>
       <ol>
         <li>
@@ -194,6 +201,8 @@
         </li>
       </ol>
 
+    </section>
+    <section class="card">
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
@@ -208,6 +217,8 @@
         <li>Running the container in production still requires a real database and secrets outside the workflow.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Compatibility and migration</h2>
       <ul>
         <li>Backward-compatibility impact: <strong>none</strong> for API contracts; automation and docs are additive only.</li>
@@ -215,12 +226,16 @@
         <li>Rollback: remove or disable the <code>publish-image</code> job; local development workflow is unchanged.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Validation</h2>
       <ul>
         <li>Technical: on push to <code>main</code>, the workflow completes <code>publish-image</code>; the image appears under the repository’s Packages and is pullable with correct authentication.</li>
         <li>Documentation: this ADR, the <a href="../adr/README.html">ADR index</a>, and contributor notes link to the workflow as needed.</li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>References</h2>
       <ul>
         <li>
@@ -237,8 +252,8 @@
           <a href="../developer/0009-docker-and-kubernetes-local.html">Docker image and local Kubernetes</a> (local build; links to registry automation).
         </li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-</html>
+</body></html>

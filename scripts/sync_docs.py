@@ -239,6 +239,129 @@ def _render_makefile_html(entries: list[tuple[str, str]]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Error catalog renderers (docs/internal/errors.html)
+# ---------------------------------------------------------------------------
+
+
+def _load_error_catalog() -> tuple[list[tuple[str, str, str]], list[tuple[str, str, str]]]:
+    """Load stable error identities from ``app.errors`` modules.
+
+    Returns:
+        Two sorted lists of tuples ``(code, key, message)``:
+        first for ``COMMON_*``, second for ``USER_*``.
+    """
+    sys.path.insert(0, str(ROOT))
+    try:
+        import app.errors.common as common_module  # noqa: WPS433
+        import app.errors.user as user_module  # noqa: WPS433
+        from app.errors.types import StableError  # noqa: WPS433
+    except Exception as exc:
+        print(f"  ⚠ Could not import error catalog: {exc}", file=sys.stderr)
+        return [], []
+
+    common_symbols = vars(common_module)
+    common_rows: list[tuple[str, str, str]] = []
+    for name, value in common_symbols.items():
+        if not name.startswith("COMMON_") or not isinstance(value, StableError):
+            continue
+        common_rows.append((value.code, value.key, value.message))
+    common_rows.sort(key=lambda row: row[0])
+
+    user_symbols = vars(user_module)
+    user_rows: list[tuple[str, str, str]] = []
+    for name, value in user_symbols.items():
+        if not name.startswith("USER_") or not isinstance(value, StableError):
+            continue
+        user_rows.append((value.code, value.key, value.message))
+    user_rows.sort(key=lambda row: row[0])
+
+    return common_rows, user_rows
+
+
+def _load_validation_rule_rows() -> list[tuple[str, str, str, str, str]]:
+    """Build rows for documented validation mapping dicts.
+
+    Returns:
+        Sorted list of ``(rule_set, field, pydantic_type, code, key)`` rows.
+    """
+    sys.path.insert(0, str(ROOT))
+    try:
+        from app.errors.user import (  # noqa: WPS433
+            CREATE_USER_VALIDATION_RULES,
+            UPDATE_USER_VALIDATION_RULES,
+        )
+    except Exception as exc:
+        print(f"  ⚠ Could not import validation rules: {exc}", file=sys.stderr)
+        return []
+
+    rows: list[tuple[str, str, str, str, str]] = []
+    for rule_set, mapping in (
+        ("CREATE_USER_VALIDATION_RULES", CREATE_USER_VALIDATION_RULES),
+        ("UPDATE_USER_VALIDATION_RULES", UPDATE_USER_VALIDATION_RULES),
+    ):
+        for (field, pydantic_type), err in mapping.items():
+            rows.append((rule_set, field, pydantic_type, err.code, err.key))
+    rows.sort(key=lambda row: (row[0], row[1], row[2], row[3]))
+    return rows
+
+
+def _render_error_rows_html(rows: list[tuple[str, str, str]], source_path: str) -> str:
+    """Render ``(code, key, message)`` rows as HTML table body fragment.
+
+    Args:
+        rows: Error tuples loaded from code catalog modules.
+        source_path: Relative path shown in the source column.
+
+    Returns:
+        HTML fragment with ``<tr>`` rows.
+    """
+    if not rows:
+        return '                  <tr><td colspan="4"><em>No rows found.</em></td></tr>'
+
+    out: list[str] = []
+    for code, key, message in rows:
+        out.extend(
+            [
+                "                  <tr>",
+                f"                    <td><code>{html.escape(code)}</code></td>",
+                f"                    <td><code>{html.escape(key)}</code></td>",
+                f"                    <td>{html.escape(message)}</td>",
+                f"                    <td><code>{html.escape(source_path)}</code></td>",
+                "                  </tr>",
+            ]
+        )
+    return "\n".join(out)
+
+
+def _render_rule_rows_html(rows: list[tuple[str, str, str, str, str]]) -> str:
+    """Render validation mapping rows as HTML fragment for docs marker.
+
+    Args:
+        rows: Tuples ``(rule_set, field, pydantic_type, code, key)``.
+
+    Returns:
+        HTML fragment with ``<tr>`` rows.
+    """
+    if not rows:
+        return '                  <tr><td colspan="5"><em>No rows found.</em></td></tr>'
+
+    out: list[str] = []
+    for rule_set, field, pydantic_type, code, key in rows:
+        out.extend(
+            [
+                "                  <tr>",
+                f"                    <td><code>{html.escape(rule_set)}</code></td>",
+                f"                    <td><code>{html.escape(field)}</code></td>",
+                f"                    <td><code>{html.escape(pydantic_type)}</code></td>",
+                f"                    <td><code>{html.escape(code)}</code></td>",
+                f"                    <td><code>{html.escape(key)}</code></td>",
+                "                  </tr>",
+            ]
+        )
+    return "\n".join(out)
+
+
+# ---------------------------------------------------------------------------
 # Documentation catalog for handbook table
 # ---------------------------------------------------------------------------
 
@@ -605,6 +728,8 @@ def sync(check: bool = False) -> int:
     _step("Syncing docs from code sources...")
     makefile_entries = _parse_makefile_help()
     routes = _get_fastapi_routes()
+    common_errors, user_errors = _load_error_catalog()
+    rule_rows = _load_validation_rule_rows()
     stale_files = 0
 
     repo_layout = _build_tree()
@@ -671,6 +796,27 @@ def sync(check: bool = False) -> int:
                 _ok("docs/internal/developers.html updated")
         else:
             _info("docs/internal/developers.html already up to date")
+
+    # --- docs/internal/api/errors.html (error catalog sync) ---
+    errors_path = ROOT / "docs" / "internal" / "api" / "errors.html"
+    if errors_path.exists():
+        errors_sections: dict[str, str] = {
+            "ERROR_COMMON_ROWS": _render_error_rows_html(common_errors, "app/errors/common.py"),
+            "ERROR_USER_ROWS": _render_error_rows_html(user_errors, "app/errors/user.py"),
+            "ERROR_RULE_ROWS": _render_rule_rows_html(rule_rows),
+        }
+
+        original = errors_path.read_text()
+        updated = _replace_markers(original, errors_sections)
+        if updated != original:
+            stale_files += 1
+            if check:
+                print("✗ docs/internal/api/errors.html is out of sync (run make docs-fix)")
+            else:
+                errors_path.write_text(updated)
+                _ok("docs/internal/api/errors.html updated")
+        else:
+            _info("docs/internal/api/errors.html already up to date")
     return stale_files
 
 

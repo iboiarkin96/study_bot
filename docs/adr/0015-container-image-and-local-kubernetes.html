@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0015: Container Image and Local Kubernetes</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="7">
-      <h1>ADR 0015: Container Image and Local Kubernetes</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
-          <a href="./0000-template.html">ADR template</a> for the full milestone table.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0015: Container Image and Local Kubernetes</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="7">
+    <h1>ADR 0015: Container Image and Local Kubernetes</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> for what each step means, or the
+        <a href="./0000-template.html">ADR template</a> for the full milestone table.
+      </p>
+    </details>
+    <section class="card">
       <h2>Ratification</h2>
       <p>
         Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
@@ -30,6 +30,8 @@
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
 
+    </section>
+    <section class="card">
       <h2>Context</h2>
       <p>
         <strong>Why this matters:</strong> Local Python (<code>make run</code>) is the fastest feedback loop for feature
@@ -42,6 +44,8 @@
         Dockerfile and example manifests so learning and integration tests do not depend on a specific cloud account.
       </p>
 
+    </section>
+    <section class="card">
       <h2>Decision</h2>
       <ul>
         <li>Provide a <strong>Dockerfile</strong> that installs dependencies from the same <code>requirements.txt</code>
@@ -63,6 +67,8 @@
                   developer guide <code>docs/developer/0009-docker-and-kubernetes-local.html</code>.</li>
                 </ul>
 
+              </section>
+              <section class="card">
                 <h2>Scope</h2>
                 <ul>
                   <li>In scope: image layout, entrypoint behavior, local kubectl apply flow, documentation.</li>
@@ -70,6 +76,8 @@
                     horizontal pod autoscaling, replacing SQLite with PostgreSQL.</li>
                   </ul>
 
+                </section>
+                <section class="card">
                   <h2>Alternatives considered</h2>
                   <ol>
                     <li><strong>Helm chart only</strong>
@@ -93,6 +101,8 @@
                       </li>
                     </ol>
 
+                  </section>
+                  <section class="card">
                     <h2>Consequences</h2>
                     <h3>Positive</h3>
                     <ul>
@@ -107,6 +117,8 @@
                         from the cluster’s.</li>
                       </ul>
 
+                    </section>
+                    <section class="card">
                       <h2>Compatibility and migration</h2>
                       <ul>
                         <li>Backward-compatibility impact: <strong>none</strong> for Python APIs; additive files only.</li>
@@ -114,6 +126,8 @@
                         <li>Rollback strategy: stop using <code>k8s/</code> manifests and continue with <code>make run</code>.</li>
                       </ul>
 
+                    </section>
+                    <section class="card">
                       <h2>Implementation plan</h2>
                       <ol>
                         <li>Add Dockerfile, <code>scripts/container_entrypoint.sh</code>, <code>.dockerignore</code>.</li>
@@ -121,6 +135,8 @@
                         <li>Document in developer guide and this ADR; link from ADR index.</li>
                       </ol>
 
+                    </section>
+                    <section class="card">
                       <h2>Validation</h2>
                       <ul>
                         <li>Technical: <code>docker build -t study-app-api:local .</code> succeeds; optional local
@@ -128,6 +144,8 @@
                           <li>Documentation: developer guide and ADR cross-linked.</li>
                         </ul>
 
+                      </section>
+                      <section class="card">
                         <h2>References</h2>
                         <ul>
                           <li>Related ADRs:
@@ -138,7 +156,8 @@
                             <a href="../developer/0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a>
                           </li>
                         </ul>
-                        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                      </main>
-                    </body>
-                  </html>
+                      </section>
+                      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                    </main>
+
+                  </body></html>

@@ -1,24 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: Logging Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: Logging Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container">
-      <h1>Runbook: Logging Failing</h1>
-      <div id="docs-top-nav"></div>
+<body>
+  <main class="container">
+    <h1>Runbook: Logging Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li>No new entries in <code>logs/app.log</code>.</li>
         <li>App crashes on startup with logging-related error.</li>
         <li>Log file path/permissions issues.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Fast triage</h2>
       <ol>
         <li>Validate logging config in <code>.env</code>: <code>LOG_DIR</code>, <code>LOG_FILE_NAME</code>,
@@ -26,6 +27,8 @@
           <li>Check directory and file permissions for <code>logs/</code>.</li>
           <li>Start app and send test request: <code>make run</code>, then call <code>/health</code>.</li>
         </ol>
+      </section>
+      <section class="card">
         <h2>Most common causes</h2>
         <ul>
           <li>Invalid/unexpected <code>LOG_LEVEL</code> value.</li>
@@ -33,6 +36,8 @@
           <li>Relative path confusion from different working directory.</li>
           <li>Logging setup changed but not initialized in <code>app/main.py</code>.</li>
         </ul>
+      </section>
+      <section class="card">
         <h2>Recovery steps</h2>
         <ol>
           <li>Reset to known-good defaults in <code>.env</code>: <code>LOG_DIR=logs</code>,
@@ -41,19 +46,23 @@
             <li>Verify request log line appears after calling <code>/health</code>.</li>
             <li>If still failing, inspect <code>app/core/logging.py</code> path/handler setup.</li>
           </ol>
+        </section>
+        <section class="card">
           <h2>Exit criteria</h2>
           <ul>
             <li>New requests write lines to <code>logs/app.log</code>.</li>
             <li>App startup is stable.</li>
             <li><code>make test</code> still passes.</li>
           </ul>
+        </section>
+        <section class="card">
           <h2>Follow-up</h2>
           <ul>
             <li>If incident exposed observability policy gap, document decision in ADR.</li>
             <li>If incident exposed operational gap, update this runbook.</li>
           </ul>
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </body>
+        </section>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
 
-    </html>
+    </body></html>

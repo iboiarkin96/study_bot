@@ -1,406 +1,433 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Make commands and workflows (onboarding)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Make commands and workflows (onboarding)</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-
-  <body>
-    <main class="container">
-      <h1>Make commands and workflows (onboarding)</h1>
-      <div id="docs-top-nav"></div>
-      <p class="lead">
-        This guide groups <code>Makefile</code> targets by purpose, shows how composite targets chain together, and
+<body>
+  <main class="container">
+    <h1>Make commands and workflows (onboarding)</h1>
+    <section id="overview" class="card">
+      <h2>Overview</h2>
+      <p>This guide groups <code>Makefile</code> targets by purpose, shows how composite targets chain together, and
         gives <strong>if → then</strong> scenarios for new contributors. Policy and naming rules for entrypoints live in
         <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>. The authoritative list
         with one-line descriptions is <code>make help</code> in the repository root.
       </p>
+    </section>
+    <div id="docs-top-nav"></div>
+    <p class="lead">
+      This guide groups <code>Makefile</code> targets by purpose, shows how composite targets chain together, and
+      gives <strong>if → then</strong> scenarios for new contributors. Policy and naming rules for entrypoints live in
+      <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>. The authoritative list
+      with one-line descriptions is <code>make help</code> in the repository root.
+    </p>
 
-      <p>
-        <strong>Diagrams:</strong> figures are <a href="https://plantuml.com/">PlantUML</a> sources under
-        <code>docs/uml/make/</code>, rendered to PNG by <code>make docs-fix</code> (Kroki). Conventions:
-        <a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>. Regenerate or verify with
-        <code>make docs-fix</code> / <code>make uml-check</code>.
-      </p>
+    <p>
+      <strong>Diagrams:</strong> figures are <a href="https://plantuml.com/">PlantUML</a> sources under
+      <code>docs/uml/make/</code>, rendered to PNG by <code>make docs-fix</code> (Kroki). Conventions:
+      <a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>. Regenerate or verify with
+      <code>make docs-fix</code> / <code>make uml-check</code>.
+    </p>
 
-      <h2>1. Recommended entry points (start here)</h2>
-      <p>
-        Most days you only need one of these. They wrap the same atomic targets (format, lint, tests, OpenAPI, docs)
-        in different orders and with different final doc steps.
-      </p>
-      <div class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>Command</th>
-              <th>Use when</th>
-              <th>Outcome</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>make fix</code></td>
-              <td>You want quick auto-fixes before committing.</td>
-              <td><code>format-fix</code> → <code>lint-fix</code> → <code>docs-fix</code></td>
-            </tr>
-            <tr>
-              <td><code>make verify</code></td>
-              <td>Local “full gate” and you are okay regenerating docs on disk.</td>
-              <td>Lint, types, OpenAPI governance, contract snapshot, tests, then <strong><code>docs-fix</code></strong></td>
-            </tr>
-            <tr>
-              <td><code>make verify-ci</code></td>
-              <td>Before push: match supply-chain and doc-sync expectations with CI.</td>
-              <td><code>deps-audit</code> first, same checks as verify, but ends with <strong><code>docs-check</code></strong>
-                (fails if generated files would differ from <code>HEAD</code>)</td>
+    <h2>1. Recommended entry points (start here)</h2>
+    <p>
+      Most days you only need one of these. They wrap the same atomic targets (format, lint, tests, OpenAPI, docs)
+      in different orders and with different final doc steps.
+    </p>
+    <section class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Use when</th>
+            <th>Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>make fix</code></td>
+            <td>You want quick auto-fixes before committing.</td>
+            <td><code>format-fix</code> → <code>lint-fix</code> → <code>docs-fix</code></td>
+          </tr>
+          <tr>
+            <td><code>make verify</code></td>
+            <td>Local “full gate” and you are okay regenerating docs on disk.</td>
+            <td>Lint, types, OpenAPI governance, contract snapshot, tests, then <strong><code>docs-fix</code></strong>
+            </td>
+          </tr>
+          <tr>
+            <td><code>make verify-ci</code></td>
+            <td>Before push: match supply-chain and doc-sync expectations with CI.</td>
+            <td><code>deps-audit</code> first, same checks as verify, but ends with
+              <strong><code>docs-check</code></strong>
+              (fails if generated files would differ from <code>HEAD</code>)
+            </td>
+          </tr>
+          <tr>
+            <td><code>make release-check</code></td>
+            <td>Pre-release or deploy rehearsal.</td>
+            <td><code>env-check</code> → <code>deps-audit</code> → <code>verify</code> (so <code>verify</code>’s
+              <code>docs-fix</code> runs at the end)
+            </td>
+          </tr>
+          <tr>
+            <td><code>make release DEPLOY_CMD='…'</code></td>
+            <td>Deploy only after the full gate.</td>
+            <td>Runs <code>release-check</code>, then your shell command</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <h2>2. Composite pipelines (diagram)</h2>
+    <section class="card">
+      <figure class="sys-diagram" aria-labelledby="d-make-composite-title">
+        <div class="sys-diagram__head">
+          <span class="sys-diagram__badge">Make</span>
+          <div class="sys-diagram__titles">
+            <h3 id="d-make-composite-title" class="sys-diagram__title">How composite targets depend on each other</h3>
+            <p class="sys-diagram__sub">Arrows show order. <code>verify</code> already ends with <code>docs-fix</code>;
+              do not list <code>docs-fix</code> again after <code>release-check</code> manually.</p>
+            </div>
+          </div>
+        </figure>
+      </section>
+
+      <div class="sys-diagram__canvas">
+        <img class="diagram diagram--uml" src="../uml/rendered/make__composite_pipelines.png" alt="PlantUML: Makefile composite targets — fix, verify, verify-ci, release-check, release" decoding="async" loading="lazy">
+      </div>
+      <figcaption class="sys-diagram__foot">
+        <strong>Source:</strong> <code>docs/uml/make/composite_pipelines.puml</code>.
+        <strong>Note:</strong> <code>docs-check</code> runs <code>docs-fix</code> internally and compares
+        <code>git diff</code> before and after; any file change fails the check. See
+        <a href="./0008-docs-pipeline.html">Documentation pipeline</a> and <a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a>.
+      </figcaption>
+
+      <h2>3. Run and observability (diagram)</h2>
+      <section class="card">
+        <figure class="sys-diagram" aria-labelledby="d-make-run-title">
+          <div class="sys-diagram__head">
+            <span class="sys-diagram__badge">Run</span>
+            <div class="sys-diagram__titles">
+              <h3 id="d-make-run-title" class="sys-diagram__title">API and optional Docker observability</h3>
+              <p class="sys-diagram__sub">Daily dev is usually <code>make run</code>. Use <code>run-project</code> when
+                you
+                want Compose + API in one flow (requires Docker).</p>
+              </div>
+            </div>
+          </figure>
+        </section>
+
+        <div class="sys-diagram__canvas">
+          <img class="diagram diagram--uml" src="../uml/rendered/make__run_and_observability.png" alt="PlantUML: make run-project starts observability stack and make run; optional alongside link" decoding="async" loading="lazy">
+        </div>
+        <figcaption class="sys-diagram__foot">
+          <strong>Source:</strong> <code>docs/uml/make/run_and_observability.puml</code>.
+          Details and ports:
+          <a href="./0007-local-development.html">Local development</a>. Load testing:
+          <a href="./0006-api-load-testing.html">API load testing</a>.
+        </figcaption>
+
+        <h2>4. Commands by theme (reference)</h2>
+        <p>Atomic targets you can run alone; composite targets are in section 1.</p>
+
+        <h3>4.1 Environment and dependencies</h3>
+        <section class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Target</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>venv</code>, <code>install</code>, <code>requirements</code></td>
+                <td>Create env, install pins, or freeze <code>requirements.txt</code> from <code>.venv</code>.</td>
               </tr>
               <tr>
-                <td><code>make release-check</code></td>
-                <td>Pre-release or deploy rehearsal.</td>
-                <td><code>env-check</code> → <code>deps-audit</code> → <code>verify</code> (so <code>verify</code>’s
-                  <code>docs-fix</code> runs at the end)</td>
-                </tr>
-                <tr>
-                  <td><code>make release DEPLOY_CMD='…'</code></td>
-                  <td>Deploy only after the full gate.</td>
-                  <td>Runs <code>release-check</code>, then your shell command</td>
+                <td><code>env-init</code></td>
+                <td>Copy <code>env/example</code> to <code>.env</code> once.</td>
+              </tr>
+              <tr>
+                <td><code>env-check</code></td>
+                <td>Quick sanity: venv, <code>.env</code>, config load, DB path.</td>
+              </tr>
+              <tr>
+                <td><code>deps-audit</code></td>
+                <td>OSV scan of pinned requirements (see <a href="../adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a>).</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <h3>4.2 Application and database</h3>
+        <section class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Target</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>run</code></td>
+                <td>Uvicorn with reload, reads <code>.env</code>.</td>
+              </tr>
+              <tr>
+                <td><code>container-start</code></td>
+                <td>Same entrypoint as the image: migrate, then Uvicorn (no reload).</td>
+              </tr>
+              <tr>
+                <td><code>migrate</code>, <code>migration name=…</code></td>
+                <td>Apply or generate Alembic revisions.</td>
+              </tr>
+              <tr>
+                <td><code>run-loadtest-api</code>, <code>run-loadtest-api-serve</code></td>
+                <td>Load-test helper (scripted run vs long-running server for a second terminal).</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <h3>4.3 Code quality and contracts</h3>
+        <section class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Target</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>format-fix</code> / <code>format-check</code></td>
+                <td>Ruff format.</td>
+              </tr>
+              <tr>
+                <td><code>lint-fix</code> / <code>lint-check</code></td>
+                <td>Ruff lint.</td>
+              </tr>
+              <tr>
+                <td><code>type-check</code></td>
+                <td>mypy on <code>app</code>, <code>tests</code>, <code>scripts</code>.</td>
+              </tr>
+              <tr>
+                <td><code>dead-code-check</code></td>
+                <td>Vulture (optional; not in default PR gate; see <a href="../adr/0014-dead-code-analysis-and-repository-hygiene.html">ADR 0014</a>).</td>
+              </tr>
+              <tr>
+                <td><code>openapi-check</code></td>
+                <td>Governance lint + breaking-change guard vs baseline.</td>
+              </tr>
+              <tr>
+                <td><code>contract-test</code></td>
+                <td>Full JSON equality of generated OpenAPI vs <code>openapi-baseline.json</code>.</td>
+              </tr>
+              <tr>
+                <td><code>openapi-accept-changes</code></td>
+                <td>Refresh baseline after intentional API changes (commit the file).</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <h3>4.4 Tests</h3>
+        <section class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Target</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>test</code></td>
+                <td>Full pytest run (coverage per <code>pyproject.toml</code>).</td>
+              </tr>
+              <tr>
+                <td><code>test-one path=…</code></td>
+                <td>Single file or node.</td>
+              </tr>
+              <tr>
+                <td><code>test-warnings</code></td>
+                <td>Pytest with warning summary for investigation.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <h3>4.5 Documentation and changelog helpers</h3>
+        <section class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Target</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>docs-fix</code>, <code>docs-check</code>, <code>uml-check</code>, <code>api-docs</code></td>
+                <td>Docs pipeline, drift check, UML-only check, pdoc-only refresh (see
+                  <a href="./0008-docs-pipeline.html">Documentation pipeline</a>).
+                </td>
+              </tr>
+              <tr>
+                <td><code>changelog-draft</code>, <code>llm-ping</code></td>
+                <td>Optional LLM draft and API key smoke test (<a href="../adr/0013-changelog-and-release-notes.html">ADR
+                  0013</a>).</td>
                 </tr>
               </tbody>
             </table>
-          </div>
+          </section>
 
-          <h2>2. Composite pipelines (diagram)</h2>
-          <div class="card">
-            <figure class="sys-diagram" aria-labelledby="d-make-composite-title">
-              <div class="sys-diagram__head">
-                <span class="sys-diagram__badge">Make</span>
-                <div class="sys-diagram__titles">
-                  <h3 id="d-make-composite-title" class="sys-diagram__title">How composite targets depend on each other</h3>
-                  <p class="sys-diagram__sub">Arrows show order. <code>verify</code> already ends with <code>docs-fix</code>;
-                    do not list <code>docs-fix</code> again after <code>release-check</code> manually.</p>
-                  </div>
-                </div>
-                <div class="sys-diagram__canvas">
-                  <img class="diagram diagram--uml" src="../uml/rendered/make__composite_pipelines.png"
-                  alt="PlantUML: Makefile composite targets — fix, verify, verify-ci, release-check, release" decoding="async"
-                  loading="lazy" />
-                </div>
-                <figcaption class="sys-diagram__foot">
-                  <strong>Source:</strong> <code>docs/uml/make/composite_pipelines.puml</code>.
-                  <strong>Note:</strong> <code>docs-check</code> runs <code>docs-fix</code> internally and compares
-                  <code>git diff</code> before and after; any file change fails the check. See
-                  <a href="./0008-docs-pipeline.html">Documentation pipeline</a> and <a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a>.
-                </figcaption>
-              </figure>
-            </div>
+          <h3>4.6 Observability, logging, container, Kubernetes</h3>
+          <section class="card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Target</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>observability-up</code>, <code>observability-down</code>, <code>observability-smoke</code></td>
+                  <td>Prometheus/Grafana stack and link checks.</td>
+                </tr>
+                <tr>
+                  <td><code>logging-up</code>, <code>logging-down</code>, <code>logging-reset</code>,
+                    <code>logging-smoke</code>, <code>logging-es-query</code>
+                  </td>
+                  <td>Optional Elasticsearch + Kibana + Filebeat for local NDJSON search
+                    (<code>docker-compose.logging.yml</code>); <code>QUERY=&lt;uuid&gt;</code> for CLI search. See <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.</td>
+                  </tr>
+                  <tr>
+                    <td><code>docker-build</code></td>
+                    <td>Build <code>study-app-api:local</code>.</td>
+                  </tr>
+                  <tr>
+                    <td><code>k8s-render-configmap</code>, <code>k8s-apply</code></td>
+                    <td>Render ConfigMap from <code>k8s/app.env</code>; apply manifests (see
+                      <a href="./0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a>).
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
 
-            <h2>3. Run and observability (diagram)</h2>
-            <div class="card">
-              <figure class="sys-diagram" aria-labelledby="d-make-run-title">
-                <div class="sys-diagram__head">
-                  <span class="sys-diagram__badge">Run</span>
-                  <div class="sys-diagram__titles">
-                    <h3 id="d-make-run-title" class="sys-diagram__title">API and optional Docker observability</h3>
-                    <p class="sys-diagram__sub">Daily dev is usually <code>make run</code>. Use <code>run-project</code> when you
-                      want Compose + API in one flow (requires Docker).</p>
-                    </div>
-                  </div>
-                  <div class="sys-diagram__canvas">
-                    <img class="diagram diagram--uml" src="../uml/rendered/make__run_and_observability.png"
-                    alt="PlantUML: make run-project starts observability stack and make run; optional alongside link" decoding="async"
-                    loading="lazy" />
-                  </div>
-                  <figcaption class="sys-diagram__foot">
-                    <strong>Source:</strong> <code>docs/uml/make/run_and_observability.puml</code>.
-                    Details and ports:
-                    <a href="./0007-local-development.html">Local development</a>. Load testing:
-                    <a href="./0006-api-load-testing.html">API load testing</a>.
-                  </figcaption>
-                </figure>
-              </div>
+            <h3>4.7 Git hooks</h3>
+            <section class="card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Target</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>pre-commit-install</code>, <code>pre-commit-check</code></td>
+                    <td>Install or run all hooks on the tree.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
 
-              <h2>4. Commands by theme (reference)</h2>
-              <p>Atomic targets you can run alone; composite targets are in section 1.</p>
-
-              <h3>4.1 Environment and dependencies</h3>
-              <div class="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Target</th>
-                      <th>Role</th>
+            <h2>5. If → then (scenarios)</h2>
+            <section class="card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>If you…</th>
+                    <th>Then…</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Just cloned the repo</td>
+                    <td><code>make venv &amp;&amp; make install &amp;&amp; make env-init</code>, edit <code>.env</code>,
+                      <code>make migrate</code>,
+                      <code>make run</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Want auto-fixes before commit</td>
+                    <td><code>make fix</code></td>
+                  </tr>
+                  <tr>
+                    <td>Want full local gate and regenerated docs</td>
+                    <td><code>make verify</code></td>
+                  </tr>
+                  <tr>
+                    <td>Are about to push and need doc sync + audit like CI</td>
+                    <td><code>make verify-ci</code></td>
+                  </tr>
+                  <tr>
+                    <td>Changed the API intentionally</td>
+                    <td>Review, <code>make openapi-accept-changes</code>, commit baseline, <code>make verify</code> or
+                      <code>make verify-ci</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Debug one test</td>
+                    <td><code>make test-one path=tests/…</code></td>
+                  </tr>
+                  <tr>
+                    <td>Run like production Docker entrypoint locally</td>
+                    <td><code>make container-start</code></td>
+                  </tr>
+                  <tr>
+                    <td>Need metrics dashboards locally</td>
+                    <td><code>make run-project</code> or <code>make observability-up</code> plus <code>make run</code> in
+                      another
+                      terminal</td>
                     </tr>
-                  </thead>
-                  <tbody>
                     <tr>
-                      <td><code>venv</code>, <code>install</code>, <code>requirements</code></td>
-                      <td>Create env, install pins, or freeze <code>requirements.txt</code> from <code>.venv</code>.</td>
+                      <td>Want logs in Kibana / Elasticsearch locally</td>
+                      <td><code>make logging-up</code>, run the API with NDJSON to <code>./logs</code> (default
+                        <code>LOG_FORMAT</code> is <code>json</code>), create Kibana data view <code>*study-app-logs*</code> — see
+                        <a href="./0007-local-development.html">Local development</a>
+                      </td>
                     </tr>
                     <tr>
-                      <td><code>env-init</code></td>
-                      <td>Copy <code>env/example</code> to <code>.env</code> once.</td>
-                    </tr>
-                    <tr>
-                      <td><code>env-check</code></td>
-                      <td>Quick sanity: venv, <code>.env</code>, config load, DB path.</td>
-                    </tr>
-                    <tr>
-                      <td><code>deps-audit</code></td>
-                      <td>OSV scan of pinned requirements (see <a href="../adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a>).</td>
+                      <td>Prepare a release</td>
+                      <td><code>make release-check</code>; deploy with <code>make release DEPLOY_CMD='…'</code></td>
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </section>
 
-              <h3>4.2 Application and database</h3>
-              <div class="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Target</th>
-                      <th>Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>run</code></td>
-                      <td>Uvicorn with reload, reads <code>.env</code>.</td>
-                    </tr>
-                    <tr>
-                      <td><code>container-start</code></td>
-                      <td>Same entrypoint as the image: migrate, then Uvicorn (no reload).</td>
-                    </tr>
-                    <tr>
-                      <td><code>migrate</code>, <code>migration name=…</code></td>
-                      <td>Apply or generate Alembic revisions.</td>
-                    </tr>
-                    <tr>
-                      <td><code>run-loadtest-api</code>, <code>run-loadtest-api-serve</code></td>
-                      <td>Load-test helper (scripted run vs long-running server for a second terminal).</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <h2>6. Related policy and automation</h2>
+              <ul>
+                <li><a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a> — taxonomy and
+                  entrypoint rules.</li>
+                  <li><a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a> — <code>verify</code> vs <code>verify-ci</code> and CI
+                    behavior.</li>
+                    <li><a href="../../.github/workflows/ci.yml">GitHub Actions workflow</a> — <code>deps-audit</code> then
+                      <code>verify</code> on the runner.
+                    </li>
+                  </ul>
 
-              <h3>4.3 Code quality and contracts</h3>
-              <div class="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Target</th>
-                      <th>Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>format-fix</code> / <code>format-check</code></td>
-                      <td>Ruff format.</td>
-                    </tr>
-                    <tr>
-                      <td><code>lint-fix</code> / <code>lint-check</code></td>
-                      <td>Ruff lint.</td>
-                    </tr>
-                    <tr>
-                      <td><code>type-check</code></td>
-                      <td>mypy on <code>app</code>, <code>tests</code>, <code>scripts</code>.</td>
-                    </tr>
-                    <tr>
-                      <td><code>dead-code-check</code></td>
-                      <td>Vulture (optional; not in default PR gate; see <a href="../adr/0014-dead-code-analysis-and-repository-hygiene.html">ADR 0014</a>).</td>
-                    </tr>
-                    <tr>
-                      <td><code>openapi-check</code></td>
-                      <td>Governance lint + breaking-change guard vs baseline.</td>
-                    </tr>
-                    <tr>
-                      <td><code>contract-test</code></td>
-                      <td>Full JSON equality of generated OpenAPI vs <code>openapi-baseline.json</code>.</td>
-                    </tr>
-                    <tr>
-                      <td><code>openapi-accept-changes</code></td>
-                      <td>Refresh baseline after intentional API changes (commit the file).</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  <h2>See also</h2>
+                  <ul>
+                    <li><a href="./README.html">Developer docs index</a></li>
+                    <li><a href="./0007-local-development.html">Local development</a></li>
+                    <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and local
+                      Elasticsearch</a></li>
+                      <li><a href="./0008-docs-pipeline.html">Documentation pipeline</a></li>
+                      <li><a href="./0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a></li>
+                      <li><a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — PlantUML style for this
+                        repo</li>
+                      </ul>
+                      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                    </main>
 
-              <h3>4.4 Tests</h3>
-              <div class="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Target</th>
-                      <th>Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>test</code></td>
-                      <td>Full pytest run (coverage per <code>pyproject.toml</code>).</td>
-                    </tr>
-                    <tr>
-                      <td><code>test-one path=…</code></td>
-                      <td>Single file or node.</td>
-                    </tr>
-                    <tr>
-                      <td><code>test-warnings</code></td>
-                      <td>Pytest with warning summary for investigation.</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <h3>4.5 Documentation and changelog helpers</h3>
-              <div class="card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Target</th>
-                      <th>Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>docs-fix</code>, <code>docs-check</code>, <code>uml-check</code>, <code>api-docs</code></td>
-                      <td>Docs pipeline, drift check, UML-only check, pdoc-only refresh (see
-                        <a href="./0008-docs-pipeline.html">Documentation pipeline</a>).</td>
-                      </tr>
-                      <tr>
-                        <td><code>changelog-draft</code>, <code>llm-ping</code></td>
-                        <td>Optional LLM draft and API key smoke test (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <h3>4.6 Observability, logging, container, Kubernetes</h3>
-                <div class="card">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Target</th>
-                        <th>Role</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td><code>observability-up</code>, <code>observability-down</code>, <code>observability-smoke</code></td>
-                        <td>Prometheus/Grafana stack and link checks.</td>
-                      </tr>
-                      <tr>
-                        <td><code>logging-up</code>, <code>logging-down</code>, <code>logging-reset</code>, <code>logging-smoke</code>, <code>logging-es-query</code></td>
-                        <td>Optional Elasticsearch + Kibana + Filebeat for local NDJSON search (<code>docker-compose.logging.yml</code>); <code>QUERY=&lt;uuid&gt;</code> for CLI search. See <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.</td>
-                      </tr>
-                      <tr>
-                        <td><code>docker-build</code></td>
-                        <td>Build <code>study-app-api:local</code>.</td>
-                      </tr>
-                      <tr>
-                        <td><code>k8s-render-configmap</code>, <code>k8s-apply</code></td>
-                        <td>Render ConfigMap from <code>k8s/app.env</code>; apply manifests (see
-                          <a href="./0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a>).</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <h3>4.7 Git hooks</h3>
-                  <div class="card">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Target</th>
-                          <th>Role</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><code>pre-commit-install</code>, <code>pre-commit-check</code></td>
-                          <td>Install or run all hooks on the tree.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <h2>5. If → then (scenarios)</h2>
-                  <div class="card">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>If you…</th>
-                          <th>Then…</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>Just cloned the repo</td>
-                          <td><code>make venv && make install && make env-init</code>, edit <code>.env</code>, <code>make migrate</code>,
-                            <code>make run</code></td>
-                          </tr>
-                          <tr>
-                            <td>Want auto-fixes before commit</td>
-                            <td><code>make fix</code></td>
-                          </tr>
-                          <tr>
-                            <td>Want full local gate and regenerated docs</td>
-                            <td><code>make verify</code></td>
-                          </tr>
-                          <tr>
-                            <td>Are about to push and need doc sync + audit like CI</td>
-                            <td><code>make verify-ci</code></td>
-                          </tr>
-                          <tr>
-                            <td>Changed the API intentionally</td>
-                            <td>Review, <code>make openapi-accept-changes</code>, commit baseline, <code>make verify</code> or
-                              <code>make verify-ci</code></td>
-                            </tr>
-                            <tr>
-                              <td>Debug one test</td>
-                              <td><code>make test-one path=tests/…</code></td>
-                            </tr>
-                            <tr>
-                              <td>Run like production Docker entrypoint locally</td>
-                              <td><code>make container-start</code></td>
-                            </tr>
-                            <tr>
-                              <td>Need metrics dashboards locally</td>
-                              <td><code>make run-project</code> or <code>make observability-up</code> plus <code>make run</code> in another
-                                terminal</td>
-                              </tr>
-                              <tr>
-                                <td>Want logs in Kibana / Elasticsearch locally</td>
-                                <td><code>make logging-up</code>, run the API with NDJSON to <code>./logs</code> (default <code>LOG_FORMAT</code> is <code>json</code>), create Kibana data view <code>*study-app-logs*</code> — see <a href="./0007-local-development.html">Local development</a></td>
-                              </tr>
-                              <tr>
-                                <td>Prepare a release</td>
-                                <td><code>make release-check</code>; deploy with <code>make release DEPLOY_CMD='…'</code></td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-
-                        <h2>6. Related policy and automation</h2>
-                        <ul>
-                          <li><a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a> — taxonomy and entrypoint rules.</li>
-                          <li><a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a> — <code>verify</code> vs <code>verify-ci</code> and CI behavior.</li>
-                          <li><a href="../../.github/workflows/ci.yml">GitHub Actions workflow</a> — <code>deps-audit</code> then <code>verify</code> on the runner.</li>
-                        </ul>
-
-                        <h2>See also</h2>
-                        <ul>
-                          <li><a href="./README.html">Developer docs index</a></li>
-                          <li><a href="./0007-local-development.html">Local development</a></li>
-                          <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and local Elasticsearch</a></li>
-                          <li><a href="./0008-docs-pipeline.html">Documentation pipeline</a></li>
-                          <li><a href="./0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a></li>
-                          <li><a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — PlantUML style for this repo</li>
-                        </ul>
-                        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                      </main>
-                    </body>
-
-                  </html>
+                  </body></html>

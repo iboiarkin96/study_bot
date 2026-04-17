@@ -90,6 +90,16 @@ a:hover {
   text-decoration: underline;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* Inline code only — not inside pre (see pre code below). */
 :not(pre) > code {
   background: #eef2ff;
@@ -722,7 +732,7 @@ p.audit-score-legend-error {
   color: #7f1d1d;
 }
 
-/* openapi-explorer.html — OpenAPI (test), Swagger UI browse-only */
+/* openapi/openapi-explorer.html — OpenAPI (test), Swagger UI browse-only */
 main.container--swagger {
   max-width: min(1240px, 100%);
 }
@@ -749,7 +759,7 @@ main.docs-page-layout [id] {
   align-items: start;
 }
 
-/* Auto TOC: pages with only h1/lead (e.g. openapi-explorer.html) have no sidebar — use full width */
+/* Auto TOC: pages with only h1/lead (e.g. openapi/openapi-explorer.html) have no sidebar — use full width */
 .docs-page-layout__inner--single {
   grid-template-columns: minmax(0, 1fr);
 }

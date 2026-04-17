@@ -1,28 +1,32 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Runbook: Migrations Failing</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Runbook: Migrations Failing</h1>
-      <div id="docs-top-nav"></div>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runbook: Migrations Failing</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Runbook: Migrations Failing</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
       <h2>Trigger</h2>
       <ul>
         <li><code>make migrate</code> fails.</li>
         <li><code>make migration name=...</code> generates incorrect diff.</li>
         <li>App startup fails due to DB schema mismatch.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Fast triage</h2>
       <ol>
-        <li>Verify env points to expected DB: check <code>.env</code> -> <code>SQLITE_DB_PATH</code>.</li>
+        <li>Verify env points to expected DB: check <code>.env</code> -&gt; <code>SQLITE_DB_PATH</code>.</li>
         <li>Run migration command explicitly: <code>make migrate</code>.</li>
         <li>Inspect current migration heads: <code>.venv/bin/python -m alembic heads</code>.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Most common causes</h2>
       <ul>
         <li>Model changes were made but migration not generated.</li>
@@ -30,6 +34,8 @@
         <li>Wrong DB file/path in <code>.env</code>.</li>
         <li>Manual DB edits drifted from migration history.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Recovery steps</h2>
       <ol>
         <li>Confirm model import chain includes new/changed model.</li>
@@ -38,22 +44,29 @@
         <li>Apply migration: <code>make migrate</code>.</li>
         <li>Re-run tests: <code>make test</code>.</li>
       </ol>
+    </section>
+    <section class="card">
       <h2>Safe rollback strategy (local)</h2>
       <ul>
         <li>If migration is clearly wrong and not shared yet, delete bad migration file and regenerate with corrected models/imports.</li>
         <li>Never rewrite shared migration history silently in team workflow.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Exit criteria</h2>
       <ul>
         <li><code>make migrate</code> passes.</li>
         <li>App starts and uses expected schema.</li>
         <li><code>make test</code> passes.</li>
       </ul>
+    </section>
+    <section class="card">
       <h2>Follow-up</h2>
       <ul>
         <li>Record non-obvious migration decisions in ADR when they affect long-term schema policy.</li>
       </ul>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

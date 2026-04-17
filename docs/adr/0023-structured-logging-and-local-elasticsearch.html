@@ -1,29 +1,31 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ADR 0023: Structured Logging, Request Correlation, and Local Elasticsearch</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container" data-adr-weight="4">
-      <h1>ADR 0023: Structured Logging, Request Correlation, and Local Elasticsearch</h1>
-      <div id="docs-top-nav"></div>
-      <details class="adr-weight-help">
-        <summary>ADR status on this page</summary>
-        <p class="small">
-          The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-          <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.
-        </p>
-      </details>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ADR 0023: Structured Logging, Request Correlation, and Local Elasticsearch</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container" data-adr-weight="4">
+    <h1>ADR 0023: Structured Logging, Request Correlation, and Local Elasticsearch</h1>
+    <div id="docs-top-nav"></div>
+    <details class="adr-weight-help">
+      <summary>ADR status on this page</summary>
+      <p class="small">
+        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
+        <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.
+      </p>
+    </details>
+    <section class="card">
 
       <h2>Ratification</h2>
       <ul>
         <li>Discussion: backlog item 18 (structured logging) and operational need for searchable logs.</li>
         <li>Accepted: as merged to <code>main</code> with this ADR and implementation.</li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Context</h2>
       <p>
@@ -38,6 +40,8 @@
         and support are separate commercial decisions. This ADR covers <em>local optional</em> Compose only—not a
         commitment to Elastic Cloud or a paid tier.
       </p>
+    </section>
+    <section class="card">
 
       <h2>Decision</h2>
       <ul>
@@ -68,6 +72,8 @@
           scope here; see backlog item 17 (OpenTelemetry).
         </li>
       </ul>
+    </section>
+    <section class="card">
 
       <h2>Implementation</h2>
       <ul>
@@ -84,11 +90,12 @@
             <code>json</code> when unset so <code>request_id</code> is a first-class field for Kibana.
           </li>
         </ul>
-
+      </section>
+      <section class="card">
         <h2>Kibana index pattern (important)</h2>
         <p>
           Create the data view with index pattern <strong><code>*study-app-logs*</code></strong>, not only
-          <code>study-app-logs-*</code>. Otherwise Discover may target no indices: Elasticsearch&nbsp;8 often writes Filebeat
+          <code>study-app-logs-*</code>. Otherwise Discover may target no indices: Elasticsearch 8 often writes Filebeat
           output to data stream backing indices named <code>.ds-study-app-logs-…</code>, which do not match a prefix of
           <code>study-app-logs-</code>. A symptom is “No results” for valid <code>request_id</code> queries even though
           documents exist in <code>logs/app.log</code>. Filebeat is configured with <code>setup.template.type: legacy</code>
@@ -100,7 +107,8 @@
           <code>mapper_parsing_exception</code> and indices show <code>docs.count: 0</code> while <code>logs/app.log</code>
           still grows on disk.
         </p>
-
+      </section>
+      <section class="card">
         <h2>Consequences</h2>
         <h3>Positive</h3>
         <ul>
@@ -114,14 +122,16 @@
           <li>Filebeat expects JSON lines; rotating text logs with stack traces can break NDJSON—ship with <code>LOG_FORMAT=json</code> (or the default when unset).</li>
           <li>Security is disabled on the local single-node Elasticsearch profile—never expose that profile to the public internet.</li>
         </ul>
-
+      </section>
+      <section class="card">
         <h2>Related</h2>
         <ul>
           <li><a href="./0009-health-readiness-and-observability.html">ADR 0009</a> — metrics and probes.</li>
           <li><a href="../developer/0007-local-development.html">Local development</a> — run targets and ports.</li>
           <li><a href="../backlog/README.html#item-17">Backlog item 17</a> — OpenTelemetry / distributed tracing.</li>
         </ul>
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </body>
-  </html>
+      </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
+
+  </body></html>

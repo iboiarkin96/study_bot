@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Business Logic Guide</title>
-    <link rel="stylesheet" href="../assets/docs.css" />
-    <script defer src="../assets/docs-nav.js"></script>
-  </head>
-  <body>
-    <main class="container">
-      <h1>Business Logic Guide</h1>
-      <div id="docs-top-nav"></div>
-      <p>This file describes how business logic is structured in the project.</p>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Business Logic Guide</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+<body>
+  <main class="container">
+    <h1>Business Logic Guide</h1>
+    <div id="docs-top-nav"></div>
+    <p>This file describes how business logic is structured in the project.</p>
+    <section class="card">
       <h2>1. Layering model</h2>
       <ul>
         <li>API layer: <code>app/api/v1/</code> (transport only)
@@ -32,70 +32,190 @@
         <li>Repository does not return HTTP-specific structures.
         </li>
       </ul>
-      <h2>2. Responsibility boundaries</h2>
-      <p>Router:</p>
-      <ul>
-        <li>parse/validate request,
-        </li>
-        <li>call service,
-        </li>
-        <li>shape response model,
-        </li>
-        <li>declare OpenAPI responses.
-        </li>
-      </ul>
-      <p>Service:</p>
-      <ul>
-        <li>enforce domain rules,
-        </li>
-        <li>orchestrate repositories,
-        </li>
-        <li>raise domain/business errors.
-        </li>
-      </ul>
-      <p>Repository:</p>
-      <ul>
-        <li>isolate query/write mechanics,
-        </li>
-        <li>keep persistence details local.
-        </li>
-      </ul>
-      <h2>3. Transactions and consistency</h2>
-      <ul>
-        <li>Write operations must be atomic.
-        </li>
-        <li>Duplicate/conflict checks must be deterministic.
-        </li>
-        <li>Any failure path must return stable error contract.
-        </li>
-      </ul>
-      <h2>4. Logging and observability</h2>
-      <ul>
-        <li>Request-level logging: middleware in <code>app/main.py</code>.
-        </li>
-        <li>Business event logs: service layer.
-        </li>
-        <li>Log format/config: <code>app/core/logging.py</code>.
-        </li>
-      </ul>
-      <h2>5. Typical change flow</h2>
-      <ol>
-        <li>Define/adjust schema.
-        </li>
-        <li>Implement service rule.
-        </li>
-        <li>Implement repository operation.
-        </li>
-        <li>Wire router.
-        </li>
-        <li>Add examples and error mappings.
-        </li>
-        <li>Add tests.
-        </li>
-        <li>Run make pipeline.
-        </li>
-      </ol>
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
-  </body>
-</html>
+
+      <h3>1.1 Theoretical background</h3>
+      <details class="docs-theory-help" id="layered-architecture-theory">
+        <summary>Layered architecture — theoretical background</summary>
+        <div class="small">
+          <p>
+            <strong>Layered architecture</strong> groups the system into <strong>horizontal layers</strong>. Each layer
+            exposes a narrow set of capabilities to the layer above and depends on the layer below. The usual dependency
+            rule is: <strong>inward-only dependencies</strong> — inner layers (domain rules, persistence abstractions) must
+            not depend on outer concerns (HTTP framework details, transport), so business logic stays testable and
+            replaceable.
+          </p>
+          <p>
+            This pattern is related to <strong>ports and adapters</strong> (hexagonal architecture): the “application” core
+            defines what the system does; adapters (HTTP, SQL) translate between the outside world and that core.
+          </p>
+          <p>
+            <strong>Contract-first</strong> means the HTTP surface is described explicitly (OpenAPI) before or alongside
+            implementation; code must conform. That fits layered boundaries because the outer “adapter” is governed by a
+            stable contract rather than growing ad hoc.
+          </p>
+        </div>
+      </details>
+
+      <h3>1.2 Layer responsibilities (reference)</h3>
+      <p>
+        The public API is described first in <strong>OpenAPI</strong> (“contract-first”): what you see in the spec is what
+        callers should rely on. System-wide diagrams (C4) live in
+        <a href="../internal/system-design.html#architectural-decomposition">System design</a>; a simplified request-path
+        diagram is rendered from <code>docs/uml/architecture/internal_readme_layer_boundaries.puml</code>.
+      </p>
+      <div class="docs-table-scroll" role="region" aria-label="Layer responsibilities">
+        <table>
+          <colgroup>
+            <col class="layers-col-layer">
+            <col class="layers-col-packages">
+            <col class="layers-col-text">
+            <col class="layers-col-text">
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">Layer</th>
+              <th scope="col">Packages</th>
+              <th scope="col">Responsibility</th>
+              <th scope="col">Contract and constraints</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">HTTP API</th>
+              <td><code>app/api/</code></td>
+              <td>FastAPI routers: declare paths, dependencies, and Pydantic-typed bodies/responses from
+                <code>app/schemas/</code>; call services. Handlers stay thin (no duplicate field validation logic here).
+              </td>
+              <td>Must match OpenAPI (operations, declared responses, examples). Maps successful outcomes and
+                framework-level HTTP concerns to the right status codes.</td>
+              </tr>
+              <tr>
+                <th scope="row">Schemas &amp; 422 contract</th>
+                <td><code>app/schemas/</code>, <code>app/validation/</code>, handlers in <code>app/main.py</code></td>
+                <td><code>app/schemas/</code>: Pydantic models and field constraints. <code>app/validation/</code>:
+                  translates Pydantic/FastAPI validation failures into the canonical <code>422</code> payload shape for
+                  clients. Registration of exception handlers lives next to app setup in <code>app/main.py</code>.
+                </td>
+                <td>Error catalog and examples in OpenAPI; alignment between Pydantic error kinds and documented
+                  <code>code</code>/<code>key</code> values.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Application</th>
+                <td><code>app/services/</code></td>
+                <td>Use cases and business invariants (for example “duplicate composite key”) implemented with domain logic;
+                  raises <code>HTTPException</code> with business error payloads when rules fail.</td>
+                  <td>Business errors must match the governed contract. Layering policy:
+                    <a href="../internal/developers.html">Developers Docs</a>.
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Persistence</th>
+                  <td><code>app/repositories/</code>, DB session in <code>app/core/</code></td>
+                  <td>Load and persist entities via SQLAlchemy; Alembic migrations for schema changes.</td>
+                  <td>Storage details stay out of the public HTTP model; DB constraints remain consistent with what the API
+                    promises.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>1.3 Where validation runs</h3>
+            <p><strong>Where checks happen</strong> (in order):</p>
+            <ol>
+              <li>
+                Field rules for JSON bodies are defined in <strong>Pydantic</strong> models under <code>app/schemas/</code>
+                (required fields, types, max length, and so on).
+              </li>
+              <li>
+                When a request arrives, <strong>FastAPI</strong> runs those checks <strong>before</strong> code in
+                <code>app/api/</code> runs. Handlers usually receive data that already passed this step.
+              </li>
+              <li>
+                If a check fails, <code>app/validation/</code> maps the failure to our standard <code>422</code> response
+                (<code>code</code>, <code>key</code>, <code>message</code>). It does <strong>not</strong> redefine the rules—only
+                the error shape for clients. That wiring is registered in <code>app/main.py</code>.
+              </li>
+              <li>
+                Rules that need the database—such as “this user already exists”—are enforced in <code>app/services/</code> and
+                surface as business client errors, not as “invalid JSON field” / schema validation. See
+                <a href="../adr/0003-error-contract-governance.html">ADR 0003</a>.
+              </li>
+            </ol>
+          </section>
+          <section class="card">
+
+            <h2>2. Responsibility boundaries</h2>
+            <p>Router:</p>
+            <ul>
+              <li>parse/validate request,
+              </li>
+              <li>call service,
+              </li>
+              <li>shape response model,
+              </li>
+              <li>declare OpenAPI responses.
+              </li>
+            </ul>
+            <p>Service:</p>
+            <ul>
+              <li>enforce domain rules,
+              </li>
+              <li>orchestrate repositories,
+              </li>
+              <li>raise domain/business errors.
+              </li>
+            </ul>
+            <p>Repository:</p>
+            <ul>
+              <li>isolate query/write mechanics,
+              </li>
+              <li>keep persistence details local.
+              </li>
+            </ul>
+          </section>
+          <section class="card">
+            <h2>3. Transactions and consistency</h2>
+            <ul>
+              <li>Write operations must be atomic.
+              </li>
+              <li>Duplicate/conflict checks must be deterministic.
+              </li>
+              <li>Any failure path must return stable error contract.
+              </li>
+            </ul>
+          </section>
+          <section class="card">
+            <h2>4. Logging and observability</h2>
+            <ul>
+              <li>Request-level logging: middleware in <code>app/main.py</code>.
+              </li>
+              <li>Business event logs: service layer.
+              </li>
+              <li>Log format/config: <code>app/core/logging.py</code>.
+              </li>
+            </ul>
+          </section>
+          <section class="card">
+            <h2>5. Typical change flow</h2>
+            <ol>
+              <li>Define/adjust schema.
+              </li>
+              <li>Implement service rule.
+              </li>
+              <li>Implement repository operation.
+              </li>
+              <li>Wire router.
+              </li>
+              <li>Add examples and error mappings.
+              </li>
+              <li>Add tests.
+              </li>
+              <li>Run make pipeline.
+              </li>
+            </ol>
+          </section>
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </main>
+
+      </body></html>

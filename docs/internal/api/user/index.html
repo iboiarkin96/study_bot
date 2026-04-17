@@ -1,530 +1,527 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User resource — internal specification — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+</head>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User resource — internal specification — Study App</title>
-    <link rel="stylesheet" href="../../../assets/docs.css" />
-    <link rel="stylesheet" href="../../../assets/internal-layout.css" />
-    <script defer src="../../../assets/docs-nav.js"></script>
-    <script defer src="../../../assets/internal-sidebar.js"></script>
-  </head>
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>User resource</h1>
+        <div id="docs-top-nav"></div>
+        <p class="lead">
+          <strong>Single entry point</strong> for the User HTTP API: product and ownership context, data contract
+          shorthand, links to per-method pages, and the full internal narrative (runtime path, idempotency, errors,
+          logging, metrics). Authoritative HTTP contract for integrators:
+          <a href="../../../openapi/openapi-explorer.html">OpenAPI</a>.
+        </p>
 
-  <body class="internal-layout">
-    <div class="internal-layout__shell">
-      <aside class="internal-layout__sidebar">
-        <p class="internal-layout__sidebar-title">Internal docs</p>
-        <div id="internal-sidebar-mount"></div>
-      </aside>
-      <div class="internal-layout__main">
-        <div class="container">
-          <h1>User resource</h1>
-          <div id="docs-top-nav"></div>
-          <p class="lead">
-            <strong>Single entry point</strong> for the User HTTP API: product and ownership context, data contract
-            shorthand, links to per-method pages, and the full internal narrative (runtime path, idempotency, errors,
-            logging, metrics). Authoritative HTTP contract for integrators:
-            <a href="../../../openapi-explorer.html">OpenAPI</a>.
+        <nav aria-labelledby="toc">
+          <h2 id="toc">Contents</h2>
+          <ol>
+            <li><a href="#business-context">Business context</a></li>
+            <li><a href="#data-contract-summary">Data contract (summary)</a></li>
+            <li><a href="#method-pages">Method pages (per endpoint)</a></li>
+            <li><a href="#overview">Technical overview</a></li>
+            <li><a href="#governance">Ownership and change management</a></li>
+            <li><a href="#surface">API surface</a></li>
+            <li><a href="#architecture">Request path and layers</a></li>
+            <li><a href="#data-model">Data model and invariants</a></li>
+            <li><a href="#idempotency">Idempotency</a></li>
+            <li><a href="#errors">Errors and HTTP status mapping</a></li>
+            <li><a href="#logging">Logging</a></li>
+            <li><a href="#observability">Metrics and tracing hooks</a></li>
+            <li><a href="#dependencies">External and in-process dependencies</a></li>
+            <li><a href="#references">Code, tests, and policy references</a></li>
+            <li><a href="#history">Document history</a></li>
+          </ol>
+        </nav>
+
+        <section id="business-context" class="card">
+          <h2>Business context</h2>
+          <p>
+            A <strong>User</strong> represents a learner identity in Study App: keyed by
+            <code>(system_user_id, system_uuid)</code> for partner integrations, with profile attributes (display
+            name, locale, notification preferences, invalidation metadata). Creating and updating users is on the
+            critical path for onboarding; reads power dashboards and entitlement checks.
           </p>
+          <p>
+            The <strong>Product API</strong> squad owns domain invariants (e.g. uniqueness within a tenant, soft-delete
+            semantics); the <strong>Platform</strong> squad owns transport concerns (authn/authz at the edge, rate
+            limits, observability baselines). This split is reflected in error codes and logs, not in duplicated prose
+            on every method page.
+          </p>
+        </section>
 
-          <nav aria-labelledby="toc">
-            <h2 id="toc">Contents</h2>
-            <ol>
-              <li><a href="#business-context">Business context</a></li>
-              <li><a href="#data-contract-summary">Data contract (summary)</a></li>
-              <li><a href="#method-pages">Method pages (per endpoint)</a></li>
-              <li><a href="#overview">Technical overview</a></li>
-              <li><a href="#governance">Ownership and change management</a></li>
-              <li><a href="#surface">API surface</a></li>
-              <li><a href="#architecture">Request path and layers</a></li>
-              <li><a href="#data-model">Data model and invariants</a></li>
-              <li><a href="#idempotency">Idempotency</a></li>
-              <li><a href="#errors">Errors and HTTP status mapping</a></li>
-              <li><a href="#logging">Logging</a></li>
-              <li><a href="#observability">Metrics and tracing hooks</a></li>
-              <li><a href="#dependencies">External and in-process dependencies</a></li>
-              <li><a href="#references">Code, tests, and policy references</a></li>
-              <li><a href="#history">Document history</a></li>
-            </ol>
-          </nav>
+        <section id="data-contract-summary" class="card">
+          <h2>Data contract (summary)</h2>
+          <p class="small">
+            Full JSON Schemas live in OpenAPI; this table is the engineering shorthand for reviews and runbooks.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Field / group</th>
+                <th>Role</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>system_user_id</code>, <code>system_uuid</code></td>
+                <td>Composite key</td>
+                <td>Path parameters for instance-scoped reads and writes.</td>
+              </tr>
+              <tr>
+                <td>Profile block</td>
+                <td>Mutable projection</td>
+                <td>PUT/PATCH semantics documented per method; optimistic concurrency where applicable.</td>
+              </tr>
+              <tr>
+                <td>Audit / invalidation</td>
+                <td>System metadata</td>
+                <td>Not always exposed in external integrator docs; internal spec describes logging and metrics hooks.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-          <section id="business-context" class="card">
-            <h2>Business context</h2>
-            <p>
-              A <strong>User</strong> represents a learner identity in Study App: keyed by
-              <code>(system_user_id, system_uuid)</code> for partner integrations, with profile attributes (display
-              name, locale, notification preferences, invalidation metadata). Creating and updating users is on the
-              critical path for onboarding; reads power dashboards and entitlement checks.
-            </p>
-            <p>
-              The <strong>Product API</strong> squad owns domain invariants (e.g. uniqueness within a tenant, soft-delete
-              semantics); the <strong>Platform</strong> squad owns transport concerns (authn/authz at the edge, rate
-              limits, observability baselines). This split is reflected in error codes and logs, not in duplicated prose
-              on every method page.
-            </p>
-          </section>
+        <section id="method-pages" class="card">
+          <h2>Method pages (per endpoint)</h2>
+          <p>
+            Navigation is keyed by <strong>HTTP method + path</strong> (how clients call the API). OpenAPI
+            <code>operationId</code> values are listed for cross-reference with code and the baseline JSON.
+          </p>
+          <p>
+            Use the left sidebar under <strong>API → User</strong>, or open a page from this table. Each method page
+            links back to anchors on <strong>this</strong> document for idempotency, metrics, and the matching
+            operation block.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Method &amp; path</th>
+                <th><code>operationId</code> (ref.)</th>
+                <th>Page</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge--method-post">POST</span> <code>/api/v1/user</code></td>
+                <td><code>createUser</code></td>
+                <td><a href="./operations/post-api-v1-user.html">Internal doc</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="badge badge--method-get">GET</span>
+                  <code>/api/v1/user/{system_uuid}/{system_user_id}</code>
+                </td>
+                <td><code>getUserBySystemUserId</code></td>
+                <td><a href="./operations/get-api-v1-user-system_uuid-system_user_id.html">Internal doc</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="badge badge--method-put">PUT</span>
+                  <code>/api/v1/user/{system_uuid}/{system_user_id}</code>
+                </td>
+                <td><code>updateUserBySystemUserId</code></td>
+                <td><a href="./operations/put-api-v1-user-system_uuid-system_user_id.html">Internal doc</a></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="badge badge--method-patch">PATCH</span>
+                  <code>/api/v1/user/{system_uuid}/{system_user_id}</code>
+                </td>
+                <td><code>patchUserBySystemUserId</code></td>
+                <td><a href="./operations/patch-api-v1-user-system_uuid-system_user_id.html">Internal doc</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-          <section id="data-contract-summary" class="card">
-            <h2>Data contract (summary)</h2>
-            <p class="small">
-              Full JSON Schemas live in OpenAPI; this table is the engineering shorthand for reviews and runbooks.
-            </p>
-            <table>
-              <thead>
-                <tr>
-                  <th>Field / group</th>
-                  <th>Role</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>system_user_id</code>, <code>system_uuid</code></td>
-                  <td>Composite key</td>
-                  <td>Path parameters for instance-scoped reads and writes.</td>
-                </tr>
-                <tr>
-                  <td>Profile block</td>
-                  <td>Mutable projection</td>
-                  <td>PUT/PATCH semantics documented per method; optimistic concurrency where applicable.</td>
-                </tr>
-                <tr>
-                  <td>Audit / invalidation</td>
-                  <td>System metadata</td>
-                  <td>Not always exposed in external integrator docs; internal spec describes logging and metrics hooks.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+        <section id="overview" class="card">
+          <h2>Technical overview</h2>
+          <p>
+            The User feature exposes four operations under the versioned prefix <code>/api/v1</code>: create a user, fetch a
+            user by composite key, full update (<code>PUT</code>), and partial update (<code>PATCH</code>). All traffic is
+            served by the FastAPI app in <code>app/main.py</code>; handlers live in
+            <code>app/api/v1/user.py</code>, domain logic in <code>app/services/user_service.py</code>, and persistence in
+            <code>app/repositories/user_repository.py</code> backed by PostgreSQL.
+          </p>
+          <p>
+            There is <strong>no</strong> Kafka topic, message consumer, or third-party identity SaaS in this code path:
+            integration is synchronous HTTP plus the application database only.
+          </p>
+        </section>
 
-          <section id="method-pages" class="card">
-            <h2>Method pages (per endpoint)</h2>
-            <p>
-              Navigation is keyed by <strong>HTTP method + path</strong> (how clients call the API). OpenAPI
-              <code>operationId</code> values are listed for cross-reference with code and the baseline JSON.
-            </p>
-            <p>
-              Use the left sidebar under <strong>API → User</strong>, or open a page from this table. Each method page
-              links back to anchors on <strong>this</strong> document for idempotency, metrics, and the matching
-              operation block.
-            </p>
-            <table>
-              <thead>
-                <tr>
-                  <th>Method &amp; path</th>
-                  <th><code>operationId</code> (ref.)</th>
-                  <th>Page</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="badge badge--method-post">POST</span> <code>/api/v1/user</code></td>
-                  <td><code>createUser</code></td>
-                  <td><a href="./operations/post-api-v1-user.html">Internal doc</a></td>
-                </tr>
-                <tr>
-                  <td>
-                    <span class="badge badge--method-get">GET</span>
-                    <code>/api/v1/user/{system_uuid}/{system_user_id}</code>
-                  </td>
-                  <td><code>getUserBySystemUserId</code></td>
-                  <td><a href="./operations/get-api-v1-user-system_uuid-system_user_id.html">Internal doc</a></td>
-                </tr>
-                <tr>
-                  <td>
-                    <span class="badge badge--method-put">PUT</span>
-                    <code>/api/v1/user/{system_uuid}/{system_user_id}</code>
-                  </td>
-                  <td><code>updateUserBySystemUserId</code></td>
-                  <td><a href="./operations/put-api-v1-user-system_uuid-system_user_id.html">Internal doc</a></td>
-                </tr>
-                <tr>
-                  <td>
-                    <span class="badge badge--method-patch">PATCH</span>
-                    <code>/api/v1/user/{system_uuid}/{system_user_id}</code>
-                  </td>
-                  <td><code>patchUserBySystemUserId</code></td>
-                  <td><a href="./operations/patch-api-v1-user-system_uuid-system_user_id.html">Internal doc</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+        <section id="governance" class="card">
+          <h2>Ownership and change management</h2>
+          <p>
+            <strong>Who changes this feature:</strong> any contributor following
+            <a href="../../../../CONTRIBUTING.md">CONTRIBUTING.md</a> — pull requests on <code>main</code>, review, and green CI.
+            There is no separate product ticket system encoded in the repo; git history and PR descriptions are the record
+            of <em>who</em> changed behavior.
+          </p>
+          <ul>
+            <li>
+              <strong>Quality gate:</strong> <code>make verify-ci</code> before push (lint, types, OpenAPI,
+              contract tests, tests, <code>docs-check</code>) per CONTRIBUTING.
+            </li>
+            <li>
+              <strong>Contract:</strong> intentional HTTP contract changes require updating application code and accepting the
+              OpenAPI baseline (<code>make openapi-accept-changes</code>) so <code>docs/openapi/openapi-baseline.json</code>
+              matches runtime (<a href="../../../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a>).
+            </li>
+            <li>
+              <strong>Release notes:</strong> user-visible behavior changes belong in root <code>CHANGELOG.md</code>
+              (<a href="../../../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
+            </li>
+            <li>
+              <strong>Internal narrative:</strong> update this HTML file in the same change when you alter business semantics,
+              logging, or idempotency paths (<a href="../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR
+              0026</a>).
+            </li>
+          </ul>
+        </section>
 
-          <section id="overview" class="card">
-            <h2>Technical overview</h2>
-            <p>
-              The User feature exposes four operations under the versioned prefix <code>/api/v1</code>: create a user, fetch a
-              user by composite key, full update (<code>PUT</code>), and partial update (<code>PATCH</code>). All traffic is
-              served by the FastAPI app in <code>app/main.py</code>; handlers live in
-              <code>app/api/v1/user.py</code>, domain logic in <code>app/services/user_service.py</code>, and persistence in
-              <code>app/repositories/user_repository.py</code> backed by PostgreSQL.
-            </p>
-            <p>
-              There is <strong>no</strong> Kafka topic, message consumer, or third-party identity SaaS in this code path:
-              integration is synchronous HTTP plus the application database only.
-            </p>
-          </section>
-
-          <section id="governance" class="card">
-            <h2>Ownership and change management</h2>
-            <p>
-              <strong>Who changes this feature:</strong> any contributor following
-              <a href="../../../../CONTRIBUTING.md">CONTRIBUTING.md</a> — pull requests on <code>main</code>, review, and green CI.
-              There is no separate product ticket system encoded in the repo; git history and PR descriptions are the record
-              of <em>who</em> changed behavior.
-            </p>
-            <ul>
-              <li>
-                <strong>Quality gate:</strong> <code>make verify-ci</code> before push (lint, types, OpenAPI,
-                contract tests, tests, <code>docs-check</code>) per CONTRIBUTING.
-              </li>
-              <li>
-                <strong>Contract:</strong> intentional HTTP contract changes require updating application code and accepting the
-                OpenAPI baseline (<code>make openapi-accept-changes</code>) so <code>docs/openapi/openapi-baseline.json</code>
-                matches runtime (<a href="../../../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a>).
-              </li>
-              <li>
-                <strong>Release notes:</strong> user-visible behavior changes belong in root <code>CHANGELOG.md</code>
-                (<a href="../../../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
-              </li>
-              <li>
-                <strong>Internal narrative:</strong> update this HTML file in the same change when you alter business semantics,
-                logging, or idempotency paths (<a href="../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR
-                0026</a>).
-              </li>
-            </ul>
-          </section>
-
-          <section id="surface" class="card">
-            <h2>API surface</h2>
-            <p>
-              Base path: <code>/api/v1/user</code> (constant <code>USER_HTTP_BASE_PATH</code> in
-              <code>app/api/v1/user.py</code>). Protected routes require <code>X-API-Key</code> and are subject to rate limiting
-              per <a href="../../../adr/0005-api-security-defaults.html">ADR 0005</a> (enforced in middleware, not in the handler
-              body).
-            </p>
-            <div class="api-endpoint-list">
-              <article id="user-op-createUser" class="api-endpoint">
-                <h3 class="api-endpoint__title"><code>POST</code> <code>/api/v1/user</code></h3>
+        <section id="surface" class="card">
+          <h2>API surface</h2>
+          <p>
+            Base path: <code>/api/v1/user</code> (constant <code>USER_HTTP_BASE_PATH</code> in
+            <code>app/api/v1/user.py</code>). Protected routes require <code>X-API-Key</code> and are subject to rate limiting
+            per <a href="../../../adr/0005-api-security-defaults.html">ADR 0005</a> (enforced in middleware, not in the handler
+            body).
+          </p>
+          <div class="api-endpoint-list">
+            <article id="user-op-createUser" class="api-endpoint">
+              <h3 class="api-endpoint__title"><code>POST</code> <code>/api/v1/user</code></h3>
+              <dl class="api-endpoint__grid">
+                <dt>operationId</dt>
+                <dd><code>createUser</code></dd>
+                <dt>Idempotency</dt>
+                <dd>Required <code>Idempotency-Key</code>. Printable ASCII only; length 1–128.</dd>
+                <dt>Success</dt>
+                <dd><code>201 Created</code>. Body: created user (includes <code>client_uuid</code>).</dd>
+              </dl>
+            </article>
+            <article id="user-op-getUserBySystemUserId" class="api-endpoint">
+              <h3 class="api-endpoint__title"><code>GET</code>
+                <code>/api/v1/user/{system_uuid}/{system_user_id}</code></h3>
                 <dl class="api-endpoint__grid">
                   <dt>operationId</dt>
-                  <dd><code>createUser</code></dd>
+                  <dd><code>getUserBySystemUserId</code></dd>
                   <dt>Idempotency</dt>
-                  <dd>Required <code>Idempotency-Key</code>. Printable ASCII only; length 1–128.</dd>
+                  <dd>Not used.</dd>
                   <dt>Success</dt>
-                  <dd><code>201 Created</code>. Body: created user (includes <code>client_uuid</code>).</dd>
+                  <dd><code>200 OK</code>.</dd>
                 </dl>
               </article>
-              <article id="user-op-getUserBySystemUserId" class="api-endpoint">
-                <h3 class="api-endpoint__title"><code>GET</code>
+              <article id="user-op-updateUserBySystemUserId" class="api-endpoint">
+                <h3 class="api-endpoint__title"><code>PUT</code>
                   <code>/api/v1/user/{system_uuid}/{system_user_id}</code></h3>
                   <dl class="api-endpoint__grid">
                     <dt>operationId</dt>
-                    <dd><code>getUserBySystemUserId</code></dd>
+                    <dd><code>updateUserBySystemUserId</code></dd>
                     <dt>Idempotency</dt>
-                    <dd>Not used.</dd>
+                    <dd>Required <code>Idempotency-Key</code> (same rules as <code>POST</code>).</dd>
                     <dt>Success</dt>
                     <dd><code>200 OK</code>.</dd>
                   </dl>
                 </article>
-                <article id="user-op-updateUserBySystemUserId" class="api-endpoint">
-                  <h3 class="api-endpoint__title"><code>PUT</code>
+                <article id="user-op-patchUserBySystemUserId" class="api-endpoint">
+                  <h3 class="api-endpoint__title"><code>PATCH</code>
                     <code>/api/v1/user/{system_uuid}/{system_user_id}</code></h3>
                     <dl class="api-endpoint__grid">
                       <dt>operationId</dt>
-                      <dd><code>updateUserBySystemUserId</code></dd>
+                      <dd><code>patchUserBySystemUserId</code></dd>
                       <dt>Idempotency</dt>
                       <dd>Required <code>Idempotency-Key</code> (same rules as <code>POST</code>).</dd>
                       <dt>Success</dt>
                       <dd><code>200 OK</code>.</dd>
                     </dl>
                   </article>
-                  <article id="user-op-patchUserBySystemUserId" class="api-endpoint">
-                    <h3 class="api-endpoint__title"><code>PATCH</code>
-                      <code>/api/v1/user/{system_uuid}/{system_user_id}</code></h3>
-                      <dl class="api-endpoint__grid">
-                        <dt>operationId</dt>
-                        <dd><code>patchUserBySystemUserId</code></dd>
-                        <dt>Idempotency</dt>
-                        <dd>Required <code>Idempotency-Key</code> (same rules as <code>POST</code>).</dd>
-                        <dt>Success</dt>
-                        <dd><code>200 OK</code>.</dd>
-                      </dl>
-                    </article>
-                  </div>
-                  <p class="small">
-                    Write operations hash the canonical JSON body (create: full dump; update: full dump; patch: only set fields via
-                    <code>exclude_unset=True</code>) for idempotency comparison — see <a href="#idempotency">Idempotency</a>.
-                  </p>
-                </section>
+                </div>
+                <p class="small">
+                  Write operations hash the canonical JSON body (create: full dump; update: full dump; patch: only set fields via
+                  <code>exclude_unset=True</code>) for idempotency comparison — see <a href="#idempotency">Idempotency</a>.
+                </p>
+              </section>
 
-                <section id="architecture" class="card">
-                  <h2>Request path and layers</h2>
-                  <p>
-                    A typical request passes through the middleware stack in <code>app/main.py</code> (order of registration:
-                    metrics/latency wrapper, body size limit, API key auth + in-memory rate limit, security headers, request ID
-                    context), then the route handler, then:
-                  </p>
-                  <ol>
-                    <li><strong>Router</strong> (<code>app/api/v1/user.py</code>) — parsing, idempotency read/replay or delegate,
-                      OpenAPI-declared responses.</li>
-                      <li><strong>UserService</strong> (<code>app/services/user_service.py</code>) — business rules, duplicate detection,
-                        <code>HTTPException</code> for domain outcomes.</li>
-                        <li><strong>UserRepository</strong> (<code>app/repositories/user_repository.py</code>) — SQLAlchemy
-                          <code>SELECT</code> / commit+refresh for <code>users</code> table.</li>
-                          <li><strong>IdempotencyRepository</strong> (<code>app/repositories/idempotency_repository.py</code>) — read/write
-                            <code>idempotency_keys</code> rows for successful writes only.</li>
-                          </ol>
-                        </section>
+              <section id="architecture" class="card">
+                <h2>Request path and layers</h2>
+                <p>
+                  A typical request passes through the middleware stack in <code>app/main.py</code> (order of registration:
+                  metrics/latency wrapper, body size limit, API key auth + in-memory rate limit, security headers, request ID
+                  context), then the route handler, then:
+                </p>
+                <ol>
+                  <li><strong>Router</strong> (<code>app/api/v1/user.py</code>) — parsing, idempotency read/replay or delegate,
+                    OpenAPI-declared responses.</li>
+                    <li><strong>UserService</strong> (<code>app/services/user_service.py</code>) — business rules, duplicate detection,
+                      <code>HTTPException</code> for domain outcomes.</li>
+                      <li><strong>UserRepository</strong> (<code>app/repositories/user_repository.py</code>) — SQLAlchemy
+                        <code>SELECT</code> / commit+refresh for <code>users</code> table.</li>
+                        <li><strong>IdempotencyRepository</strong> (<code>app/repositories/idempotency_repository.py</code>) — read/write
+                          <code>idempotency_keys</code> rows for successful writes only.</li>
+                        </ol>
+                      </section>
 
-                        <section id="data-model" class="card">
-                          <h2>Data model and invariants</h2>
-                          <ul>
-                            <li>
-                              <strong>Natural key:</strong> <code>(system_user_id, system_uuid)</code> — unique in DB
-                              (<code>uq_users_system_user_id_system_uuid</code> on <code>users</code>).
-                            </li>
-                            <li>
-                              <strong>Primary key:</strong> <code>client_uuid</code> (string UUID) — generated server-side on create.
-                            </li>
-                            <li>
-                              <strong>Mutable fields</strong> include profile fields (<code>username</code>, <code>full_name</code>,
-                              <code>timezone</code>, invalidation flags, optional <code>system_uuid</code> change on update/patch per schema).
-                              Validation of shapes and timezones is at the API schema layer (<code>app/schemas/user.py</code>) before service
-                              calls.
-                            </li>
-                          </ul>
-                        </section>
+                      <section id="data-model" class="card">
+                        <h2>Data model and invariants</h2>
+                        <ul>
+                          <li>
+                            <strong>Natural key:</strong> <code>(system_user_id, system_uuid)</code> — unique in DB
+                            (<code>uq_users_system_user_id_system_uuid</code> on <code>users</code>).
+                          </li>
+                          <li>
+                            <strong>Primary key:</strong> <code>client_uuid</code> (string UUID) — generated server-side on create.
+                          </li>
+                          <li>
+                            <strong>Mutable fields</strong> include profile fields (<code>username</code>, <code>full_name</code>,
+                            <code>timezone</code>, invalidation flags, optional <code>system_uuid</code> change on update/patch per schema).
+                            Validation of shapes and timezones is at the API schema layer (<code>app/schemas/user.py</code>) before service
+                            calls.
+                          </li>
+                        </ul>
+                      </section>
 
-                        <section id="idempotency" class="card">
-                          <h2>Idempotency</h2>
-                          <p>
-                            Writes require <code>Idempotency-Key</code>. The handler computes a SHA-256 hash of the JSON payload (sorted keys
-                            in storage) and looks up <code>(endpoint_path, idempotency_key)</code>:
-                          </p>
-                          <ul>
-                            <li>
-                              <strong>POST create:</strong> <code>endpoint_path = "/api/v1/user"</code>.
-                            </li>
-                            <li>
-                              <strong>PUT update:</strong> <code>endpoint_path = "/api/v1/user/{system_uuid}/{system_user_id}"</code> (literal
-                              path with UUID string).
-                            </li>
-                            <li>
-                              <strong>PATCH:</strong> <code>endpoint_path = "PATCH /api/v1/user/{system_uuid}/{system_user_id}"</code> — note
-                              the <code>PATCH </code> prefix so PUT and PATCH on the same URL do not share idempotency records.
-                            </li>
-                          </ul>
-                          <p>
-                            If a record exists and the hash matches, the stored response body is replayed (same status code as first
-                            success). Hash mismatch → <code>409</code> with <code>COMMON_409</code> /
-                            <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>. Missing header → <code>400</code>
-                            <code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code>.
-                          </p>
-                        </section>
+                      <section id="idempotency" class="card">
+                        <h2>Idempotency</h2>
+                        <p>
+                          Writes require <code>Idempotency-Key</code>. The handler computes a SHA-256 hash of the JSON payload (sorted keys
+                          in storage) and looks up <code>(endpoint_path, idempotency_key)</code>:
+                        </p>
+                        <ul>
+                          <li>
+                            <strong>POST create:</strong> <code>endpoint_path = "/api/v1/user"</code>.
+                          </li>
+                          <li>
+                            <strong>PUT update:</strong> <code>endpoint_path = "/api/v1/user/{system_uuid}/{system_user_id}"</code> (literal
+                            path with UUID string).
+                          </li>
+                          <li>
+                            <strong>PATCH:</strong> <code>endpoint_path = "PATCH /api/v1/user/{system_uuid}/{system_user_id}"</code> — note
+                            the <code>PATCH </code> prefix so PUT and PATCH on the same URL do not share idempotency records.
+                          </li>
+                        </ul>
+                        <p>
+                          If a record exists and the hash matches, the stored response body is replayed (same status code as first
+                          success). Hash mismatch → <code>409</code> with <code>COMMON_409</code> /
+                          <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>. Missing header → <code>400</code>
+                          <code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code>.
+                        </p>
+                      </section>
 
-                        <section id="errors" class="card">
-                          <h2>Errors and HTTP status mapping</h2>
-                          <p>
-                            Structured business errors use the shared envelope (<code>code</code>, <code>key</code>, <code>message</code>,
-                            <code>source</code>) per <a href="../../../adr/0003-error-contract-governance.html">ADR 0003</a>. FastAPI returns them
-                            as JSON <code>detail</code>.
-                          </p>
-                          <div class="docs-table-scroll">
-                            <table>
-                              <thead>
-                                <tr>
-                                  <th>HTTP</th>
-                                  <th>Code / key (representative)</th>
-                                  <th>When</th>
+                      <section id="errors" class="card">
+                        <h2>Errors and HTTP status mapping</h2>
+                        <p>
+                          Structured business errors use the shared envelope (<code>code</code>, <code>key</code>, <code>message</code>,
+                          <code>source</code>) per <a href="../../../adr/0003-error-contract-governance.html">ADR 0003</a>. FastAPI returns them
+                          as JSON <code>detail</code>.
+                        </p>
+                        <div class="docs-table-scroll">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>HTTP</th>
+                                <th>Code / key (representative)</th>
+                                <th>When</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td><code>400</code></td>
+                                <td><code>USER_101</code> / <code>USER_CREATE_ALREADY_EXISTS</code></td>
+                                <td>Create: duplicate <code>(system_user_id, system_uuid)</code> — logged at <strong>warning</strong> in
+                                  <code>UserService.create</code>.</td>
                                 </tr>
-                              </thead>
-                              <tbody>
                                 <tr>
                                   <td><code>400</code></td>
-                                  <td><code>USER_101</code> / <code>USER_CREATE_ALREADY_EXISTS</code></td>
-                                  <td>Create: duplicate <code>(system_user_id, system_uuid)</code> — logged at <strong>warning</strong> in
-                                    <code>UserService.create</code>.</td>
+                                  <td><code>USER_102</code> / <code>USER_PATCH_BODY_EMPTY</code></td>
+                                  <td>Patch: no fields present after unset stripping — <strong>warning</strong> in
+                                    <code>UserService.patch</code>.</td>
                                   </tr>
                                   <tr>
                                     <td><code>400</code></td>
-                                    <td><code>USER_102</code> / <code>USER_PATCH_BODY_EMPTY</code></td>
-                                    <td>Patch: no fields present after unset stripping — <strong>warning</strong> in
-                                      <code>UserService.patch</code>.</td>
+                                    <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                                    <td>Write without <code>Idempotency-Key</code>.</td>
+                                  </tr>
+                                  <tr>
+                                    <td><code>404</code></td>
+                                    <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
+                                    <td>Get / update / patch: no row for composite key — <strong>warning</strong> in
+                                      <code>UserService.get_or_404</code>.</td>
                                     </tr>
                                     <tr>
-                                      <td><code>400</code></td>
-                                      <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
-                                      <td>Write without <code>Idempotency-Key</code>.</td>
+                                      <td><code>409</code></td>
+                                      <td><code>COMMON_409</code> / <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                                      <td>Same idempotency key, different body hash.</td>
                                     </tr>
                                     <tr>
-                                      <td><code>404</code></td>
-                                      <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
-                                      <td>Get / update / patch: no row for composite key — <strong>warning</strong> in
-                                        <code>UserService.get_or_404</code>.</td>
+                                      <td><code>422</code></td>
+                                      <td>Validation (<code>error_type</code> / field errors)</td>
+                                      <td>Pydantic request validation — global handler logs
+                                        <code>validation_error method=… path=…</code> at <strong>warning</strong>
+                                        (<code>app/main.py</code>).</td>
                                       </tr>
                                       <tr>
-                                        <td><code>409</code></td>
-                                        <td><code>COMMON_409</code> / <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
-                                        <td>Same idempotency key, different body hash.</td>
-                                      </tr>
-                                      <tr>
-                                        <td><code>422</code></td>
-                                        <td>Validation (<code>error_type</code> / field errors)</td>
-                                        <td>Pydantic request validation — global handler logs
-                                          <code>validation_error method=… path=…</code> at <strong>warning</strong>
-                                          (<code>app/main.py</code>).</td>
+                                        <td><code>413</code></td>
+                                        <td><code>COMMON_413</code> / body too large</td>
+                                        <td>Middleware rejects oversized body before the handler runs — <strong>warning</strong>
+                                          <code>request_body_limit_exceeded</code>.</td>
                                         </tr>
                                         <tr>
-                                          <td><code>413</code></td>
-                                          <td><code>COMMON_413</code> / body too large</td>
-                                          <td>Middleware rejects oversized body before the handler runs — <strong>warning</strong>
-                                            <code>request_body_limit_exceeded</code>.</td>
+                                          <td><code>500</code></td>
+                                          <td>—</td>
+                                          <td>Uncaught exceptions: ASGI middleware logs <code>request_failed</code> with <strong>exception</strong> stack
+                                            (<code>logger.exception</code>).</td>
                                           </tr>
-                                          <tr>
-                                            <td><code>500</code></td>
-                                            <td>—</td>
-                                            <td>Uncaught exceptions: ASGI middleware logs <code>request_failed</code> with <strong>exception</strong> stack
-                                              (<code>logger.exception</code>).</td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                      <p class="small">
-                                        Auth failures (<code>401</code>) and rate limits (<code>429</code>) are produced by security middleware before
-                                        route execution; see ADR 0005 and <code>app/core/security.py</code>.
-                                      </p>
-                                    </section>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                    <p class="small">
+                                      Auth failures (<code>401</code>) and rate limits (<code>429</code>) are produced by security middleware before
+                                      route execution; see ADR 0005 and <code>app/core/security.py</code>.
+                                    </p>
+                                  </section>
 
-                                    <section id="logging" class="card">
-                                      <h2>Logging</h2>
-                                      <p>
-                                        Logging is configured in <code>app/core/logging.py</code>: plain text or NDJSON with
-                                        <code>request_id</code> from <code>X-Request-Id</code> (set in <code>request_context_middleware</code>) per
-                                        <a href="../../../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
-                                      </p>
-                                      <p>
-                                        <strong>Every completed request</strong> emits an info line from the outer HTTP middleware:
-                                        <code>request_done method=… path=… status=… elapsed_ms=…</code> (path is the request URL path; successful User
-                                        calls include <code>status=200</code> or <code>201</code> as appropriate).
-                                      </p>
-                                      <p>
-                                        <strong>User router</strong> (<code>app.api.v1.user</code>) additionally logs:
-                                      </p>
-                                      <ul>
-                                        <li><code>create_user_idempotent_replay</code>, <code>update_user_idempotent_replay</code>,
-                                          <code>patch_user_idempotent_replay</code> — <strong>info</strong>, idempotency key only.</li>
-                                          <li><code>create_user_requested</code>, <code>update_user_requested</code>, <code>patch_user_requested</code> —
-                                            <strong>info</strong>, <code>system_user_id</code> and <code>system_uuid</code>.</li>
-                                            <li><code>create_user_succeeded</code> — <strong>info</strong>, <code>system_user_id</code>, <code>client_uuid</code>
-                                              after persist.</li>
-                                            </ul>
-                                            <p>
-                                              <strong>UserService</strong> logs <code>create_user_duplicate</code>, <code>get_user_not_found</code>,
-                                              <code>patch_user_empty_body</code> at <strong>warning</strong> before raising; <code>create_user_persisted</code> at
-                                              <strong>info</strong> after insert.
-                                            </p>
+                                  <section id="logging" class="card">
+                                    <h2>Logging</h2>
+                                    <p>
+                                      Logging is configured in <code>app/core/logging.py</code>: plain text or NDJSON with
+                                      <code>request_id</code> from <code>X-Request-Id</code> (set in <code>request_context_middleware</code>) per
+                                      <a href="../../../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
+                                    </p>
+                                    <p>
+                                      <strong>Every completed request</strong> emits an info line from the outer HTTP middleware:
+                                      <code>request_done method=… path=… status=… elapsed_ms=…</code> (path is the request URL path; successful User
+                                      calls include <code>status=200</code> or <code>201</code> as appropriate).
+                                    </p>
+                                    <p>
+                                      <strong>User router</strong> (<code>app.api.v1.user</code>) additionally logs:
+                                    </p>
+                                    <ul>
+                                      <li><code>create_user_idempotent_replay</code>, <code>update_user_idempotent_replay</code>,
+                                        <code>patch_user_idempotent_replay</code> — <strong>info</strong>, idempotency key only.</li>
+                                        <li><code>create_user_requested</code>, <code>update_user_requested</code>, <code>patch_user_requested</code> —
+                                          <strong>info</strong>, <code>system_user_id</code> and <code>system_uuid</code>.</li>
+                                          <li><code>create_user_succeeded</code> — <strong>info</strong>, <code>system_user_id</code>, <code>client_uuid</code>
+                                            after persist.</li>
+                                          </ul>
+                                          <p>
+                                            <strong>UserService</strong> logs <code>create_user_duplicate</code>, <code>get_user_not_found</code>,
+                                            <code>patch_user_empty_body</code> at <strong>warning</strong> before raising; <code>create_user_persisted</code> at
+                                            <strong>info</strong> after insert.
+                                          </p>
+                                        </section>
+
+                                        <section id="observability" class="card">
+                                          <h2>Metrics and tracing hooks</h2>
+                                          <p>
+                                            Prometheus metrics (<code>app/core/metrics.py</code>) record:
+                                          </p>
+                                          <ul>
+                                            <li>
+                                              <code>http_requests_total</code> and <code>http_request_duration_seconds</code> with labels including
+                                              <code>path_template</code> from the FastAPI route template (e.g. <code>/api/v1/user/{system_uuid}/{system_user_id}</code>),
+                                              <code>method</code>, and status.
+                                            </li>
+                                            <li>
+                                              <code>db_operation_duration_seconds</code> for SQLAlchemy operations (read/write classification from statement
+                                              text).
+                                            </li>
+                                          </ul>
+                                          <p>
+                                            <code>trace_id</code> / <code>span_id</code> in JSON logs are reserved for future OpenTelemetry; correlation today
+                                            is primarily <code>request_id</code>.
+                                          </p>
+                                        </section>
+
+                                        <section id="dependencies" class="card">
+                                          <h2>External and in-process dependencies</h2>
+                                          <table>
+                                            <thead>
+                                              <tr>
+                                                <th>Dependency</th>
+                                                <th>Role for User API</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td><strong>PostgreSQL</strong></td>
+                                                <td>Authoritative storage for <code>users</code> and <code>idempotency_keys</code> (via SQLAlchemy).</td>
+                                              </tr>
+                                              <tr>
+                                                <td><strong>In-memory rate limiter</strong></td>
+                                                <td>Per-client sliding window on protected paths (<code>app/core/security.py</code>); not a separate network
+                                                  service.</td>
+                                                </tr>
+                                                <tr>
+                                                  <td><strong>Configured API keys</strong></td>
+                                                  <td>Validated in middleware against settings — no call to an external IdP in this flow.</td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
                                           </section>
 
-                                          <section id="observability" class="card">
-                                            <h2>Metrics and tracing hooks</h2>
-                                            <p>
-                                              Prometheus metrics (<code>app/core/metrics.py</code>) record:
-                                            </p>
+                                          <section id="references" class="card">
+                                            <h2>Code, tests, and policy references</h2>
                                             <ul>
-                                              <li>
-                                                <code>http_requests_total</code> and <code>http_request_duration_seconds</code> with labels including
-                                                <code>path_template</code> from the FastAPI route template (e.g. <code>/api/v1/user/{system_uuid}/{system_user_id}</code>),
-                                                <code>method</code>, and status.
-                                              </li>
-                                              <li>
-                                                <code>db_operation_duration_seconds</code> for SQLAlchemy operations (read/write classification from statement
-                                                text).
-                                              </li>
-                                            </ul>
-                                            <p>
-                                              <code>trace_id</code> / <code>span_id</code> in JSON logs are reserved for future OpenTelemetry; correlation today
-                                              is primarily <code>request_id</code>.
-                                            </p>
-                                          </section>
+                                              <li>Handlers: <code>app/api/v1/user.py</code></li>
+                                              <li>Service: <code>app/services/user_service.py</code></li>
+                                              <li>Repositories: <code>app/repositories/user_repository.py</code>,
+                                                <code>app/repositories/idempotency_repository.py</code></li>
+                                                <li>ORM model: <code>app/models/core/user.py</code> (<code>users</code> table)</li>
+                                                <li>Tests: <code>tests/api/v1/test_user_create.py</code>, helpers in
+                                                  <code>tests/api/v1/user_test_utils.py</code></li>
+                                                  <li>Policies: <a href="../../../adr/0006-idempotency-write-operations.html">ADR 0006</a> (idempotency),
+                                                    <a href="../../../adr/0003-error-contract-governance.html">ADR 0003</a> (errors)</li>
+                                                  </ul>
+                                                </section>
 
-                                          <section id="dependencies" class="card">
-                                            <h2>External and in-process dependencies</h2>
-                                            <table>
-                                              <thead>
-                                                <tr>
-                                                  <th>Dependency</th>
-                                                  <th>Role for User API</th>
-                                                </tr>
-                                              </thead>
-                                              <tbody>
-                                                <tr>
-                                                  <td><strong>PostgreSQL</strong></td>
-                                                  <td>Authoritative storage for <code>users</code> and <code>idempotency_keys</code> (via SQLAlchemy).</td>
-                                                </tr>
-                                                <tr>
-                                                  <td><strong>In-memory rate limiter</strong></td>
-                                                  <td>Per-client sliding window on protected paths (<code>app/core/security.py</code>); not a separate network
-                                                    service.</td>
-                                                  </tr>
-                                                  <tr>
-                                                    <td><strong>Configured API keys</strong></td>
-                                                    <td>Validated in middleware against settings — no call to an external IdP in this flow.</td>
-                                                  </tr>
-                                                </tbody>
-                                              </table>
-                                            </section>
+                                                <section id="history" class="card">
+                                                  <h2>Document history</h2>
+                                                  <table>
+                                                    <thead>
+                                                      <tr>
+                                                        <th>Date</th>
+                                                        <th>Summary</th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr>
+                                                        <td>2026-04-14</td>
+                                                        <td>Initial internal capability doc: operations, layers, idempotency keys, logging, metrics, dependencies.</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>2026-04-15</td>
+                                                        <td>File moved from <code>docs/internal/user-http-api.html</code> to <code>docs/internal/api/user/user-http-api.html</code> (resource-scoped layout).</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>2026-04-15</td>
+                                                        <td>Unified long-form content merged into <code>docs/internal/api/user/index.html</code>; <code>user-http-api.html</code> retained as redirect stub for bookmarks.</td>
+                                                      </tr>
+                                                    </tbody>
+                                                  </table>
+                                                </section>
 
-                                            <section id="references" class="card">
-                                              <h2>Code, tests, and policy references</h2>
-                                              <ul>
-                                                <li>Handlers: <code>app/api/v1/user.py</code></li>
-                                                <li>Service: <code>app/services/user_service.py</code></li>
-                                                <li>Repositories: <code>app/repositories/user_repository.py</code>,
-                                                  <code>app/repositories/idempotency_repository.py</code></li>
-                                                  <li>ORM model: <code>app/models/core/user.py</code> (<code>users</code> table)</li>
-                                                  <li>Tests: <code>tests/api/v1/test_user_create.py</code>, helpers in
-                                                    <code>tests/api/v1/user_test_utils.py</code></li>
-                                                    <li>Policies: <a href="../../../adr/0006-idempotency-write-operations.html">ADR 0006</a> (idempotency),
-                                                      <a href="../../../adr/0003-error-contract-governance.html">ADR 0003</a> (errors)</li>
-                                                    </ul>
-                                                  </section>
-
-                                                  <section id="history" class="card">
-                                                    <h2>Document history</h2>
-                                                    <table>
-                                                      <thead>
-                                                        <tr>
-                                                          <th>Date</th>
-                                                          <th>Summary</th>
-                                                        </tr>
-                                                      </thead>
-                                                      <tbody>
-                                                        <tr>
-                                                          <td>2026-04-14</td>
-                                                          <td>Initial internal capability doc: operations, layers, idempotency keys, logging, metrics, dependencies.</td>
-                                                        </tr>
-                                                        <tr>
-                                                          <td>2026-04-15</td>
-                                                          <td>File moved from <code>docs/internal/user-http-api.html</code> to <code>docs/internal/api/user/user-http-api.html</code> (resource-scoped layout).</td>
-                                                        </tr>
-                                                        <tr>
-                                                          <td>2026-04-15</td>
-                                                          <td>Unified long-form content merged into <code>docs/internal/api/user/index.html</code>; <code>user-http-api.html</code> retained as redirect stub for bookmarks.</td>
-                                                        </tr>
-                                                      </tbody>
-                                                    </table>
-                                                  </section>
-
-                                                  <p>
-                                                    <a href="../README.html">← Internal service documentation</a>
-                                                  </p>
-                                                  <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                                                </div>
-                                              </div>
+                                                <p>
+                                                  <a href="../README.html">← Internal service documentation</a>
+                                                </p>
+                                                <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                                              </main>
                                             </div>
-                                          </body>
+                                          </div>
 
-                                        </html>
+                                        </body></html>
