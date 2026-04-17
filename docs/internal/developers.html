@@ -40,6 +40,41 @@
             <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>.
           </p>
         </section>
+        <section id="golden-delivery-path" class="card">
+          <h2>Golden delivery path (feature and API changes)</h2>
+          <p>
+            Use this sequence for regular engineering work when code and behavior change together.
+          </p>
+          <ol>
+            <li>Align requirements and contracts before coding.</li>
+            <li>Implement endpoint or behavior through schemas, service, repository, and API layers.</li>
+            <li>Update OpenAPI examples and internal HTML docs in the same change set.</li>
+            <li>Run local quality gates: <code>make verify</code>.</li>
+            <li>Run CI-equivalent gate before push: <code>make verify-ci</code>.</li>
+          </ol>
+          <p class="small">
+            Canonical end-to-end walkthrough:
+            <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
+          </p>
+        </section>
+
+        <section id="golden-docs-only-path" class="card">
+          <h2>Golden docs-only path (documentation PRs)</h2>
+          <p>
+            Use this sequence when changes are limited to docs structure, wording, navigation, or standards.
+          </p>
+          <ol>
+            <li>Choose the right document type and required structure from the style guide.</li>
+            <li>Update content and cross-links in related hubs or indexes.</li>
+            <li>For internal pages, keep sidebar and layout consistent with internal docs rules.</li>
+            <li>Run normalization and generation: <code>make docs-fix</code>.</li>
+            <li>Run validation and drift checks: <code>make docs-check</code>.</li>
+          </ol>
+          <p class="small">
+            Mandatory standard for docs-only work:
+            <a href="./documentation-style-guide.html">Documentation style guide and audit standard</a>.
+          </p>
+        </section>
 
         <section id="developer-guides" class="card">
           <h2>Developer guides by topic</h2>
@@ -180,6 +215,7 @@
           <h2>Related hubs</h2>
           <ul>
             <li><a href="./README.html">Internal docs index</a></li>
+            <li><a href="./documentation-style-guide.html">Documentation style guide and audit standard</a></li>
             <li><a href="./api/README.html">Internal HTTP API hub</a></li>
             <li><a href="./make-commands.html">Make commands</a></li>
             <li><a href="../openapi/openapi-explorer.html">OpenAPI (test)</a> and <a href="../api/index.html">Python API reference</a></li>

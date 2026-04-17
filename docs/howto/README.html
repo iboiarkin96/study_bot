@@ -12,38 +12,118 @@
     <h1>How-to guides</h1>
     <div id="docs-top-nav"></div>
     <p class="lead">
-      Short, task-focused guides: onboarding path from local setup to endpoint + docs, internal HTML documentation
-      layout under <code>docs/internal/</code>, and a beginner endpoint walkthrough. These pages used to live under
-      <code>docs/internal/STRUCTURE.md</code> and <code>docs/developer/0004-how-to-add-post-contract.html</code> — see
-      each guide for the canonical location.
+      Practical guides for contributors: from first local run to endpoint delivery and documentation updates.
+      This page is the canonical entry point for the Golden onboarding path and for documentation authoring workflow.
     </p>
 
-    <section class="card">
-      <h2>Onboarding: start project, add endpoint, publish docs</h2>
+    <section id="overview" class="card">
+      <h2>Overview</h2>
       <p>
-        Full end-to-end path for a new contributor: local startup, first successful API call, endpoint implementation
-        through layers, docs updates, and final quality gates before PR.
-      </p>
-      <p><a href="./onboarding-from-zero-to-endpoint-docs.html">Open guide — onboarding from zero to endpoint + docs</a>
+        Use this index when you need a concrete, task-oriented route instead of policy documents.
+        For architecture decisions, use <a href="../adr/README.html">ADR</a>. For implementation specifications,
+        use <a href="../rfc/README.html">RFC</a>. For mandatory writing and audit rules, use
+        <a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a>.
       </p>
     </section>
 
-    <section class="card">
-      <h2>Update internal service documentation</h2>
+    <section id="golden-onboarding-path" class="card">
+      <h2>Golden onboarding path (recommended sequence)</h2>
       <p>
-        Directory layout for <code>docs/internal/</code>, shared layout assets, sidebar navigation, and steps to add a
-        resource hub or per-operation pages.
+        If you are new to the repository, follow this order. It gives one complete flow from setup to review-ready PR.
       </p>
-      <p><a href="./internal-service-docs-layout.html">Open guide — internal HTML docs layout</a></p>
+      <ol>
+        <li>
+          Run full onboarding guide:
+          <a href="./onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
+        </li>
+        <li>
+          Use the concrete endpoint implementation example:
+          <a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code> (beginner walkthrough)</a>.
+        </li>
+        <li>
+          Update internal service docs structure and navigation:
+          <a href="./internal-service-docs-layout.html">Internal service docs layout and how to add pages</a>.
+        </li>
+        <li>
+          Validate writing style and structure against:
+          <a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a>.
+        </li>
+      </ol>
     </section>
 
-    <section class="card">
-      <h2>Add <code>POST /api/v1/contract</code> (beginner walkthrough)</h2>
+    <section id="documentation-authoring-path" class="card">
+      <h2>Documentation authoring path (create and format docs)</h2>
       <p>
-        End-to-end checklist: DB, repository, service, schemas, validation, OpenAPI examples, router, tests, and quality
-        gates. The endpoint is illustrative; the sequence matches how the codebase is organized.
+        Use this checklist when you add or change endpoint behavior and must publish matching documentation.
       </p>
-      <p><a href="./0004-how-to-add-post-contract.html">Open guide — add POST contract endpoint</a></p>
+      <ol>
+        <li>
+          Define document type and target location (internal API page, how-to, runbook, ADR, RFC).
+        </li>
+        <li>
+          Create or update page content using the required section structure from
+          <a href="../internal/documentation-style-guide.html#document-type-matrix">document-type matrix</a>.
+        </li>
+        <li>
+          For internal service pages, keep navigation and shell consistent with
+          <a href="./internal-service-docs-layout.html">internal docs layout guide</a>.
+        </li>
+        <li>
+          Update links in related hubs (for example this page, internal indexes, ADR/RFC/runbook indexes) if a new page
+          becomes part of the official flow.
+        </li>
+        <li>
+          Run documentation build and normalization:
+          <pre><code>make docs-fix</code></pre>
+        </li>
+        <li>
+          Run checks and drift validation before push:
+          <pre><code>make docs-check</code></pre>
+        </li>
+      </ol>
+    </section>
+
+    <section id="guides-catalog" class="card">
+      <h2>Guides catalog</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Guide</th>
+            <th>When to use it</th>
+            <th>Open</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Onboarding: from zero to endpoint and docs</td>
+            <td>First contribution path; full lifecycle from setup to quality gates.</td>
+            <td><a href="./onboarding-from-zero-to-endpoint-docs.html">Open guide</a></td>
+          </tr>
+          <tr>
+            <td>Internal service docs layout and how to add pages</td>
+            <td>Add/update pages under <code>docs/internal/</code>, sidebar navigation, and internal API docs layout.</td>
+            <td><a href="./internal-service-docs-layout.html">Open guide</a></td>
+          </tr>
+          <tr>
+            <td>Beginner walkthrough: add <code>POST /api/v1/contract</code></td>
+            <td>Concrete endpoint implementation example through all service layers.</td>
+            <td><a href="./0004-how-to-add-post-contract.html">Open guide</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="related" class="card">
+      <h2>Related references</h2>
+      <p>
+        Use these hubs when you need policy context or broader engineering guidance around the how-to steps.
+      </p>
+      <ul>
+        <li><a href="../internal/developers.html">Developers Docs hub</a></li>
+        <li><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></li>
+        <li><a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a></li>
+        <li><a href="../runbooks/README.html">Runbooks index</a> (incident and recovery procedures)</li>
+      </ul>
     </section>
 
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

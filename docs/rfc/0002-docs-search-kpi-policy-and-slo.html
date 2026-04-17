@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RFC 0002: Docs Search KPI Policy and SLO Thresholds</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+
+<body>
+  <main class="container">
+    <h1>RFC 0002: Docs Search KPI Policy and SLO Thresholds</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
+      <h2>Status</h2>
+      <ul>
+        <li>State: active</li>
+        <li>Date: 2026-04-17</li>
+        <li>Related decision: <a href="../adr/0027-client-side-docs-search-index-and-ranking.html">ADR 0027</a></li>
+        <li>Related implementation: <a href="./0001-docs-search-implementation.html">RFC 0001</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Goals and non-goals</h2>
+      <p>
+        This policy defines service-level targets for docs search quality and the operating playbook when quality degrades.
+      </p>
+      <h3>Goals</h3>
+      <ul>
+        <li>Define measurable, stable KPIs for docs search quality on <code>docs/**/*.html</code>.</li>
+        <li>Set explicit warning and breach thresholds for operational response.</li>
+        <li>Keep KPI review cadence and response actions consistent across releases.</li>
+      </ul>
+      <h3>Non-goals</h3>
+      <ul>
+        <li>Semantic/vector retrieval, typo correction, and multilingual ranking.</li>
+        <li>Replacing RFC 0001 implementation details with policy-level text.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Canonical KPI definitions</h2>
+      <ul>
+        <li><strong>Zero-result rate</strong> = <code>count(search_query where results_count = 0) / count(search_query)</code>.</li>
+        <li><strong>Query CTR</strong> = <code>count(distinct query_id with at least one search_result_click) / count(search_query)</code>.</li>
+        <li><strong>TTFS</strong> (time-to-first-success) = distribution of first <code>search_success.time_to_success_ms</code> per session (p50/p75).</li>
+      </ul>
+      <p>
+        Source endpoint: <code>GET /internal/telemetry/docs-search/metrics?window_minutes=&lt;N&gt;</code>.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Targets (rolling 7-day window)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>KPI</th>
+            <th>Target</th>
+            <th>Warning threshold</th>
+            <th>Breach threshold</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Zero-result rate</td>
+            <td>≤ 12%</td>
+            <td>&gt; 12% and ≤ 18%</td>
+            <td>&gt; 18%</td>
+          </tr>
+          <tr>
+            <td>Query CTR</td>
+            <td>≥ 45%</td>
+            <td>&lt; 45% and ≥ 35%</td>
+            <td>&lt; 35%</td>
+          </tr>
+          <tr>
+            <td>TTFS p50</td>
+            <td>≤ 25s</td>
+            <td>&gt; 25s and ≤ 40s</td>
+            <td>&gt; 40s</td>
+          </tr>
+          <tr>
+            <td>TTFS p75</td>
+            <td>≤ 60s</td>
+            <td>&gt; 60s and ≤ 90s</td>
+            <td>&gt; 90s</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Operating cadence</h2>
+      <ul>
+        <li><strong>Weekly:</strong> review KPI snapshot for 7-day and 30-day windows.</li>
+        <li><strong>Release gate:</strong> check that KPIs are not in breach before major documentation rollouts.</li>
+        <li><strong>Monthly:</strong> record trend note in docs changelog/audit updates when significant shifts appear.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Response playbook</h2>
+      <h3>Warning level (one KPI in warning for 2+ days)</h3>
+      <ol>
+        <li>Inspect top zero-result queries and top low-CTR queries.</li>
+        <li>Verify index freshness and payload health: rebuild with <code>python3 scripts/build_docs_search_index.py</code>.</li>
+        <li>Review ranking regressions after recent content/nav changes.</li>
+      </ol>
+
+      <h3>Breach level (any KPI in breach for 24h)</h3>
+      <ol>
+        <li>Open incident task in backlog and assign owner for 48h mitigation.</li>
+        <li>Run telemetry validation playbook from <a href="./0001-docs-search-implementation.html">RFC 0001</a>.</li>
+        <li>Apply hotfix: index regeneration, ranking rollback, or nav/content correction.</li>
+        <li>If user-facing quality is materially degraded, publish runbook note and add changelog entry.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Runbook links</h2>
+      <ul>
+        <li><a href="./0001-docs-search-implementation.html#troubleshooting">RFC 0001 troubleshooting</a></li>
+        <li><a href="../runbooks/0003-logging-failing.html">Runbook: Logging failing</a> (telemetry/log signal checks)</li>
+        <li><a href="../runbooks/0005-quality-check-failing.html">Runbook: Quality-check failing</a> (CI and docs pipeline gates)</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Change management</h2>
+      <ul>
+        <li>Adjust KPI thresholds only with evidence from 30+ days of telemetry and documented rationale.</li>
+        <li>Any threshold change must update this RFC and be referenced in <code>docs/CHANGELOG.md</code>.</li>
+        <li>ADR updates are required only when the architecture itself changes (not just threshold tuning).</li>
+      </ul>
+    </section>
+
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

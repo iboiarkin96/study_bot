@@ -183,8 +183,11 @@
     { label: "Methodology", path: "internal/methodology.html" },
     { label: "System design", path: "internal/system-design.html" },
     { label: "Developers Docs", path: "internal/developers.html" },
+    { label: "Documentation style guide", path: "internal/documentation-style-guide.html" },
+    { label: "How-to guides", path: "howto/README.html" },
     { label: "ADR", path: "adr/README.html" },
     { label: "RFC", path: "rfc/README.html" },
+    { label: "Runbooks", path: "runbooks/README.html" },
     {
       label: "Kafka (just example)",
       children: [

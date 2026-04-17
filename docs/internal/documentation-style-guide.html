@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentation style guide and audit standard</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+</head>
+
+<body class="internal-layout">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Documentation style guide and audit standard</h1>
+        <div id="docs-top-nav"></div>
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This document is the single source of truth for documentation style, structure, and quality checks across
+            <code>docs/</code>. Use it for both human review and LLM-driven conformance checks.
+          </p>
+          <ul>
+            <li><strong>Goal:</strong> keep all docs predictable, readable, and auditable over time.</li>
+            <li><strong>Scope:</strong> all HTML documents under <code>docs/</code> plus index pages and redirect stubs.</li>
+            <li><strong>Related policy:</strong> <a href="../adr/0001-docs-as-code.html">ADR 0001</a>,
+              <a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>,
+              <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>,
+              <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
+            </li>
+          </ul>
+        </section>
+
+        <section id="global-style" class="card">
+          <h2>Global style rules (all document types)</h2>
+          <ul>
+            <li><strong>Language:</strong> English, clear engineering prose, no slang, no hype.</li>
+            <li><strong>Tone:</strong> neutral and directive; describe what is required, optional, and prohibited.</li>
+            <li><strong>Tense:</strong> present tense for current behavior and policy; future tense only for planned work.</li>
+            <li><strong>Heading case:</strong> sentence case for section headings; keep labels short and explicit.</li>
+            <li><strong>Formatting:</strong> one primary topic per <code>&lt;section class="card"&gt;</code>.</li>
+            <li><strong>Terminology:</strong> use stable terms consistently (for example: "OpenAPI contract test", not variants).</li>
+            <li><strong>Links:</strong> link by destination name (for example: <code>ADR 0027</code>, <code>Runbook: Tests failing</code>).</li>
+            <li><strong>Commands and paths:</strong> wrap in <code>&lt;code&gt;</code>; use copy-paste-safe command examples.</li>
+            <li><strong>Lists:</strong> use ordered lists for procedures and unordered lists for policies/reference.</li>
+          </ul>
+        </section>
+
+        <section id="required-page-skeleton" class="card">
+          <h2>Required page skeleton</h2>
+          <p>All non-redirect pages should follow this baseline skeleton.</p>
+          <ol>
+            <li><code>&lt;h1&gt;</code> page title.</li>
+            <li><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> top navigation mount.</li>
+            <li>First content card: either <code>Overview</code> or <code>Status</code> (document type dependent).</li>
+            <li>Body cards grouped by one topic per card.</li>
+            <li><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near end of <code>&lt;main&gt;</code>.</li>
+          </ol>
+          <p class="small">
+            Redirect pages are the only exception: short "Page moved" card plus canonical link.
+          </p>
+        </section>
+
+        <section id="document-type-matrix" class="card">
+          <h2>Document-type matrix</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Primary purpose</th>
+                <th>Must include</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ADR</td>
+                <td>Decision and rationale</td>
+                <td>Status, Context, Decision, Consequences, Alternatives, change history</td>
+              </tr>
+              <tr>
+                <td>RFC</td>
+                <td>Implementation-level specification</td>
+                <td>Status, Goals/non-goals, architecture/flow, operations/troubleshooting</td>
+              </tr>
+              <tr>
+                <td>Runbook</td>
+                <td>Incident triage and recovery procedure</td>
+                <td>Symptoms, impact, pre-checks, step-by-step recovery, validation, escalation</td>
+              </tr>
+              <tr>
+                <td>How-to</td>
+                <td>Task-oriented instructional guide</td>
+                <td>Prerequisites, ordered steps, verification, related links</td>
+              </tr>
+              <tr>
+                <td>Internal API page</td>
+                <td>Engineering narrative of behavior and operational meaning</td>
+                <td>Contract summary, business rules, technical flow, error behavior, references</td>
+              </tr>
+              <tr>
+                <td>Audit report</td>
+                <td>Assessment against standards and references</td>
+                <td>Method, scored mapping, findings, mitigations, residual risk, review date</td>
+              </tr>
+              <tr>
+                <td>Index/hub</td>
+                <td>Navigation and orientation</td>
+                <td>Overview card, table/list of documents, concise "what this covers" descriptions</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="templates-by-type" class="card">
+          <h2>Minimal templates by type</h2>
+          <h3>ADR template baseline</h3>
+          <ol>
+            <li>Status</li>
+            <li>Context and problem statement</li>
+            <li>Decision</li>
+            <li>Consequences and trade-offs</li>
+            <li>Alternatives considered</li>
+            <li>References</li>
+            <li>History</li>
+          </ol>
+
+          <h3>RFC template baseline</h3>
+          <ol>
+            <li>Status</li>
+            <li>Goals and non-goals</li>
+            <li>Architecture or data flow</li>
+            <li>Implementation details</li>
+            <li>Operational guidance and troubleshooting</li>
+            <li>Change management</li>
+          </ol>
+
+          <h3>Runbook template baseline</h3>
+          <ol>
+            <li>Incident definition and trigger conditions</li>
+            <li>Immediate safety checks</li>
+            <li>Triage checklist</li>
+            <li>Recovery actions (ordered)</li>
+            <li>Post-recovery validation</li>
+            <li>Escalation and owner handoff</li>
+          </ol>
+        </section>
+
+        <section id="naming-conventions" class="card">
+          <h2>Naming and linking conventions</h2>
+          <ul>
+            <li><strong>File names:</strong> lowercase kebab-case with numeric prefix where series requires ordering (for example ADR/RFC/Runbook).</li>
+            <li><strong>Operation page names:</strong> HTTP method plus path pattern (for example <code>post-api-v1-user.html</code>).</li>
+            <li><strong>Link labels:</strong> keep style stable per index (for example always <code>ADR 00XX</code>, not mixed with <code>Open ADR 00XX</code>).</li>
+            <li><strong>Index descriptions:</strong> one sentence, same grammatical style across rows.</li>
+          </ul>
+        </section>
+
+        <section id="audit-protocol" class="card">
+          <h2>Audit protocol for documentation changes</h2>
+          <p>Use this protocol for every docs PR and for periodic audits.</p>
+          <ol>
+            <li>Run quality gates: <code>make docs-fix</code>, <code>make docs-html-check</code>, and project-required checks.</li>
+            <li>Verify links and navigation paths for all changed/added pages.</li>
+            <li>Verify section structure against this standard for the affected document type.</li>
+            <li>Check terminology consistency against nearby index/hub pages.</li>
+            <li>Confirm changelog and cross-links were updated when policy/process changed.</li>
+            <li>Record deviations and remediation in audit notes or PR checklist.</li>
+          </ol>
+        </section>
+
+        <section id="llm-conformance-checklist" class="card">
+          <h2>LLM conformance checklist (copy/paste)</h2>
+          <p>Use this checklist when asking an LLM to review docs changes.</p>
+          <pre><code>Validate changed docs against docs/internal/documentation-style-guide.html.
+            Return:
+            1) Violations grouped by severity (critical/major/minor).
+            2) For each violation: file path, violated rule, short evidence, concrete fix.
+            3) Missing required sections by document type.
+            4) Terminology inconsistencies (same concept, different naming).
+            5) Broken or suspicious links.
+            6) Final pass/fail verdict and residual risks.</code></pre>
+          </section>
+
+          <section id="governance" class="card">
+            <h2>Governance and updates</h2>
+            <ul>
+              <li>Any style-rule change must be updated in this page first, then reflected in related guides.</li>
+              <li>If a rule affects architecture/process, update the relevant ADR/RFC in the same PR.</li>
+              <li>When uncertainty exists, this document wins over local wording patterns in individual pages.</li>
+            </ul>
+          </section>
+
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </main>
+      </div>
+    </div>
+
+  </body></html>

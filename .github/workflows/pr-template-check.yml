@@ -1,0 +1,49 @@
+name: PR Template Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-pr-mode:
+    name: Validate PR change type selection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require delivery/docs-only/mixed checkbox
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${PR_BODY:-}" ]; then
+            echo "PR body is empty."
+            echo "Please fill the PR template and select one change type: delivery, docs-only, or mixed."
+            exit 1
+          fi
+
+          checked_count=0
+          for marker in \
+            "- [x] \`delivery\`" \
+            "- [x] \`docs-only\`" \
+            "- [x] \`mixed\`" \
+            "- [X] \`delivery\`" \
+            "- [X] \`docs-only\`" \
+            "- [X] \`mixed\`"; do
+            if [[ "${PR_BODY}" == *"${marker}"* ]]; then
+              checked_count=$((checked_count + 1))
+            fi
+          done
+
+          if [ "${checked_count}" -eq 0 ]; then
+            echo "No PR change type selected."
+            echo "Please check one option in 'Change type': delivery, docs-only, or mixed."
+            exit 1
+          fi
+
+          if [ "${checked_count}" -gt 1 ]; then
+            echo "Multiple PR change types selected."
+            echo "Please select exactly one option in 'Change type': delivery, docs-only, or mixed."
+            exit 1
+          fi
+
+          echo "PR template change type is valid."
