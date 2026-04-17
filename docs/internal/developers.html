@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
 <body class="internal-layout">
@@ -53,6 +53,22 @@
             <li>Run local quality gates: <code>make verify</code>.</li>
             <li>Run CI-equivalent gate before push: <code>make verify-ci</code>.</li>
           </ol>
+          <figure class="sys-diagram" aria-labelledby="golden-delivery-process-title">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Delivery flow</span>
+              <div class="sys-diagram__titles">
+                <h3 id="golden-delivery-process-title" class="sys-diagram__title">Golden delivery process with helpers</h3>
+                <p class="sys-diagram__sub">Local commands and CI checks that keep code and docs quality stable.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas">
+              <img class="diagram diagram--uml" src="../uml/rendered/development_process_quality_flow.png" alt="Development process with make commands and quality helper scripts" decoding="async" loading="lazy">
+            </div>
+            <figcaption class="sys-diagram__foot">
+              <strong>Source:</strong> <code>docs/uml/development_process_quality_flow.puml</code>.
+              Green boxes represent helper scripts and CI checks used in the standard delivery path.
+            </figcaption>
+          </figure>
           <p class="small">
             Canonical end-to-end walkthrough:
             <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.

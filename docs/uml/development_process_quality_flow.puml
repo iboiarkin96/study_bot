@@ -1,0 +1,31 @@
+@startuml
+title Study App - Development Process with Quality Helpers
+
+start
+:1) Implement change\n(code + docs);
+
+#E8F5E9:2) Helper command\n`make docs-fix`\n(regenerates docs artifacts);
+
+:3) Local quality gate\n`make verify` + `make docs-check`;
+
+if (Local checks green?) then (yes)
+else (no)
+  :Fix locally and rerun\n`make verify` + `make docs-check`;
+  -up-> :3) Local quality gate\n`make verify` + `make docs-check`;
+endif
+
+:4) Open/Update PR;
+#E8F5E9:Helper in CI\n`.github/workflows/pr-template-check.yml`;
+
+:5) CI quality gate\n(full pipeline checks);
+
+if (CI green?) then (yes)
+  :6) Review and merge;
+else (no)
+  :Fix in branch;\nRun `make verify` + `make docs-check`;\nPush updates;
+  -up-> :5) CI quality gate\n(full pipeline checks);
+endif
+
+stop
+
+@enduml

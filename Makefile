@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build k8s-render-configmap k8s-apply
+.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-design-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build k8s-render-configmap k8s-apply
 
 # ──────────────────────────────────────────────
 # Help
@@ -104,6 +104,7 @@ help:
 	@echo "  # Documentation"
 	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + HTML repair + format + pdoc API + search index)"
 	@echo "  make docs-html-check      Validate HTML consistency (fails if docs HTML needs repair)"
+	@echo "  make docs-design-check    Baseline docs design consistency checks (page skeleton, cards, mounts)"
 	@echo "  make docs-a11y-check      Baseline accessibility checks (headings, landmarks, contrast, keyboard)"
 	@echo "  make docs-feedback-check  Smoke-check page-level feedback wiring for key docs pages"
 	@echo "  make uml-check            Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes)"
@@ -402,9 +403,11 @@ verify:
 	@$(MAKE) contract-test
 	@printf "$(ICON_INFO) %s\n" "[5/6] test"
 	@$(MAKE) test
-	@printf "$(ICON_INFO) %s\n" "[6/7] docs-fix"
+	@printf "$(ICON_INFO) %s\n" "[6/8] docs-fix"
 	@$(MAKE) docs-fix
-	@printf "$(ICON_INFO) %s\n" "[7/7] docs-a11y-check"
+	@printf "$(ICON_INFO) %s\n" "[7/8] docs-design-check"
+	@$(MAKE) docs-design-check
+	@printf "$(ICON_INFO) %s\n" "[8/8] docs-a11y-check"
 	@$(MAKE) docs-a11y-check
 	@printf "$(COLOR_GREEN)== VERIFY: SUCCESS ==$(COLOR_RESET)\n"
 
@@ -424,9 +427,11 @@ verify-ci:
 	@$(MAKE) contract-test
 	@printf "$(ICON_INFO) %s\n" "[6/7] test"
 	@$(MAKE) test
-	@printf "$(ICON_INFO) %s\n" "[7/8] docs-check"
+	@printf "$(ICON_INFO) %s\n" "[7/9] docs-check"
 	@$(MAKE) docs-check
-	@printf "$(ICON_INFO) %s\n" "[8/8] docs-a11y-check"
+	@printf "$(ICON_INFO) %s\n" "[8/9] docs-design-check"
+	@$(MAKE) docs-design-check
+	@printf "$(ICON_INFO) %s\n" "[9/9] docs-a11y-check"
 	@$(MAKE) docs-a11y-check
 	@printf "$(COLOR_GREEN)== VERIFY-CI: SUCCESS ==$(COLOR_RESET)\n"
 
@@ -560,6 +565,15 @@ docs-html-check:
 	@$(PYTHON) scripts/validate_docs_html.py
 	@printf "$(COLOR_GREEN)== DOCS-HTML-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
+# Baseline docs design checks (page skeleton and card conventions).
+docs-design-check:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(COLOR_CYAN)== DOCS-DESIGN-CHECK: START ==$(COLOR_RESET)\n"
+	@$(PYTHON) scripts/validate_docs_design.py
+	@printf "$(COLOR_GREEN)== DOCS-DESIGN-CHECK: SUCCESS ==$(COLOR_RESET)\n"
+
 # Baseline a11y checks for docs HTML (headings, landmarks, contrast, keyboard).
 docs-a11y-check:
 	@if [ ! -d ".venv" ]; then \
@@ -587,6 +601,7 @@ docs-check:
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
 	@$(MAKE) docs-html-check
+	@$(MAKE) docs-design-check
 	@$(MAKE) docs-feedback-check
 	@tmp_before=$$(mktemp); tmp_after=$$(mktemp); \
 	git diff HEAD > "$$tmp_before"; \
