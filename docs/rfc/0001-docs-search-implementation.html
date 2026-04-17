@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RFC 0001: Documentation Search Implementation</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <script defer src="../assets/docs-nav.js"></script>
+</head>
+
+<body>
+  <main class="container">
+    <h1>RFC 0001: Documentation Search Implementation</h1>
+    <div id="docs-top-nav"></div>
+    <section class="card">
+      <h2>Status</h2>
+      <ul>
+        <li>State: active</li>
+        <li>Date: 2026-04-17</li>
+        <li>Related decision: <a href="../adr/0027-client-side-docs-search-index-and-ranking.html">ADR 0027</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Goals and non-goals</h2>
+      <h3>Goals</h3>
+      <ul>
+        <li>Fast client-side full-site search over all HTML docs pages.</li>
+        <li>Deterministic lexical ranking with predictable tuning levers.</li>
+        <li>Minimal runtime dependencies and static-hosting compatibility.</li>
+        <li>Collection of product-quality search telemetry: zero-result rate, query CTR, and time-to-first-success.</li>
+      </ul>
+      <h3>Non-goals</h3>
+      <ul>
+        <li>Semantic/vector retrieval, typo correction, language morphology.</li>
+        <li>External hosted search services.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Architecture overview</h2>
+      <ol>
+        <li>Build step creates <code>docs/assets/search-index.json</code> from <code>docs/**/*.html</code>.</li>
+        <li>Browser loads the index once and executes query-time ranking in JS.</li>
+        <li>UI renders top-N results and supports keyboard navigation.</li>
+        <li>Telemetry events are emitted from browser and sent to API endpoint.</li>
+        <li>API persists events into SQLite table <code>docs_search_events</code>.</li>
+        <li>API aggregates and serves KPI snapshots via <code>/internal/telemetry/docs-search/metrics</code>.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Build-time indexing</h2>
+      <p>Implemented in <code>scripts/build_docs_search_index.py</code>.</p>
+      <h3>Input corpus</h3>
+      <ul>
+        <li>Includes: all <code>docs/**/*.html</code>.</li>
+        <li>Excludes: files under <code>docs/assets/</code>.</li>
+      </ul>
+      <h3>Extraction and normalization</h3>
+      <ul>
+        <li>Title from <code>&lt;title&gt;</code> with fallback to file stem.</li>
+        <li>Content from <code>&lt;main&gt;</code>; fallback to <code>&lt;body&gt;</code>.</li>
+        <li>Removes script/style/noscript/svg/template blocks and HTML tags.</li>
+        <li>Whitespace collapse and entity decoding.</li>
+        <li>Lowercase normalization and alphanumeric tokenization.</li>
+      </ul>
+      <h3>Index schema (version 2)</h3>
+      <ul>
+        <li><code>meta</code>: doc count, vocabulary size, avg content length, formulas.</li>
+        <li><code>docs</code>: metadata for rendering and length normalization.</li>
+        <li><code>doc_freq</code>: token document frequencies.</li>
+        <li><code>postings</code>: token postings with per-field TF values.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Query-time ranking</h2>
+      <p>Implemented in <code>docs/assets/docs-nav.js</code>.</p>
+      <h3>Core formula</h3>
+      <pre><code>score_base(d, T) = Σ over t in T:
+  idf(t) * (
+      8.0 * log(1 + tf_title(t, d))
+    + 4.0 * log(1 + tf_url(t, d))
+    + 2.0 * log(1 + tf_section(t, d))
+    + 1.4 * log(1 + tf_content(t, d))
+  )
+
+idf(t) = log(1 + (N + 1) / (df(t) + 0.5))
+
+norm(d) = 1 / (1 + 0.08 * max(0, content_len(d) / avg_content_len - 1))
+
+score_norm = score_base * norm</code></pre>
+      <h3>Precision boosts</h3>
+      <ul>
+        <li>All tokens present in title.</li>
+        <li>All tokens present in URL.</li>
+        <li>Exact query phrase in title.</li>
+        <li>Exact query phrase in URL.</li>
+        <li>Title prefix match.</li>
+        <li>Exact section match.</li>
+      </ul>
+      <h3>Prefix expansion policy</h3>
+      <ul>
+        <li>Applied only to the last query token.</li>
+        <li>Enabled for token length 3+.</li>
+        <li>Capped by <code>DOCS_SEARCH_MAX_PREFIX_EXPANSIONS</code> for bounded latency.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Telemetry implementation</h2>
+      <h3>Client event types</h3>
+      <ul>
+        <li><code>search_query</code>: emitted after each completed query execution.</li>
+        <li><code>search_result_click</code>: emitted on result click / enter activation.</li>
+        <li><code>search_success</code>: first successful click within active search session.</li>
+        <li><code>search_query_error</code>: emitted when index loading fails.</li>
+      </ul>
+      <h3>Transport behavior</h3>
+      <ul>
+        <li>Primary transport: <code>fetch</code> with <code>keepalive: true</code>.</li>
+        <li>Local default endpoint resolution: docs host <code>127.0.0.1:8765</code> routes telemetry to API host <code>127.0.0.1:8000</code>.</li>
+        <li>Endpoint can be overridden with <code>&lt;meta name="docs-search-telemetry-endpoint" ...&gt;</code>.</li>
+      </ul>
+      <h3>Server-side ingestion and storage</h3>
+      <ul>
+        <li>Ingest endpoint: <code>POST /internal/telemetry/docs-search</code>.</li>
+        <li>Storage table: <code>docs_search_events</code> (append-only).</li>
+        <li>DB file: same SQLite file configured by <code>SQLITE_DB_PATH</code>.</li>
+        <li>WAL mode enabled in telemetry store.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Canonical KPI definitions</h2>
+      <p>In a rolling time window:</p>
+      <ul>
+        <li><strong>Zero-result rate</strong> = <code>count(search_query where results_count = 0) / count(search_query)</code>.</li>
+        <li><strong>Query CTR</strong> = <code>count(distinct query_id with at least one search_result_click) / count(search_query)</code>.</li>
+        <li><strong>Time-to-first-success</strong> = distribution of first <code>search_success.time_to_success_ms</code> per session (reported as p50/p75).</li>
+      </ul>
+      <p>
+        Metrics endpoint:
+        <code>GET /internal/telemetry/docs-search/metrics?window_minutes=&lt;N&gt;</code>.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Local validation playbook</h2>
+      <ol>
+        <li>Rebuild search index:
+          <pre><code>python3 scripts/build_docs_search_index.py</code></pre>
+        </li>
+        <li>Run docs server:
+          <pre><code>cd docs
+python3 -m http.server 8765</code></pre>
+        </li>
+        <li>Run API:
+          <pre><code>make run</code></pre>
+        </li>
+        <li>Open <code>http://127.0.0.1:8765/index.html</code>, run queries, click a result.</li>
+        <li>Verify index fetch in browser network:
+          <code>GET /assets/search-index.json</code> returns <code>200</code> or <code>304</code>.</li>
+        <li>Verify DB writes:
+          <pre><code>sqlite3 study_app.db "select id,event,session_id,query_id,datetime(emitted_at_ms/1000,'unixepoch','localtime') from docs_search_events order by id desc limit 20;"</code></pre>
+        </li>
+        <li>Verify aggregate API:
+          <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
+        </li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Troubleshooting</h2>
+      <h3>Could not load search index</h3>
+      <ul>
+        <li>When opening docs via <code>file://</code>, fetch is blocked. Use HTTP server.</li>
+        <li>Wrong relative path can produce <code>/internal/assets/search-index.json</code> instead of <code>/assets/search-index.json</code>.</li>
+      </ul>
+      <h3>Telemetry preflight is 200 but no rows in DB</h3>
+      <ul>
+        <li><code>OPTIONS</code> only confirms preflight path; verify actual <code>POST</code> request and DB rows.</li>
+        <li>Use hard refresh to avoid stale JS cache.</li>
+        <li>SQLite viewers may not auto-refresh with WAL; validate via SQL query in terminal.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Change management</h2>
+      <ul>
+        <li>Keep ADR for architectural decisions (what/why); update RFC for implementation details (how).</li>
+        <li>When ranking weights or formulas change, update this RFC and run local validation playbook.</li>
+        <li>When telemetry schema changes, keep backward compatibility for metrics endpoint where feasible.</li>
+      </ul>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

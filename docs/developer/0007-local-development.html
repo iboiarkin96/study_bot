@@ -156,7 +156,50 @@
       </section>
       <section class="card">
 
-        <h2>6. Sanity checks</h2>
+        <h2>6. Local docs search smoke test (index + telemetry)</h2>
+        <p>
+          Use this checklist to validate the docs search UI and telemetry pipeline locally.
+        </p>
+        <ol>
+          <li>
+            Rebuild the search index:
+            <pre><code>python3 scripts/build_docs_search_index.py</code></pre>
+          </li>
+          <li>
+            Serve docs over HTTP (not <code>file://</code>):
+            <pre><code>cd docs
+python3 -m http.server 8765</code></pre>
+          </li>
+          <li>
+            Start API locally (telemetry endpoint lives on API host):
+            <pre><code>make run</code></pre>
+          </li>
+          <li>
+            Open <code>http://127.0.0.1:8765/index.html</code>, type a few queries, and click at least one result.
+          </li>
+          <li>
+            In browser Network, verify index fetch:
+            <code>GET /assets/search-index.json</code> returns <code>200</code>.
+          </li>
+          <li>
+            Verify telemetry writes in SQLite:
+            <pre><code>sqlite3 study_app.db "select event, count(*) from docs_search_events group by event order by event;"</code></pre>
+          </li>
+          <li>
+            Verify KPI aggregation endpoint:
+            <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
+          </li>
+        </ol>
+        <h3>Why Network can show only OPTIONS</h3>
+        <ul>
+          <li>Telemetry may be sent with <code>navigator.sendBeacon</code>; in DevTools this is often shown as <em>ping/other</em>, not as fetch/XHR.</li>
+          <li>When fallback <code>fetch</code> is used, browser sends CORS preflight <code>OPTIONS</code> before <code>POST</code>.</li>
+          <li>If you only see <code>OPTIONS</code>, use DB/API verification above as source of truth for successful ingestion.</li>
+        </ul>
+      </section>
+      <section class="card">
+
+        <h2>7. Sanity checks</h2>
         <ul>
           <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code> (responses
             include <code>X-Request-Id</code>)</li>

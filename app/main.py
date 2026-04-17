@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from time import perf_counter
 from typing import Any
 
@@ -23,6 +24,7 @@ from starlette.responses import Response
 from app.api.v1.user import router as user_router
 from app.core.config import get_settings
 from app.core.database import SessionLocal, engine
+from app.core.docs_search_telemetry import DocsSearchTelemetryStore
 from app.core.logging import configure_logging
 from app.core.metrics import MetricsCollector, install_sqlalchemy_metrics, metrics_content_type
 from app.core.request_context import (
@@ -41,6 +43,10 @@ from app.core.security import (
 )
 from app.errors.common import COMMON_413, COMMON_429
 from app.schemas.system import LiveResponse, ReadyResponse
+from app.schemas.telemetry import (
+    DocsSearchTelemetryIngestRequest,
+    DocsSearchTelemetryMetricsResponse,
+)
 from app.validation.user import build_validation_error_payload
 
 settings = get_settings()
@@ -84,6 +90,7 @@ metrics = MetricsCollector(
     db_buckets=settings.metrics_buckets_db,
 )
 install_sqlalchemy_metrics(engine=engine, metrics=metrics)
+docs_search_telemetry_store = DocsSearchTelemetryStore(settings.sqlite_db_path)
 
 app.add_middleware(
     CORSMiddleware,
@@ -366,6 +373,67 @@ app.add_api_route(
     methods=["GET"],
     include_in_schema=False,
 )
+
+
+@app.post(
+    "/internal/telemetry/docs-search",
+    tags=["System"],
+    summary="Ingest docs search telemetry event",
+    operation_id="ingestDocsSearchTelemetryEvent",
+    status_code=202,
+)
+def ingest_docs_search_telemetry(
+    payload: DocsSearchTelemetryIngestRequest,
+) -> dict[str, str]:
+    """Persist one docs-search client telemetry event to the technical SQLite DB.
+
+    Args:
+        payload: Normalized telemetry event body from docs frontend JS.
+
+    Returns:
+        Lightweight acknowledgement body.
+    """
+    persisted_payload = payload.model_dump(mode="json")
+    extra_payload = persisted_payload.pop("payload", {})
+    if isinstance(extra_payload, dict):
+        persisted_payload.update(extra_payload)
+    docs_search_telemetry_store.insert_event(persisted_payload)
+    return {"status": "accepted"}
+
+
+@app.get(
+    "/internal/telemetry/docs-search/metrics",
+    tags=["System"],
+    summary="Get docs search KPI summary",
+    operation_id="getDocsSearchTelemetryMetrics",
+    response_model=DocsSearchTelemetryMetricsResponse,
+)
+def get_docs_search_telemetry_metrics(
+    window_minutes: int = 24 * 60,
+) -> DocsSearchTelemetryMetricsResponse:
+    """Return docs-search KPI aggregates for the requested rolling time window.
+
+    Args:
+        window_minutes: Rolling aggregation horizon (default 24 hours).
+
+    Returns:
+        KPI summary with zero-result rate, query CTR, and time-to-first-success percentiles.
+    """
+    bounded_window = min(max(1, int(window_minutes)), 30 * 24 * 60)
+    snapshot = docs_search_telemetry_store.metrics(
+        now_ms=int(time.time() * 1000),
+        window_minutes=bounded_window,
+    )
+    return DocsSearchTelemetryMetricsResponse(
+        window_minutes=snapshot.window_minutes,
+        total_queries=snapshot.total_queries,
+        zero_result_queries=snapshot.zero_result_queries,
+        zero_result_rate=snapshot.zero_result_rate,
+        queries_with_click=snapshot.queries_with_click,
+        query_ctr=snapshot.query_ctr,
+        median_time_to_first_success_ms=snapshot.median_time_to_first_success_ms,
+        p75_time_to_first_success_ms=snapshot.p75_time_to_first_success_ms,
+    )
 
 
 @app.get("/docs", include_in_schema=False)

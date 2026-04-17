@@ -18,6 +18,64 @@
  * “active descendant” to decide `open`.
  */
 (function () {
+  const INTERNAL_SIDEBAR_COLLAPSED_STORAGE_KEY = "docs.internal.sidebar.collapsed";
+
+  function readSidebarCollapsedPreference() {
+    try {
+      return window.localStorage.getItem(INTERNAL_SIDEBAR_COLLAPSED_STORAGE_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function persistSidebarCollapsedPreference(isCollapsed) {
+    try {
+      window.localStorage.setItem(INTERNAL_SIDEBAR_COLLAPSED_STORAGE_KEY, isCollapsed ? "1" : "0");
+    } catch {
+      // Ignore storage failures and keep interaction working.
+    }
+  }
+
+  function ensureSidebarToggle(sidebar, sidebarHost, shell) {
+    if (!sidebar || !sidebarHost || !shell) {
+      return;
+    }
+    const title = sidebar.querySelector(".internal-layout__sidebar-title");
+    if (!title) {
+      return;
+    }
+    const expandedTitleText = "Internal docs";
+    const collapsedTitleText = "DOCS";
+    title.textContent = expandedTitleText;
+
+    let toggle = sidebar.querySelector("[data-internal-sidebar-toggle]");
+    if (!toggle) {
+      toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "internal-layout__sidebar-toggle";
+      toggle.setAttribute("data-internal-sidebar-toggle", "1");
+      title.insertAdjacentElement("afterend", toggle);
+    }
+
+    toggle.setAttribute("aria-controls", sidebarHost.id);
+
+    function applyCollapsedState(isCollapsed) {
+      shell.classList.toggle("is-sidebar-collapsed", isCollapsed);
+      sidebarHost.hidden = isCollapsed;
+      toggle.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
+      toggle.textContent = isCollapsed ? "SHOW\nMENU" : "Hide menu";
+      title.textContent = isCollapsed ? collapsedTitleText : expandedTitleText;
+    }
+
+    let isCollapsed = readSidebarCollapsedPreference();
+    applyCollapsedState(isCollapsed);
+    toggle.addEventListener("click", () => {
+      isCollapsed = !isCollapsed;
+      applyCollapsedState(isCollapsed);
+      persistSidebarCollapsedPreference(isCollapsed);
+    });
+  }
+
   function normalizeParts(parts) {
     const out = [];
     for (const part of parts) {
@@ -55,17 +113,31 @@
     if (idx >= 0) {
       return path.slice(idx + marker.length);
     }
-    const ghPages = path.match(/^\/[^/]+\/(.*)$/);
-    if (ghPages) {
-      const rel = ghPages[1];
-      return rel && rel.length > 0 ? rel : "index.html";
-    }
     const parts = path.split("/").filter(Boolean);
-    const last = parts[parts.length - 1];
-    if (!last) {
+    if (parts.length === 0) {
       return "index.html";
     }
-    return last;
+    const docsRootFirstSegments = new Set([
+      "index.html",
+      "adr",
+      "api",
+      "assets",
+      "audit",
+      "backlog",
+      "developer",
+      "howto",
+      "internal",
+      "openapi",
+      "rfc",
+      "runbooks",
+    ]);
+    if (docsRootFirstSegments.has(parts[0])) {
+      return parts.join("/");
+    }
+    if (parts.length >= 2) {
+      return parts.slice(1).join("/");
+    }
+    return parts[0] || "index.html";
   }
 
   function normalizePath(p) {
@@ -111,6 +183,8 @@
     { label: "Methodology", path: "internal/methodology.html" },
     { label: "System design", path: "internal/system-design.html" },
     { label: "Developers Docs", path: "internal/developers.html" },
+    { label: "ADR", path: "adr/README.html" },
+    { label: "RFC", path: "rfc/README.html" },
     {
       label: "Kafka (just example)",
       children: [
@@ -179,12 +253,15 @@
     if (!host) {
       return;
     }
+    const sidebar = host.closest(".internal-layout__sidebar");
+    const shell = document.querySelector(".internal-layout__shell");
     const relPath = currentDocsRelPath();
     const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
     const nav = document.createElement("nav");
     nav.setAttribute("aria-label", "Internal documentation");
     nav.appendChild(renderTree(INTERNAL_SIDEBAR_NAV, fromDir, relPath));
     host.replaceChildren(nav);
+    ensureSidebarToggle(sidebar, host, shell);
   }
 
   if (document.readyState === "loading") {

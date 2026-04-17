@@ -19,33 +19,18 @@
       <main class="container">
         <h1>Welcome — Internal docs</h1>
         <div id="docs-top-nav"></div>
-        <nav aria-labelledby="toc">
-          <h2 id="toc">Contents</h2>
-          <ol>
-            <li><a href="#overview">Overview</a></li>
-            <li><a href="#onboarding">Onboarding path (first setup to endpoint + docs)</a></li>
-            <li><a href="#boundaries">Request path and layering</a></li>
-            <li><a href="#contract">Contract and integrators</a></li>
-            <li><a href="#observability">Observability and operations</a></li>
-            <li><a href="#history">Document history</a></li>
-          </ol>
-        </nav>
-
         <section id="overview" class="card">
           <h2>Overview</h2>
           <p>
-            This project is all about the <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API. If you're
-            working on this project, this page will help you find
-            where things
-            live and show you where to
-            learn more.
+            This project is all about the <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API. If you are
+            working on this project, this page helps you find where things live and where to learn more.
           </p>
           <ul>
             <li>
               <strong>What is this API?</strong>
               The <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API provides a set of endpoints designed to
-              help you build systems—like a study app—that
-              support knowledge review using effective retrieval and scheduling methods.
+              help you build systems (for example, a study app) that support knowledge review using effective retrieval
+              and scheduling methods.
             </li>
             <li>
               <strong>Want to know how the system is designed?</strong>
@@ -63,9 +48,14 @@
               Find guides, setup steps, and technical notes in the <a href="./developers.html">Developers Docs</a>.
             </li>
             <li>
+              <strong>Need architecture decisions and deep technical implementation specs?</strong>
+              Read <a href="../adr/README.html">ADR Index</a> for decision rationale and
+              <a href="../rfc/README.html">RFC Index</a> for implementation-level details (including docs search internals).
+            </li>
+            <li>
               <strong>Need onboarding from zero to first endpoint and docs?</strong>
-              Start with
-              <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding guide (setup → endpoint → docs)</a>.
+              Start with <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding guide (setup →
+                endpoint → docs)</a>.
             </li>
             <li>
               <strong>Interested in the API itself?</strong>
@@ -78,7 +68,8 @@
             </li>
             <li>
               <strong>Need the official API reference?</strong>
-              Check the <a href="../openapi/openapi-baseline.json"><code>OpenAPI baseline</code></a> or <a href="../openapi/openapi-explorer.html">OpenAPI Explorer</a>.
+              Check the <a href="../openapi/openapi-baseline.json"><code>OpenAPI baseline</code></a> or
+              <a href="../openapi/openapi-explorer.html">OpenAPI Explorer</a>.
               If the app is running, visit <code>/docs</code> for live docs.
             </li>
             <li>
@@ -119,84 +110,84 @@
             For details, see:
           </p>
           <ul>
-          <li>
-            Layering model, processing order, and business rule overview:
-            <a href="../developer/0003-business-logic.html">Business Logic Guide</a>
-          </li>
-          <li>
-            Schema evolution and contract safety:
-            <a href="../developer/0002-schemas-and-contracts.html">Schemas and contracts</a>
-          </li>
-          <li>
-            System architecture (C4 diagrams, containers, observability stack):
-            <a href="./system-design.html#architectural-decomposition">System design §3</a>
-          </li>
+            <li>
+              Layering model, processing order, and business rule overview:
+              <a href="../developer/0003-business-logic.html">Business Logic Guide</a>
+            </li>
+            <li>
+              Schema evolution and contract safety:
+              <a href="../developer/0002-schemas-and-contracts.html">Schemas and contracts</a>
+            </li>
+            <li>
+              System architecture (C4 diagrams, containers, observability stack):
+              <a href="./system-design.html#architectural-decomposition">System design §3</a>
+            </li>
           </ul>
         </section>
 
-      <section id="contract" class="card">
-        <h2>Contract and integrators</h2>
-        <p>
-          External developers must use the <strong>OpenAPI document</strong> as the contract: committed snapshot at
-          <code>docs/openapi/openapi-baseline.json</code>, explorer at
-          <a href="../openapi/openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at <code>/docs</code>.
-          Release-to-release changes are summarized in the repository root <code>CHANGELOG.md</code>
-          (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
-        </p>
-        <p>
-          Versioning rules (URL major version, additive changes within a major) follow
-          <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
-        </p>
-      </section>
-
-      <section id="observability" class="card">
-        <h2>Observability and operations</h2>
-        <p>
-          Health, readiness, and metrics expectations follow
-          <a href="../adr/0009-health-readiness-and-observability.html">ADR 0009</a>. Non-functional detail (including
-          <code>/metrics</code> and Prometheus) is summarized under
-          <a href="./system-design.html#dev-nfr">System design — Non-Functional Requirements</a> (NFR-5). Structured
-          logging follows
-          <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>. Operational recovery
-          steps belong in <a href="../runbooks/README.html">Runbooks</a> when they are procedural.
-        </p>
-      </section>
-
-      <section id="history" class="card">
-        <h2>Document history</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Summary</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2026-04-17</td>
-              <td>Overview IA (layering/observability, merged cards, sidebar “Overview”); added
-                <a href="./methodology.html"><code>methodology.html</code></a> for human <abbr title="Extract–Transform–Retrieve">ETR</abbr> workflow (idea-discovery
-                only), sidebar link, System design §2 pointer.
-              </td>
-            </tr>
-            <tr>
-              <td>2026-04-16</td>
-              <td>Merged former <code>service-overview.html</code> into this page; one overview for project context
-                and
-                service scope.</td>
-              </tr>
-              <tr>
-                <td>2026-04-14</td>
-                <td>Initial internal service overview page; ADR 0025/0026 establish <code>docs/internal/</code> norms.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <section id="contract" class="card">
+          <h2>Contract and integrators</h2>
+          <p>
+            External developers must use the <strong>OpenAPI document</strong> as the contract: committed snapshot at
+            <code>docs/openapi/openapi-baseline.json</code>, explorer at
+            <a href="../openapi/openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at <code>/docs</code>.
+            Release-to-release changes are summarized in the repository root <code>CHANGELOG.md</code>
+            (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
+          </p>
+          <p>
+            Versioning rules (URL major version, additive changes within a major) follow
+            <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
+          </p>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
+        <section id="observability" class="card">
+          <h2>Observability and operations</h2>
+          <p>
+            Health, readiness, and metrics expectations follow
+            <a href="../adr/0009-health-readiness-and-observability.html">ADR 0009</a>. Non-functional detail (including
+            <code>/metrics</code> and Prometheus) is summarized under
+            <a href="./system-design.html#dev-nfr">System design — Non-Functional Requirements</a> (NFR-5). Structured
+            logging follows
+            <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>. Operational recovery
+            steps belong in <a href="../runbooks/README.html">Runbooks</a> when they are procedural.
+          </p>
+        </section>
 
-</body></html>
+        <section id="history" class="card">
+          <h2>Document history</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Summary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2026-04-17</td>
+                <td>Overview IA (layering/observability, merged cards, sidebar “Overview”); added
+                  <a href="./methodology.html"><code>methodology.html</code></a> for human <abbr title="Extract–Transform–Retrieve">ETR</abbr> workflow (idea-discovery
+                  only), sidebar link, System design §2 pointer.
+                </td>
+              </tr>
+              <tr>
+                <td>2026-04-16</td>
+                <td>Merged former <code>service-overview.html</code> into this page; one overview for project context
+                  and
+                  service scope.</td>
+                </tr>
+                <tr>
+                  <td>2026-04-14</td>
+                  <td>Initial internal service overview page; ADR 0025/0026 establish <code>docs/internal/</code> norms.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </main>
+      </div>
+    </div>
+
+  </body></html>
