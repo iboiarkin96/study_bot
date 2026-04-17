@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Error Matrix By Status</title>
@@ -49,118 +47,114 @@
     <section class="card">
 
       <h2>3. Service-wide common pool (recommended baseline)</h2>
-      <section class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>HTTP status</th>
-              <th>Code(s)</th>
-              <th>Key(s)</th>
-              <th>Reuse scope</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>401</code></td>
-              <td><code>COMMON_401</code></td>
-              <td><code>SECURITY_AUTH_REQUIRED</code></td>
-              <td>All protected endpoints.</td>
-            </tr>
-            <tr>
-              <td><code>413</code></td>
-              <td><code>COMMON_413</code></td>
-              <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
-              <td>Endpoints that can receive oversized body.</td>
-            </tr>
-            <tr>
-              <td><code>429</code></td>
-              <td><code>COMMON_429</code></td>
-              <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
-              <td>All endpoints behind rate limiting.</td>
-            </tr>
-            <tr>
-              <td><code>409</code></td>
-              <td><code>COMMON_409</code></td>
-              <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
-              <td>Write endpoints with idempotency semantics.</td>
-            </tr>
-            <tr>
-              <td><code>400</code></td>
-              <td><code>COMMON_400</code></td>
-              <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
-              <td>Write endpoints where idempotency key is required.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      <table>
+        <thead>
+          <tr>
+            <th>HTTP status</th>
+            <th>Code(s)</th>
+            <th>Key(s)</th>
+            <th>Reuse scope</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>401</code></td>
+            <td><code>COMMON_401</code></td>
+            <td><code>SECURITY_AUTH_REQUIRED</code></td>
+            <td>All protected endpoints.</td>
+          </tr>
+          <tr>
+            <td><code>413</code></td>
+            <td><code>COMMON_413</code></td>
+            <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+            <td>Endpoints that can receive oversized body.</td>
+          </tr>
+          <tr>
+            <td><code>429</code></td>
+            <td><code>COMMON_429</code></td>
+            <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+            <td>All endpoints behind rate limiting.</td>
+          </tr>
+          <tr>
+            <td><code>409</code></td>
+            <td><code>COMMON_409</code></td>
+            <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+            <td>Write endpoints with idempotency semantics.</td>
+          </tr>
+          <tr>
+            <td><code>400</code></td>
+            <td><code>COMMON_400</code></td>
+            <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+            <td>Write endpoints where idempotency key is required.</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
     <section class="card">
 
       <h2>4. Entity matrix example: user</h2>
-      <section class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>Endpoint</th>
-              <th>HTTP status</th>
-              <th>Class</th>
-              <th>Code prefix</th>
-              <th>Current examples</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>POST /api/v1/user</code></td>
-              <td><code>400</code></td>
-              <td>Mixed: COMMON + entity</td>
-              <td><code>COMMON_*</code> + <code>USER_*</code></td>
-              <td><code>IDEMPOTENCY_KEY_REQUIRED</code>, <code>USER_CREATE_ALREADY_EXISTS</code></td>
-            </tr>
-            <tr>
-              <td><code>POST /api/v1/user</code></td>
-              <td><code>422</code></td>
-              <td>Entity validation matrix</td>
-              <td><code>USER_00x</code></td>
-              <td><code>USER_001...USER_013</code></td>
-            </tr>
-            <tr>
-              <td><code>GET /api/v1/user/{system_user_id}</code></td>
-              <td><code>404</code></td>
-              <td>Entity business</td>
-              <td><code>USER_*</code></td>
-              <td><code>USER_NOT_FOUND</code> (<code>USER_404</code>)</td>
-            </tr>
-            <tr>
-              <td><code>PUT /api/v1/user/{system_user_id}</code></td>
-              <td><code>422</code></td>
-              <td>Entity validation matrix</td>
-              <td><code>USER_014…USER_024</code></td>
-              <td>Update body rules (e.g. <code>USER_UPDATE_TIMEZONE_INVALID</code>)</td>
-            </tr>
-            <tr>
-              <td><code>PATCH /api/v1/user/{system_user_id}</code></td>
-              <td><code>400</code></td>
-              <td>Entity business</td>
-              <td><code>USER_102</code></td>
-              <td><code>USER_PATCH_BODY_EMPTY</code> (no fields in body)</td>
-            </tr>
-            <tr>
-              <td><code>PATCH /api/v1/user/{system_user_id}</code></td>
-              <td><code>422</code></td>
-              <td>Entity validation matrix</td>
-              <td><code>USER_014…USER_024</code></td>
-              <td>Same field rules as PUT when a field is present</td>
-            </tr>
-            <tr>
-              <td><code>GET /api/v1/user/{system_user_id}</code></td>
-              <td><code>401</code>, <code>429</code></td>
-              <td>COMMON reusable</td>
-              <td><code>COMMON_*</code></td>
-              <td>Auth and rate-limit responses reused from shared pool</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
+      <table>
+        <thead>
+          <tr>
+            <th>Endpoint</th>
+            <th>HTTP status</th>
+            <th>Class</th>
+            <th>Code prefix</th>
+            <th>Current examples</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>POST /api/v1/user</code></td>
+            <td><code>400</code></td>
+            <td>Mixed: COMMON + entity</td>
+            <td><code>COMMON_*</code> + <code>USER_*</code></td>
+            <td><code>IDEMPOTENCY_KEY_REQUIRED</code>, <code>USER_CREATE_ALREADY_EXISTS</code></td>
+          </tr>
+          <tr>
+            <td><code>POST /api/v1/user</code></td>
+            <td><code>422</code></td>
+            <td>Entity validation matrix</td>
+            <td><code>USER_00x</code></td>
+            <td><code>USER_001...USER_013</code></td>
+          </tr>
+          <tr>
+            <td><code>GET /api/v1/user/{system_user_id}</code></td>
+            <td><code>404</code></td>
+            <td>Entity business</td>
+            <td><code>USER_*</code></td>
+            <td><code>USER_NOT_FOUND</code> (<code>USER_404</code>)</td>
+          </tr>
+          <tr>
+            <td><code>PUT /api/v1/user/{system_user_id}</code></td>
+            <td><code>422</code></td>
+            <td>Entity validation matrix</td>
+            <td><code>USER_014…USER_024</code></td>
+            <td>Update body rules (e.g. <code>USER_UPDATE_TIMEZONE_INVALID</code>)</td>
+          </tr>
+          <tr>
+            <td><code>PATCH /api/v1/user/{system_user_id}</code></td>
+            <td><code>400</code></td>
+            <td>Entity business</td>
+            <td><code>USER_102</code></td>
+            <td><code>USER_PATCH_BODY_EMPTY</code> (no fields in body)</td>
+          </tr>
+          <tr>
+            <td><code>PATCH /api/v1/user/{system_user_id}</code></td>
+            <td><code>422</code></td>
+            <td>Entity validation matrix</td>
+            <td><code>USER_014…USER_024</code></td>
+            <td>Same field rules as PUT when a field is present</td>
+          </tr>
+          <tr>
+            <td><code>GET /api/v1/user/{system_user_id}</code></td>
+            <td><code>401</code>, <code>429</code></td>
+            <td>COMMON reusable</td>
+            <td><code>COMMON_*</code></td>
+            <td>Auth and rate-limit responses reused from shared pool</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
     <section class="card">
 
@@ -184,6 +178,4 @@
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
   </main>
 
-</body>
-
-</html>
+</body></html>

@@ -102,7 +102,7 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + HTML repair + format + pdoc API)"
+	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + HTML repair + format + pdoc API + search index)"
 	@echo "  make docs-html-check      Validate HTML consistency (fails if docs HTML needs repair)"
 	@echo "  make docs-a11y-check      Baseline accessibility checks (headings, landmarks, contrast, keyboard)"
 	@echo "  make uml-check            Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes)"
@@ -532,20 +532,22 @@ docs-fix:
 		printf "$(ICON_ERR) %s\n" "scripts/regenerate_docs.py not found."; exit 1; \
 	fi
 	@printf "$(COLOR_CYAN)== DOCS-FIX: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/7] regenerate UML diagrams"
+	@printf "$(ICON_INFO) %s\n" "[1/8] regenerate UML diagrams"
 	@$(PYTHON) scripts/regenerate_docs.py
-	@printf "$(ICON_INFO) %s\n" "[2/7] sync marker-based documentation"
+	@printf "$(ICON_INFO) %s\n" "[2/8] sync marker-based documentation"
 	@$(PYTHON) scripts/sync_docs.py
-	@printf "$(ICON_INFO) %s\n" "[3/7] render Kubernetes ConfigMap from k8s/app.env"
+	@printf "$(ICON_INFO) %s\n" "[3/8] render Kubernetes ConfigMap from k8s/app.env"
 	@$(PYTHON) scripts/render_k8s_configmap.py
-	@printf "$(ICON_INFO) %s\n" "[4/7] render docs markdown to html companions"
+	@printf "$(ICON_INFO) %s\n" "[4/8] render docs markdown to html companions"
 	@$(PYTHON) scripts/render_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[5/7] repair docs html structure"
+	@printf "$(ICON_INFO) %s\n" "[5/8] repair docs html structure"
 	@$(PYTHON) scripts/repair_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[6/7] normalize docs html template"
+	@printf "$(ICON_INFO) %s\n" "[6/8] normalize docs html template"
 	@$(PYTHON) scripts/format_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[7/7] Python API reference (pdoc)"
+	@printf "$(ICON_INFO) %s\n" "[7/8] Python API reference (pdoc)"
 	@$(MAKE) api-docs
+	@printf "$(ICON_INFO) %s\n" "[8/8] build docs search index"
+	@$(PYTHON) scripts/build_docs_search_index.py
 	@printf "$(COLOR_GREEN)== DOCS-FIX: SUCCESS ==$(COLOR_RESET)\n"
 
 # Validate docs HTML structure is already normalized (no writes).

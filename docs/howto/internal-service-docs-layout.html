@@ -66,7 +66,7 @@
         </section>
 
         <section class="card" id="page-structure">
-          <h2>Page structure (Contents, Overview, sections)</h2>
+          <h2>Page structure (On this page, Overview, sections)</h2>
           <p>
             Multi-section pages that use the internal sidebar layout should follow one predictable skeleton so navigation
             and scanning stay consistent. Canonical example:
@@ -85,13 +85,6 @@
                 of contents.
               </li>
               <li>
-                <strong>Contents</strong> — <code>&lt;nav aria-labelledby="toc"&gt;</code> with
-                <code>&lt;h2 id="toc"&gt;Contents&lt;/h2&gt;</code> and an <code>&lt;ol&gt;</code> of anchors to in-page
-                sections (<code>&lt;a href="#your-section-id"&gt;</code>). Keep every <code>href</code> in sync with a
-                matching
-                <code>&lt;section id="..."&gt;</code> (or other target) on the same page.
-              </li>
-              <li>
                 <strong>Overview</strong> — on hub / landing pages, the first substantive block is usually
                 <code>&lt;section id="overview" class="card"&gt;</code> with <code>&lt;h2&gt;Overview&lt;/h2&gt;</code>: who
                 the
@@ -103,10 +96,9 @@
                 Additional topics — more <code>&lt;section id="..." class="card"&gt;</code> blocks, one main subject per card.
               </li>
               <li>
-                Optional <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near the
-                end
-                of the container — injects an auto-generated mini-TOC from headings; redundant with manual Contents if both
-                are present, so use on purpose.
+                <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near the end of
+                the container — injects the auto-generated <strong>On this page</strong> TOC from headings. If this mount is
+                missing, <code>docs-nav.js</code> adds it automatically.
               </li>
             </ol>
           </section>
@@ -163,7 +155,7 @@
                 <section class="card">
                   <h2>Related</h2>
                   <ul>
-                    <li><a href="#page-structure">Page structure (Contents, Overview, sections)</a> — on this page</li>
+                    <li><a href="#page-structure">Page structure (On this page, Overview, sections)</a> — on this page</li>
                     <li><a href="../internal/README.html">Internal service documentation — index</a></li>
                     <li><a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> — external vs internal API
                       documentation</li>

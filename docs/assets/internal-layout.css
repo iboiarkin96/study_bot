@@ -52,6 +52,59 @@
   margin: 0 0 10px;
 }
 
+.internal-layout__sidebar-toggle {
+  display: inline-block;
+  margin: 0 0 12px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  padding: 5px 11px;
+  cursor: pointer;
+  position: relative;
+  isolation: isolate;
+}
+
+.internal-layout__sidebar-toggle:hover {
+  border-color: var(--accent, #2563eb);
+  color: var(--accent, #2563eb);
+}
+
+.internal-layout__shell.is-sidebar-collapsed {
+  grid-template-columns: 56px minmax(0, 1fr);
+}
+
+.internal-layout__shell.is-sidebar-collapsed .internal-layout__sidebar {
+  max-height: none;
+  overflow: visible;
+  padding-right: 4px;
+}
+
+.internal-layout__shell.is-sidebar-collapsed .internal-layout__sidebar-title {
+  margin: 0 0 6px;
+  writing-mode: horizontal-tb;
+  transform: none;
+  letter-spacing: 0.14em;
+  line-height: 1.15;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.internal-layout__shell.is-sidebar-collapsed .internal-layout__sidebar-toggle {
+  margin-bottom: 0;
+  writing-mode: horizontal-tb;
+  min-height: 0;
+  min-width: 44px;
+  padding: 8px 6px;
+  border-radius: 16px;
+  line-height: 1.1;
+  text-align: center;
+  white-space: pre-line;
+}
+
+
 .internal-layout__main {
   min-width: 0;
   padding-left: 8px;
@@ -60,6 +113,10 @@
 @media (max-width: 900px) {
   .internal-layout__main {
     padding-left: 0;
+  }
+
+  .internal-layout__shell.is-sidebar-collapsed {
+    grid-template-columns: 1fr;
   }
 }
 

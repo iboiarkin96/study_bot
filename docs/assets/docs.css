@@ -833,6 +833,92 @@ main.docs-page-layout [id] {
   border-left-color: var(--accent);
 }
 
+/* Global docs search (docs-nav.js + docs/assets/search-index.json). */
+.docs-search {
+  position: relative;
+  margin-top: 12px;
+}
+
+.docs-search__label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.docs-search__input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  background: #fff;
+  color: var(--text);
+}
+
+.docs-search__input::placeholder {
+  color: #94a3b8;
+}
+
+.docs-search__results {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.docs-search__result-link {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.docs-search__result-link:hover,
+.docs-search__result-link--active {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  text-decoration: none;
+}
+
+.docs-search__result-title {
+  display: block;
+  font-weight: 600;
+}
+
+.docs-search__result-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.docs-search__result-preview {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.docs-search__empty,
+.docs-search__status {
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.docs-search__status--error {
+  color: #7f1d1d;
+}
+
 @media (max-width: 960px) {
   .docs-page-layout__inner {
     grid-template-columns: 1fr;

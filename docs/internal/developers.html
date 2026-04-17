@@ -19,37 +19,27 @@
       <main class="container">
         <h1>Developers Docs</h1>
         <div id="docs-top-nav"></div>
-        <nav aria-labelledby="toc">
-          <h2 id="toc">Contents</h2>
-          <ol>
-            <li><a href="#overview">Overview</a></li>
-            <li><a href="#quick-start">Quick start</a></li>
-            <li><a href="#developer-guides">Developer guides by topic</a></li>
-            <li><a href="#engineering-standards">Engineering standards (mandatory)</a></li>
-            <li><a href="#versioning-policy">API versioning policy</a></li>
-            <li><a href="#related-hubs">Related hubs</a></li>
-          </ol>
-        </nav>
-
         <section id="overview" class="card">
           <h2>Overview</h2>
-          <p>One entry point for engineering workflow: where to start, which guides to read, and which quality gates are
-            mandatory before release.</p>
-          </section>
-          <section id="quick-start" class="card">
-            <h2>Quick start</h2>
-            <p>Recommended day-to-day path for contributors.</p>
-            <ol>
-              <li>Install environment once: <code>make env-init</code> and <code>make install</code>.</li>
-              <li>Run local API: <code>make run</code> (or <code>make run-project</code> for observability stack).</li>
-              <li>Before commit/PR: <code>make verify</code>.</li>
-              <li>Before deployment: <code>make release-check</code> or <code>make release DEPLOY_CMD="..."</code>.</li>
-            </ol>
-            <p class="small">
-              Full command taxonomy and rationale: <a href="../developer/0010-make-commands-and-workflows.html">Make
-              commands and workflows</a>.
-            </p>
-          </section>
+          <p>
+            One entry point for engineering workflow: where to start, which guides to read, and which quality gates are
+            mandatory before release.
+          </p>
+        </section>
+        <section id="quick-start" class="card">
+          <h2>Quick start</h2>
+          <p>Recommended day-to-day path for contributors.</p>
+          <ol>
+            <li>Install environment once: <code>make env-init</code> and <code>make install</code>.</li>
+            <li>Run local API: <code>make run</code> (or <code>make run-project</code> for observability stack).</li>
+            <li>Before commit or PR: <code>make verify</code>.</li>
+            <li>Before deployment: <code>make release-check</code> or <code>make release DEPLOY_CMD="..."</code>.</li>
+          </ol>
+          <p class="small">
+            Full command taxonomy and rationale:
+            <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>.
+          </p>
+        </section>
 
           <section id="developer-guides" class="card">
             <h2>Developer guides by topic</h2>
@@ -160,56 +150,47 @@
             </table>
           </section>
 
-          <section id="engineering-standards" class="card">
-            <h2>Engineering standards (mandatory)</h2>
-            <ul>
-              <li><strong>Contract-first:</strong> API behavior must match request/response/error contracts.</li>
-              <li><strong>Validation boundaries:</strong> validate at API boundary, avoid duplicated shape validation in
-                inner layers.</li>
-                <li><strong>Error governance:</strong> existing <code>code</code> and <code>key</code> values are immutable;
-                  add, do not repurpose.</li>
-                  <li><strong>Testing policy:</strong> API changes require success + failure tests and OpenAPI contract
-                    checks.</li>
-                    <li><strong>Security baseline:</strong> protected endpoints must keep auth, limits, and security headers
-                      enabled.</li>
-                      <li><strong>Observability baseline:</strong> maintain <code>/live</code>, <code>/ready</code>,
-                        <code>/metrics</code>, and request correlation IDs.
-                      </li>
-                      <li><strong>Config governance:</strong> use explicit <code>APP_ENV</code> profiles and block insecure
-                        production defaults.</li>
-                      </ul>
-                    </section>
+        <section id="engineering-standards" class="card">
+          <h2>Engineering standards (mandatory)</h2>
+          <ul>
+            <li><strong>Contract-first:</strong> API behavior must match request/response/error contracts.</li>
+            <li><strong>Validation boundaries:</strong> validate at API boundary, avoid duplicated shape validation in inner layers.</li>
+            <li><strong>Error governance:</strong> existing <code>code</code> and <code>key</code> values are immutable; add, do not repurpose.</li>
+            <li><strong>Testing policy:</strong> API changes require success + failure tests and OpenAPI contract checks.</li>
+            <li><strong>Security baseline:</strong> protected endpoints must keep auth, limits, and security headers enabled.</li>
+            <li><strong>Observability baseline:</strong> maintain <code>/live</code>, <code>/ready</code>, <code>/metrics</code>, and request correlation IDs.</li>
+            <li><strong>Config governance:</strong> use explicit <code>APP_ENV</code> profiles and block insecure production defaults.</li>
+          </ul>
+        </section>
 
-                    <section id="versioning-policy" class="card">
-                      <h2>API versioning policy</h2>
-                      <ul>
-                        <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
-                        <li>Breaking changes are not allowed in the same major version.</li>
-                        <li>Breaking examples: remove/rename endpoints or fields, change field semantics or requiredness, repurpose
-                          existing error meanings.</li>
-                          <li>Allowed within current major: new endpoints, optional fields, and additive error codes.</li>
-                        </ul>
-                        <p class="small">
-                          Formal policy: <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
-                        </p>
-                      </section>
+        <section id="versioning-policy" class="card">
+          <h2>API versioning policy</h2>
+          <ul>
+            <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
+            <li>Breaking changes are not allowed in the same major version.</li>
+            <li>Breaking examples: remove or rename endpoints or fields, change field semantics or requiredness, repurpose existing error meanings.</li>
+            <li>Allowed within current major: new endpoints, optional fields, and additive error codes.</li>
+          </ul>
+          <p class="small">
+            Formal policy: <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
+          </p>
+        </section>
 
-                      <section id="related-hubs" class="card">
-                        <h2>Related hubs</h2>
-                        <ul>
-                          <li><a href="./README.html">Internal docs index</a></li>
-                          <li><a href="./api/README.html">Internal HTTP API hub</a></li>
-                          <li><a href="./make-commands.html">Make commands</a></li>
-                          <li><a href="../openapi/openapi-explorer.html">OpenAPI (test)</a> and <a href="../api/index.html">Python API
-                            reference</a></li>
-                            <li><a href="../adr/README.html">ADR index</a></li>
-                            <li><a href="../runbooks/README.html">Runbooks</a>, <a href="../audit/README.html">Audit reports</a>, <a href="../backlog/README.html">Backlog</a></li>
-                          </ul>
-                        </section>
+        <section id="related-hubs" class="card">
+          <h2>Related hubs</h2>
+          <ul>
+            <li><a href="./README.html">Internal docs index</a></li>
+            <li><a href="./api/README.html">Internal HTTP API hub</a></li>
+            <li><a href="./make-commands.html">Make commands</a></li>
+            <li><a href="../openapi/openapi-explorer.html">OpenAPI (test)</a> and <a href="../api/index.html">Python API reference</a></li>
+            <li><a href="../adr/README.html">ADR index</a></li>
+            <li><a href="../runbooks/README.html">Runbooks</a>, <a href="../audit/README.html">Audit reports</a>, <a href="../backlog/README.html">Backlog</a></li>
+          </ul>
+        </section>
 
-                        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                      </main>
-                    </div>
-                  </div>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
-                </body></html>
+</body></html>
