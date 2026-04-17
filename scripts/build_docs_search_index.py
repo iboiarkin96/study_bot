@@ -198,7 +198,8 @@ def _pack_postings(
         merged_keys = (
             set(doc.title_tf) | set(doc.url_tf) | set(doc.section_tf) | set(doc.content_tf)
         )
-        for token in merged_keys:
+        # Keep stable token order across runs so JSON output is deterministic.
+        for token in sorted(merged_keys):
             t_title = doc.title_tf.get(token, 0)
             t_url = doc.url_tf.get(token, 0)
             t_section = doc.section_tf.get(token, 0)
@@ -206,7 +207,11 @@ def _pack_postings(
             postings_by_token[token].append([doc_id, t_title, t_url, t_section, t_content])
             doc_freq[token] += 1
 
-    return dict(postings_by_token), dict(doc_freq), len(postings_by_token)
+    return (
+        dict(sorted(postings_by_token.items())),
+        dict(sorted(doc_freq.items())),
+        len(postings_by_token),
+    )
 
 
 def build_search_index(output: Path) -> int:
