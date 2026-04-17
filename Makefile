@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-a11y-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build k8s-render-configmap k8s-apply
+.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build k8s-render-configmap k8s-apply
 
 # ──────────────────────────────────────────────
 # Help
@@ -105,6 +105,7 @@ help:
 	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + HTML repair + format + pdoc API + search index)"
 	@echo "  make docs-html-check      Validate HTML consistency (fails if docs HTML needs repair)"
 	@echo "  make docs-a11y-check      Baseline accessibility checks (headings, landmarks, contrast, keyboard)"
+	@echo "  make docs-feedback-check  Smoke-check page-level feedback wiring for key docs pages"
 	@echo "  make uml-check            Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
 	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)"
@@ -568,6 +569,15 @@ docs-a11y-check:
 	@$(PYTHON) scripts/validate_docs_a11y.py
 	@printf "$(COLOR_GREEN)== DOCS-A11Y-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
+# Smoke-check feedback controls wiring on key pages.
+docs-feedback-check:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(COLOR_CYAN)== DOCS-FEEDBACK-CHECK: START ==$(COLOR_RESET)\n"
+	@$(PYTHON) scripts/validate_docs_feedback.py
+	@printf "$(COLOR_GREEN)== DOCS-FEEDBACK-CHECK: SUCCESS ==$(COLOR_RESET)\n"
+
 # Verify docs are already synchronized (no drift allowed).
 # Compare the full working tree diff vs HEAD before and after docs-fix. If identical,
 # docs-fix did not change any file—so committed generated artifacts match the pipeline.
@@ -577,6 +587,7 @@ docs-check:
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
 	@$(MAKE) docs-html-check
+	@$(MAKE) docs-feedback-check
 	@tmp_before=$$(mktemp); tmp_after=$$(mktemp); \
 	git diff HEAD > "$$tmp_before"; \
 	$(MAKE) docs-fix; \

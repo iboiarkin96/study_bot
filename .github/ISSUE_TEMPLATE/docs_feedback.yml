@@ -1,0 +1,47 @@
+name: Docs feedback
+description: Report unclear, outdated, or missing documentation content
+title: "[Docs feedback] "
+labels:
+  - docs-feedback
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page path
+      description: Relative docs path, for example `internal/README.html`
+      placeholder: docs/internal/README.html
+    validations:
+      required: true
+  - type: input
+    id: page_url
+    attributes:
+      label: Page URL
+      description: URL where you saw the issue
+      placeholder: https://github.com/<owner>/<repo>/blob/main/docs/...
+    validations:
+      required: true
+  - type: dropdown
+    id: feedback_type
+    attributes:
+      label: Feedback type
+      options:
+        - Incorrect or outdated content
+        - Missing explanation
+        - Broken link or navigation
+        - Accessibility issue
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What should be improved
+      description: Describe the issue and the expected fix.
+      placeholder: Explain what was unclear and what result you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: extra_context
+    attributes:
+      label: Additional context
+      description: Optional screenshots, references, or related pages.

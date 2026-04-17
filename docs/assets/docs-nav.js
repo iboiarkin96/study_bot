@@ -114,6 +114,9 @@ const DOCS_SEARCH_MAX_RESULTS = 10;
 const DOCS_SEARCH_DEBOUNCE_MS = 120;
 const DOCS_SEARCH_MAX_PREFIX_EXPANSIONS = 24;
 const DOCS_SEARCH_SUCCESS_WINDOW_MS = 60_000;
+const DOCS_FEEDBACK_REPOSITORY = "iboiarkin96/study_bot";
+const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.yml";
+const DOCS_FEEDBACK_LABELS = ["docs-feedback"];
 let docsSearchIndexPromise = null;
 let docsSearchSessionId = null;
 let docsSearchQuerySeq = 0;
@@ -675,10 +678,6 @@ function renderTopNav() {
   const internalItems = [
     { label: "Home", target: "index.html" },
     { label: "Internal docs", target: "internal/README.html" },
-    { label: "How-to guides", target: "howto/README.html" },
-    { label: "ADR", target: "adr/README.html" },
-    { label: "RFC", target: "rfc/README.html" },
-    { label: "Runbooks", target: "runbooks/README.html" },
     { label: "API assessment reports", target: "audit/README.html" },
     { label: "⭐Backlog", target: "backlog/README.html", className: "top-nav__link--backlog" },
   ];
@@ -1079,6 +1078,67 @@ function removeLegacyManualContents(article) {
   }
 }
 
+function docsFeedbackIssueUrl() {
+  const pagePath = currentDocsRelPath();
+  const pageUrl = window.location.href;
+  const title = `[Docs feedback] ${pagePath}`;
+  const body = [
+    "## Page",
+    pagePath,
+    "",
+    "## URL",
+    pageUrl,
+    "",
+    "## Feedback",
+    "<!-- What is unclear, missing, or incorrect? -->",
+  ].join("\n");
+
+  const query = new URLSearchParams({
+    template: DOCS_FEEDBACK_TEMPLATE,
+    title,
+    labels: DOCS_FEEDBACK_LABELS.join(","),
+    body,
+  });
+  return `https://github.com/${DOCS_FEEDBACK_REPOSITORY}/issues/new?${query.toString()}`;
+}
+
+function injectDocsFeedbackCard() {
+  const main = document.querySelector("main.container");
+  if (!main) {
+    return;
+  }
+  if (main.querySelector(".docs-feedback-card")) {
+    return;
+  }
+
+  const mount = main.querySelector('.docs-inpage-toc-mount[data-inpage-toc="auto"]');
+  if (!mount) {
+    return;
+  }
+
+  const section = document.createElement("section");
+  section.className = "card docs-feedback-card";
+  section.setAttribute("aria-label", "Documentation feedback");
+
+  const heading = document.createElement("h2");
+  heading.textContent = "Page feedback";
+
+  const text = document.createElement("p");
+  text.textContent =
+    "Found something unclear or outdated? Open a prefilled GitHub issue for this page.";
+
+  const link = document.createElement("a");
+  link.href = docsFeedbackIssueUrl();
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = "Report feedback on GitHub";
+
+  section.appendChild(heading);
+  section.appendChild(text);
+  section.appendChild(link);
+  mount.insertAdjacentElement("beforebegin", section);
+}
+
 /**
  * Wrap content after `#docs-top-nav` in a grid with a sticky “On this page” TOC built from `h2`/`h3` (not `p.lead`).
  * If mount is missing, create it as the last child of `<main>` automatically.
@@ -1260,6 +1320,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderAdr(main);
   }
   injectAuditScoreLegends();
+  injectDocsFeedbackCard();
   initAutoInPageToc();
   initInPageTocScrollSpy();
 });

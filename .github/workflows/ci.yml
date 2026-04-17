@@ -64,6 +64,9 @@ jobs:
       - name: Quality gate
         run: make verify
 
+      - name: Docs feedback smoke check
+        run: make docs-feedback-check
+
       - name: Pre-commit hooks
         run: .venv/bin/pre-commit run --all-files
 
