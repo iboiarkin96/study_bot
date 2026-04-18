@@ -17,18 +17,17 @@
     <section id="overview" class="card">
       <h2>Overview</h2>
       <p>
-        These are <strong>maturity assessments</strong> for this repo. Each report maps the <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API to a simple list of reference practices (Table 1),
-        scores evidence and gaps (Table 2), and lists mitigations and checklists. ADRs record <em>decisions</em>; these
-        reports add a dated picture of <em>how we compare</em> to common practice.
+        These pages are <strong>maturity assessments</strong> for this repo. Each report lists reference practices
+        (Table 1), scores how we match them (Table 2), then lists gaps and next steps. ADRs record <em>decisions</em>;
+        assessments record <em>how we compare</em> to common practice on a given date.
       </p>
     </section>
 
     <section class="card">
       <h2>Format and location</h2>
       <p>
-        Files sit under <code>docs/audit/</code> as static HTML:
-        <code><var>YYYY-MM-DD</var>-<var>topic</var>-assessment.html</code>. Naming, score bands, and the Table 2 legend
-        are defined in
+        Files live under <code>docs/audit/</code> as static HTML:
+        <code><var>YYYY-MM-DD</var>-<var>topic</var>-assessment.html</code>. Naming, score bands, and the Table 2 legend follow
         <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
       </p>
     </section>
@@ -36,15 +35,14 @@
     <section class="card">
       <h2>Industry context</h2>
       <p>
-        Big companies often run formal <strong>design reviews</strong>, <strong>launch checklists</strong>,
-        <strong>security programs</strong>, and <strong>central dev portals</strong>. This repo uses a
-        <strong>smaller, git-based checklist</strong>: Table 1 (practices), Table 2 (evidence and scores), then gaps and
-        mitigations. It follows the same <em>idea</em> as large-scale maturity talks, but it does not replace automated
-        tests, ADRs, or company-wide approvals.
+        Large firms often use <strong>design reviews</strong>, <strong>launch checklists</strong>,
+        <strong>security programs</strong>, and <strong>central dev portals</strong>. Here we use a
+        <strong>smaller, git-based</strong> version: Table 1 (what “good” looks like), Table 2 (our scores), then gaps and
+        fixes. Same general idea as big-company reviews; it does not replace tests, ADRs, or formal sign-off.
       </p>
       <p>
-        Unless we say otherwise, assessments target <strong>PET-scale</strong> work. A low score often means “not done
-        yet” or “not worth the cost now,” not “build a full platform feature.” See
+        Unless stated, assessments assume <strong>PET-scale</strong> work. A low score often means “not done yet” or “not
+        worth it at this size,” not “you must build an enterprise portal.” See
         <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR 0024
           — industry context</a>.
         </p>
@@ -64,34 +62,29 @@
             <tr>
               <td><a href="./2026-04-14-api-assessment.html">REST API assessment</a></td>
               <td>2026-04-14</td>
-              <td>HTTP API, OpenAPI governance, idempotency, security headers, observability hooks, CI contract checks.
-              </td>
+              <td>HTTP API, OpenAPI rules, idempotency, security headers, metrics, CI contract checks.</td>
             </tr>
             <tr>
               <td><a href="./2026-04-14-documentation-experience-assessment.html">Documentation Experience (DX)
                 assessment</a></td>
                 <td>2026-04-14</td>
-                <td>Information architecture, docs-as-code, discovery, API docs UX, accessibility, feedback, and related
-                  DX
-                  themes.</td>
+                <td>IA, docs-as-code, discovery, API docs UX, accessibility, feedback.</td>
+              </tr>
+              <tr>
+                <td><a href="./2026-04-17-documentation-experience-world-class-gap-assessment.html">Documentation
+                  Experience
+                  (DX) world-class gap check</a></td>
+                  <td>2026-04-17</td>
+                  <td>Second pass vs top-tier doc standards; design maturity and how to close gaps.</td>
                 </tr>
-                <tr>
-                  <td><a href="./2026-04-17-documentation-experience-world-class-gap-assessment.html">Documentation
-                    Experience
-                    (DX) world-class gap check</a></td>
-                    <td>2026-04-17</td>
-                    <td>Re-check against top-tier documentation standards with explicit design-maturity and closure plan
-                      focus.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <p>
-                Add new assessments to this table. When you change this index or an assessment file, add a short note to
-                <a href="../CHANGELOG.md">docs/CHANGELOG.md</a>.
-              </p>
-            </section>
-            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-          </main>
+              </tbody>
+            </table>
+            <p>
+              Add new rows when you publish an assessment. Note changes in
+              <a href="../CHANGELOG.md">docs/CHANGELOG.md</a>.
+            </p>
+          </section>
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </main>
 
-        </body></html>
+      </body></html>

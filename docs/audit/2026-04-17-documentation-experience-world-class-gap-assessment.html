@@ -17,8 +17,8 @@
     <div id="docs-top-nav"></div>
     <p class="lead">
       <strong>Assessment date:</strong> 17 April 2026<br>
-      <strong>Scope:</strong> DX maturity re-check after search, telemetry, and navigation improvements<br>
-      <strong>Objective:</strong> identify residual gaps to reach world-class documentation quality, including design maturity.
+      <strong>Scope:</strong> Documentation experience (DX) after search, telemetry, and nav work<br>
+      <strong>Goal:</strong> Name remaining gaps to reach very strong doc quality, including visual/design consistency.
     </p>
 
     <section class="card">
@@ -36,12 +36,12 @@
     <section class="card">
       <h2 id="1-summary-score">1. Summary score</h2>
       <p>
-        Current overall documentation experience maturity is estimated at <strong>8.8/10</strong> for a PET-scale service.
-        This is a strong engineering-docs posture and above average for static docs sets.
+        Overall DX maturity is about <strong>8.8/10</strong> for a PET-scale service. That is strong for static HTML docs
+        in git.
       </p>
       <p>
-        The project is not yet at a stable top-decile level (9.2+) primarily due to feedback-loop and design-system gaps,
-        not due to core architecture, search, or governance.
+        We are not yet steady at “top few percent” (9.2+) mainly because reader feedback and design rules are still thin—not
+        because search, IA, or governance are weak.
       </p>
     </section>
 
@@ -59,37 +59,37 @@
           <tr>
             <td>Information architecture</td>
             <td>8.9</td>
-            <td>Strong hubs and content split (ADRs, RFCs, runbooks, internal docs, how-to).</td>
+            <td>Clear hubs and split (ADRs, RFCs, runbooks, internal, how-to).</td>
           </tr>
           <tr>
             <td>Discoverability and search</td>
             <td>9.1</td>
-            <td>Client-side inverted index, ranking boosts, and telemetry loop are in place (ADR 0027 / RFC 0001).</td>
+            <td>Client-side index, ranking, telemetry (ADR 0027 / RFC 0001).</td>
           </tr>
           <tr>
             <td>API and internal reference DX</td>
             <td>8.6</td>
-            <td>Good depth and structure; remaining inconsistency is mostly editorial and presentation-level.</td>
+            <td>Solid depth; leftover issues are mostly wording and layout.</td>
           </tr>
           <tr>
             <td>Docs governance and CI quality gates</td>
             <td>9.3</td>
-            <td>Strong docs-as-code discipline with explicit checks and policies.</td>
+            <td>Strong docs-as-code: checks and policies are explicit.</td>
           </tr>
           <tr>
             <td>Accessibility</td>
             <td>8.2</td>
-            <td>Formal CI workflow exists; next step is explicit trend/SLA reporting.</td>
+            <td>A11y runs in CI; next: publish trends and SLAs.</td>
           </tr>
           <tr>
             <td>Feedback and product loop</td>
             <td>7.4</td>
-            <td>Search telemetry exists, but page-level reader feedback UX is still missing.</td>
+            <td>Search telemetry yes; per-page “was this helpful?” still missing.</td>
           </tr>
           <tr>
             <td>Design maturity</td>
             <td>8.1</td>
-            <td>Clear shared base styles, but still no strict component-level design governance.</td>
+            <td>Shared styles exist; no strict component-level design rules yet.</td>
           </tr>
         </tbody>
       </table>
@@ -97,36 +97,35 @@
 
     <section class="card">
       <h2 id="3-critical-gaps">3. Critical gaps to close</h2>
-      <h3>3.1 Reader feedback loop is not visible enough</h3>
+      <h3>3.1 Reader feedback is hard to see</h3>
       <p>
-        Search telemetry is implemented, but docs pages still lack a lightweight visible feedback control
-        (e.g., “Was this page helpful?” and direct issue shortcut).
+        Search telemetry exists, but pages still lack a simple control (e.g. “Was this helpful?” plus a link to file an
+        issue).
       </p>
 
-      <h3>3.2 Design consistency is not fully systematized</h3>
+      <h3>3.2 Design is not fully standardized</h3>
       <p>
-        Many pages follow shared styles, but section composition and visual hierarchy are still somewhat variable.
-        A stronger page-template system is needed for repeatable UX quality.
+        Most pages use the same CSS, but section layout and visual hierarchy still vary. We need clearer page templates
+        for steady UX.
       </p>
 
-      <h3>3.3 A11y operations need KPI ownership</h3>
+      <h3>3.3 Accessibility needs an owner for metrics</h3>
       <p>
-        Accessibility checks run in CI, but there is no explicit published cadence for reviewing trends,
-        recurring violations, and closure SLA by severity.
+        A11y checks run in CI, but we do not yet publish how often we review trends, repeat issues, or close by severity.
       </p>
 
-      <h3>3.4 Golden onboarding path still needs measurable TTFS ownership</h3>
+      <h3>3.4 Onboarding path needs one owner and clear metrics</h3>
       <p>
-        Content exists across hubs, but one strict path with explicit “you should see...” checkpoints and target
-        time-to-first-success should be maintained as a first-class DX artifact.
+        Guides exist in many places, but we still need one golden path with “you should see…” steps and a target
+        time-to-first-success (TTFS), owned like a product artifact.
       </p>
     </section>
 
     <section class="card">
       <h2 id="4-design-maturity">4. Design maturity review</h2>
       <p>
-        Current visual system provides a coherent baseline: shared stylesheet, top nav, in-page TOC, and consistent cards/tables.
-        To match world-leading doc portals, the next maturity step is <strong>system-level enforcement</strong>.
+        Today we have one stylesheet, top nav, in-page TOC, and cards/tables that mostly match. To match top doc sites, the
+        next step is <strong>enforcing</strong> patterns, not only documenting them.
       </p>
       <table>
         <thead>
@@ -139,23 +138,23 @@
         <tbody>
           <tr>
             <td>Page templates</td>
-            <td>Mostly consistent, some drift between sections</td>
-            <td>Strict templates by doc type (assessment, ADR, runbook, index, how-to)</td>
+            <td>Mostly consistent; some drift</td>
+            <td>Strict templates per type (assessment, ADR, runbook, index, how-to)</td>
           </tr>
           <tr>
             <td>Visual hierarchy</td>
-            <td>Good core hierarchy, uneven detail-level execution</td>
-            <td>Codified spacing/heading rhythm and reusable content blocks</td>
+            <td>Good headings; spacing and detail vary</td>
+            <td>Fixed spacing, heading rhythm, reusable blocks</td>
           </tr>
           <tr>
             <td>Design governance</td>
-            <td>Manual review and conventions</td>
-            <td>Template conformance checks + documented design checklist in CI review flow</td>
+            <td>Review by convention</td>
+            <td>Template checks + design checklist in CI review</td>
           </tr>
           <tr>
             <td>Feedback UX</td>
             <td>Search telemetry only</td>
-            <td>Visible per-page feedback affordance and issue route</td>
+            <td>Visible per-page feedback and clear issue path</td>
           </tr>
         </tbody>
       </table>
@@ -165,20 +164,20 @@
       <h2 id="5-closure-plan">5. 90-day closure plan</h2>
       <h3>Phase A (0-30 days)</h3>
       <ul>
-        <li>Publish and adopt KPI policy for search quality (thresholds, warning, breach actions).</li>
-        <li>Add page-level feedback controls on top hubs and assessment pages.</li>
+        <li>Publish search KPI policy (thresholds, warnings, what to do on breach).</li>
+        <li>Add per-page feedback on main hubs and assessment pages.</li>
       </ul>
 
       <h3>Phase B (31-60 days)</h3>
       <ul>
-        <li>Standardize doc-type templates and apply to top-traffic pages.</li>
-        <li>Introduce a11y trend reporting cadence and severity-based triage SLA.</li>
+        <li>Lock doc-type templates; roll out to high-traffic pages first.</li>
+        <li>Publish a11y trend reports and triage SLAs by severity.</li>
       </ul>
 
       <h3>Phase C (61-90 days)</h3>
       <ul>
-        <li>Ship one canonical onboarding spine with explicit TTFS checkpoints.</li>
-        <li>Run focused design polish pass on highest-traffic 20 pages.</li>
+        <li>Ship one canonical onboarding path with TTFS checkpoints.</li>
+        <li>Polish design on the ~20 most-read pages.</li>
       </ul>
     </section>
 
@@ -194,7 +193,7 @@
         <tbody>
           <tr>
             <td>2026-04-17</td>
-            <td>Initial world-class gap re-check for documentation experience and design maturity.</td>
+            <td>First “world-class gap” re-check for DX and design maturity.</td>
           </tr>
         </tbody>
       </table>

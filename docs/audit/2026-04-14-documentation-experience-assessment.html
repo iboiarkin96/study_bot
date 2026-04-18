@@ -17,13 +17,12 @@
     <div id="docs-top-nav"></div>
     <p class="lead">
       <strong>Assessment date:</strong> 14 April 2026<br>
-      <strong>Stack:</strong> Static HTML under <code>docs/</code>, shared CSS, automated doc sync (see
-      <a href="../developer/0008-docs-pipeline.html">docs pipeline</a>)<br>
-      <strong>Scope:</strong> Documentation Experience (DX) for this repository — how readers find, understand, trust,
-      and
-      act on technical documentation (guides, ADRs, generated API reference, runbooks).<br>
-      <strong>Document purpose:</strong> Map industry reference practices to Study App’s current posture, score maturity
-      (Table 2), prioritize gaps, and record a mitigation path plus checklist.
+      <strong>Stack:</strong> Static HTML under <code>docs/</code>, shared CSS, automated sync
+      (<a href="../developer/0008-docs-pipeline.html">docs pipeline</a>)<br>
+      <strong>Scope:</strong> Documentation experience (DX): how people find, read, trust, and use our docs (guides,
+      ADRs, API reference, runbooks).<br>
+      <strong>Purpose:</strong> Compare our repo to common good practice, score it (Table 2), list gaps, and record fixes
+      plus a checklist.
     </p>
 
     <section>
@@ -48,40 +47,36 @@
 
         <h3 id="1-1-scope">1.1 Scope</h3>
         <p>
-          <strong>Documentation Experience (DX)</strong> here means the end-to-end experience of consuming technical
-          documentation: navigation, search, examples, API reference, operational runbooks, and trust signals (changelog,
-          errors). This assessment is <strong>stack-agnostic</strong> in Table 1; Table 2 is specific to Study
-          App’s published <code>docs/</code> tree and automation.
+          <strong>Documentation experience (DX)</strong> here means using our docs end to end: nav, search, examples, API
+          reference, runbooks, and trust signals (changelog, errors). Table 1 is generic; Table 2 is about this repo’s
+          <code>docs/</code> tree and automation.
         </p>
         <p>
-          The review targets a <strong>PET-scale</strong> service: a documentation site and repo workflows, not a
-          full commercial developer portal with billing and org management unless Table 1 rows explicitly call for
-          that pattern.
+          We assume <strong>PET-scale</strong>: a doc site in git, not a full commercial portal with billing unless a
+          Table 1 row calls for that pattern.
         </p>
 
         <h3 id="1-2-method">1.2 Method</h3>
         <p>The review proceeds in four steps:</p>
         <ol>
           <li>
-            <strong>Reference catalogue</strong> — Table 1 lists DX practices with neutral descriptions (what “good”
-            usually means). Rows <strong>17–18</strong> are grouped under “A11y / i18n*” (accessibility and
-            internationalization).
+            <strong>Reference list</strong> — Table 1 describes good DX practices in neutral terms. Rows
+            <strong>17–18</strong> are “A11y / i18n*” (accessibility and translation).
           </li>
           <li>
-            <strong>Implementation mapping</strong> — Table 2 scores each practice (1–10) against the
-            <strong>current</strong> repository, with evidence pointers (paths, ADRs, tooling).
+            <strong>Map to repo</strong> — Table 2 scores each practice (1–10) for <strong>this</strong> repo, with
+            pointers (paths, ADRs, tools).
           </li>
           <li>
-            <strong>Synthesis</strong> — overall score, gaps grouped by priority (<a href="#5-gaps-refactors-and-recommendations">section 5</a>), and a mitigation timeline (<a href="#6-mitigation-plan-and-indicative-deadlines">section 6</a>).
+            <strong>Summarize</strong> — overall score, gaps by priority (<a href="#5-gaps-refactors-and-recommendations">section 5</a>), timeline (<a href="#6-mitigation-plan-and-indicative-deadlines">section 6</a>).
           </li>
           <li>
-            <strong>Follow-ups</strong> — actionable checklist (<a href="#7-actionable-checklist-top-decile-dx">section
-            7</a>) and document history (<a href="#8-document-history">section 8</a>).
+            <strong>Follow up</strong> — checklist (<a href="#7-actionable-checklist-top-decile-dx">section 7</a>) and
+            history (<a href="#8-document-history">section 8</a>).
           </li>
         </ol>
         <p>
-          Scores are <strong>subjective</strong> and indicative; they are not a WCAG certification, formal user study, or
-          performance review of individuals.
+          Scores are <strong>subjective</strong> guesses, not WCAG certification, user research, or a review of people.
         </p>
 
         <h3 id="1-3-what-was-examined">1.3 What was examined</h3>
@@ -102,26 +97,25 @@
 
         <h3 id="1-4-what-this-assessment-is-not">1.4 What this assessment is not</h3>
         <ul>
-          <li>It is not a full WCAG 2.2 AA audit of every HTML template.</li>
-          <li>It does not replace usability testing with real integrators or support transcript analysis.</li>
-          <li>It does not certify localization, analytics, or AI assistants — only notes typical gaps if absent.</li>
+          <li>Not a full WCAG 2.2 AA audit of every template.</li>
+          <li>Not a substitute for tests with real readers or support data.</li>
+          <li>Does not certify localization, analytics, or AI—only notes if they are missing.</li>
         </ul>
 
         <h3 id="1-5-industry-context-and-pet-scope">1.5 Industry context, PET scope, and standards we do not chase (yet)
         </h3>
         <p>
-          Large tech organizations often run <strong>central doc portals</strong>, <strong>search and analytics
-          programs</strong>, <strong>localization workflows</strong>, and <strong>AI assistants</strong> with dedicated
-          teams. This repository uses a lighter, git-versioned rubric (Table 1 / Table 2) per
+          Big tech often runs <strong>central doc portals</strong>, <strong>search and analytics</strong>,
+          <strong>translation workflows</strong>, and <strong>AI assistants</strong> with dedicated teams. We use a
+          lighter Table 1 / Table 2 rubric in git per
           <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR
             0024</a>.
           </p>
           <p>
-            Study App’s docs are <strong>PET-scale</strong>: a static site and generated references, not a commercial
-            developer platform with org dashboards and billing. Many Table 1 rows (e.g. multi-SDK tabs, enterprise
-            portal, DocSearch-scale search) are <strong>benchmarks</strong>, not requirements. Low scores often mean
-            “not worth building at this stage” or “explicitly English-first,” not organizational failure. High-impact
-            follow-ups for our context are listed in <a href="#5-gaps-refactors-and-recommendations">section 5</a> and
+            Our docs are <strong>PET-scale</strong>: static HTML and generated API docs, not a paid developer platform.
+            Many Table 1 rows (multi-SDK tabs, enterprise portal, huge search) are <strong>benchmarks</strong>, not
+            requirements. Low scores often mean “not worth it yet” or “English-only by choice,” not failure. Priorities sit
+            in <a href="#5-gaps-refactors-and-recommendations">section 5</a> and
             <a href="#6-mitigation-plan-and-indicative-deadlines">section 6</a>.
           </p>
         </section>
@@ -131,12 +125,12 @@
         <section class="card">
           <h2 id="table-1-reference-practices">2. Table: Reference practices</h2>
           <p>
-            <strong>Category</strong> groups the theme; <strong>Practice</strong> is a concise name;
-            <strong>Reference description</strong> states expected behaviour; <strong>Typical benchmark</strong> notes who
-            often exemplifies it (patterns vary by company size).
+            <strong>Category</strong> = theme; <strong>Practice</strong> = short name;
+            <strong>Reference description</strong> = what good usually looks like; <strong>Typical benchmark</strong> =
+            who often does it well (varies by company size).
           </p>
           <p>
-            <strong>*A11y / i18n:</strong> Accessibility and internationalization (rows 17–18).
+            <strong>*A11y / i18n:</strong> Accessibility and translation (rows 17–18).
           </p>
           <div style="overflow-x: auto">
             <table class="audit-ref-table">
@@ -415,10 +409,9 @@
         <section class="card">
           <h2 id="table-2-study-app-scores">3. Table: AS-IS situation</h2>
           <p>
-            One row per practice in Table 1 (rows <strong>1–25</strong>): no bundled rows. Scores are
-            <strong>1–10</strong> indicative maturity (not a formal audit). Colour bands for the Score column are defined in
-            <code>docs/assets/docs.css</code> (see
-            <a href="../adr/0024-architecture-and-quality-assessment-documents.html#assessment-score-scale">ADR 0024</a>).
+            One row per Table 1 practice (rows <strong>1–25</strong>). Scores are <strong>1–10</strong> (our guess, not a
+            formal audit). Colours come from <code>docs/assets/docs.css</code>
+            (<a href="../adr/0024-architecture-and-quality-assessment-documents.html#assessment-score-scale">ADR 0024</a>).
           </p>
           <div class="audit-score-legend-include" data-legend-id="dx"></div>
           <noscript>
@@ -689,11 +682,10 @@
         <section class="card">
           <h2 id="4-scoring-summary">4. Scoring summary</h2>
           <p>
-            <strong>Overall (subjective, PET-scale docs site):</strong> approximately <strong>8 / 10</strong> on the 1–10
-            scale.
+            <strong>Overall (our guess, PET-scale site):</strong> about <strong>8 / 10</strong>.
             <br>
-            <strong>To approach top decile:</strong> explicit Diátaxis labels, one golden onboarding path, full-site search,
-            prose lint and link checking in CI, and (optionally) citation-grounded AI — see
+            <strong>To move toward top decile:</strong> label content by Diátaxis type, one golden onboarding page,
+            full-site search, prose lint + link check in CI, optional citation-grounded AI — see
             <a href="#5-gaps-refactors-and-recommendations">section 5</a>.
           </p>
         </section>
@@ -703,12 +695,12 @@
         <section class="card">
           <h2 id="5-gaps-refactors-and-recommendations">5. Gaps, refactors, and recommendations</h2>
           <p>
-            Grouped by implementation priority. Row numbers refer to
+            By priority. Rows refer to
             <a href="#table-1-reference-practices">Table 1</a> / <a href="#table-2-study-app-scores">Table 2</a>.
           </p>
 
           <h3 id="5-1-should-add">5.1 Should add</h3>
-          <p><em>High impact for moderate effort; closes visible gaps in Table 2.</em></p>
+          <p><em>High impact, moderate effort; fixes clear Table 2 gaps.</em></p>
           <ol>
             <li>
               <strong>Explicit Diátaxis labels</strong> (row 1): e.g. tag or group pages as tutorial / how-to / reference /
@@ -725,7 +717,7 @@
           </ol>
 
           <h3 id="5-2-should-refactor">5.2 Should refactor / tighten</h3>
-          <p><em>Improve consistency without changing product scope.</em></p>
+          <p><em>Better consistency; no product scope change.</em></p>
           <ol>
             <li>
               <strong>Prose lint + link check in CI</strong> (row 7): extend beyond drift checks for generated artifacts
@@ -742,7 +734,7 @@
           </ol>
 
           <h3 id="5-3-nice-to-have">5.3 Nice-to-have (product-dependent)</h3>
-          <p><em>Optional enhancements once baseline DX is stable.</em></p>
+          <p><em>Optional after baseline DX is solid.</em></p>
           <ol>
             <li>
               <strong>AI-assisted answers</strong> (row 14): only with retrieval over <em>this</em> doc set, citations, and
@@ -764,7 +756,7 @@
         </section>
         <section class="card">
           <h2 id="6-mitigation-plan-and-indicative-deadlines">6. Mitigation plan and indicative deadlines</h2>
-          <p>Dates are <strong>indicative</strong>; preserve ordering if timelines slip.</p>
+          <p>Dates are <strong>rough</strong>; keep order if they slip.</p>
 
           <section class="card">
             <h3 id="phase-a-dx">Phase A — by <strong>30 April 2026</strong></h3>
@@ -792,9 +784,9 @@
         <section class="card">
           <h2 id="7-actionable-checklist-top-decile-dx">7. Actionable checklist (top-decile DX)</h2>
           <p>
-            Cross-reference <a href="#table-2-study-app-scores">Table 2</a> and
-            <a href="#5-gaps-refactors-and-recommendations">section 5</a>. PET-scale does not require every row at 9–10; see
-            <a href="#1-5-industry-context-and-pet-scope">section 1.5</a>.
+            See <a href="#table-2-study-app-scores">Table 2</a> and
+            <a href="#5-gaps-refactors-and-recommendations">section 5</a>. At PET scale you do not need 9–10 on every row;
+            see <a href="#1-5-industry-context-and-pet-scope">section 1.5</a>.
           </p>
           <ul>
             <li>IA: tutorials / how-tos / reference / explanation are distinguishable in navigation (row 1).</li>
