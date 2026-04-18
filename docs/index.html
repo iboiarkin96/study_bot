@@ -18,18 +18,17 @@
     <section id="overview" class="card">
       <h2>Overview</h2>
       <p>
-        Welcome to the engineering documentation for the <strong><abbr title="Extract–Transform–Retrieve">ETR</abbr>
+        This site is the engineering documentation for the <strong><abbr title="Extract–Transform–Retrieve">ETR</abbr>
         Study API</strong>.
       </p>
       <p>
-        This site collects architecture overviews, engineering standards, developer onboarding guides, ADRs, runbooks,
-        and the generated Python API documentation (using pdoc). If published (e.g., through GitHub Pages from the
-        <code>docs/</code> folder), this page serves as your documentation homepage.
+        Here you will find architecture notes, standards, onboarding guides, ADRs, runbooks, and auto-generated Python
+        API docs (pdoc). If you host the repo on GitHub Pages with <code>docs/</code> as the root, this page is the docs
+        home.
       </p>
       <p>
-        <strong>⚠️ Docs changelog:</strong> Changes to the documentation are listed in <code>docs/CHANGELOG.md</code>.
-        This <em>docs changelog</em> is distinct from the main project <code>CHANGELOG.md</code>, which covers product
-        and API version changes.
+        <strong>⚠️ Docs changelog:</strong> Documentation changes are listed in <code>docs/CHANGELOG.md</code>. That file
+        is separate from the root <code>CHANGELOG.md</code>, which tracks product and API releases.
       </p>
     </section>
 
@@ -46,97 +45,84 @@
           <tr>
             <td><a href="./internal/methodology.html">Methodology</a></td>
             <td>
-              Explain methodology of the project. What is ETR, why it's important, how it works, and how to use it.
+              What ETR is, why it matters, how it works, and how to work with it.
             </td>
           </tr>
           <tr>
             <td><a href="./internal/developers.html">Developers Docs</a></td>
             <td>
-              Combined entry point: engineering workflow, quality gates, policies, and the index of hands-on guides
-              under <code>docs/developer/</code> (requirements, contracts, Make targets, local dev, Docker/K8s, docs
-              pipeline).
+              Main entry: workflow, quality gates, policies, and links to hands-on guides under
+              <code>docs/developer/</code> (requirements, contracts, Make, local dev, Docker/K8s, docs pipeline).
             </td>
           </tr>
           <tr>
             <td><a href="./developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>
             </td>
             <td>
-              Documentation on the use of <code>make</code> commands for setup, testing, deployments, and daily
-              development tasks. Includes tips for new contributors and workflow automation.
+              How to use <code>make</code> for setup, tests, deploy-related tasks, and day-to-day development. Tips for
+              new contributors.
             </td>
           </tr>
           <tr>
             <td><a href="./internal/README.html">Internal service documentation</a></td>
             <td>
-              Engineering-facing behavior, business rules, and operational meaning for the HTTP API are documented
-              under
-              <code>docs/internal/</code> (HTML). External integrators rely on OpenAPI and the root changelog; the
-              split
-              and
-              authority rules are fixed in
+              Engineering-focused behavior, business rules, and how operations map to HTTP — under
+              <code>docs/internal/</code> (HTML). External clients use OpenAPI and the root changelog. Rules for who
+              reads what are in
               <a href="./adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> and
               <a href="./adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
-              <a href="./internal/README.html">Browse internal service documentation</a>.
+              <a href="./internal/README.html">Open internal service documentation</a>.
             </td>
           </tr>
           <tr>
             <td><a href="./howto/README.html">How-to guides</a></td>
             <td>
-              Step-by-step walkthroughs for specific tasks, such as authentication setup, adding a new API endpoint,
-              or
-              navigating the internal doc layout. Geared towards practical problem-solving.
+              Task-focused steps (for example auth setup, adding an endpoint, or working with the internal doc tree).
             </td>
           </tr>
           <tr>
             <td><a href="./adr/README.html">ADRs</a></td>
             <td>
-              Architecture Decision Records: written rationale and trade-offs behind major technical and
-              process-related
-              decisions, ensuring transparency and knowledge sharing.
+              Architecture Decision Records: why we chose a path, trade-offs, and context for big technical and process
+              choices.
             </td>
           </tr>
           <tr>
             <td><a href="./rfc/README.html">RFCs</a></td>
             <td>
-              Deep implementation specifications and operational playbooks (for example, docs search internals:
-              indexing, ranking, telemetry transport, persistence, troubleshooting, and KPI/SLO policy).
+              Detailed specs and runbooks (for example docs search: index, rank, telemetry, storage, troubleshooting,
+              KPI/SLO).
             </td>
           </tr>
           <tr>
             <td><a href="./audit/README.html">Architecture &amp; quality assessments</a></td>
             <td>
-              Periodic audits comparing project practices to industry standards and reference guides; includes scored
-              tables, identified gaps, and mitigation strategies. See <a href="./adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
+              Audits against common practice: scored tables, gaps, mitigations. See
+              <a href="./adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
             </td>
           </tr>
           <tr>
             <td><a href="./runbooks/README.html">Runbooks</a></td>
             <td>
-              Operational playbooks for handling outages, major incidents, and recovery tasks. Step-by-step guides for
-              on-call engineers or anyone responding to operational events.
+              Steps for incidents and recovery: for on-call and anyone handling production issues.
             </td>
           </tr>
           <tr>
             <td><a href="./backlog/README.html">Backlog</a></td>
             <td>
-              Prioritized list of features, bugs, and technical debt. Supports roadmap planning and tracking
-              engineering
-              work in a transparent, collaborative way.
+              Prioritized features, bugs, and tech debt for planning and tracking work.
             </td>
           </tr>
           <tr>
             <td><a href="./api/index.html">Python API reference</a></td>
             <td>
-              Auto-generated documentation for the Python codebase (via pdoc), listing modules, functions, and
-              classes,
-              including docstrings and usage examples.
+              Generated from the Python code (pdoc): modules, functions, classes, docstrings, examples.
             </td>
           </tr>
           <tr>
             <td><a href="./openapi/openapi-explorer.html">OpenAPI (test)</a></td>
             <td>
-              Interactive Swagger UI for browsing and testing the HTTP API contract. Useful for both backend/frontend
-              developers and external integrators.
+              Swagger UI to explore and try the HTTP contract. For backend, frontend, and integrators.
             </td>
           </tr>
         </tbody>
@@ -146,8 +132,8 @@
     <section class="card">
       <h2>Repository root documentation</h2>
       <p>
-        These Markdown files sit next to the application code (not under <code>docs/</code>). Open them in your clone
-        or from the GitHub repository root.
+        These Markdown files live next to the app code (not under <code>docs/</code>). Open them in your clone or on
+        GitHub at the repo root.
       </p>
       <table>
         <thead>
@@ -160,17 +146,15 @@
           <tr>
             <td><a href="../README.md"><code>README.md</code></a></td>
             <td>
-              Project overview, quick start, environment and configuration,
-              documentation map, observability, container image and optional local Kubernetes, repository layout, and
-              HTTP/OpenAPI endpoints.
+              Overview, quick start, config, docs map, observability, Docker/K8s (optional), repo tree, HTTP/OpenAPI
+              links.
             </td>
           </tr>
           <tr>
             <td><a href="../CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a></td>
             <td>
-              Quality gates (<code>make verify</code>, <code>make verify-ci</code>), how CI/CD relates to docs,
-              dead-code checks, documentation workflow and <code>docs-fix</code>/<code>docs-check</code>, Kubernetes
-              manifest hygiene, OpenAPI contract changes, and other contributor expectations.
+              Quality gates, CI/CD and docs, dead-code checks, <code>docs-fix</code> / <code>docs-check</code>, K8s
+              files, OpenAPI updates, and what we expect from contributors.
             </td>
           </tr>
         </tbody>
