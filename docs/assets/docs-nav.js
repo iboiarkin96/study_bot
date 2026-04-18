@@ -735,6 +735,139 @@ function appendTopNavLinks(container, items, fromDir, active) {
   }
 }
 
+/** Hub HTML file for a path prefix (directory trail), or null if there is no index page. */
+function docsHubHrefForPrefix(prefix) {
+  const hubs = {
+    adr: "adr/README.html",
+    api: "api/index.html",
+    audit: "audit/README.html",
+    backlog: "backlog/README.html",
+    developer: "developer/README.html",
+    howto: "howto/README.html",
+    internal: "internal/README.html",
+    "internal/api": "internal/api/README.html",
+    "internal/api/user": "internal/api/user/index.html",
+    openapi: "openapi/openapi-explorer.html",
+    rfc: "rfc/README.html",
+    runbooks: "runbooks/README.html",
+  };
+  return hubs[prefix] || null;
+}
+
+/** Human-readable label for a directory prefix (path segments joined by "/"). */
+function docsBreadcrumbLabelForPrefix(prefix) {
+  const labels = {
+    adr: "ADRs",
+    api: "API reference",
+    audit: "Assessments",
+    backlog: "Backlog",
+    developer: "Developer guides",
+    howto: "How-to guides",
+    internal: "Internal docs",
+    "internal/api": "Internal API",
+    "internal/api/user": "User",
+    "internal/api/user/operations": "Operations",
+    openapi: "OpenAPI",
+    rfc: "RFCs",
+    runbooks: "Runbooks",
+    assets: "Assets",
+  };
+  if (labels[prefix]) {
+    return labels[prefix];
+  }
+  const last = prefix.includes("/") ? prefix.slice(prefix.lastIndexOf("/") + 1) : prefix;
+  if (!last) {
+    return prefix;
+  }
+  return last.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function docsBreadcrumbCurrentLabel(fileName) {
+  const t = document.title.trim();
+  if (t) {
+    const first = t.split(/\s[—–-]\s/)[0].trim();
+    if (first) {
+      return first;
+    }
+  }
+  const stem = fileName.replace(/\.html?$/i, "");
+  return stem.replace(/-/g, " ");
+}
+
+/**
+ * @returns {{ label: string, href?: string, current?: boolean }[]}
+ */
+function buildDocsBreadcrumbItems(relPath) {
+  const normalized = relPath.replace(/\\/g, "/");
+  if (normalized === "index.html") {
+    return [{ label: "Documentation", current: true }];
+  }
+
+  const parts = normalized.split("/");
+  const fileName = parts.pop() || "";
+  const dirParts = parts;
+  const fullPath = normalized;
+
+  const crumbs = [{ label: "Documentation", href: "index.html" }];
+
+  let prefix = "";
+  for (let i = 0; i < dirParts.length; i++) {
+    prefix = i === 0 ? dirParts[0] : `${prefix}/${dirParts[i]}`;
+    const hub = docsHubHrefForPrefix(prefix);
+    const hubIsThisPage =
+      hub &&
+      hub === fullPath &&
+      (fileName === "README.html" || fileName === "index.html");
+    if (hubIsThisPage) {
+      crumbs.push({ label: docsBreadcrumbLabelForPrefix(prefix), current: true });
+      return crumbs;
+    }
+    crumbs.push({
+      label: docsBreadcrumbLabelForPrefix(prefix),
+      href: hub || undefined,
+    });
+  }
+
+  crumbs.push({
+    label: docsBreadcrumbCurrentLabel(fileName),
+    current: true,
+  });
+  return crumbs;
+}
+
+function renderDocsBreadcrumbNav(fromDir, relPath) {
+  const items = buildDocsBreadcrumbItems(relPath);
+  const el = document.createElement("nav");
+  el.className = "docs-breadcrumbs";
+  el.setAttribute("aria-label", "Breadcrumb");
+  const ol = document.createElement("ol");
+  ol.className = "docs-breadcrumbs__list";
+  for (const item of items) {
+    const li = document.createElement("li");
+    li.className = "docs-breadcrumbs__item";
+    if (item.current) {
+      const span = document.createElement("span");
+      span.className = "docs-breadcrumbs__current";
+      span.textContent = item.label;
+      span.setAttribute("aria-current", "page");
+      li.appendChild(span);
+    } else if (item.href) {
+      const a = document.createElement("a");
+      a.href = relHref(fromDir, item.href);
+      a.textContent = item.label;
+      li.appendChild(a);
+    } else {
+      const span = document.createElement("span");
+      span.className = "docs-breadcrumbs__text";
+      span.textContent = item.label;
+      li.appendChild(span);
+    }
+    ol.appendChild(li);
+  }
+  el.appendChild(ol);
+  return el;
+}
+
 function renderTopNav() {
   const host = document.getElementById("docs-top-nav");
   if (!host) {
@@ -839,8 +972,10 @@ function renderTopNav() {
   nav.appendChild(groups);
   mountDocsSearch(nav, fromDir);
 
+  const breadcrumbNav = renderDocsBreadcrumbNav(fromDir, relPath);
+
   /* Keep `#docs-top-nav` in the DOM — `initAutoInPageToc` and formatters anchor off this host. */
-  host.replaceChildren(nav);
+  host.replaceChildren(breadcrumbNav, nav);
 }
 
 /** ADR: single `data-adr-weight` on <main> (−1…7) → current status + linear status log. */
@@ -1396,6 +1531,105 @@ function initInPageTocScrollSpy() {
   updateActive();
 }
 
+/** Scroll-to-top control: visible when the viewport is near the bottom of a scrollable page. */
+function initBackToTopButton() {
+  const root = document.documentElement;
+  const thresholdPx = 320;
+  const minScrollExtra = 100;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "docs-back-to-top";
+  btn.setAttribute("aria-label", "Back to top");
+  btn.setAttribute("title", "Back to top");
+  btn.setAttribute("aria-hidden", "true");
+  btn.tabIndex = -1;
+  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`;
+
+  function pageIsScrollable() {
+    return root.scrollHeight > window.innerHeight + minScrollExtra;
+  }
+
+  function isNearBottom() {
+    return window.scrollY + window.innerHeight >= root.scrollHeight - thresholdPx;
+  }
+
+  function updateVisibility() {
+    const show = pageIsScrollable() && isNearBottom();
+    btn.classList.toggle("docs-back-to-top--visible", show);
+    btn.setAttribute("aria-hidden", show ? "false" : "true");
+    btn.tabIndex = show ? 0 : -1;
+  }
+
+  btn.addEventListener("click", () => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      updateVisibility();
+    },
+    { passive: true },
+  );
+  window.addEventListener("resize", updateVisibility, { passive: true });
+
+  document.body.appendChild(btn);
+  updateVisibility();
+}
+
+/** Site-wide footer on hand-written docs pages (presence of `#docs-top-nav`). */
+function initDocsSiteFooter() {
+  if (document.getElementById("docs-site-footer")) {
+    return;
+  }
+  if (!document.getElementById("docs-top-nav")) {
+    return;
+  }
+
+  const relPath = currentDocsRelPath();
+  const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
+
+  const footer = document.createElement("footer");
+  footer.id = "docs-site-footer";
+  footer.className = "docs-site-footer";
+  footer.setAttribute("role", "contentinfo");
+
+  const inner = document.createElement("div");
+  inner.className = "container docs-site-footer__inner";
+
+  const nav = document.createElement("nav");
+  nav.className = "docs-site-footer__links";
+  nav.setAttribute("aria-label", "Footer");
+
+  function addLink(href, text) {
+    const a = document.createElement("a");
+    a.href = relHref(fromDir, href);
+    a.textContent = text;
+    nav.appendChild(a);
+  }
+
+  addLink("index.html", "Documentation home");
+  addLink("internal/developers.html", "Contributors");
+  const gh = document.createElement("a");
+  gh.href = `https://github.com/${DOCS_FEEDBACK_REPOSITORY}`;
+  gh.textContent = "GitHub";
+  gh.target = "_blank";
+  gh.rel = "noopener noreferrer";
+  nav.appendChild(gh);
+
+  const meta = document.createElement("p");
+  meta.className = "docs-site-footer__meta";
+  meta.textContent =
+    "Static HTML under docs/. Product changes are recorded in the repository root CHANGELOG; documentation-only changes are listed in docs/CHANGELOG.md.";
+
+  inner.appendChild(nav);
+  inner.appendChild(meta);
+  footer.appendChild(inner);
+  document.body.appendChild(footer);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderTopNav();
   applyDocsThemeFromMode(getEffectiveDocsThemeMode());
@@ -1408,4 +1642,6 @@ document.addEventListener("DOMContentLoaded", () => {
   injectDocsFeedbackCard();
   initAutoInPageToc();
   initInPageTocScrollSpy();
+  initBackToTopButton();
+  initDocsSiteFooter();
 });
