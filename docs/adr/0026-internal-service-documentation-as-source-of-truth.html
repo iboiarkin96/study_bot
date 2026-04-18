@@ -20,10 +20,10 @@
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        This ADR records <strong>norms for internal HTML documentation</strong> under <code>docs/internal/</code>: what
-        must appear there, how pages relate to code and OpenAPI, and how we preserve history. Complements
-        <a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a> (audience split). The audit trail is
-        the git history for this file on <code>main</code>.
+        This ADR sets <strong>rules for internal HTML</strong> under <code>docs/internal/</code>: what belongs there, how
+        pages relate to code and OpenAPI, and how we keep history. It works with
+        <a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a> (who reads what). Git history on
+        <code>main</code> is the record for this file.
       </p>
       <ul>
         <li>Discussion Issue: <em>optional — link when opened with <code>[ADR]</code> title</em></li>
@@ -43,16 +43,16 @@
         <section class="card">
           <h2>Context</h2>
           <p>
-            <strong>Why this matters:</strong> External integrators rely on OpenAPI
-            (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Internally, we still need a
-            <strong>single, reviewable place</strong> for rules that span layers: business invariants, when an error is
-            considered operational vs validation, how a flow is expected to be monitored, and how HTTP handlers relate to
-            domain services and (if any) asynchronous boundaries. Without that, disagreements default to “read the
-            implementation,” which is slow and version-ambiguous.
+            <strong>Why this matters:</strong> External clients use OpenAPI
+            (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Inside the team we still need
+            <strong>one place we can review</strong> for rules across layers: business invariants, when an error is
+            operational vs validation, how we expect to monitor a flow, and how HTTP handlers map to services and async
+            work. Without that, people fall back to “read the code,” which is slow and unclear when code and branches
+            differ.
           </p>
           <p>
-            This ADR makes <code>docs/internal/</code> the <strong>authoritative narrative for engineering</strong> for those
-            topics. It does not duplicate OpenAPI field lists; it <strong>interprets and binds</strong> them to behavior and
+            This ADR makes <code>docs/internal/</code> the <strong>main engineering narrative</strong> for those topics.
+            It does not copy OpenAPI field lists; it <strong>explains</strong> them and ties them to behavior and
             operations.
           </p>
 

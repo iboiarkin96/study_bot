@@ -18,11 +18,10 @@
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>; no separate ratification
-        trail was required then. The audit trail is the git history for this file on <code>main</code>.
+        Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. There was no separate ratification process. Git history for this file on <code>main</code> is the record.
       </p>
       <ul>
-        <li>Discussion Issue: <em>not recorded (pre–ADR 0018 process)</em></li>
+        <li>Discussion Issue: <em>not recorded (before ADR 0018)</em></li>
         <li>Merge PR: <em>see git history for this file</em></li>
         <li>Accepted: <em>as merged to <code>main</code></em></li>
       </ul>
@@ -31,13 +30,13 @@
     <section class="card">
       <h2>Context</h2>
       <p>
-        <strong>Why this matters:</strong> Automated tests are the cheapest place to catch mistakes. A bug caught in CI
-        costs minutes; the same bug in production costs user trust, on-call time, and data repair. Manual “click through”
-        does not scale when the API surface grows or when several people change code at once.
+        <strong>Why this matters:</strong> Automated tests are the cheapest place to find bugs. A bug in CI costs
+        minutes; in production it costs trust, on-call time, and data fixes. Manual “click through” does not scale as
+        the API grows or more people touch the code.
       </p>
       <p>
-        We therefore treat API tests as part of the contract: if behavior is not covered by at least one success and one
-        failure case, we do not consider the change finished.
+        API tests are part of the contract: if there is not at least one success test and one failure test, the change
+        is not complete.
       </p>
     </section>
 

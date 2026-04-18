@@ -120,7 +120,7 @@ const DOCS_FEEDBACK_LABELS = ["docs-feedback"];
 const DOCS_THEME_STORAGE_KEY = "docs-theme-preference";
 
 /** Bump when the shared ADR/RFC lifecycle help copy in `injectDocsLifecycleHelp` changes. */
-const DOCS_LIFECYCLE_HELP_SNIPPET_VERSION = "1";
+const DOCS_LIFECYCLE_HELP_SNIPPET_VERSION = "2";
 
 function docsPageDir() {
   const rel = currentDocsRelPath();
@@ -146,25 +146,24 @@ function injectDocsLifecycleHelp() {
       const h0 = docsLifecycleHelpHref("adr/0000-template.html");
       el.innerHTML = `<summary>ADR status on this page</summary>
       <p class="small">
-        The lifecycle bar uses <code>data-adr-weight</code> on <code>&lt;main&gt;</code> (values −1…7). See
-        <a href="${h18}">ADR 0018</a> for what each step means, or the
-        <a href="${h0}">ADR template</a> for the full milestone table.
+        Set <code>data-adr-weight</code> on <code>&lt;main&gt;</code> to a value from −1 to 7. Read
+        <a href="${h18}">ADR 0018</a> for what each value means. The
+        <a href="${h0}">ADR template</a> has the full milestone table.
       </p>`;
     } else if (kind === "rfc-short") {
       const h18 = docsLifecycleHelpHref("adr/0018-adr-lifecycle-ratification-and-badges.html");
       el.innerHTML = `<summary>RFC status on this page</summary>
       <p class="small">
-        The lifecycle bar uses <code>data-rfc-weight</code> on <code>&lt;main&gt;</code> (values −1…7), the same milestone
-        scale as ADRs (<a href="${h18}">ADR 0018</a>). Update the attribute
-        when this document\u2019s milestone changes.
+        Set <code>data-rfc-weight</code> on <code>&lt;main&gt;</code> to a value from −1 to 7 (same scale as ADRs;
+        see <a href="${h18}">ADR 0018</a>). Change it when this document\u2019s milestone changes.
       </p>`;
     } else if (kind === "adr-template") {
       const h18 = docsLifecycleHelpHref("adr/0018-adr-lifecycle-ratification-and-badges.html");
       el.innerHTML = `<summary>How to set status (author reference)</summary>
       <p class="small">
-        On <code>&lt;main&gt;</code>, set one attribute <code>data-adr-weight</code> to the <strong>current</strong>
-        milestone (−1 … 7). The page derives <strong>Current status</strong> and the <strong>Status log</strong> from that
-        number. Full policy: <a href="${h18}">ADR 0018</a>.
+        On <code>&lt;main&gt;</code>, set <code>data-adr-weight</code> to the <strong>current</strong> milestone (−1 … 7).
+        The page shows <strong>Current status</strong> and the <strong>Status log</strong> from that value. Policy:
+        <a href="${h18}">ADR 0018</a>.
       </p>
       <table>
         <caption>Milestone scale (single order 0 → 7)</caption>
@@ -214,8 +213,8 @@ function injectDocsLifecycleHelp() {
         </tbody>
       </table>
       <p class="small">
-        Example: <code>data-adr-weight="4"</code> → <strong>Current status</strong> is Documentation · Ready. Invalid
-        values are clamped in <code>docs/assets/docs-nav.js</code>.
+        Example: <code>data-adr-weight="4"</code> gives <strong>Current status</strong> Documentation · Ready. Values
+        outside the range are clamped in <code>docs/assets/docs-nav.js</code>.
       </p>`;
     }
   }

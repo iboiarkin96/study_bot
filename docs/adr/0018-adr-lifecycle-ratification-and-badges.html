@@ -18,9 +18,8 @@
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        This ADR establishes the canonical lifecycle model for ADRs in this repository. Record the discussion Issue
-        (opened with the ADR template; title starts with <code>[ADR]</code>), merge PR, and acceptance date here when
-        the ratification thread is complete.
+        This ADR defines the standard lifecycle for ADRs in this repo. When ratification is done, add the discussion
+        Issue (use the ADR template; title starts with <code>[ADR]</code>), the merge PR, and the acceptance date here.
       </p>
       <ul>
         <li>Discussion Issue: <em>see repository issues</em></li>
@@ -31,50 +30,48 @@
     <section class="card">
       <h2>Context</h2>
       <p>
-        <strong>Why this matters:</strong> An ADR is useless if readers cannot tell whether it is a draft idea, an
-        accepted policy, or fully implemented. A tiny, machine-readable status on each page keeps the docs site honest
-        without maintaining a second spreadsheet of “ADR state.”
+        <strong>Why this matters:</strong> Readers must see whether an ADR is still a draft, accepted, or done. One small
+        machine-readable field on each page keeps the site accurate without a separate “ADR status” spreadsheet.
       </p>
       <p>
-        Records live as static HTML under <code>docs/adr/</code>. We need one lifecycle: what was decided, how it was
-        ratified (Issue + PR), and progress through documentation and implementation—without inventing a new ticket system
-        only for status.
+        ADRs are static HTML under <code>docs/adr/</code>. We use one lifecycle: what we decided, how we ratified it
+        (Issue + PR), and how far documentation and code have progressed — without a new ticket system only for status.
       </p>
       <p>
-        <strong>This ADR defines the canonical status model.</strong> It uses one ordered scale
-        (<code>-1</code> … <code>7</code>) covering <strong>Decision</strong> (0–2), <strong>Documentation</strong> (3–4),
-        and <strong>Implementation</strong> (5–7). Authors set a single attribute on <code>&lt;main&gt;</code>:
-        <code>data-adr-weight</code>. That value is the <strong>current milestone</strong>; <strong>Current status</strong>
-        and the <strong>Status log</strong> are derived from it (green = passed; yellow = current step except
-        <strong>Implementation: Done</strong>, which stays green when current; gray = not yet). Rendering is in
-        <code>docs/assets/docs-nav.js</code> (<code>renderLifecycleStatusBlocks</code>). RFC pages under
-        <code>docs/rfc/</code> use the same scale via <code>data-rfc-weight</code> on <code>&lt;main&gt;</code>
+        <strong>Status model (normative).</strong> One ordered scale
+        (<code>-1</code> … <code>7</code>): <strong>Decision</strong> (0–2), <strong>Documentation</strong> (3–4),
+        <strong>Implementation</strong> (5–7). Authors set one attribute on <code>&lt;main&gt;</code>:
+        <code>data-adr-weight</code>. That number is the <strong>current milestone</strong>. The UI shows
+        <strong>Current status</strong> and the <strong>Status log</strong> (green = done; yellow = current step except
+        <strong>Implementation: Done</strong>, which stays green when it is current; gray = not reached). Code:
+        <code>docs/assets/docs-nav.js</code> (<code>renderLifecycleStatusBlocks</code>). RFCs under
+        <code>docs/rfc/</code> use the same scale with <code>data-rfc-weight</code> on <code>&lt;main&gt;</code>
         (see <a href="../rfc/README.html">RFC index</a>).
       </p>
       <p>
-        The <a href="./0000-template.html">ADR HTML template</a> is the <strong>author-facing shell</strong>:
-        <code>data-adr-weight</code>, optional collapsible value table, and standard sections (Ratification, Context,
-        Decision, …). New ADRs start from that file; they apply the model—they do not redefine it.
+        The <a href="./0000-template.html">ADR HTML template</a> is the <strong>starting shell</strong>:
+        <code>data-adr-weight</code>, optional value table, and sections (Ratification, Context, Decision, …). New ADRs
+        copy that file; they use this model, they do not replace it.
       </p>
     </section>
     <section class="card">
       <h2>How we mark ADR work</h2>
-      <p>Three layers — do not mix them up:</p>
+      <p>Three pieces — keep them distinct:</p>
       <ol>
         <li>
-          <strong>GitHub Issue (discussion).</strong> Use the template
+          <strong>GitHub Issue (discussion).</strong> Use
           <code>.github/ISSUE_TEMPLATE/adr_discussion.md</code>. Start the <strong>title</strong> with
-          <code>[ADR]</code> so these threads are easy to find. Discussion and consensus stay in the Issue. We do not
-          depend on a big label system; the template plus title prefix are the convention.
+          <code>[ADR]</code> so people can find the thread. Discussion stays in the Issue. Labels are optional; the
+          template and title prefix are enough.
         </li>
         <li>
-          <strong>ADR page on the site (lifecycle).</strong> Set <code>data-adr-weight</code> on <code>&lt;main&gt;</code>
-          so readers see draft → done in the docs UI. That is <em>published</em> status only; it does not replace the Issue
-          and PR history.
+          <strong>ADR page (lifecycle on the site).</strong> Set <code>data-adr-weight</code> on <code>&lt;main&gt;</code>
+          so the docs UI shows progress. That is only the <em>published</em> milestone; it does not replace Issue and PR
+          history.
         </li>
         <li>
-          <strong>Ratification.</strong> In the merged ADR, record links to this Issue, the merge PR, and the acceptance
-          date — that binds the HTML record to the audit trail.
+          <strong>Ratification.</strong> In the merged ADR, link the Issue, merge PR, and acceptance date so the HTML
+          matches the audit trail.
         </li>
       </ol>
       <p class="small">
@@ -87,25 +84,24 @@
       <h2>Decision</h2>
       <ol>
         <li>
-          <strong>Status model (normative here).</strong> The milestone table is fixed: Decision — Proposed (0), Accepted (1),
+          <strong>Status model (normative here).</strong> Fixed milestones: Decision — Proposed (0), Accepted (1),
           Superseded (2); Documentation — Draft (3), Ready (4); Implementation — Not started (5), In progress (6), Done (7).
-          Invalid <code>data-adr-weight</code> values are clamped in script. The model was introduced with this ADR; older
-          ADRs may predate it until migrated.
+          Bad <code>data-adr-weight</code> values are clamped in script. This ADR introduced the model; older ADRs may not
+          use it until someone updates them.
         </li>
         <li>
-          <strong>Ratification.</strong> For decisions adopted after this ADR, record the discussion Issue (opened with
-          the ADR template and <code>[ADR]</code> title), merge PR, and acceptance date in the ADR’s Ratification section
-          (see the template). ADRs numbered 0017 and below were adopted under earlier conventions; from 0018 onward, this
-          pattern applies.
+          <strong>Ratification.</strong> For work after this ADR, put the discussion Issue (ADR template,
+          <code>[ADR]</code> title), merge PR, and acceptance date in the ADR Ratification section (see template). ADRs
+          0017 and below used older rules; from 0018 on, use this pattern.
         </li>
         <li>
-          <strong>Documentation changelog.</strong> Notable changes under <code>docs/</code> are summarized in
-          <code>docs/CHANGELOG.md</code>, separate from the root <code>CHANGELOG.md</code> (product/API focus per
+          <strong>Documentation changelog.</strong> Important changes under <code>docs/</code> go in
+          <code>docs/CHANGELOG.md</code>. The root <code>CHANGELOG.md</code> is for product/API (see
           <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>).
         </li>
         <li>
-          <strong>Documentation-only delivery.</strong> Pull requests that only change documentation (including ADRs) may
-          merge to <code>main</code> before implementation code; implementation follows in separate PRs.
+          <strong>Docs-only PRs.</strong> Pull requests that only change docs (including ADRs) can merge to
+          <code>main</code> before code; code can follow in later PRs.
         </li>
       </ol>
     </section>

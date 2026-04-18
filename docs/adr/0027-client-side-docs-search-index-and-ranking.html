@@ -27,19 +27,18 @@
     <section class="card">
       <h2>Context</h2>
       <p>
-        The project uses static documentation hosting and needs fast, relevant full-site search across
-        ADRs, runbooks, internal guides, developer pages, and API docs.
+        Docs are hosted as static files. We need fast, useful search across ADRs, runbooks, internal guides, developer
+        pages, and API docs.
       </p>
       <p>
-        A simple field-presence scorer is easy to maintain but starts degrading on larger corpora:
-        common words dominate, long pages are over-selected, and prefix queries need better behavior while typing.
+        A simple “word present or not” scorer is easy to maintain but weak on large sites: common words win too often,
+        long pages rank too high, and prefix search while typing needs better behavior.
       </p>
     </section>
     <section class="card">
       <h2>Decision</h2>
       <p>
-        We replace the previous simple scorer with an <strong>inverted-index lexical retrieval model</strong>
-        that combines:
+        We replace the old scorer with an <strong>inverted-index lexical model</strong> that combines:
       </p>
       <ol>
         <li>Per-field term frequencies at build time (title, URL, section, content).</li>
@@ -49,8 +48,8 @@
         <li>Prefix expansion only for the last query token for good type-ahead UX.</li>
       </ol>
       <p>
-        We also add <strong>docs-search product telemetry</strong> with append-only storage in the
-        current application SQLite database for simpler local operation and verification.
+        We also add <strong>search telemetry</strong> (append-only) in the app SQLite database so local runs stay simple
+        and we can verify behavior.
       </p>
     </section>
     <section class="card">

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,12 +19,12 @@
       Hands-on guides for contributors: from a first local run to shipping an endpoint and updating docs. Use this page
       as the main entry for the recommended onboarding path and for the doc authoring checklist.
     </p>
-
     <section id="overview" class="card">
       <h2>Overview</h2>
       <p>
         Use this index when you want steps for a task, not only policy text. For decisions, see
-        <a href="../adr/README.html">ADRs</a>. For detailed specs, see <a href="../rfc/README.html">RFCs</a>. For writing
+        <a href="../adr/README.html">ADRs</a>. For detailed specs, see <a href="../rfc/README.html">RFCs</a>. For
+        writing
         rules and audits, see
         <a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a>.
       </p>
@@ -42,91 +42,94 @@
         </li>
         <li>
           Use the concrete endpoint implementation example:
-          <a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code> (beginner walkthrough)</a>.
-        </li>
-        <li>
-          Update internal service docs structure and navigation:
-          <a href="./internal-service-docs-layout.html">Internal service docs layout and how to add pages</a>.
-        </li>
-        <li>
-          Validate writing style and structure against:
-          <a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a>.
-        </li>
-      </ol>
-    </section>
+          <a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code> (beginner
+            walkthrough)</a>.
+          </li>
+          <li>
+            Update internal service docs structure and navigation:
+            <a href="./internal-service-docs-layout.html">Internal service docs layout and how to add pages</a>.
+          </li>
+          <li>
+            Validate writing style and structure against:
+            <a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a>.
+          </li>
+        </ol>
+      </section>
 
-    <section id="documentation-authoring-path" class="card">
-      <h2>Documentation authoring path (create and format docs)</h2>
-      <p>
-        Use this list when you change behavior and need to update the docs to match.
-      </p>
-      <ol>
-        <li>
-          Define document type and target location (internal API page, how-to, runbook, ADR, RFC).
-        </li>
-        <li>
-          Create or update page content using the required section structure from
-          <a href="../internal/documentation-style-guide.html#document-type-matrix">document-type matrix</a>.
-        </li>
-        <li>
-          For internal service pages, keep navigation and shell consistent with
-          <a href="./internal-service-docs-layout.html">internal docs layout guide</a>.
-        </li>
-        <li>
-          Update links on hub pages (this index, internal indexes, ADR/RFC/runbook lists) when a new page is part of the
-          official flow.
-        </li>
-        <li>
-          Run documentation build and normalization:
-          <pre><code>make docs-fix</code></pre>
-        </li>
-        <li>
-          Run checks and drift validation before push:
-          <pre><code>make docs-check</code></pre>
-        </li>
-      </ol>
-    </section>
+      <section id="documentation-authoring-path" class="card">
+        <h2>Documentation authoring path (create and format docs)</h2>
+        <p>
+          Use this list when you change behavior and need to update the docs to match.
+        </p>
+        <ol>
+          <li>
+            Define document type and target location (internal API page, how-to, runbook, ADR, RFC).
+          </li>
+          <li>
+            Create or update page content using the required section structure from
+            <a href="../internal/documentation-style-guide.html#document-type-matrix">document-type matrix</a>.
+          </li>
+          <li>
+            For internal service pages, keep navigation and shell consistent with
+            <a href="./internal-service-docs-layout.html">internal docs layout guide</a>.
+          </li>
+          <li>
+            Update links on hub pages (this index, internal indexes, ADR/RFC/runbook lists) when a new page is part of the
+            official flow.
+          </li>
+          <li>
+            Run documentation build and normalization:
+            <pre><code>make docs-fix</code></pre>
+          </li>
+          <li>
+            Run checks and drift validation before push:
+            <pre><code>make docs-check</code></pre>
+          </li>
+        </ol>
+      </section>
 
-    <section id="guides-catalog" class="card">
-      <h2>Guides catalog</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Guide</th>
-            <th>When to use it</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="./onboarding-from-zero-to-endpoint-docs.html">Onboarding: from zero to endpoint and docs</a></td>
-            <td>First-time path from setup to quality gates.</td>
-          </tr>
-          <tr>
-            <td><a href="./internal-service-docs-layout.html">Internal service docs layout and how to add pages</a></td>
-            <td>Add or change pages under <code>docs/internal/</code>, sidebar, and layout.</td>
-          </tr>
-          <tr>
-            <td><a href="./0004-how-to-add-post-contract.html">Beginner walkthrough: add <code>POST /api/v1/contract</code></a></td>
-            <td>Example endpoint wired through all service layers.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+      <section id="guides-catalog" class="card">
+        <h2>Guides catalog</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Guide</th>
+              <th>When to use it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="./onboarding-from-zero-to-endpoint-docs.html">Onboarding: from zero to endpoint and docs</a>
+              </td>
+              <td>First-time path from setup to quality gates.</td>
+            </tr>
+            <tr>
+              <td><a href="./internal-service-docs-layout.html">Internal service docs layout and how to add pages</a></td>
+              <td>Add or change pages under <code>docs/internal/</code>, sidebar, and layout.</td>
+            </tr>
+            <tr>
+              <td><a href="./0004-how-to-add-post-contract.html">Beginner walkthrough: add
+                <code>POST /api/v1/contract</code></a></td>
+                <td>Example endpoint wired through all service layers.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-    <section id="related" class="card">
-      <h2>Related references</h2>
-      <p>
-        More context and policies around the tasks above.
-      </p>
-      <ul>
-        <li><a href="../internal/developers.html">Developers Docs hub</a></li>
-        <li><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></li>
-        <li><a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a></li>
-        <li><a href="../runbooks/README.html">Runbooks index</a> (incident and recovery procedures)</li>
-      </ul>
-    </section>
+        <section id="related" class="card">
+          <h2>Related references</h2>
+          <p>
+            More context and policies around the tasks above.
+          </p>
+          <ul>
+            <li><a href="../internal/developers.html">Developers Docs hub</a></li>
+            <li><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></li>
+            <li><a href="../internal/documentation-style-guide.html">Documentation style guide and audit standard</a></li>
+            <li><a href="../runbooks/README.html">Runbooks index</a> (incident and recovery procedures)</li>
+          </ul>
+        </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
 
-</body></html>
+    </body></html>

@@ -20,9 +20,9 @@
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        This ADR records a <strong>documentation architecture decision</strong>: how we separate material aimed at
-        <strong>external integrators</strong> (partners, client developers) from material aimed at
-        <strong>repository engineers</strong>. The audit trail is the git history for this file on <code>main</code>.
+        This ADR decides <strong>how we split documentation</strong> for <strong>external integrators</strong> (partners,
+        client developers) and <strong>engineers in this repo</strong>. Git history on <code>main</code> is the record for
+        this file.
       </p>
       <ul>
         <li>Discussion Issue: <em>optional — link when opened with <code>[ADR]</code> title</em></li>
@@ -34,17 +34,17 @@
     <section class="card">
       <h2>Context</h2>
       <p>
-        <strong>Why this matters:</strong> One audience needs a <strong>stable, machine-readable contract</strong> and
-        release notes; the other needs <strong>business rules, operational semantics, and design rationale</strong> that
-        are awkward to fully express in OpenAPI alone. Mixing both in ad hoc prose creates drift: external readers inherit
-        internal detail they do not need, while engineers hunt behavior in code when prose is missing.
+        <strong>Why this matters:</strong> One group needs a <strong>stable contract</strong> and release notes; the other
+        needs <strong>business rules, how things behave in production, and why we built it that way</strong> — hard to put
+        fully in OpenAPI. If we mix both in random prose, external readers see internal detail they do not need, and
+        engineers search code when text is missing.
       </p>
       <p>
-        We already govern HTTP surface quality via
+        We already govern HTTP quality via
         <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> (OpenAPI snapshot, examples, CI) and
-        consumer-facing change history via <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>. This ADR does
-        not relax those rules — it <strong>labels</strong> which artifacts are authoritative for which audience and where
-        internal narrative lives (<a href="../internal/README.html"><code>docs/internal/</code></a>, see
+        public change history via <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>. This ADR does not change
+        those rules. It only <strong>names</strong> which artifact is official for which audience and where internal
+        narrative lives (<a href="../internal/README.html"><code>docs/internal/</code></a>; see
         <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>).
       </p>
 
