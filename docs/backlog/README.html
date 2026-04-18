@@ -17,16 +17,15 @@
     <h1>Backlog: priorities and status</h1>
     <div id="docs-top-nav"></div>
     <p class="backlog-intro lead">
-      A single prioritized list of engineering work, from critical to nice-to-have. Estimates are <strong>rough
-      calendar-day ranges</strong> assuming steady focus (weekends excluded) at <strong>3 / 2 / 1 hours per
-      day</strong>—not commitments, but a shared planning baseline. Update each item’s status by changing the pill
-      class (see legend). This roadmap markup is separate from ADR lifecycle
-      (<code>data-adr-weight</code> on ADR pages — see <a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR
-      0018</a>).
+      One ordered list of engineering work: most urgent first, nice-to-have last. Dates are <strong>rough
+      calendar-day ranges</strong> (weekends off), for <strong>3 / 2 / 1 hours of focused work per day</strong>. They are
+      not deadlines—only a shared guess for planning. To change status, edit the pill class (see the legend). This page
+      is <strong>not</strong> ADR lifecycle: ADRs use <code>data-adr-weight</code> and ratification
+      (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
     </p>
     <p class="backlog-intro">
-      <strong>See also:</strong> <a href="../audit/README.html">Architecture &amp; quality assessments</a> (indexed
-      maturity reports under <code>docs/audit/</code>, <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>).
+      <strong>See also:</strong> <a href="../audit/README.html">Architecture &amp; quality assessments</a> — maturity
+      notes under <code>docs/audit/</code> (<a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>).
     </p>
 
     <section class="card" aria-labelledby="legend-title">
@@ -37,35 +36,34 @@
         <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.75em;">
           <div style="display: flex; align-items: center; gap: .75em;">
             <span class="status-pill status-pill--todo">To do</span>
-            <span style="text-align:left;">— queued; not started</span>
+            <span style="text-align:left;">— not started</span>
           </div>
           <div style="display: flex; align-items: center; gap: .75em;">
             <span class="status-pill status-pill--in-progress">In progress</span>
-            <span style="text-align:left;">— actively in progress</span>
+            <span style="text-align:left;">— someone is working on it</span>
           </div>
           <div style="display: flex; align-items: center; gap: .75em;">
             <span class="status-pill status-pill--done">Done</span>
-            <span style="text-align:left;">— completed and accepted</span>
+            <span style="text-align:left;">— finished and accepted</span>
           </div>
           <div style="display: flex; align-items: center; gap: .75em;">
             <span class="status-pill status-pill--blocked">Blocked</span>
-            <span style="text-align:left;">— waiting on external dependency or decision</span>
+            <span style="text-align:left;">— waiting on someone or a decision</span>
           </div>
           <div style="display: flex; align-items: center; gap: .75em;">
             <span class="status-pill status-pill--rejected">Rejected</span>
-            <span style="text-align:left;">— idea reviewed and explicitly declined (out of scope / no longer needed)</span>
+            <span style="text-align:left;">— we decided not to do this (out of scope or obsolete)</span>
           </div>
         </div>
       </dl>
       <div class="meta">
-        <p><strong>How to update status in this page (<code>README.html</code>)</strong></p>
+        <p><strong>How to change status (<code>README.html</code>)</strong></p>
         <ol>
-          <li>Status colors are defined in <code>docs/backlog/backlog.css</code> using CSS custom properties.</li>
-          <li>To change the palette, edit the <code>--status-*</code> variables; all pills on the page follow them.</li>
-          <li>In each backlog item heading (<code>&lt;h2&gt;</code>), find
-            <code>&lt;span class="status-pill status-pill--..."&gt;&lt;/span&gt;</code> and replace the suffix after
-            <code>status-pill--</code> with one of: <code>todo</code>, <code>in-progress</code>, <code>done</code>,
-            <code>blocked</code>, <code>rejected</code>.
+          <li>Colors live in <code>docs/backlog/backlog.css</code> (CSS variables).</li>
+          <li>To change colors globally, edit <code>--status-*</code> there.</li>
+          <li>In each item’s <code>&lt;h2&gt;</code>, find
+            <code>&lt;span class="status-pill status-pill--..."&gt;</code> and set the part after <code>status-pill--</code> to
+            <code>todo</code>, <code>in-progress</code>, <code>done</code>, <code>blocked</code>, or <code>rejected</code>.
           </li>
         </ol>
       </div>
@@ -81,15 +79,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Maintain a static backlog under <code>docs/backlog/</code>: human-readable HTML, shared status styling, and
-          a
-          consistent field template so priorities are visible to the team and stakeholders without a separate tool.
+          Keep a simple backlog in <code>docs/backlog/</code>: HTML, shared pill styles, and the same fields per item so
+          anyone reading the repo sees priorities without a separate tool.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          Without a single source of truth, roadmap discussions fragment across chats and tickets. This page gives a
-          lightweight, version-controlled backlog aligned with the repo—useful for reviews, onboarding, and release
-          planning when you are not yet on Jira/Linear or want docs co-located with code.
+          Without one place to look, plans scatter across chat and tickets. This page is versioned with the code—good for
+          reviews, onboarding, and release planning if you do not use Jira/Linear or want docs next to the source.
         </dd>
         <dt>3) Delivered (to date)</dt>
         <dd>
@@ -119,18 +115,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Automate the same checks developers run locally (<code>make verify</code> or equivalent) in continuous
-          integration: linters, types, tests with a minimum coverage floor, OpenAPI/doc consistency, and optional
-          contract tests—so <code>main</code> stays releasable.
+          Run the same checks as locally (<code>make verify</code> or similar) in CI: format, types, tests with a
+          coverage floor, OpenAPI/docs sync, contract tests—so <code>main</code> stays shippable.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Strict local workflows do not protect the default branch if CI is missing or
-          weaker;
-          regressions and doc drift merge silently.<br>
-          <strong>Value:</strong> Shifts defects left; gives reviewers a green pipeline signal; matches industry
-          practice
-          (quality gates per commit/PR).
+          <strong>Problem:</strong> If CI is weak or missing, bad code and doc drift can merge to <code>main</code>.<br>
+          <strong>Value:</strong> Bugs surface earlier; reviewers see a green pipeline; standard gates on each PR.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -168,18 +159,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Define service level indicators (SLIs), objectives (SLOs), and optional external-facing SLAs for latency,
-          availability, and error rate; wire Prometheus (or current stack) dashboards and alerts; document what
-          happens
-          when the error budget burns (e.g. feature freeze, incident response).
+          Set SLIs/SLOs (and optional SLAs) for latency, uptime, and errors. Add dashboards and alerts in Prometheus (or
+          your stack). Write what to do when the error budget runs out (freeze, incident flow).
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Raw metrics without targets do not drive release discipline or on-call
-          clarity.<br>
-          <strong>Value:</strong> Measurable reliability promises for users and dependent teams; aligns operations
-          with
-          product risk (Google SRE–style error budgeting).
+          <strong>Problem:</strong> Metrics without targets do not guide releases or on-call.<br>
+          <strong>Value:</strong> Clear reliability goals; ops and product share the same numbers (error-budget style).
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -215,18 +201,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Encode business invariants in the schema (unique constraints), map database conflict errors to the API error
-          contract, and document concurrent scenarios (double submit, retries, idempotency) so behavior under load is
-          explicit.
+          Put business rules in the DB (unique constraints), map conflicts to the API error shape, and document races
+          (double submit, retries, idempotency) so behavior under load is clear.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> “Check-then-act” without unique indexes races under concurrency and causes
-          duplicate
-          rows and production incidents.<br>
-          <strong>Value:</strong> Data integrity at the database layer; predictable client handling; less tribal
-          knowledge
-          for support and new engineers.
+          <strong>Problem:</strong> “Check then insert” without unique indexes can race and duplicate rows.<br>
+          <strong>Value:</strong> The database enforces truth; clients get stable errors; less guesswork for support.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -259,14 +240,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Automate vulnerability scanning of Python dependencies, pin direct dependencies for reproducible builds, and
-          publish a short policy for when and how to upgrade (e.g. per sprint, severity thresholds).
+          Scan Python deps for known CVEs, pin direct deps for reproducible builds, and write a short upgrade policy
+          (how often, by severity).
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Unpinned or stale dependencies increase CVE exposure and unpredictable CI/prod
-          behavior.<br>
-          <strong>Value:</strong> Aligns with supply-chain hygiene (OWASP, NIST SSDF); reduces emergency upgrades.
+          <strong>Problem:</strong> Loose or old pins add CVE risk and surprise builds.<br>
+          <strong>Value:</strong> Safer supply chain; fewer panic upgrades.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -301,15 +281,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Add an integration test layer that runs against a real PostgreSQL instance (with migrations applied and
-          repositories exercised) in CI using Docker Compose—complementing unit tests, which may use SQLite or mocks.
+          Add integration tests that hit real PostgreSQL in CI (Compose), with migrations and repositories—alongside fast
+          unit tests on SQLite or mocks.
         </dd>
         <dt>2) Problem &amp; Value</dt>
         <dd>
-          <strong>Problem:</strong> Developer SQLite and production PostgreSQL differ in datatypes, locking logic, and
-          edge cases; higher load can reveal latent bugs.<br>
-          <strong>Value:</strong> Test pyramid: fast unit tests plus a smaller set of high-signal integration tests—an
-          essential approach for data-heavy APIs.
+          <strong>Problem:</strong> SQLite in dev and Postgres in prod differ (types, locks, edge cases).<br>
+          <strong>Value:</strong> Fast unit tests plus a smaller set of real-DB tests catches data-heavy bugs.
         </dd>
         <dt>3) Scope &amp; Deliverables</dt>
         <dd>
@@ -337,17 +315,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Strengthen fast feedback: extract pure validation functions, cover them with unit and property-based tests
-          (Hypothesis) to assert invariants across generated inputs—reducing edge-case regressions without relying
-          only
-          on slow E2E tests.
+          Pull pure validation into small functions; test them with unit tests and property tests (Hypothesis) so many
+          inputs are checked without slow E2E only.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Ad-hoc examples miss boundary combinations; line coverage alone does not prove
-          correctness.<br>
-          <strong>Value:</strong> Cheaper than E2E for input-heavy logic; industry-standard for parsers and validation
-          rules.
+          <strong>Problem:</strong> Hand-picked examples miss edge mixes; line coverage is not proof.<br>
+          <strong>Value:</strong> Cheaper than E2E for heavy validation; common pattern for parsers and rules.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -374,14 +348,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Add a small suite of end-to-end tests that exercise the full path (HTTP client → API → database) against a
-          running stack, validating real status codes, headers, and payloads—not just mocked layers.
+          Add a few E2E tests: real HTTP → API → DB on a running stack, with real status codes, headers, and bodies—not
+          only mocks.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Unit and integration tests can miss wiring mistakes, middleware behavior, and
-          contract mismatches.<br>
-          <strong>Value:</strong> Confidence in release candidates; complements (does not replace) lower-level tests.
+          <strong>Problem:</strong> Lower-level tests can miss wiring, middleware, and contract gaps.<br>
+          <strong>Value:</strong> Extra confidence before release; does not replace unit/integration tests.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -408,14 +381,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Pilot mutation testing (e.g. cosmic-ray, mutmut) on one or two modules with idempotency or
-          security-sensitive
-          logic to validate that tests actually kill faulty mutants—not just high line coverage.
+          Try mutation testing (e.g. cosmic-ray, mutmut) on one or two sensitive modules to see if tests really catch
+          broken code—not just high line coverage.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Coverage metrics can be gamed; weak assertions leave branches untested.<br>
-          <strong>Value:</strong> Industry technique to measure test effectiveness; informs where to add assertions.
+          <strong>Problem:</strong> Coverage can look good with weak asserts.<br>
+          <strong>Value:</strong> Shows where tests actually fail bad mutations; points to stronger asserts.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -444,17 +416,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Replace per-process in-memory rate limiting with a shared store (Redis) so limits are consistent across
-          horizontally scaled API instances, with the same HTTP 429 contract clients already expect.
+          Move rate limits from per-process memory to Redis so limits match across many API instances, still returning
+          HTTP 429 as today.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Per-replica counters let abusive traffic multiply by instance count; fairness
-          breaks
-          under autoscaling.<br>
-          <strong>Value:</strong> Standard pattern for APIs behind load balancers; prerequisite for fair abuse
-          protection
-          at scale.
+          <strong>Problem:</strong> Each replica has its own counter, so abuse scales with instance count.<br>
+          <strong>Value:</strong> Normal pattern behind a load balancer; fair limits when you scale out.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -482,15 +450,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Standardize on PostgreSQL for staging/production (Docker-friendly), manage schema with Alembic, and define a
-          safe path to move from SQLite where it is still used—including data migration runbooks if needed.
+          Use PostgreSQL for staging/prod (Docker-friendly), keep schema in Alembic, and plan a safe move from SQLite
+          where it still runs—including data migration runbooks if needed.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> SQLite is excellent for dev but limits concurrency, backup story, and operational
-          tooling at production scale.<br>
-          <strong>Value:</strong> Matches typical “serious API” expectations: backups, replication, observability
-          hooks.
+          <strong>Problem:</strong> SQLite is fine for dev but weak for concurrent prod ops, backups, and tooling.<br>
+          <strong>Value:</strong> Postgres matches usual ops expectations (backup, HA, metrics).
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -517,14 +483,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Add repeatable load scenarios (e.g. k6 or Locust) that measure p95 latency and error rates under defined
-          concurrency, and compare results to SLO targets—optionally as a scheduled or manual CI stage.
+          Add repeatable load scripts (e.g. k6 or Locust) for p95 and errors under set concurrency; compare to SLOs;
+          optional CI or nightly job.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Production is the first load test for many teams; bottlenecks surface too
-          late.<br>
-          <strong>Value:</strong> Evidence-based capacity planning; catches regressions before traffic spikes.
+          <strong>Problem:</strong> Many teams only load-test in production.<br>
+          <strong>Value:</strong> Plan capacity from data; spot regressions before traffic jumps.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -559,16 +524,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Provide reproducible reference data and fixtures for integration and E2E tests, plus a short runbook so
-          anyone
-          can reset or bootstrap a known state without “magic” in <code>conftest.py</code>.
+          Ship reference data and fixtures for integration/E2E tests, plus a short runbook to reset or seed state
+          without hidden tricks in <code>conftest.py</code>.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Flaky or opaque test setup slows onboarding and hides real failures.<br>
-          <strong>Value:</strong> Stable CI; faster new-hire time-to-first-green-test; aligns with test data
-          management
-          hygiene.
+          <strong>Problem:</strong> Opaque setup flakes and hides real bugs.<br>
+          <strong>Value:</strong> Stable CI; new contributors get green tests faster.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -595,16 +557,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Introduce a minimal feature-flag mechanism (environment and/or Redis-backed) so risky behavior can be
-          toggled
-          without redeploying, supporting gradual rollout and fast mitigation.
+          Add simple feature flags (env and/or Redis) so risky behavior can flip without a full deploy—gradual rollout and
+          fast rollback.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Every mitigation requires a new deploy, lengthening incidents.<br>
-          <strong>Value:</strong> Industry standard for progressive delivery; enables canary-style activation and
-          instant
-          rollback of behavior.
+          <strong>Problem:</strong> Every fix needs a deploy, which slows incidents.<br>
+          <strong>Value:</strong> Turn behavior on/off quickly; canary-style rollouts.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -632,16 +591,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Automatically enforce allowed import directions between layers (e.g. HTTP handlers must not import
-          repositories
-          directly)—using import-linter or a custom graph check in <code>make verify</code>.
+          Enforce layer rules in CI (e.g. routers do not import repositories directly)—import-linter or a graph check in
+          <code>make verify</code>.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Undisciplined imports create circular dependencies and blur separation of concerns
-          as
-          the team grows.<br>
-          <strong>Value:</strong> Documented architecture that stays true in code; scalable modular monolith patterns.
+          <strong>Problem:</strong> Loose imports cause cycles and muddy layers as the team grows.<br>
+          <strong>Value:</strong> The code matches the documented architecture.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -669,15 +625,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Adopt <a href="https://keepachangelog.com/" rel="noopener noreferrer">Keep a Changelog</a> for user-visible
-          and
-          breaking API changes, and optionally enforce updates in CI when release tags are created.
+          Use <a href="https://keepachangelog.com/" rel="noopener noreferrer">Keep a Changelog</a> for user-visible and
+          breaking changes; optional CI check on release tags.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Consumers and support lack a single, dated record of what shipped.<br>
-          <strong>Value:</strong> Meets consumer expectations for versioned APIs; supports audit and communication
-          discipline.
+          <strong>Problem:</strong> Users and support lack one dated list of what shipped.<br>
+          <strong>Value:</strong> Clear history for API consumers and audits.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -710,14 +664,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Systematically find and remove unused modules, duplicated logic, and temporary workarounds once contracts
-          are
-          stable—using static analysis plus targeted human review.
+          Remove unused modules, duplicate logic, and old hacks after contracts stabilize—static analysis plus human
+          review.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Dead code increases cognitive load and hides real control flow.<br>
-          <strong>Value:</strong> Smaller attack surface and faster reviews; best done after major refactors settle.
+          <strong>Problem:</strong> Dead code confuses readers and hides real flow.<br>
+          <strong>Value:</strong> Smaller surface, faster reviews—best after big refactors land.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -753,18 +706,14 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Instrument the API with OpenTelemetry (W3C Trace Context): HTTP server spans, outbound calls, and database
-          spans where practical; export to OTLP (local Jaeger/Tempo or a hosted backend). Link traces to logs and
-          metrics
-          via <code>trace_id</code> / <code>span_id</code>.
+          Add OpenTelemetry (W3C): HTTP spans, outbound calls, DB spans where useful; export OTLP to Jaeger/Tempo or a
+          host. Tie traces to logs/metrics with <code>trace_id</code> / <code>span_id</code>.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Prometheus metrics and plain logs explain symptoms but not end-to-end request
-          paths
-          across layers and replicas.<br>
-          <strong>Value:</strong> Standard in large-scale platforms for incident response, latency breakdown, and
-          dependency mapping—complements existing SLO work (ADR 0011) without replacing it.
+          <strong>Problem:</strong> Metrics and logs alone do not show one request across services and replicas.<br>
+          <strong>Value:</strong> Standard way to debug latency and dependencies; adds to SLO work (ADR 0011), not a
+          replacement.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -792,16 +741,14 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Emit machine-readable JSON logs in production (and optionally in dev), with a stable schema: timestamp,
-          level, logger, message, and correlation fields (<code>request_id</code>, later <code>trace_id</code> when
-          OpenTelemetry lands). Accept or generate <code>X-Request-Id</code> (or similar) per request.
+          Ship JSON logs in prod (optional in dev) with stable fields: time, level, logger, message, and correlation
+          (<code>request_id</code>; <code>trace_id</code> when OTel ships). Accept or set <code>X-Request-Id</code> per
+          request.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Plain text logs are harder to query at volume and to join across services in log
-          platforms.<br>
-          <strong>Value:</strong> Aligns with how centralized logging (ELK, Cloud Logging, Datadog) expects payloads;
-          speeds up support and postmortems.
+          <strong>Problem:</strong> Plain text is hard to search at scale and to join across services.<br>
+          <strong>Value:</strong> Fits ELK/Datadog-style tools; faster support and postmortems.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -836,17 +783,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          After building and pushing the Docker image to GHCR, generate an SBOM (e.g. Syft), scan the image for known
-          CVEs
-          (e.g. Trivy or Grype), upload SARIF or summary to the workflow run, and fail or warn on configurable
-          severity
-          thresholds—documented in engineering practices.
+          After push to GHCR: build an SBOM (e.g. Syft), scan the image for CVEs (Trivy/Grype), upload SARIF or a
+          summary, warn or fail on severity—document the rules for engineers.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> <code>pip-audit</code> covers Python deps; the runtime image still carries OS
-          packages and layers that need separate review.<br>
-          <strong>Value:</strong> Matches supply-chain expectations in regulated and large orgs; complements ADR 0019.
+          <strong>Problem:</strong> <code>pip-audit</code> does not cover OS packages inside the image.<br>
+          <strong>Value:</strong> Meets common supply-chain checks; complements ADR 0019.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -873,16 +816,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Treat the public HTTP contract as versioned code: automated checks for operation IDs, summaries, examples on
-          write paths and 422 responses, and guardrails against accidental breaking changes vs a checked-in baseline.
+          Treat OpenAPI like code: lint operation IDs, summaries, examples on writes and 422s, and block surprise breaks
+          vs a checked-in baseline.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Undocumented or drifting OpenAPI confuses clients and hides incompatible
-          changes.<br>
-          <strong>Value:</strong> Same discipline as large API platforms: contract-first visibility and safer
-          evolution
-          within <code>/api/v1</code> (see ADR 0007).
+          <strong>Problem:</strong> Drift or missing docs confuse clients and hide breaks.<br>
+          <strong>Value:</strong> Visible contract and safer changes inside <code>/api/v1</code> (ADR 0007).
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -917,15 +857,12 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          After the quality gate passes, build and push a reproducible Docker artifact to GitHub Container Registry so
-          staging and tutorials can pull a known image digest.
+          After CI passes, build and push a Docker image to GHCR so staging and docs can pull a known digest.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> “Works on my machine” without a standard OCI image slows adoption of container/K8s
-          paths.<br>
-          <strong>Value:</strong> Aligns with common internal platform practice: Git commit → tested artifact →
-          registry.
+          <strong>Problem:</strong> Without a standard image, container and K8s flows are harder to share.<br>
+          <strong>Value:</strong> Commit → tested image → registry is the usual path.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -960,17 +897,13 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Define one canonical version string (e.g. <code>[project]</code> in <code>pyproject.toml</code> or
-          <code>app/__version__.py</code>) and inject it into FastAPI metadata, OpenAPI, and release notes workflows
-          so
-          tags and docs cannot drift from the running app.
+          One version string (e.g. <code>pyproject.toml</code> or <code>app/__version__.py</code>) wired into FastAPI,
+          OpenAPI, and release notes so tags and docs match the running app.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> A hardcoded <code>FastAPI(version=…)</code> diverges from
-          <code>CHANGELOG.md</code>
-          and git tags.<br>
-          <strong>Value:</strong> Operational clarity (support asks “which build?”) and cleaner automation.
+          <strong>Problem:</strong> Hardcoded <code>FastAPI(version=…)</code> drifts from changelog and tags.<br>
+          <strong>Value:</strong> Support and automation know which build is running.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
@@ -997,16 +930,14 @@
       <dl>
         <dt>1) Summary</dt>
         <dd>
-          Run a minimal automated scenario (health + one protected API path, or a short load profile from
-          <code>tools/load_testing/</code>) in GitHub Actions so latency and 5xx regressions surface without manual
-          <code>make run-loadtest-api</code>. Builds on local tooling already delivered under
-          <a href="#item-11">item 11</a>.
+          In GitHub Actions, run a small smoke or short load (health + one protected route, or
+          <code>tools/load_testing/</code>) so latency and 5xx regressions show without manual
+          <code>make run-loadtest-api</code>. Builds on <a href="#item-11">item 11</a>.
         </dd>
         <dt>2) Problem &amp; value</dt>
         <dd>
-          <strong>Problem:</strong> Local load tooling (backlog item 11) does not run on every merge by default.<br>
-          <strong>Value:</strong> Catches performance and timeout issues before they reach operators; complements SLO
-          alerts.
+          <strong>Problem:</strong> Item 11’s tooling does not run on every merge by default.<br>
+          <strong>Value:</strong> Catches perf/timeouts earlier; works with SLO alerts.
         </dd>
         <dt>3) Scope &amp; deliverables</dt>
         <dd>
