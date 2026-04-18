@@ -39,7 +39,7 @@
         <li>Unexpected aggressive rate-limit settings for local/test load.</li>
         <li>Payload grew beyond <code>API_BODY_MAX_BYTES</code>.</li>
         <li>Frontend origin missing in <code>CORS_ALLOW_ORIGINS</code>.</li>
-        <li>Middleware order/behavior changed without ADR + test updates.</li>
+        <li>Middleware order or behavior changed without tests or an ADR.</li>
       </ul>
     </section>
     <section class="card">
@@ -54,7 +54,7 @@
       <ul>
         <li>Check <code>API_RATE_LIMIT_REQUESTS</code> and <code>API_RATE_LIMIT_WINDOW_SECONDS</code>.</li>
         <li>Validate client retry/backoff behavior.</li>
-        <li>If policy change is needed, update ADR and docs before increasing limits.</li>
+        <li>Before raising limits, agree policy in an ADR and update docs.</li>
       </ul>
       <h3>3) Body limit errors (<code>413</code>)</h3>
       <ul>
@@ -82,14 +82,14 @@
       <ul>
         <li>Protected endpoints behave as expected for auth, rate limit, and body size.</li>
         <li>CORS and security headers are present and validated.</li>
-        <li>All automated checks pass, and docs reflect current policy.</li>
+        <li>CI passes and docs match the security settings you ship.</li>
       </ul>
     </section>
     <section class="card">
       <h2>Follow-up</h2>
       <ul>
-        <li>Policy-level security changes must be captured in ADR.</li>
-        <li>Update this runbook with new recurring incident patterns.</li>
+        <li>Security policy changes belong in an ADR.</li>
+        <li>Add new repeating patterns to this runbook.</li>
       </ul>
     </section>
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

@@ -26,7 +26,7 @@
       <ol>
         <li>Run full gate once: <code>make verify</code>.</li>
         <li>Identify failing step: <code>lint-check</code>, <code>type-check</code>, <code>test</code>, <code>docs-fix</code>.</li>
-        <li>Re-run only failing step to shorten feedback loop.</li>
+        <li>Run only the step that failed to get faster feedback.</li>
       </ol>
     </section>
     <section class="card">
@@ -35,7 +35,7 @@
         <li>Lint/type errors after refactor.</li>
         <li>Tests expect outdated API contract or DB state.</li>
         <li>Docs not synchronized after endpoint/config changes.</li>
-        <li>New file not included in expected imports/exports.</li>
+        <li>New module not wired into imports or package exports.</li>
       </ul>
     </section>
     <section class="card">
@@ -73,14 +73,14 @@
       <ul>
         <li><code>make verify</code> passes end-to-end.</li>
         <li><code>make release-check</code> passes.</li>
-        <li>Diff contains only intentional code/docs changes.</li>
+        <li>Your diff only includes changes you meant to ship.</li>
       </ul>
     </section>
     <section class="card">
       <h2>Follow-up</h2>
       <ul>
-        <li>If failure source is process/policy ambiguity, update developer docs or runbooks.</li>
-        <li>If it changes architecture/governance, record in ADR.</li>
+        <li>If the steps were unclear, update developer docs or a runbook.</li>
+        <li>If governance or architecture changed, add or update an ADR.</li>
       </ul>
     </section>
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

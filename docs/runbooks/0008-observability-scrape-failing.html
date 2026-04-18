@@ -58,7 +58,7 @@
         <li>API process is down or started on a different port.</li>
         <li><code>METRICS_ENABLED=false</code> in runtime environment.</li>
         <li>Wrong scrape target in <code>ops/prometheus/prometheus.tpl.yml</code> (rendered to <code>ops/prometheus/prometheus.yml</code>).</li>
-        <li>Docker Desktop does not resolve <code>host.docker.internal</code> in your environment.</li>
+        <li>Docker cannot reach the host (<code>host.docker.internal</code> missing or broken).</li>
       </ul>
     </section>
     <section class="card">
@@ -92,6 +92,13 @@
           <li>Prometheus target is <code>UP</code>.</li>
           <li><code>/metrics</code> returns expected metrics.</li>
           <li>Grafana dashboard panels show non-empty time-series data.</li>
+        </ul>
+      </section>
+      <section class="card">
+        <h2>Follow-up</h2>
+        <ul>
+          <li>If scrape targets or metrics policy changed, update ops docs or an ADR.</li>
+          <li>If the same scrape failure repeats, add a note to this runbook.</li>
         </ul>
       </section>
       <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

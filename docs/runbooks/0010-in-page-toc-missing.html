@@ -18,12 +18,10 @@
       <h2>Trigger</h2>
       <ul>
         <li>
-          A long-form HTML page under <code>docs/</code> (not <code>docs/api/</code>) shows no sticky “On this page”
-          block, or the list is empty.
+          A long HTML page under <code>docs/</code> (not <code>docs/api/</code>) has no “On this page” list, or the list is empty.
         </li>
         <li>
-          Expected: after the global doc nav, the main column and a right-hand (or stacked) TOC built by
-          <code>docs/assets/docs-nav.js</code>.
+          You expect a main column plus a right-hand (or stacked) table of contents from <code>docs/assets/docs-nav.js</code>.
         </li>
       </ul>
     </section>
@@ -31,23 +29,19 @@
       <h2>Fast triage</h2>
       <ol>
         <li>
-          Confirm <code>&lt;script defer src="…/assets/docs-nav.js"&gt;&lt;/script&gt;</code> is present and loads (browser
-          devtools → Network → no 404 for <code>docs-nav.js</code>).
+          The page loads <code>&lt;script defer src="…/assets/docs-nav.js"&gt;&lt;/script&gt;</code> (Network tab: no 404 for <code>docs-nav.js</code>).
         </li>
         <li>
-          Confirm JavaScript is allowed (not disabled; for <code>file://</code> some browsers restrict scripts — prefer a
-          local static server, e.g. <code>cd docs &amp;&amp; python -m http.server 8765</code>).
+          JavaScript is on. For <code>file://</code> URLs some browsers block scripts; use a small server, e.g. <code>cd docs &amp;&amp; python -m http.server 8765</code>.
         </li>
         <li>
-          Open devtools → Console: look for errors from <code>docs-nav.js</code> before layout runs.
+          Console: no errors from <code>docs-nav.js</code> before the layout runs.
         </li>
         <li>
-          In Elements, check that <code>&lt;div id="docs-top-nav"&gt;</code> still exists after load (it must wrap the top
-          nav — the script must not replace this node; it should contain <code>&lt;nav class="top-nav"&gt;</code>).
+          After load, <code>&lt;div id="docs-top-nav"&gt;</code> still exists (the script fills it; it should not disappear). It should contain <code>&lt;nav class="top-nav"&gt;</code>.
         </li>
         <li>
-          Check that the page has <code>&lt;main class="container"&gt;</code> and
-          <code>&lt;div id="docs-top-nav"&gt;</code>; <code>docs-nav.js</code> can add the TOC mount automatically.
+          The page uses <code>&lt;main class="container"&gt;</code> and <code>&lt;div id="docs-top-nav"&gt;</code>; the script can add the TOC mount for you.
         </li>
       </ol>
     </section>
@@ -55,29 +49,22 @@
       <h2>Most common causes</h2>
       <ul>
         <li>
-          <strong>No supported page shell</strong> — TOC autoinit expects <code>&lt;main class="container"&gt;</code> and
-          <code>#docs-top-nav</code>.
+          <strong>Wrong page shell</strong> — Auto TOC needs <code>&lt;main class="container"&gt;</code> and <code>#docs-top-nav</code>.
         </li>
         <li>
-          <strong>No qualifying headings</strong> — the TOC is built from <code>h2</code>/<code>h3</code> with
-          <code>id</code> (assigned automatically where missing). <code>p.lead</code> is intentionally not listed.
+          <strong>No headings</strong> — TOC lists <code>h2</code>/<code>h3</code> (adds <code>id</code> if missing). <code>p.lead</code> is not listed.
         </li>
         <li>
-          <strong>Missing <code>id</code> on a heading</strong> — the script assigns stable <code>id</code>s from heading
-          text when absent; if a heading still does not appear, check for invalid markup around it.
+          <strong>Broken markup</strong> — The script sets <code>id</code> from heading text; bad HTML around a heading can hide it.
         </li>
         <li>
-          <strong>Diagram-only headings skipped</strong> — <code>h3</code> inside <code>figure.sys-diagram</code> /
-          <code>.sys-diagram</code> are excluded from the TOC.
+          <strong>Diagram headings</strong> — <code>h3</code> inside <code>figure.sys-diagram</code> / <code>.sys-diagram</code> is skipped.
         </li>
         <li>
-          <strong>Very long TOC lists</strong> — pages with many headings (for example the backlog index) still use the
-          same mount; the link list scrolls inside the sidebar. If you truly want no sidebar, remove the mount from that
-          page only.
+          <strong>Long list</strong> — Many headings still use one mount; the sidebar scrolls. To hide the sidebar on one page, remove that page’s mount only.
         </li>
         <li>
-          <strong>Duplicate manual TOC</strong> — legacy in-page <code>Contents</code> blocks are removed by
-          <code>docs-nav.js</code>; author only one TOC, the generated “On this page” sidebar.
+          <strong>Two TOCs</strong> — Old <code>Contents</code> blocks are removed by <code>docs-nav.js</code>; keep only the generated “On this page”.
         </li>
       </ul>
     </section>
@@ -95,8 +82,7 @@
             <code>id</code> (or let the script generate one from heading text).
           </li>
           <li>
-            Use clear <code>h2</code>/<code>h3</code> structure; cards and sections are optional and do not affect which
-            headings are listed.
+            Use clear <code>h2</code>/<code>h3</code> structure. Cards do not change which headings appear.
           </li>
           <li>
             Run <code>make docs-fix</code> so HTML normalization stays consistent, then <code>make docs-check</code>.
@@ -106,7 +92,7 @@
       <section class="card">
         <h2>Exit criteria</h2>
         <ul>
-          <li>“On this page” appears with the expected section links; scroll-spy highlights the active link while scrolling.</li>
+          <li>“On this page” lists the right sections; the active link updates as you scroll.</li>
           <li>No console errors from <code>docs-nav.js</code> on that page.</li>
         </ul>
       </section>

@@ -20,53 +20,52 @@
       <ul>
         <li>No new entries in <code>logs/app.log</code>.</li>
         <li>App crashes on startup with logging-related error.</li>
-        <li>Log file path/permissions issues.</li>
+        <li>Wrong log path or no write permission.</li>
       </ul>
     </section>
     <section class="card">
       <h2>Fast triage</h2>
       <ol>
-        <li>Validate logging config in <code>.env</code>: <code>LOG_DIR</code>, <code>LOG_FILE_NAME</code>,
-          <code>LOG_LEVEL</code>.</li>
-          <li>Check directory and file permissions for <code>logs/</code>.</li>
-          <li>Start app and send test request: <code>make run</code>, then call <code>/health</code>.</li>
+        <li>Check <code>.env</code>: <code>LOG_DIR</code>, <code>LOG_FILE_NAME</code>, <code>LOG_LEVEL</code>.</li>
+        <li>Check directory and file permissions for <code>logs/</code>.</li>
+        <li>Start app and send test request: <code>make run</code>, then call <code>/health</code>.</li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>Most common causes</h2>
+      <ul>
+        <li>Invalid/unexpected <code>LOG_LEVEL</code> value.</li>
+        <li>Non-writable log directory.</li>
+        <li>App started from a different folder; relative paths break.</li>
+        <li>Logging code changed but startup in <code>app/main.py</code> does not match.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Recovery steps</h2>
+      <ol>
+        <li>Reset to known-good defaults in <code>.env</code>: <code>LOG_DIR=logs</code>,
+          <code>LOG_FILE_NAME=app.log</code>, <code>LOG_LEVEL=INFO</code>.</li>
+          <li>Restart app: stop server and run <code>make run</code> again.</li>
+          <li>Verify request log line appears after calling <code>/health</code>.</li>
+          <li>If still failing, inspect <code>app/core/logging.py</code> path/handler setup.</li>
         </ol>
       </section>
       <section class="card">
-        <h2>Most common causes</h2>
+        <h2>Exit criteria</h2>
         <ul>
-          <li>Invalid/unexpected <code>LOG_LEVEL</code> value.</li>
-          <li>Non-writable log directory.</li>
-          <li>Relative path confusion from different working directory.</li>
-          <li>Logging setup changed but not initialized in <code>app/main.py</code>.</li>
+          <li>New requests write lines to <code>logs/app.log</code>.</li>
+          <li>App startup is stable.</li>
+          <li><code>make test</code> still passes.</li>
         </ul>
       </section>
       <section class="card">
-        <h2>Recovery steps</h2>
-        <ol>
-          <li>Reset to known-good defaults in <code>.env</code>: <code>LOG_DIR=logs</code>,
-            <code>LOG_FILE_NAME=app.log</code>, <code>LOG_LEVEL=INFO</code>.</li>
-            <li>Restart app: stop server and run <code>make run</code> again.</li>
-            <li>Verify request log line appears after calling <code>/health</code>.</li>
-            <li>If still failing, inspect <code>app/core/logging.py</code> path/handler setup.</li>
-          </ol>
-        </section>
-        <section class="card">
-          <h2>Exit criteria</h2>
-          <ul>
-            <li>New requests write lines to <code>logs/app.log</code>.</li>
-            <li>App startup is stable.</li>
-            <li><code>make test</code> still passes.</li>
-          </ul>
-        </section>
-        <section class="card">
-          <h2>Follow-up</h2>
-          <ul>
-            <li>If incident exposed observability policy gap, document decision in ADR.</li>
-            <li>If incident exposed operational gap, update this runbook.</li>
-          </ul>
-        </section>
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
+        <h2>Follow-up</h2>
+        <ul>
+          <li>If this changes observability policy, add or update an ADR.</li>
+          <li>If it is a new failure pattern, update this runbook.</li>
+        </ul>
+      </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
 
-    </body></html>
+  </body></html>

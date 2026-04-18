@@ -25,7 +25,7 @@
     <section class="card">
       <h2>Fast triage</h2>
       <ol>
-        <li>Verify env points to expected DB: check <code>.env</code> -&gt; <code>SQLITE_DB_PATH</code>.</li>
+        <li>Confirm <code>.env</code> points at the DB you expect (<code>SQLITE_DB_PATH</code>).</li>
         <li>Run migration command explicitly: <code>make migrate</code>.</li>
         <li>Inspect current migration heads: <code>.venv/bin/python -m alembic heads</code>.</li>
       </ol>
@@ -34,9 +34,9 @@
       <h2>Most common causes</h2>
       <ul>
         <li>Model changes were made but migration not generated.</li>
-        <li>Migration generated against stale model imports.</li>
+        <li>Migration was built with stale or wrong model imports.</li>
         <li>Wrong DB file/path in <code>.env</code>.</li>
-        <li>Manual DB edits drifted from migration history.</li>
+        <li>Someone changed the DB by hand; history no longer matches Alembic.</li>
       </ul>
     </section>
     <section class="card">
@@ -52,8 +52,8 @@
     <section class="card">
       <h2>Safe rollback strategy (local)</h2>
       <ul>
-        <li>If migration is clearly wrong and not shared yet, delete bad migration file and regenerate with corrected models/imports.</li>
-        <li>Never rewrite shared migration history silently in team workflow.</li>
+        <li>If the file is wrong and nobody else has it yet, delete it and generate again with fixed models/imports.</li>
+        <li>Do not rewrite shared migration history without team agreement.</li>
       </ul>
     </section>
     <section class="card">
@@ -67,7 +67,7 @@
     <section class="card">
       <h2>Follow-up</h2>
       <ul>
-        <li>Record non-obvious migration decisions in ADR when they affect long-term schema policy.</li>
+        <li>If the schema policy is non-obvious, capture it in an ADR.</li>
       </ul>
     </section>
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

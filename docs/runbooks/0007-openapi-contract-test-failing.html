@@ -39,7 +39,7 @@
         <li>Field type changed in request/response schema.</li>
         <li>Error code/key mapping changed unintentionally.</li>
         <li>Response status set changed (for example removed <code>422</code> or <code>404</code>).</li>
-        <li>Requiredness changed for existing fields/parameters.</li>
+        <li>A field or parameter flipped between required and optional.</li>
         <li>OpenAPI examples or router response declarations diverged from implementation.</li>
       </ul>
     </section>
@@ -55,7 +55,7 @@
 
       <h3>2) Intentional contract change</h3>
       <ul>
-        <li>Confirm change is backward-compatible for current API major version.</li>
+        <li>Confirm the change is safe for the current API major version.</li>
         <li>Update tests, examples, and related docs/ADR notes.</li>
         <li>Accept new baseline: <code>make openapi-accept-changes</code>.</li>
         <li>Re-run <code>make contract-test</code> and <code>make verify</code>.</li>
@@ -76,15 +76,15 @@
       <ul>
         <li><code>make contract-test</code> passes.</li>
         <li><code>make verify</code> passes end-to-end.</li>
-        <li>Baseline update (if any) is explicit and justified in the change.</li>
+        <li>If you updated the baseline, the commit message or PR explains why.</li>
       </ul>
     </section>
     <section class="card">
 
       <h2>Follow-up</h2>
       <ul>
-        <li>If policy/compatibility boundary changed, update ADR and developer docs.</li>
-        <li>If this incident repeats, add stronger lint rules in <code>scripts/openapi_governance.py</code>.</li>
+        <li>If compatibility rules changed, update an ADR and developer docs.</li>
+        <li>If this keeps happening, tighten checks in <code>scripts/openapi_governance.py</code>.</li>
       </ul>
     </section>
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

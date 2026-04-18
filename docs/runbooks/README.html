@@ -17,15 +17,14 @@
     <div id="docs-top-nav"></div>
     <section id="overview" class="card">
       <h2>Overview</h2>
-      <p>This page is an entry point for operational procedures. Use the table to quickly open the needed runbook,
-        identify the incident type, and follow the standardized recovery checklist.
+      <p>
+        Use this page to pick a runbook by incident type. Each runbook lists triggers, quick checks, likely causes,
+        recovery steps, and how to confirm the problem is gone.
       </p>
     </section>
 
     <section class="card">
       <h2>Runbooks</h2>
-      <p>
-      </p>
       <table>
         <thead>
           <tr>
@@ -36,67 +35,65 @@
         <tbody>
           <tr>
             <td><a href="./0000-template.html">Template</a></td>
-            <td>Template for creating a new runbook with consistent incident structure.</td>
+            <td>Shell for a new runbook (same sections every time).</td>
           </tr>
           <tr>
             <td><a href="./0001-tests-failing.html">Tests failing</a></td>
-            <td>Triage and recovery flow for failing automated tests.</td>
+            <td>Failing tests in CI or locally: triage and fix.</td>
           </tr>
           <tr>
             <td><a href="./0002-migrations-failing.html">Migrations failing</a></td>
-            <td>Recovery steps for migration generation/apply issues and schema mismatch.</td>
+            <td>Alembic errors, bad migration files, or schema mismatch.</td>
           </tr>
           <tr>
             <td><a href="./0003-logging-failing.html">Logging failing</a></td>
-            <td>Diagnostics for log setup, paths, permissions, and runtime logging behavior.</td>
+            <td>No log lines, bad paths, or permissions on <code>logs/</code>.</td>
           </tr>
           <tr>
             <td><a href="./0004-pre-commit-failing.html">Pre-commit failing</a></td>
-            <td>Fix path for hook failures and staged/unstaged formatting conflicts.</td>
+            <td>Hooks fail on commit; staging and auto-format conflicts.</td>
           </tr>
           <tr>
             <td><a href="./0005-quality-check-failing.html">Quality check failing</a></td>
-            <td>Step-by-step breakdown for lint, type-check, test, and docs gate failures.</td>
+            <td><code>make verify</code> fails: lint, types, tests, or docs sync.</td>
           </tr>
           <tr>
             <td><a href="./0006-api-security-failing.html">API security failing</a></td>
-            <td>Triage and recovery for auth, rate-limit, CORS, security headers, and body-size constraints.</td>
+            <td>Auth, rate limits, CORS, headers, or body size problems.</td>
           </tr>
           <tr>
             <td><a href="./0007-openapi-contract-test-failing.html">OpenAPI contract test failing</a></td>
-            <td>Recovery flow for OpenAPI snapshot drift and baseline update decisions.</td>
+            <td>Contract test or OpenAPI baseline drift.</td>
           </tr>
           <tr>
             <td><a href="./0008-observability-scrape-failing.html">Observability scrape failing</a></td>
-            <td>Triage and recovery for Prometheus scrape failures and empty Grafana dashboards.</td>
+            <td>Prometheus down targets or empty Grafana panels.</td>
           </tr>
           <tr>
             <td><a href="./0009-error-budget-exhaustion.html">Error budget exhaustion</a></td>
-            <td>Response when SLO error budget is burned, Prometheus SLO alerts fire, or readiness/latency targets
-              break.</td>
-            </tr>
-            <tr>
-              <td><a href="./0010-in-page-toc-missing.html">In-page TOC missing</a></td>
-              <td>“On this page” sidebar absent, empty, or wrong; mount, headings, or script troubleshooting.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-      <section class="card">
-        <h2>Operational Rule</h2>
-        <ul>
-          <li>If root cause reveals architecture/policy gap, capture decision in ADR.</li>
-          <li>If root cause is procedural, update the related runbook.</li>
-        </ul>
-        <h2>Mini-SLA</h2>
-        <ul>
-          <li>During active incident: add temporary notes/checklist in the relevant runbook within 30 minutes.</li>
-          <li>After incident resolution: publish finalized runbook update within 24 hours.</li>
-          <li>If same incident repeats twice in 30 days: update runbook and add preventive action item in developer
-            docs/ADR.</li>
-          </ul>
-        </section>
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
+            <td>SLO alerts, high 5xx, latency, or readiness failures.</td>
+          </tr>
+          <tr>
+            <td><a href="./0010-in-page-toc-missing.html">In-page TOC missing</a></td>
+            <td>“On this page” sidebar missing, empty, or wrong.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="card">
+      <h2>Operational rule</h2>
+      <ul>
+        <li>If you find a <strong>policy or architecture</strong> gap, add or update an ADR.</li>
+        <li>If it is a <strong>process or step</strong> gap, update the runbook (this one or another).</li>
+      </ul>
+      <h2>Mini-SLA</h2>
+      <ul>
+        <li><strong>During an incident:</strong> add short notes or a checklist to the runbook within 30 minutes.</li>
+        <li><strong>After the fix:</strong> publish a clean runbook update within 24 hours.</li>
+        <li><strong>Same incident twice in 30 days:</strong> update the runbook and add a preventive action (docs or ADR).</li>
+      </ul>
+    </section>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-    </body></html>
+</body></html>

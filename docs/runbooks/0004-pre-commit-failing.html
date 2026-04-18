@@ -17,22 +17,22 @@
     <section class="card">
       <h2>Trigger</h2>
       <ul>
-        <li><code>make pre-commit-check</code> fails</li>
-        <li><code>git commit</code> fails on pre-commit hooks</li>
+        <li><code>make pre-commit-check</code> fails.</li>
+        <li><code>git commit</code> fails because a hook failed.</li>
       </ul>
     </section>
     <section class="card">
       <h2>Fast triage</h2>
       <ol>
-        <li>Run hooks explicitly: <code>make pre-commit-check</code></li>
+        <li>Run hooks: <code>make pre-commit-check</code>.</li>
         <li>Check which hook failed (ruff, format, mypy, hygiene hooks).</li>
-        <li>Re-run only after fixes; pre-commit often auto-modifies files.</li>
+        <li>Fix issues, then run again; hooks may edit files for you.</li>
       </ol>
     </section>
     <section class="card">
       <h2>Most common causes</h2>
       <ul>
-        <li><code>ruff-format</code> changed files and commit was attempted with unstaged changes.</li>
+        <li><code>ruff-format</code> changed files but they were not staged before commit.</li>
         <li><code>mypy</code> reports type errors after schema/service edits.</li>
         <li>Hygiene hooks found trailing spaces/EOF/line endings.</li>
         <li>Merge conflict markers accidentally committed.</li>
@@ -67,8 +67,8 @@
     <section class="card">
       <h2>Follow-up</h2>
       <ul>
-        <li>If hook set is insufficient/too strict, adjust <code>.pre-commit-config.yaml</code> centrally.</li>
-        <li>Document recurring failure patterns in this runbook.</li>
+        <li>To change which hooks run or how strict they are, edit <code>.pre-commit-config.yaml</code>.</li>
+        <li>If the same failure keeps happening, add a line to this runbook.</li>
       </ul>
     </section>
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

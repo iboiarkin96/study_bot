@@ -22,21 +22,20 @@
           <code>StudyAppFast5xxBurn</code>, <code>StudyAppHighHttp5xxRate</code>, <code>StudyAppLatencySLOViolation</code>, or
           <code>StudyAppReadyProbeFailing</code> are firing.
         </li>
-        <li>Grafana SLO panels show HTTP error budget burn above 1, or sustained high 5xx rate, or readiness probe at 0.</li>
-        <li>External SLA breach or customer-visible outage correlated with the above.</li>
+        <li>Grafana shows error budget burn over 1, a high 5xx rate, or readiness at 0.</li>
+        <li>Users see an outage or you breach an external SLA at the same time.</li>
       </ul>
     </section>
     <section class="card">
 
       <h2>What “error budget exhausted” means</h2>
       <p>
-        For the Study App API, the internal SLO allows at most <strong>0.1%</strong> of requests to return HTTP 5xx over a
-        rolling 30-day window (99.9% success). The recording rule <code>job:study_app:http_5xx:burn30d</code> compares
-        actual 5xx share to that allowance. When burn is <strong>above 1</strong>, the team has consumed more than the
-        allotted error budget for the window.
+        For this API we allow at most <strong>0.1%</strong> of requests to return HTTP 5xx in a rolling 30-day window
+        (99.9% success). The rule <code>job:study_app:http_5xx:burn30d</code> compares real 5xx share to that allowance.
+        When burn is <strong>above 1</strong>, you have used more errors than budget for that window.
       </p>
       <p>
-        Policy details and SLI definitions:
+        Full policy and SLI text:
         <a href="../adr/0011-slo-sla-error-budget.html">ADR 0011: SLOs, SLAs, error budget, and monitoring alerts</a>.
       </p>
     </section>
@@ -45,9 +44,9 @@
       <h2>Fast triage (order)</h2>
       <ol>
         <li>
-          <strong>Readiness / dependencies</strong> — If <code>StudyAppReadyProbeFailing</code> fires, open
-          <a href="./0008-observability-scrape-failing.html">Observability scrape failing</a> patterns: confirm API is up,
-          database reachable, <code>curl -i http://127.0.0.1:8000/ready</code> returns <code>200</code>.
+          <strong>Readiness / dependencies</strong> — If <code>StudyAppReadyProbeFailing</code> fires, use
+          <a href="./0008-observability-scrape-failing.html">Observability scrape failing</a>: API up, DB reachable,
+          <code>curl -i http://127.0.0.1:8000/ready</code> returns <code>200</code>.
         </li>
         <li>
           <strong>5xx and latency</strong> — Open Grafana dashboard
@@ -57,16 +56,13 @@
           <a href="http://127.0.0.1:9090/graph">Graph</a>.
         </li>
         <li>
-          <strong>Recent change</strong> — Identify deploys, config changes, migrations, or traffic spikes in the incident
-          window.
+          <strong>Recent change</strong> — Look for deploys, config edits, migrations, or traffic spikes in that window.
         </li>
         <li>
-          <strong>Rollback</strong> — If a new release is the likely cause, roll back to the last known-good version per
-          your deployment process.
+          <strong>Rollback</strong> — If a new release is likely the cause, roll back to the last good version (your usual process).
         </li>
         <li>
-          <strong>Saturation</strong> — Check CPU/memory, connection pools, and rate limits if latency SLO fires without
-          clear 5xx spikes.
+          <strong>Saturation</strong> — If latency SLO fires but 5xx are low, check CPU, memory, pools, and rate limits.
         </li>
       </ol>
     </section>
@@ -75,19 +71,16 @@
       <h2>Response when budget is exhausted or critical</h2>
       <ul>
         <li>
-          <strong>Incident</strong> — Treat sustained burn or customer impact as an incident: assign an incident lead,
-          use a shared channel, and document timeline.
+          <strong>Incident</strong> — Sustained burn or user impact: name a lead, use one channel, write a short timeline.
         </li>
         <li>
-          <strong>Feature freeze</strong> — Until stability is restored, defer non-essential releases and risky changes
-          except fixes for the incident.
+          <strong>Feature freeze</strong> — Until things are stable, pause non-urgent releases; ship only fixes for the incident.
         </li>
         <li>
-          <strong>Root cause</strong> — After mitigation, capture root cause and follow-up items (tests, alerts, ADR).
+          <strong>Root cause</strong> — After mitigation, record cause and follow-ups (tests, alerts, ADR if needed).
         </li>
         <li>
-          <strong>External SLA</strong> — If a published SLA exists, follow customer communication and escalation
-          processes defined for that SLA.
+          <strong>External SLA</strong> — If you have a published SLA, follow its customer comms and escalation steps.
         </li>
       </ul>
     </section>
@@ -111,7 +104,7 @@
       <ul>
         <li>Firing alerts are resolved or acknowledged with a documented exception.</li>
         <li>5xx rate and latency panels are back within SLO targets on the Grafana dashboard.</li>
-        <li>Error budget burn is trending down or a new window policy is agreed in writing.</li>
+        <li>Error budget burn is going down, or the team agreed a new window rule in writing.</li>
       </ul>
     </section>
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

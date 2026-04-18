@@ -33,10 +33,10 @@
     <section class="card">
       <h2>Most common causes</h2>
       <ul>
-        <li>Changed API contract but tests expect old payload/keys.</li>
-        <li>Test fixtures are stale after schema/model changes.</li>
-        <li>Migration not applied to local DB before tests.</li>
-        <li>Nondeterministic test order/state leakage.</li>
+        <li>API shape changed; tests still expect old fields or payloads.</li>
+        <li>Fixtures are out of date after schema or model changes.</li>
+        <li>Local DB was not migrated before tests.</li>
+        <li>Flaky order or shared state between tests.</li>
       </ul>
     </section>
     <section class="card">
@@ -60,8 +60,8 @@
     <section class="card">
       <h2>Follow-up</h2>
       <ul>
-        <li>If failure source is policy-level (contract/versioning/testing rules), add/update ADR.</li>
-        <li>If failure source is operational routine, update this runbook with the new case.</li>
+        <li>If the fix changes policy (contracts, versioning, test rules), add or update an ADR.</li>
+        <li>If it is a new failure pattern, add a short note to this runbook.</li>
       </ul>
     </section>
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
