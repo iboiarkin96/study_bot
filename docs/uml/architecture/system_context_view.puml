@@ -1,73 +1,45 @@
 @startuml
-title Study App - C4 L1 System Context
+title ETR Study API — C4 Level 1 (system context)
 
 top to bottom direction
 
-package "People" as People {
-  actor Learner
-  actor Mentor
-  actor Operator
-}
+actor "Integrator\n(HTTP client)" as Integrator
+note right of Integrator
+  **Out of scope:** web, mobile, bots.
+  Any OpenAPI-compliant HTTP client.
+end note
 
-package "Client apps" as Clients {
-  [Web UI] as Web
-  [Mobile] as Mobile
-  [Bot adapter] as Bot
-  Web -[hidden]right- Mobile
-  Mobile -[hidden]right- Bot
-}
+rectangle "ETR Study API\nFastAPI · OpenAPI · /api/v1" as Api
 
-rectangle "Study App API\nFastAPI · OpenAPI" as Api
+database "Relational store\n(SQLite dev · Postgres-capable)" as Db
 
-database "SQLite\nstudy_app.db" as Db
 rectangle "OCI image\nstudy-app-api" as Img
 
-package "Kubernetes\n(optional)" as K8s {
-  rectangle "Deployment · Service\nk8s/*.yaml" as K8sDep
-}
-
-package "Observability\n(Docker Compose)" as Obs {
+package "Observability\n(optional · Compose)" as Obs {
   [Grafana] as Graf
   [Prometheus] as Prom
   [Blackbox] as Bbx
-  Graf -[hidden]right- Prom
-  Prom -[hidden]right- Bbx
 }
 
-package "Log search\n(optional Compose)" as LogSearch {
+package "Log search\n(optional)" as LogSearch {
   [Elasticsearch] as ES
   [Kibana] as Kib
-  ES -[hidden]right- Kib
 }
 
-People -[hidden]down- Clients
-Clients -[hidden]down- Api
-Api -[hidden]down- Db
-Db -[hidden]right- Img
-Img -[hidden]right- K8s
-Db -[hidden]down- Obs
-Db -[hidden]right- LogSearch
+Integrator --> Api : HTTPS · JSON
+Api --> Db : SQL · transactions
 
-Learner --> Web
-Learner --> Mobile
-Mentor --> Web
-Operator --> Bot
-Operator --> Graf
-Operator --> Kib : optional\n(log search)
-Operator ..> K8sDep : optional
-
-Web --> Api : HTTPS
-Mobile --> Api
-Bot --> Api
-
-Api --> Db : SQL
 Img ..> Api : packages
-K8sDep ..> Img : image pull
-K8sDep ..> Api : runs
 
-Prom ..> Api : metrics
-Bbx ..> Api : ready
+Prom ..> Api : scrape /metrics
+Bbx ..> Api : probe /ready
 Graf --> Prom
-Api ..> ES : NDJSON logs\n(via Filebeat)
+
+Api ..> ES : NDJSON logs\n(optional)
+
+note bottom of Db
+  Single service owns schema,
+  Alembic migrations, transactional writes.
+end note
 
 @enduml

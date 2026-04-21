@@ -1,60 +1,53 @@
 @startuml
-title Study App - C4 L2 Container View
+title ETR Study API — C4 Level 2 (containers)
 
 top to bottom direction
 
-actor "Client app" as Client
+actor "Integrator" as Client
 
-package "Study App\n(single process)" as Proc {
-  [HTTP · FastAPI routers] as Http
-  [Application services] as App
-  [Persistence · repositories] as Persist
+package "API process\n(single deployable)" as Proc {
+  [HTTP · FastAPI] as Http
+  [Domain services] as App
+  [Repositories] as Persist
   Http -[hidden]down- App
   App -[hidden]down- Persist
 }
 
-database "SQLite\nstudy_app.db" as Db
-rectangle "Alembic\n(migrations)" as Mig
+database "Database" as Db
+rectangle "Alembic" as Mig
 
-Persist -[hidden]right- Db
-Mig -[hidden]down- Db
-
-package "Observability stack\n(Docker Compose)" as Obs {
+package "Observability\n(optional)" as Obs {
   [Grafana] as Graf
   [Prometheus] as Prom
-  [Blackbox exporter] as Bbx
-  Graf -[hidden]right- Prom
-  Prom -[hidden]right- Bbx
+  [Blackbox] as Bbx
 }
 
-package "Log stack\n(optional Compose)" as LogStack {
+package "Log pipeline\n(optional)" as LogStack {
   [Elasticsearch] as ES
   [Kibana] as Kib
   [Filebeat] as FB
-  ES -[hidden]right- Kib
-  Kib -[hidden]right- FB
 }
 
-artifact "logs/*.log\n(NDJSON)" as LogFile
-
-Proc -[hidden]down- Obs
-Proc ..> LogFile : LOG_FORMAT=json
-LogFile ..> FB : volume mount
-FB --> ES : index
-Kib --> ES : Discover / search
+artifact "NDJSON logs" as LogFile
 
 Client --> Http : HTTPS / JSON
 Http --> App
 App --> Persist
 Persist --> Db : SQL
-Mig ..> Db : apply
+Mig ..> Db : migrations
 
-Graf --> Prom : queries
-Prom ..> Http : scrape :8000/metrics
-Bbx ..> Http : probe :8000/ready
+App ..> LogFile
+LogFile ..> FB
+FB --> ES
+Kib --> ES
+
+Graf --> Prom
+Prom ..> Http : :8000/metrics
+Bbx ..> Http : :8000/ready
 
 note bottom of App
-  Layering: API → Services → Repositories → DB
+  Writes update snapshots and append
+  review_log / conspectus_events in one transaction.
 end note
 
 @enduml

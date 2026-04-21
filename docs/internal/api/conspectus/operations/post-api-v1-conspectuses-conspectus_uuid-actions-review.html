@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>POST /api/v1/conspectuses/{conspectus_uuid}/actions/review — Conspectus — Study App</title>
+  <link rel="stylesheet" href="../../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../../assets/internal-layout.css">
+  <script defer src="../../../../assets/docs-nav.js"></script>
+  <script defer src="../../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Conspectus</p>
+        <h1 class="internal-doc-h1">
+          <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="POST /api/v1/conspectuses/{conspectus_uuid}/actions/review">
+            <span class="badge badge--method-post">POST</span>
+            <code class="internal-http-tablet__path">/api/v1/conspectuses/{conspectus_uuid}/actions/review</code>
+          </span>
+        </h1>
+        <p class="lead">
+          <strong>Specification.</strong> Apply one retrieve outcome: <code>tag</code> is <code>easy</code>,
+          <code>hard</code>, or <code>forgot</code>. Intended to update <code>slot</code>, <code>slot_d_ladder_index</code>,
+          and <code>next_review_at</code> via a schedule policy (implementation TBD). Planned <code>operationId</code>:
+          <code>reviewConspectus</code>.
+        </p>
+        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>reviewConspectus</code></p>
+
+        <section class="card">
+          <h2>Path, body, and behavior</h2>
+          <p>
+            Path parameter: <code>conspectus_uuid</code> (36-char UUID string). Body:
+            <code>system_user_id</code>, <code>system_uuid</code>, <code>tag</code> (<code>ReviewTag</code> enum).
+          </p>
+          <p>
+            Service loads the row only if <code>conspectus_uuid</code> belongs to the resolved user’s
+            <code>client_uuid</code>. Otherwise <code>404</code> with <code>CONS_404</code>.
+          </p>
+          <p>
+            <strong>Idempotency:</strong> required header. Key
+            <code>endpoint_path = "/api/v1/conspectuses/{conspectus_uuid}/actions/review"</code> with the concrete UUID in the path
+            (each conspectus has its own idempotency namespace).
+          </p>
+          <p><strong>Success:</strong> <code>200 OK</code> — full <code>ConspectusResponse</code> after update.</p>
+        </section>
+
+        <section class="card">
+          <h2>Errors</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>HTTP</th>
+                <th>Code / key</th>
+                <th>When</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>400</code></td>
+                <td><code>COMMON_400</code></td>
+                <td>Missing <code>Idempotency-Key</code>.</td>
+              </tr>
+              <tr>
+                <td><code>404</code></td>
+                <td><code>USER_404</code></td>
+                <td>User not found.</td>
+              </tr>
+              <tr>
+                <td><code>404</code></td>
+                <td><code>CONS_404</code> / <code>CONSPECTUS_NOT_FOUND</code></td>
+                <td>No conspectus for this id + user (wrong id or other user’s row).</td>
+              </tr>
+              <tr>
+                <td><code>409</code></td>
+                <td><code>COMMON_409</code></td>
+                <td>Idempotency key conflict (different body).</td>
+              </tr>
+              <tr>
+                <td><code>422</code></td>
+                <td>Validation</td>
+                <td>Invalid <code>tag</code> or body fields.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <h2>Logging</h2>
+          <p><code>conspectus_reviewed</code> at info with <code>conspectus_uuid</code>, <code>tag</code>, new <code>slot</code>.</p>
+        </section>
+
+        <section class="card">
+          <h2>Single-file deep spec</h2>
+          <p><a href="../index.html#conspectus-op-reviewConspectus">Conspectus hub — this operation</a></p>
+        </section>
+
+        <p class="small">
+          <a href="../index.html">← Conspectus resource hub</a>
+        </p>
+
+        <section id="page-history" class="card">
+
+          <h2>Page history</h2>
+
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+            <table class="docs-page-history">
+
+              <thead>
+
+                <tr>
+
+                  <th scope="col">Date</th>
+
+                  <th scope="col">Change</th>
+
+                  <th scope="col">Author</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr>
+
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                  <td>Added Page history section (repository baseline).</td>
+
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

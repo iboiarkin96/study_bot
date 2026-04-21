@@ -1,5 +1,7 @@
 """Regenerate rendered UML diagrams for project documentation.
 
+Outputs SVG (Kroki ``plantuml/svg``) for crisp scaling in HTML; sources are ``*.puml``.
+
 Usage:
   python scripts/regenerate_docs.py
   python scripts/regenerate_docs.py --check
@@ -24,11 +26,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 UML_SRC_DIR = PROJECT_ROOT / "docs" / "uml"
 UML_OUT_DIR = PROJECT_ROOT / "docs" / "uml" / "rendered"
 UML_STYLE_FILE = UML_SRC_DIR / "include" / "style.puml"
-# Committed fingerprint store: skip Kroki when merged PlantUML + PNG bytes match last run.
+# Committed fingerprint store: skip Kroki when merged PlantUML + output bytes match last run.
 UML_MANIFEST_PATH = UML_SRC_DIR / "input-hashes.json"
 MANIFEST_VERSION = 1
-# PNG quality is controlled mainly by skinparam dpi in docs/uml/include/style.puml (sent in the diagram body).
-KROKI_URL = "https://kroki.io/plantuml/png"
+# Vector output; layout/font size still come from skinparam in docs/uml/include/style.puml.
+UML_OUTPUT_SUFFIX = ".svg"
+KROKI_URL = "https://kroki.io/plantuml/svg"
 NO_COLOR = os.getenv("NO_COLOR", "0") == "1"
 COLOR_RESET = "" if NO_COLOR else "\033[0m"
 COLOR_GREEN = "" if NO_COLOR else "\033[32m"
@@ -104,21 +107,21 @@ def _source_files() -> list[Path]:
 
 
 def _output_for(source_path: Path) -> Path:
-    """Map a ``.puml`` path to the PNG path under ``docs/uml/rendered``.
+    """Map a ``.puml`` path to the SVG path under ``docs/uml/rendered``.
 
     Args:
         source_path: Absolute path to a PlantUML file.
 
     Returns:
-        Destination PNG path (sequence diagrams keep stem-only names).
+        Destination SVG path (sequence diagrams keep stem-only names).
     """
     rel = source_path.relative_to(UML_SRC_DIR)
     # Keep legacy names for sequence diagrams to avoid breaking docs/internal/system-design.html.
     if rel.parts and rel.parts[0] == "sequences":
-        safe_name = source_path.stem + ".png"
+        safe_name = source_path.stem + UML_OUTPUT_SUFFIX
     else:
         # Keep filenames stable and unique across non-sequence subdirectories.
-        safe_name = "__".join(rel.with_suffix("").parts) + ".png"
+        safe_name = "__".join(rel.with_suffix("").parts) + UML_OUTPUT_SUFFIX
     return UML_OUT_DIR / safe_name
 
 
@@ -196,15 +199,31 @@ def _save_manifest_diagrams(diagrams: dict[str, dict[str, str]]) -> None:
         raise
 
 
+def _ensure_unix_eof_newline(path: Path) -> None:
+    """Normalize file bytes so the file ends with exactly one Unix newline.
+
+    Kroki SVG responses may omit a trailing newline; ``pre-commit``'s ``end-of-file-fixer``
+    then rewrites the file and fails CI. Normalizing here keeps ``make verify`` and hooks
+    consistent after a fresh render.
+
+    Args:
+        path: File written by :func:`render_one` (typically ``*.svg``).
+    """
+    data = path.read_bytes()
+    if not data:
+        return
+    path.write_bytes(data.rstrip(b"\r\n") + b"\n")
+
+
 def render_one(source_path: Path, output_path: Path) -> None:
-    """Render one PlantUML file to PNG via POST to :data:`KROKI_URL` using ``curl``.
+    """Render one PlantUML file to SVG via POST to :data:`KROKI_URL` using ``curl``.
 
     Injects :data:`UML_STYLE_FILE` after the opening ``@startuml`` line when present so
     Kroki receives one self-contained document (``!include`` is not resolved server-side).
 
     Args:
         source_path: Input ``.puml`` file.
-        output_path: Target ``.png`` path (parent dirs created).
+        output_path: Target ``.svg`` path (parent dirs created).
 
     Raises:
         subprocess.CalledProcessError: If ``curl`` exits non-zero.
@@ -238,10 +257,11 @@ def render_one(source_path: Path, output_path: Path) -> None:
         subprocess.run(cmd, check=True)
     finally:
         Path(tmp_path).unlink(missing_ok=True)
+    _ensure_unix_eof_newline(output_path)
 
 
 def render_all(verbose: bool = True, *, force: bool = False) -> tuple[int, int]:
-    """Render PlantUML sources to PNGs, skipping Kroki when manifest and bytes match.
+    """Render PlantUML sources to SVGs, skipping Kroki when manifest and bytes match.
 
     Uses :data:`UML_MANIFEST_PATH` (input + output SHA-256 per diagram). Orphan manifest
     keys are removed after a successful run.
@@ -282,10 +302,10 @@ def render_all(verbose: bool = True, *, force: bool = False) -> tuple[int, int]:
 
 
 def bootstrap_manifest(verbose: bool = True) -> int:
-    """Fill ``input-hashes.json`` from current sources and PNGs without calling Kroki.
+    """Fill ``input-hashes.json`` from current sources and SVGs without calling Kroki.
 
     Use when introducing the fingerprint file or offline; assumes each ``.puml`` already
-    matches its ``rendered/*.png``.
+    matches its ``rendered/*.svg``.
 
     Args:
         verbose: Print one status line per diagram.
@@ -294,14 +314,14 @@ def bootstrap_manifest(verbose: bool = True) -> int:
         Number of diagrams recorded.
 
     Raises:
-        SystemExit: If any diagram has no PNG on disk.
+        SystemExit: If any diagram has no SVG on disk.
     """
     diagrams: dict[str, dict[str, str]] = {}
     for src in _source_files():
         out = _output_for(src)
         if not out.is_file():
             print(
-                f"✗ Missing PNG for {src.relative_to(PROJECT_ROOT)} — run docs-fix with network first."
+                f"✗ Missing SVG for {src.relative_to(PROJECT_ROOT)} — run docs-fix with network first."
             )
             raise SystemExit(1)
         key = _rel_key(src)
@@ -319,12 +339,12 @@ def _is_render_up_to_date(source_path: Path, output_path: Path) -> bool:
 
     Args:
         source_path: PlantUML input.
-        output_path: Existing PNG to compare.
+        output_path: Existing SVG to compare.
 
     Returns:
-        Whether the on-disk PNG matches a fresh Kroki render.
+        Whether the on-disk SVG matches a fresh Kroki render.
     """
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(suffix=UML_OUTPUT_SUFFIX, delete=False) as tmp:
         temp_path = Path(tmp.name)
     try:
         render_one(source_path, temp_path)
@@ -435,7 +455,7 @@ def main() -> None:
     parser.add_argument(
         "--bootstrap-manifest",
         action="store_true",
-        help="Write input-hashes.json from current .puml/.png only (no Kroki).",
+        help="Write input-hashes.json from current .puml/.svg only (no Kroki).",
     )
     args = parser.parse_args()
 

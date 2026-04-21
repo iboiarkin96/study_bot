@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Error log — internal specification — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Error log</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section class="card" id="spec-status">
+          <h2>Specification status</h2>
+          <p class="lead" style="margin:0;">
+            <strong>Specification only.</strong> The <code>/api/v1/errors</code> API is <strong>not implemented</strong> yet.
+            This hub describes the intended FR-4 behavior; OpenAPI and code will follow a finalized spec.
+          </p>
+        </section>
+        <p class="lead">
+          <strong>Learning mistake log</strong> (FR-4): store and list short messages, optionally linked to a
+          <a href="../conspectus/index.html">conspectus</a> the user owns. Optional <code>conspectus_uuid</code> should be
+          validated against that user’s notes when both exist.
+        </p>
+
+        <section id="methods-table" class="card">
+          <h2>Methods (quick links)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Error log HTTP methods">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">HTTP</th>
+                  <th scope="col">operationId</th>
+                  <th scope="col">Internal method page</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge--method-post">POST</span> <code>/api/v1/errors</code></td>
+                  <td><code>createErrorLog</code></td>
+                  <td><a href="./operations/post-api-v1-errors.html">Method page</a></td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge--method-get">GET</span> <code>/api/v1/errors</code></td>
+                  <td><code>listErrorLogs</code></td>
+                  <td><a href="./operations/get-api-v1-errors.html">Method page</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="surface" class="card">
+          <h2>API surface</h2>
+          <div class="api-endpoint-list">
+            <article id="error-log-op-createErrorLog" class="api-endpoint">
+              <h3 class="api-endpoint__title"><code>POST</code> <code>/api/v1/errors</code></h3>
+              <dl class="api-endpoint__grid">
+                <dt>operationId</dt>
+                <dd><code>createErrorLog</code></dd>
+                <dt>Idempotency</dt>
+                <dd>Required; path key <code>/api/v1/errors</code>.</dd>
+                <dt>Body</dt>
+                <dd>Optional <code>conspectus_uuid</code> (must belong to the user).</dd>
+                <dt>Success</dt>
+                <dd><code>201 Created</code> — error log row.</dd>
+              </dl>
+            </article>
+            <article id="error-log-op-listErrorLogs" class="api-endpoint">
+              <h3 class="api-endpoint__title"><code>GET</code> <code>/api/v1/errors</code></h3>
+              <dl class="api-endpoint__grid">
+                <dt>operationId</dt>
+                <dd><code>listErrorLogs</code></dd>
+                <dt>Idempotency</dt>
+                <dd>Not used (read).</dd>
+                <dt>Success</dt>
+                <dd><code>200 OK</code> — paginated list.</dd>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+        <p class="small"><a href="../conspectus/index.html">← Conspectus resource hub</a></p>
+
+        <section id="page-history" class="card">
+
+          <h2>Page history</h2>
+
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+            <table class="docs-page-history">
+
+              <thead>
+
+                <tr>
+
+                  <th scope="col">Date</th>
+
+                  <th scope="col">Change</th>
+
+                  <th scope="col">Author</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr>
+
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                  <td>Added Page history section (repository baseline).</td>
+
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

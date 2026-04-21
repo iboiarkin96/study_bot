@@ -1,0 +1,103 @@
+@startuml
+title ETR Study API — relational model (core learner data)
+
+top to bottom direction
+hide circle
+skinparam ArrowThickness 1.2
+skinparam entity {
+  BackgroundColor #EFF6FF
+  BorderColor #2563EB
+}
+
+entity "users" as users {
+  * client_uuid : varchar(36) <<PK>>
+  --
+  (system_user_id, system_uuid) unique
+  timezone : text <<nullable>>
+}
+
+entity "schedule_policies" as pol {
+  * schedule_policy_id : varchar(64) <<PK>>
+  * algorithm_version : varchar(64) <<PK>>
+  --
+  name : text
+  rules : json
+  created_at : timestamptz
+}
+
+entity "conspectuses" as conspectus {
+  * conspectus_uuid : varchar(36) <<PK>>
+  --
+  * owner_client_uuid : varchar(36) <<FK users>>
+  cue_sheet : json
+  cue_sheet_schema_version : int
+  dense_paragraph : text
+  bullets : json
+  content_version : int
+  --
+  body_storage : enum <<nullable>>
+  external_document_id : text <<nullable>>
+  content_sha256 : text <<nullable>>
+  sync_status : enum <<nullable>>
+}
+
+entity "conspectus_schedules" as sched {
+  * conspectus_uuid : varchar(36) <<PK FK>>
+  --
+  * schedule_policy_id : varchar(64) <<FK>>
+  * algorithm_version : varchar(64) <<FK>>
+  slot : varchar(1)
+  slot_d_ladder_index : int
+  next_review_at : timestamptz
+  schedule_revision : bigint
+  schedule_updated_at : timestamptz
+}
+
+entity "conspectus_review_logs" as revlog {
+  * id : bigint <<PK>>
+  --
+  * conspectus_uuid : varchar(36) <<FK>>
+  reviewed_at : timestamptz
+  tag : varchar(16)
+  schedule_before : json
+  schedule_after : json
+  schedule_policy_id : varchar(64)
+  algorithm_version : varchar(64)
+}
+
+entity "conspectus_events" as ev {
+  * id : bigint <<PK>>
+  --
+  * conspectus_uuid : varchar(36) <<FK>>
+  occurred_at : timestamptz
+  event_type : varchar(64)
+  payload : json
+  schema_version : int
+}
+
+entity "learning_errors" as err {
+  * error_uuid : varchar(36) <<PK>>
+  --
+  * owner_client_uuid : varchar(36) <<FK users>>
+  conspectus_uuid : varchar(36) <<FK optional>>
+  review_log_id : bigint <<FK optional>>
+  message : text
+  created_at : timestamptz
+}
+
+users ||--o{ conspectus : owns
+pol ||--o{ sched : "policy FK"
+conspectus ||--|| sched : "1:1"
+conspectus ||--o{ revlog : append-only
+conspectus ||--o{ ev : append-only
+users ||--o{ err : owns
+conspectus ||--o{ err : optional
+revlog ||--o{ err : "optional session link"
+
+note bottom of err
+  Review **tags**: **conspectus_review_logs**.
+  Weak-cue log: separate domain.
+  Optional **review_log_id** correlates both.
+end note
+
+@enduml

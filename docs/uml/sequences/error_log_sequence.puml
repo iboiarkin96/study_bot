@@ -1,46 +1,35 @@
 @startuml
-title Study App - Sequence: Create Error Log
+title ETR Study API — Create learning error log
 
 autonumber
 hide footbox
+' Same participant order as create/review sequences (Policy between service and DB). This flow
+' does not call Policy; the lifeline stays idle so the export width matches the other diagrams.
+skinparam ParticipantPadding 71
 
-actor "Client app" as Client
+actor "Integrator" as Client
 boundary "HTTP API" as Api
 control "ErrorLogService" as Service
-database "Repos + DB" as RepoDb
+participant "SchedulePolicy" as Policy
+database "DB" as Db
 
-Client -> Api: POST /errors
+Client -> Api: POST /api/v1/errors
 activate Api
-Api -> Api: validate payload
+Api -> Service: create(user, payload)
+activate Service
+Service -> Db: verify user / optional conspectus FK
 
-alt invalid payload
-  Api --> Client: 422 Validation Error
+alt not found
+  Service --> Api: 404
+  deactivate Service
+  Api --> Client: 404
   deactivate Api
-else valid payload
-  Api -> Service: add_error(user_id, payload)
-  activate Service
-  Service -> RepoDb: verify owner and conspectus
-  RepoDb --> Service: found or missing
-
-  alt not found
-    Service --> Api: NotFound
-    deactivate Service
-    Api --> Client: 404 Not Found
-    deactivate Api
-  else found
-    Service -> RepoDb: insert error log
-    alt transaction failed
-      Service --> Api: Conflict
-      deactivate Service
-      Api --> Client: 409 Conflict
-      deactivate Api
-    else transaction success
-      Service --> Api: ErrorLogResponse
-      deactivate Service
-      Api --> Client: 201 Created
-      deactivate Api
-    end
-  end
+else ok
+  Service -> Db: INSERT learning_errors
+  Service --> Api: DTO
+  deactivate Service
+  Api --> Client: 201 Created
+  deactivate Api
 end
 
 @enduml

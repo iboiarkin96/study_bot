@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PATCH /api/v1/conspectuses/{conspectus_uuid} — Conspectus — Study App</title>
+  <link rel="stylesheet" href="../../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../../assets/internal-layout.css">
+  <script defer src="../../../../assets/docs-nav.js"></script>
+  <script defer src="../../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Conspectus</p>
+        <h1 class="internal-doc-h1">
+          <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="PATCH /api/v1/conspectuses/{conspectus_uuid}">
+            <span class="badge badge--method-patch">PATCH</span>
+            <code class="internal-http-tablet__path">/api/v1/conspectuses/{conspectus_uuid}</code>
+          </span>
+        </h1>
+        <p class="lead">
+          <strong>Specification.</strong> Intended partial update of ETR fields (<code>title</code>, <code>cue_sheet</code>,
+          <code>dense_paragraph</code>, <code>bullets</code>). Ownership via <code>system_user_id</code> and
+          <code>system_uuid</code> in the body. Does not change scheduling; for retrieve transitions see
+          <a href="./post-api-v1-conspectuses-conspectus_uuid-actions-review.html"><code>POST …/actions/review</code></a>.
+          Planned <code>operationId</code>: <code>patchConspectus</code>.
+        </p>
+        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>patchConspectus</code></p>
+
+        <section class="card">
+          <h2>Path, body, idempotency</h2>
+          <p>
+            Path: <code>conspectus_uuid</code>. Body: composite owner key plus any subset of ETR fields to change.
+          </p>
+          <p>
+            <strong>Idempotency:</strong> required. Namespace
+            <code>endpoint_path = "PATCH /api/v1/conspectuses/{conspectus_uuid}"</code> with the concrete UUID (same
+            pattern as <code>PATCH /api/v1/user/…</code>).
+          </p>
+          <p><strong>Success:</strong> <code>200 OK</code> — full <code>ConspectusResponse</code>.</p>
+        </section>
+
+        <section class="card">
+          <h2>Errors</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>HTTP</th>
+                <th>Code / key</th>
+                <th>When</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>400</code></td>
+                <td><code>COMMON_400</code></td>
+                <td>Missing <code>Idempotency-Key</code>.</td>
+              </tr>
+              <tr>
+                <td><code>400</code></td>
+                <td><code>CONS_102</code> / <code>CONSPECTUS_PATCH_BODY_EMPTY</code></td>
+                <td>Body has owner fields only — no ETR field to update.</td>
+              </tr>
+              <tr>
+                <td><code>404</code></td>
+                <td><code>USER_404</code> / <code>CONS_404</code></td>
+                <td>User or conspectus not found for this key.</td>
+              </tr>
+              <tr>
+                <td><code>409</code></td>
+                <td><code>COMMON_409</code></td>
+                <td>Idempotency key reused with different body.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <h2>Single-file deep spec</h2>
+          <p><a href="../index.html#conspectus-op-patchConspectus">Conspectus hub — this operation</a></p>
+        </section>
+
+        <p class="small">
+          <a href="../index.html">← Conspectus resource hub</a>
+        </p>
+
+        <section id="page-history" class="card">
+
+          <h2>Page history</h2>
+
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+            <table class="docs-page-history">
+
+              <thead>
+
+                <tr>
+
+                  <th scope="col">Date</th>
+
+                  <th scope="col">Change</th>
+
+                  <th scope="col">Author</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr>
+
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                  <td>Added Page history section (repository baseline).</td>
+
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

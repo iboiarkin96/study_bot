@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conspectus resource — internal specification — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Conspectus resource</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section class="card" id="spec-status" aria-label="Implementation status">
+          <h2>Specification status</h2>
+          <p class="lead" style="margin:0;">
+            <strong>Specification only.</strong> The Conspectus HTTP API is <strong>not implemented</strong> in the
+            application code yet. This hub is the working product narrative: data shapes, intended paths, and idempotency
+            ideas. After the API spec is finalized, implementation and <a href="../../../openapi/openapi-explorer.html">OpenAPI</a> will follow.
+          </p>
+        </section>
+        <p class="lead">
+          <strong>Single entry point</strong> for the ETR <strong>conspectus</strong> (study note): what the learner
+          produces in the human workflow, how that maps to JSON fields, and how HTTP methods are expected to fit
+          together. Human methodology (not normative for field shapes): <a href="../../methodology.html">Methodology</a>.
+        </p>
+
+        <section id="business-context" class="card">
+          <h2>Business context</h2>
+          <p>
+            A <strong>conspectus</strong> is a saved study note created after a learning session. Our <a href="../../methodology.html">methodology</a>
+            uses a 3-step process: <strong>Extract</strong> (pull cues from content), <strong>Transform</strong> (write
+            a summary paragraph and bullet points). The API stores this package, along with scheduling info:
+            <strong>slot</strong> (A–D ladder), <strong>next_review_at</strong>, and an optional <strong>title</strong>.
+            <strong>Retrieval</strong> is planned via API endpoints for due and review; slot movement will live in a
+            dedicated schedule policy module once implemented.
+          </p>
+          <p>
+            Each conspectus is owned by a <strong>User</strong> identified by the
+            <code>(system_user_id, system_uuid)</code> pair (in requests or query params)—the same key as the <a href="../user/index.html">User</a>.
+          </p>
+
+          <section id="etr-to-api" class="card">
+            <h2>From study notes to API fields</h2>
+            <p>
+              The methodology uses a <strong>three-column cue sheet</strong> during <strong>Extract</strong>. The HTTP
+              body
+              splits that work into: (1) everything from the cue sheet → <code>cue_sheet</code> (JSON object); (2)
+              Transform
+              output → <code>dense_paragraph</code> and <code>bullets</code>; (3) optional heading for the whole note →
+              <code>title</code>. Identity → <code>system_user_id</code> + <code>system_uuid</code> (see
+              <a href="#data-contract-summary">Data contract</a>).
+            </p>
+
+            <h3 id="cue-sheet-convention">Recommended <code>cue_sheet</code> shape (explicit routing)</h3>
+            <p>
+              The API accepts <strong>any</strong> JSON object for <code>cue_sheet</code>. For clarity across clients
+              and
+              docs, this hub uses one <strong>documented convention</strong>: one array <code>rows</code>, each element
+              is
+              one horizontal row of the paper table; inside each element, three string fields match the three columns
+              left
+              to right.
+            </p>
+            <div class="docs-table-scroll" role="region" aria-label="Cue sheet column to JSON path mapping">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Paper column (methodology)</th>
+                    <th scope="col">Position in row</th>
+                    <th scope="col">JSON path (under <code>cue_sheet</code>)</th>
+                    <th scope="col">Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Column 1 — keywords / anchors</td>
+                    <td>left cell</td>
+                    <td><code>rows[<em>n</em>].keywords</code></td>
+                    <td>Short cue words (one to a few per methodology).</td>
+                  </tr>
+                  <tr>
+                    <td>Column 2 — questions / gaps</td>
+                    <td>middle cell</td>
+                    <td><code>rows[<em>n</em>].question</code></td>
+                    <td>What to recall or explain; gaps to close.</td>
+                  </tr>
+                  <tr>
+                    <td>Column 3 — hints / micro-answers</td>
+                    <td>right cell</td>
+                    <td><code>rows[<em>n</em>].hint</code></td>
+                    <td>Minimal hint only (not full notes).</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small">
+              <strong>Index <code>n</code>:</strong> the first data row on paper is <code>n = 0</code> (first element of
+              <code>rows</code>), the second row is <code>n = 1</code>, and so on. Order in the array is top-to-bottom
+              as
+              on
+              the sheet.
+            </p>
+            <p class="small">
+              <strong>Optional</strong> string <code>cue_sheet.topic</code> repeats the session theme inside the Extract
+              payload; you can also set the API field <code>title</code> for the whole conspectus (list views, cards).
+              They
+              may match (as in the example below) or differ if your product needs it.
+            </p>
+
+            <h3 id="cue-to-json-visual">Real cue sheet → <code>cue_sheet</code> JSON (same content)</h3>
+            <p>
+              Below, the <strong>left</strong> column is what a learner might actually fill in on paper during
+              <strong>Extract</strong> (one horizontal line = one idea). The <strong>right</strong> column is the same
+              information as the <code>cue_sheet</code> object you send in the API — no extra fields, only structure.
+              First line on paper = <code>rows[0]</code>, next = <code>rows[1]</code>, top to bottom. Use the property
+              names <code>keywords</code>, <code>question</code>, <code>hint</code> (not ad-hoc <code>kw</code> /
+              <code>q</code> abbreviations) so different clients agree on one shape.
+            </p>
+            <div class="cue-sheet-walkthrough" role="region" aria-label="Paper cue sheet and matching cue_sheet JSON">
+              <div class="cue-sheet-walkthrough__col">
+                <p class="cue-sheet-walkthrough__label">On paper (three columns)</p>
+                <table class="cue-sheet-walkthrough__paper">
+                  <caption class="cue-sheet-walkthrough__cap">Topic on paper (optional): “Water cycle” — also fits
+                    <code>cue_sheet.topic</code> below</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Keywords</th>
+                        <th scope="col">Questions</th>
+                        <th scope="col">Hints</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>evaporation</td>
+                        <td>What drives water into vapor?</td>
+                        <td>Sun heats surface</td>
+                      </tr>
+                      <tr>
+                        <td>condensation</td>
+                        <td>Where do clouds form?</td>
+                        <td>Cooling air</td>
+                      </tr>
+                      <tr>
+                        <td>precipitation</td>
+                        <td>Rain vs snow depends on?</td>
+                        <td>Temperature aloft</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="cue-sheet-walkthrough__col">
+                  <p class="cue-sheet-walkthrough__label">In JSON (<code>cue_sheet</code> only)</p>
+                  <pre class="cue-sheet-walkthrough__pre" role="region" aria-label="cue_sheet JSON matching the table"><code>{
+                    "topic": "Water cycle",
+                    "rows": [
+                    {
+                    "keywords": "evaporation",
+                    "question": "What drives water into vapor?",
+                    "hint": "Sun heats surface"
+                    },
+                    {
+                    "keywords": "condensation",
+                    "question": "Where do clouds form?",
+                    "hint": "Cooling air"
+                    },
+                    {
+                    "keywords": "precipitation",
+                    "question": "Rain vs snow depends on?",
+                    "hint": "Temperature aloft"
+                    }
+                    ]
+                    }</code></pre>
+                  </div>
+                </div>
+                <ul class="small cue-sheet-walkthrough__legend">
+                  <li><strong>Row 1</strong> of the table → <code>rows[0]</code> — left cell =
+                    <code>rows[0].keywords</code>, middle = <code>rows[0].question</code>, right =
+                    <code>rows[0].hint</code>.
+                  </li>
+                  <li><strong>Row 2</strong> → <code>rows[1]</code>, <strong>row 3</strong> → <code>rows[2]</code> — same
+                    rule.</li>
+                    <li>Optional session theme: either only <code>cue_sheet.topic</code> here, or repeat it in the request
+                      field <code>title</code> for lists (see <a href="#worked-example">worked example</a>).</li>
+                    </ul>
+
+                    <h3 id="transform-layer">Transform layer (same POST body)</h3>
+                    <div class="docs-table-scroll" role="region" aria-label="Transform mapping to API fields">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Learner artifact (methodology)</th>
+                            <th scope="col">API field (request body)</th>
+                            <th scope="col">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>One dense paragraph (sources closed)</td>
+                            <td><code>dense_paragraph</code> (string)</td>
+                            <td>Single string; not split across cells.</td>
+                          </tr>
+                          <tr>
+                            <td>Bullet list (Feynman-style)</td>
+                            <td><code>bullets</code> (array of strings)</td>
+                            <td>Each array element is one bullet line; order = your UI order.</td>
+                          </tr>
+                          <tr>
+                            <td>Optional title for the note</td>
+                            <td><code>title</code> (string, optional)</td>
+                            <td>Separate from <code>cue_sheet.topic</code>; often the same phrase.</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                </section>
+
+                <section id="data-contract-summary" class="card">
+                  <h2>Data contract (summary)</h2>
+                  <p class="small">
+                    Full schemas are in OpenAPI; this table is the shorthand for reviews and client onboarding.
+                  </p>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Field</th>
+                        <th>What the learner meant</th>
+                        <th>API notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>system_user_id</code>, <code>system_uuid</code></td>
+                        <td>Which account this note belongs to (from your integration).</td>
+                        <td>Required on create / due / patch / review / errors; must match an existing user.</td>
+                      </tr>
+                      <tr>
+                        <td><code>title</code></td>
+                        <td>Optional short label (chapter, topic).</td>
+                        <td>Omit or string; max length per OpenAPI.</td>
+                      </tr>
+                      <tr>
+                        <td><code>cue_sheet</code></td>
+                        <td>The lean capture from Extract (e.g. rows with keyword / question / hint).</td>
+                        <td>Arbitrary JSON <strong>object</strong> (not an array at the top level). Must be valid JSON.</td>
+                      </tr>
+                      <tr>
+                        <td><code>dense_paragraph</code></td>
+                        <td>Transform: one paragraph in their own words, sources closed.</td>
+                        <td>Required non-empty string.</td>
+                      </tr>
+                      <tr>
+                        <td><code>bullets</code></td>
+                        <td>Transform: bullet list explaining the idea simply.</td>
+                        <td>Array of non-empty strings; typical length 5–7 in methodology docs.</td>
+                      </tr>
+                      <tr>
+                        <td><code>slot</code>, <code>next_review_at</code>, …</td>
+                        <td>Scheduling — usually not typed by the user on create.</td>
+                        <td>Set by server from <code>SchedulePolicy</code>; updated on review.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+
+                <section id="worked-example" class="card">
+                  <h2>Worked example</h2>
+                  <p>
+                    <strong>Scenario:</strong> the learner studied <strong>the water cycle</strong> (evaporation,
+                    condensation,
+                    precipitation). They already have a user with the same <code>(system_user_id, system_uuid)</code> in our
+                    database. Below is a realistic <code>POST /api/v1/conspectuses</code> body: the <code>cue_sheet</code> object
+                    is the same as in <a href="#cue-to-json-visual">the paper ↔ JSON example above</a> (three rows); add
+                    <code>dense_paragraph</code> and <code>bullets</code> for the Transform layer.
+                  </p>
+                  <pre role="region" aria-label="Example JSON body"><code>{
+                    "system_user_id": "learner-01",
+                    "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                    "title": "The water cycle",
+                    "cue_sheet": {
+                    "topic": "Water cycle",
+                    "rows": [
+                    {
+                    "keywords": "evaporation",
+                    "question": "What drives water into vapor?",
+                    "hint": "Sun heats surface"
+                    },
+                    {
+                    "keywords": "condensation",
+                    "question": "Where do clouds form?",
+                    "hint": "Cooling air"
+                    },
+                    {
+                    "keywords": "precipitation",
+                    "question": "Rain vs snow depends on?",
+                    "hint": "Temperature aloft"
+                    }
+                    ]
+                    },
+                    "dense_paragraph": "The sun heats oceans and lakes so water evaporates. Rising vapor cools and condenses into clouds. When droplets or ice grow heavy enough, water returns as rain or snow.",
+                    "bullets": [
+                    "Evaporation moves water from surface to atmosphere.",
+                    "Condensation forms clouds when air cools.",
+                    "Precipitation completes the loop back to Earth.",
+                    "Energy from the sun drives the cycle.",
+                    "The same water moves through states and locations over time."
+                    ]
+                    }</code></pre>
+                    <p class="small">
+                      After <code>201 Created</code>, the response includes <code>conspectus_uuid</code>, <code>slot</code>
+                      (starts at
+                      <code>A</code>), <code>next_review_at</code>, and timestamps. Use <code>Idempotency-Key</code> on this
+                      POST
+                      as for
+                      other critical writes.
+                    </p>
+                  </section>
+
+                  <section id="method-pages" class="card">
+                    <h2>Method pages (per endpoint)</h2>
+                    <p>
+                      Navigation matches <strong>HTTP method + path</strong> (how clients are expected to call the API). Planned
+                      <code>operationId</code> names appear in the table; OpenAPI will be generated when routes exist.
+                    </p>
+                    <p>
+                      Use the sidebar under <strong>API → Conspectus</strong>, or open a row below. Schedule summary (FR-5) is
+                      documented here as a related read surface. The <strong>error log</strong> (<code>/api/v1/errors</code>, FR-4)
+                      has a dedicated <a href="../error-log/index.html">Error log hub</a> — separate internal nav, same product
+                      scope.
+                    </p>
+                    <div class="docs-table-scroll" role="region" aria-label="Conspectus and related endpoints">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Method &amp; path</th>
+                            <th><code>operationId</code></th>
+                            <th>Internal doc</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><span class="badge badge--method-post">POST</span> <code>/api/v1/conspectuses</code></td>
+                            <td><code>createConspectus</code></td>
+                            <td><a href="./operations/post-api-v1-conspectuses.html">Method page</a></td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge badge--method-get">GET</span> <code>/api/v1/conspectuses/due</code></td>
+                            <td><code>listDueConspectuses</code></td>
+                            <td><a href="./operations/get-api-v1-conspectuses-due.html">Method page</a></td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <span class="badge badge--method-patch">PATCH</span>
+                              <code>/api/v1/conspectuses/{conspectus_uuid}</code>
+                            </td>
+                            <td><code>patchConspectus</code></td>
+                            <td><a href="./operations/patch-api-v1-conspectuses-conspectus_uuid.html">Method page</a></td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <span class="badge badge--method-post">POST</span>
+                              <code>/api/v1/conspectuses/{conspectus_uuid}/actions/review</code>
+                            </td>
+                            <td><code>reviewConspectus</code></td>
+                            <td><a href="./operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html">Method
+                              page</a></td>
+                            </tr>
+                            <tr>
+                              <td><span class="badge badge--method-get">GET</span> <code>/api/v1/schedule/summary</code></td>
+                              <td><code>getScheduleSummary</code></td>
+                              <td><a href="./operations/get-api-v1-schedule-summary.html">Method page</a></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+
+                    <section id="surface" class="card">
+                      <h2>API surface</h2>
+                      <p>
+                        Planned conspectus routes share prefix <code>/api/v1/conspectuses</code>. Writes that change scheduling are
+                        expected to use <code>POST …/actions/review</code> (command-style). When implemented, routes should require
+                        <code>X-API-Key</code> and rate limiting per <a href="../../../adr/0005-api-security-defaults.html">ADR 0005</a>.
+                      </p>
+                      <div class="api-endpoint-list">
+                        <article id="conspectus-op-createConspectus" class="api-endpoint">
+                          <h3 class="api-endpoint__title"><code>POST</code> <code>/api/v1/conspectuses</code></h3>
+                          <dl class="api-endpoint__grid">
+                            <dt>operationId</dt>
+                            <dd><code>createConspectus</code></dd>
+                            <dt>Idempotency</dt>
+                            <dd>Required <code>Idempotency-Key</code>; path key <code>/api/v1/conspectuses</code>.</dd>
+                            <dt>Success</dt>
+                            <dd><code>201 Created</code> — full conspectus including <code>conspectus_uuid</code>,
+                              <code>slot</code>, <code>next_review_at</code>.
+                            </dd>
+                          </dl>
+                        </article>
+                        <article id="conspectus-op-listDueConspectuses" class="api-endpoint">
+                          <h3 class="api-endpoint__title"><code>GET</code> <code>/api/v1/conspectuses/due</code></h3>
+                          <dl class="api-endpoint__grid">
+                            <dt>operationId</dt>
+                            <dd><code>listDueConspectuses</code></dd>
+                            <dt>Idempotency</dt>
+                            <dd>Not used (read).</dd>
+                            <dt>Success</dt>
+                            <dd><code>200 OK</code> — JSON array of <code>ConspectusResponse</code>.</dd>
+                          </dl>
+                        </article>
+                        <article id="conspectus-op-patchConspectus" class="api-endpoint">
+                          <h3 class="api-endpoint__title"><code>PATCH</code> <code>/api/v1/conspectuses/{conspectus_uuid}</code>
+                          </h3>
+                          <dl class="api-endpoint__grid">
+                            <dt>operationId</dt>
+                            <dd><code>patchConspectus</code></dd>
+                            <dt>Idempotency</dt>
+                            <dd>Required; scope <code>PATCH /api/v1/conspectuses/{uuid}</code> (per resource).</dd>
+                            <dt>Success</dt>
+                            <dd><code>200 OK</code> — updated ETR fields; scheduling unchanged.</dd>
+                          </dl>
+                        </article>
+                        <article id="conspectus-op-reviewConspectus" class="api-endpoint">
+                          <h3 class="api-endpoint__title"><code>POST</code>
+                            <code>/api/v1/conspectuses/{conspectus_uuid}/actions/review</code>
+                          </h3>
+                          <dl class="api-endpoint__grid">
+                            <dt>operationId</dt>
+                            <dd><code>reviewConspectus</code></dd>
+                            <dt>Idempotency</dt>
+                            <dd>Required; path includes concrete <code>conspectus_uuid</code> (…/actions/review).</dd>
+                            <dt>Success</dt>
+                            <dd><code>200 OK</code> — updated conspectus body.</dd>
+                          </dl>
+                        </article>
+                        <article id="conspectus-op-getScheduleSummary" class="api-endpoint">
+                          <h3 class="api-endpoint__title"><code>GET</code> <code>/api/v1/schedule/summary</code></h3>
+                          <dl class="api-endpoint__grid">
+                            <dt>operationId</dt>
+                            <dd><code>getScheduleSummary</code></dd>
+                            <dt>Idempotency</dt>
+                            <dd>Not used (read).</dd>
+                            <dt>Success</dt>
+                            <dd><code>200 OK</code> — slot histogram + <code>due_now_count</code> (aggregates conspectus rows).
+                            </dd>
+                          </dl>
+                        </article>
+                      </div>
+                    </section>
+
+                    <section id="request-path-layers" class="card">
+                      <h2>Request path and layers</h2>
+                      <p>
+                        Middleware in <code>app/main.py</code> (metrics, body limit, API key + rate limit, security headers,
+                        request
+                        ID) → route handler → service → repository → SQLite. Writes that use idempotency also touch
+                        <code>idempotency_keys</code> via <code>IdempotencyRepository</code>.
+                      </p>
+                    </section>
+
+                    <section id="technical-overview" class="card">
+                      <h2>Technical overview</h2>
+                      <p>
+                        <strong>Current codebase:</strong> user identity and idempotency infrastructure only (<code>app/api/v1/user.py</code>,
+                        shared middleware in <code>app/main.py</code>, SQLite via <code>SQLITE_DB_PATH</code>). Conspectus, schedule,
+                        and error-log persistence are <strong>not</strong> present until the spec is implemented (new routers,
+                        services, repositories, ORM models, and Alembic migrations).
+                      </p>
+                    </section>
+
+                    <section id="governance" class="card">
+                      <h2>Ownership and change management</h2>
+                      <p>
+                        <strong>Who changes this feature:</strong> contributors following
+                        <a href="../../../../CONTRIBUTING.md">CONTRIBUTING.md</a> — PRs on <code>main</code>, review, green CI.
+                      </p>
+                      <ul>
+                        <li>
+                          <strong>Quality gate:</strong> <code>make verify-ci</code> (lint, types, OpenAPI, contract tests, tests,
+                          <code>docs-check</code>).
+                        </li>
+                        <li>
+                          <strong>Contract:</strong> HTTP changes → code + <code>make openapi-accept-changes</code>
+                          (<a href="../../../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a>).
+                        </li>
+                        <li>
+                          <strong>Internal narrative:</strong> update this hub and method pages when behavior or idempotency paths
+                          change (<a href="../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR
+                          0026</a>).
+                        </li>
+                      </ul>
+                    </section>
+
+                    <section id="page-history" class="card">
+
+                      <h2>Page history</h2>
+
+                      <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+                        <table class="docs-page-history">
+
+                          <thead>
+
+                            <tr>
+
+                              <th scope="col">Date</th>
+
+                              <th scope="col">Change</th>
+
+                              <th scope="col">Author</th>
+
+                            </tr>
+
+                          </thead>
+
+                          <tbody>
+
+                            <tr>
+
+                              <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                              <td>Added Page history section (repository baseline).</td>
+
+                              <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                            </tr>
+
+                          </tbody>
+
+                        </table>
+
+                      </div>
+
+                    </section>
+
+                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                  </main>
+                </div>
+              </div>
+
+            </body></html>

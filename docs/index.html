@@ -1,166 +1,210 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ETR (Extract–Transform–Retrieve) Study API — Documentation</title>
+  <title>ETR Study API - Home page</title>
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="stylesheet" href="./assets/docs.css" />
   <link rel="stylesheet" href="./assets/docs-theme.css">
+  <link rel="stylesheet" href="./assets/internal-layout.css">
   <script defer src="./assets/docs-nav.js"></script>
+  <script defer src="./assets/docs-portal-data.js"></script>
+  <script defer src="./assets/docs-internal-meta.js"></script>
+
+  <script defer src="./assets/internal-sidebar.js"></script>
 </head>
 
-<body>
-  <main class="container">
-    <h1><abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API — Documentation</h1>
-    <div id="docs-top-nav"></div>
-    <section id="overview" class="card">
-      <h2>Overview</h2>
-      <p>
-        This site is the engineering documentation for the <strong><abbr title="Extract–Transform–Retrieve">ETR</abbr>
-        Study API</strong>.
-      </p>
-      <p>
-        Here you will find architecture notes, standards, onboarding guides, ADRs, runbooks, and auto-generated Python
-        API docs (pdoc). If you host the repo on GitHub Pages with <code>docs/</code> as the root, this page is the docs
-        home.
-      </p>
-      <p>
-        <strong>⚠️ Docs changelog:</strong> Documentation changes are listed in <code>docs/CHANGELOG.md</code>. That file
-        is separate from the root <code>CHANGELOG.md</code>, which tracks product and API releases.
-      </p>
-    </section>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1><abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API - Home page</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This site is the engineering documentation for the <strong><abbr title="Extract–Transform–Retrieve">ETR</abbr>
+            Study API</strong>.
+          </p>
+          <p>
+            Here you will find architecture notes, standards, onboarding guides, ADRs, runbooks, and auto-generated
+            Python
+            API docs (pdoc). If you host the repo on GitHub Pages with <code>docs/</code> as the root, this page is the
+            docs
+            home.
+          </p>
+          <p>
+            <strong>⚠️ Docs changelog:</strong> Documentation changes are listed in <code>docs/CHANGELOG.md</code>. That
+            file
+            is separate from the root <code>CHANGELOG.md</code>, which tracks product and API releases.
+          </p>
+        </section>
 
-    <section class="card">
-      <h2>Documentation index</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Topic</th>
-            <th>Link</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="./internal/methodology.html">Methodology</a></td>
-            <td>
-              What ETR is, why it matters, how it works, and how to work with it.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./internal/developers.html">Developers Docs</a></td>
-            <td>
-              Main entry: workflow, quality gates, policies, and links to hands-on guides under
-              <code>docs/developer/</code> (requirements, contracts, Make, local dev, Docker/K8s, docs pipeline).
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>
-            </td>
-            <td>
-              How to use <code>make</code> for setup, tests, deploy-related tasks, and day-to-day development. Tips for
-              new contributors.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./internal/README.html">Internal service documentation</a></td>
-            <td>
-              Engineering-focused behavior, business rules, and how operations map to HTTP — under
-              <code>docs/internal/</code> (HTML). External clients use OpenAPI and the root changelog. Rules for who
-              reads what are in
-              <a href="./adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> and
-              <a href="./adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
-              <a href="./internal/README.html">Open internal service documentation</a>.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./howto/README.html">How-to guides</a></td>
-            <td>
-              Task-focused steps (for example auth setup, adding an endpoint, or working with the internal doc tree).
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./adr/README.html">ADRs</a></td>
-            <td>
-              Architecture Decision Records: why we chose a path, trade-offs, and context for big technical and process
-              choices.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./rfc/README.html">RFCs</a></td>
-            <td>
-              Detailed specs and runbooks (for example docs search: index, rank, telemetry, storage, troubleshooting,
-              KPI/SLO).
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./audit/README.html">Architecture &amp; quality assessments</a></td>
-            <td>
-              Audits against common practice: scored tables, gaps, mitigations. See
-              <a href="./adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./runbooks/README.html">Runbooks</a></td>
-            <td>
-              Steps for incidents and recovery: for on-call and anyone handling production issues.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./backlog/README.html">Backlog</a></td>
-            <td>
-              Prioritized features, bugs, and tech debt for planning and tracking work.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./api/index.html">Python API reference</a></td>
-            <td>
-              Generated from the Python code (pdoc): modules, functions, classes, docstrings, examples.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="./openapi/openapi-explorer.html">OpenAPI (test)</a></td>
-            <td>
-              Swagger UI to explore and try the HTTP contract. For backend, frontend, and integrators.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+        <section class="card">
+          <h2>Documentation index</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Topic</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="./internal/methodology.html">Methodology</a></td>
+                <td>
+                  What ETR is, why it matters, how it works, and how to work with it.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./internal/developers.html">Developers Docs</a></td>
+                <td>
+                  Main entry: workflow, quality gates, policies, and links to hands-on guides under
+                  <code>docs/developer/</code> (requirements, contracts, Make, local dev, Docker image, docs pipeline).
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>
+                </td>
+                <td>
+                  How to use <code>make</code> for setup, tests, deploy-related tasks, and day-to-day development. Tips
+                  for
+                  new contributors.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./internal/README.html">Internal service documentation</a></td>
+                <td>
+                  Engineering-focused behavior, business rules, and how operations map to HTTP — under
+                  <code>docs/internal/</code> (HTML). External clients use OpenAPI and the root changelog. Rules for who
+                  reads what are in
+                  <a href="./adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> and
+                  <a href="./adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
+                  <a href="./internal/README.html">Open internal service documentation</a>.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./howto/README.html">How-to guides</a></td>
+                <td>
+                  Task-focused steps (for example auth setup, adding an endpoint, or working with the internal doc
+                  tree).
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./adr/README.html">ADRs</a></td>
+                <td>
+                  Architecture Decision Records: why we chose a path, trade-offs, and context for big technical and
+                  process
+                  choices.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./rfc/README.html">RFCs</a></td>
+                <td>
+                  Detailed specs and runbooks (for example docs search: index, rank, telemetry, storage,
+                  troubleshooting,
+                  KPI/SLO).
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./audit/README.html">Architecture &amp; quality assessments</a></td>
+                <td>
+                  Audits against common practice: scored tables, gaps, mitigations. See
+                  <a href="./adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./runbooks/README.html">Runbooks</a></td>
+                <td>
+                  Steps for incidents and recovery: for on-call and anyone handling production issues.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./backlog/README.html">Backlog</a></td>
+                <td>
+                  Prioritized features, bugs, and tech debt for planning and tracking work.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./api/index.html">Python API reference</a></td>
+                <td>
+                  Generated from the Python code (pdoc): modules, functions, classes, docstrings, examples.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="./openapi/openapi-explorer.html">OpenAPI (test)</a></td>
+                <td>
+                  Swagger UI to explore and try the HTTP contract. For backend, frontend, and integrators.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-    <section class="card">
-      <h2>Repository root documentation</h2>
-      <p>
-        These Markdown files live next to the app code (not under <code>docs/</code>). Open them in your clone or on
-        GitHub at the repo root.
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>File</th>
-            <th>What it covers</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="../README.md"><code>README.md</code></a></td>
-            <td>
-              Overview, quick start, config, docs map, observability, Docker/K8s (optional), repo tree, HTTP/OpenAPI
-              links.
-            </td>
-          </tr>
-          <tr>
-            <td><a href="../CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a></td>
-            <td>
-              Quality gates, CI/CD and docs, dead-code checks, <code>docs-fix</code> / <code>docs-check</code>, K8s
-              files, OpenAPI updates, and what we expect from contributors.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <section class="card">
+          <h2>Repository root documentation</h2>
+          <p>
+            These Markdown files live next to the app code (not under <code>docs/</code>). Open them in your clone or on
+            GitHub at the repo root.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>What it covers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="../README.md"><code>README.md</code></a></td>
+                <td>
+                  Overview, quick start, config, docs map, observability, Docker image (optional), repo tree,
+                  HTTP/OpenAPI
+                  links.
+                </td>
+              </tr>
+              <tr>
+                <td><a href="../CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a></td>
+                <td>
+                  Quality gates, CI/CD and docs, dead-code checks, <code>docs-fix</code> / <code>docs-check</code>,
+                  container image notes, OpenAPI updates, and what we expect from contributors.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

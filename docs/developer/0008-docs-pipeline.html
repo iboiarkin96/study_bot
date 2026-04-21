@@ -8,13 +8,17 @@
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body>
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
     <h1>Documentation pipeline (docs-as-code)</h1>
     <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
     <section id="overview" class="card">
       <h2>Overview</h2>
       <p>How doc automation works and what <code>make docs-check</code> enforces.</p>
@@ -30,7 +34,7 @@
       <ol>
         <li>
           <strong>UML</strong> — <code>scripts/regenerate_docs.py</code> renders
-          <code>docs/uml/**/*.puml</code> to PNG under <code>docs/uml/rendered/</code> (Kroki; requires network).
+          <code>docs/uml/**/*.puml</code> to SVG under <code>docs/uml/rendered/</code> (Kroki; requires network).
         </li>
         <li>
           <strong>Marker sync</strong> — <code>scripts/sync_docs.py</code> refreshes marker blocks in
@@ -38,10 +42,6 @@
           <code>docs/internal/developers.html</code> from the Makefile and FastAPI routes (repository tree,
           Makefile command table where present, HTTP route tables). Environment variables are documented only in
           <code>env/example</code>, not generated into the README.
-        </li>
-        <li>
-          <strong>Kubernetes ConfigMap</strong> — <code>scripts/render_k8s_configmap.py</code> renders
-          <code>k8s/configmap.yaml</code> from <code>k8s/app.env</code>.
         </li>
         <li>
           <strong>Optional Markdown → HTML</strong> — <code>scripts/render_docs_html.py</code> rewrites
@@ -58,6 +58,10 @@
           <code>pdoc</code> on package <code>app</code> and writes HTML under <code>docs/api/</code> for local browsing
           and <a href="https://pages.github.com/">GitHub Pages</a> (linked from <code>docs/index.html</code>).
         </li>
+        <li>
+          <strong>Docs search index</strong> — <code>scripts/build_docs_search_index.py</code> writes
+          <code>docs/assets/search-index.json</code> for client-side search in the docs UI.
+        </li>
       </ol>
     </section>
     <section class="card">
@@ -72,7 +76,7 @@
         </thead>
         <tbody>
           <tr>
-            <td><code>docs/uml/rendered/*.png</code></td>
+            <td><code>docs/uml/rendered/*.svg</code></td>
             <td>Generated from sibling <code>docs/uml/**/*.puml</code> (edit PlantUML; commit PNGs after <code>docs-fix</code>).</td>
           </tr>
           <tr>
@@ -239,6 +243,28 @@
         <a href="../runbooks/0010-in-page-toc-missing.html">Runbook: In-page “On this page” sidebar missing or empty</a>.
       </p>
     </section>
+    <section id="page-history" class="card">
+      <h2>Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+              <td>Added Page history section (repository baseline).</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
   </main>
 

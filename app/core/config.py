@@ -248,7 +248,7 @@ def get_settings() -> Settings:
         return tuple(sorted(set(parsed)))
 
     settings = Settings(
-        app_name=os.getenv("APP_NAME", "Study App API").strip() or "Study App API",
+        app_name=os.getenv("APP_NAME", "ETR Study App API").strip() or "ETR Study App API",
         app_env=app_env,
         app_host=os.getenv("APP_HOST", "127.0.0.1").strip() or "127.0.0.1",
         app_port=int(os.getenv("APP_PORT", "8000")),

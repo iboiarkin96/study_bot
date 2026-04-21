@@ -7,43 +7,79 @@
   <title>RFC Index</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../assets/internal-sidebar.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body>
-  <main class="container">
-    <h1>RFC Index</h1>
-    <div id="docs-top-nav"></div>
-    <p class="lead">
-      RFCs spell out <strong>how</strong> we build and run things: implementation detail and operational steps. ADRs
-      record <strong>what</strong> we decided and <strong>why</strong>. Each numbered RFC sets
-      <code>data-rfc-weight</code> on <code>&lt;main&gt;</code> (−1…7) so <strong>Current status</strong> and the
-      <strong>Status log</strong> use the same lifecycle as ADRs
-      (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
-    </p>
-    <section class="card">
-      <h2>Available RFCs</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Document</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="./0001-docs-search-implementation.html">RFC 0001</a></td>
-            <td>Docs search: index format, ranking, telemetry, storage, and how to validate locally.</td>
-          </tr>
-          <tr>
-            <td><a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a></td>
-            <td>Docs search KPIs: targets, warning/breach limits, and what to do when metrics slip.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>RFC Index</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="lead">
+          RFCs spell out <strong>how</strong> we build and run things: implementation detail and operational steps. ADRs
+          record <strong>what</strong> we decided and <strong>why</strong>. Each numbered RFC sets
+          <code>data-rfc-weight</code> on <code>&lt;main&gt;</code> (−1…7) so <strong>Current status</strong> and the
+          <strong>Status log</strong> use the same lifecycle as ADRs
+          (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
+        </p>
+        <section class="card">
+          <h2>Available RFCs</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="./0001-docs-search-implementation.html">RFC 0001</a></td>
+                <td>Docs search: index format, ranking, telemetry, storage, and how to validate locally.</td>
+              </tr>
+              <tr>
+                <td><a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a></td>
+                <td>Docs search KPIs: targets, warning/breach limits, and what to do when metrics slip.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

@@ -197,7 +197,7 @@ logging are initialized at import time.</p>
 </span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
 </span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>    <span class="n">title</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span>
 </span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.1.1&quot;</span><span class="p">,</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Study App API&quot;</span><span class="p">,</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;ETR Study App API&quot;</span><span class="p">,</span>
 </span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>    <span class="n">docs_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 </span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>    <span class="n">redoc_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>    <span class="n">openapi_tags</span><span class="o">=</span><span class="n">OPENAPI_TAGS</span><span class="p">,</span>
@@ -224,11 +224,11 @@ logging are initialized at import time.</p>
 </span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
 </span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>    <span class="n">CORSMiddleware</span><span class="p">,</span>
-</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>    <span class="n">allow_origins</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_allow_origins</span><span class="p">),</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>    <span class="n">allow_origins</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">](</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_allow_origins</span><span class="p">),</span>
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>    <span class="n">allow_credentials</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_allow_credentials</span><span class="p">,</span>
-</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>    <span class="n">allow_methods</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_allow_methods</span><span class="p">),</span>
-</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>    <span class="n">allow_headers</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_allow_headers</span><span class="p">),</span>
-</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="n">expose_headers</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_expose_headers</span><span class="p">),</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>    <span class="n">allow_methods</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">](</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_allow_methods</span><span class="p">),</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>    <span class="n">allow_headers</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">](</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_allow_headers</span><span class="p">),</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>    <span class="n">expose_headers</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">](</span><span class="n">settings</span><span class="o">.</span><span class="n">cors_expose_headers</span><span class="p">),</span>
 </span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a><span class="p">)</span>
 </span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>
 </span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>
@@ -453,7 +453,7 @@ logging are initialized at import time.</p>
 </span><span id="L-324"><a href="#L-324"><span class="linenos">324</span></a>    <span class="n">response_model</span><span class="o">=</span><span class="n">LiveResponse</span><span class="p">,</span>
 </span><span id="L-325"><a href="#L-325"><span class="linenos">325</span></a><span class="p">)</span>
 </span><span id="L-326"><a href="#L-326"><span class="linenos">326</span></a><span class="k">def</span><span class="w"> </span><span class="nf">live</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">LiveResponse</span><span class="p">:</span>
-</span><span id="L-327"><a href="#L-327"><span class="linenos">327</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Kubernetes-style liveness: process is up (no dependency checks).</span>
+</span><span id="L-327"><a href="#L-327"><span class="linenos">327</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Liveness: process is up (no dependency checks).</span>
 </span><span id="L-328"><a href="#L-328"><span class="linenos">328</span></a>
 </span><span id="L-329"><a href="#L-329"><span class="linenos">329</span></a><span class="sd">    Returns:</span>
 </span><span id="L-330"><a href="#L-330"><span class="linenos">330</span></a><span class="sd">        Payload with ``status=&quot;alive&quot;`` and current ``app_env``.</span>
@@ -673,7 +673,7 @@ logging are initialized at import time.</p>
                     <div class="attr variable">
             <span class="name">settings</span>        =
 <input id="settings-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="settings-view-value"></label><span class="default_value">Settings(app_name=&#39;Study App API&#39;, app_env=&#39;dev&#39;, app_host=&#39;127.0.0.1&#39;, app_port=8000, sqlite_db_path=&#39;study_app.db&#39;, log_dir=&#39;logs&#39;, log_file_name=&#39;app.log&#39;, log_level=&#39;DEBUG&#39;, log_format=&#39;json&#39;, log_service_name=&#39;study-app-api&#39;, cors_allow_origins=(&#39;http://127.0.0.1:3000&#39;, &#39;http://localhost:3000&#39;, &#39;http://127.0.0.1:8765&#39;, &#39;http://localhost:8765&#39;), cors_allow_methods=(&#39;GET&#39;, &#39;POST&#39;, &#39;PUT&#39;, &#39;PATCH&#39;, &#39;DELETE&#39;, &#39;OPTIONS&#39;), cors_allow_headers=(&#39;Authorization&#39;, &#39;Content-Type&#39;, &#39;X-API-Key&#39;, &#39;Idempotency-Key&#39;, &#39;X-Request-Id&#39;), cors_expose_headers=(&#39;X-Request-Id&#39;, &#39;X-RateLimit-Limit&#39;, &#39;X-RateLimit-Remaining&#39;, &#39;Retry-After&#39;), cors_allow_credentials=False, api_body_max_bytes=1048576, api_rate_limit_requests=60, api_rate_limit_window_seconds=60, api_auth_strategy=&#39;mock_api_key&#39;, api_mock_api_key=&#39;local-dev-key&#39;, api_auth_header=&#39;X-API-Key&#39;, api_protected_prefix=&#39;/api/v1&#39;, metrics_enabled=True, metrics_path=&#39;/metrics&#39;, readiness_db_timeout_ms=250, metrics_buckets_http=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0), metrics_buckets_db=(0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25))</span>
+            <label class="view-value-button pdoc-button" for="settings-view-value"></label><span class="default_value">Settings(app_name=&#39;ETR Study App API&#39;, app_env=&#39;dev&#39;, app_host=&#39;127.0.0.1&#39;, app_port=8000, sqlite_db_path=&#39;study_app.db&#39;, log_dir=&#39;logs&#39;, log_file_name=&#39;app.log&#39;, log_level=&#39;DEBUG&#39;, log_format=&#39;json&#39;, log_service_name=&#39;study-app-api&#39;, cors_allow_origins=(&#39;http://127.0.0.1:3000&#39;, &#39;http://localhost:3000&#39;, &#39;http://127.0.0.1:8765&#39;, &#39;http://localhost:8765&#39;), cors_allow_methods=(&#39;GET&#39;, &#39;POST&#39;, &#39;PUT&#39;, &#39;PATCH&#39;, &#39;DELETE&#39;, &#39;OPTIONS&#39;), cors_allow_headers=(&#39;Authorization&#39;, &#39;Content-Type&#39;, &#39;X-API-Key&#39;, &#39;Idempotency-Key&#39;, &#39;X-Request-Id&#39;), cors_expose_headers=(&#39;X-Request-Id&#39;, &#39;X-RateLimit-Limit&#39;, &#39;X-RateLimit-Remaining&#39;, &#39;Retry-After&#39;), cors_allow_credentials=False, api_body_max_bytes=1048576, api_rate_limit_requests=60, api_rate_limit_window_seconds=60, api_auth_strategy=&#39;mock_api_key&#39;, api_mock_api_key=&#39;local-dev-key&#39;, api_auth_header=&#39;X-API-Key&#39;, api_protected_prefix=&#39;/api/v1&#39;, metrics_enabled=True, metrics_path=&#39;/metrics&#39;, readiness_db_timeout_ms=250, metrics_buckets_http=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0), metrics_buckets_db=(0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25))</span>
 
         
     </div>
@@ -1173,7 +1173,7 @@ logging are initialized at import time.</p>
 </span><span id="live-325"><a href="#live-325"><span class="linenos">325</span></a>    <span class="n">response_model</span><span class="o">=</span><span class="n">LiveResponse</span><span class="p">,</span>
 </span><span id="live-326"><a href="#live-326"><span class="linenos">326</span></a><span class="p">)</span>
 </span><span id="live-327"><a href="#live-327"><span class="linenos">327</span></a><span class="k">def</span><span class="w"> </span><span class="nf">live</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">LiveResponse</span><span class="p">:</span>
-</span><span id="live-328"><a href="#live-328"><span class="linenos">328</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Kubernetes-style liveness: process is up (no dependency checks).</span>
+</span><span id="live-328"><a href="#live-328"><span class="linenos">328</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Liveness: process is up (no dependency checks).</span>
 </span><span id="live-329"><a href="#live-329"><span class="linenos">329</span></a>
 </span><span id="live-330"><a href="#live-330"><span class="linenos">330</span></a><span class="sd">    Returns:</span>
 </span><span id="live-331"><a href="#live-331"><span class="linenos">331</span></a><span class="sd">        Payload with ``status=&quot;alive&quot;`` and current ``app_env``.</span>
@@ -1182,7 +1182,7 @@ logging are initialized at import time.</p>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Kubernetes-style liveness: process is up (no dependency checks).</p>
+            <div class="docstring"><p>Liveness: process is up (no dependency checks).</p>
 
 <p>Returns:
     Payload with <code>status="alive"</code> and current <code>app_env</code>.</p>

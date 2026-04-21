@@ -9,11 +9,15 @@
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
   <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-diagram-lightbox.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body class="internal-layout">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <p class="internal-layout__sidebar-title">Internal docs</p>
@@ -23,6 +27,7 @@
       <main class="container">
         <h1>Developers Docs</h1>
         <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
         <section id="overview" class="card">
           <h2>Overview</h2>
           <p>
@@ -57,180 +62,220 @@
             <li>Run CI-equivalent gate before push: <code>make verify-ci</code>.</li>
           </ol>
           <figure class="sys-diagram" aria-labelledby="golden-delivery-process-title">
-            <div class="sys-diagram__head">
-              <span class="sys-diagram__badge">Delivery flow</span>
-              <div class="sys-diagram__titles">
-                <h3 id="golden-delivery-process-title" class="sys-diagram__title">Golden delivery process with helpers</h3>
-                <p class="sys-diagram__sub">Local commands and CI checks that keep code and docs quality stable.</p>
-              </div>
+            <div class="sys-diagram__head"><span class="sys-diagram__badge">Delivery flow</span><!-- --><div class="sys-diagram__titles">
+              <h3 id="golden-delivery-process-title" class="sys-diagram__title">Golden delivery process with helpers</h3>
+              <p class="sys-diagram__sub">Local commands and CI checks that keep code and docs quality stable.</p>
             </div>
-            <div class="sys-diagram__canvas">
-              <img class="diagram diagram--uml" src="../uml/rendered/development_process_quality_flow.png" alt="Development process with make commands and quality helper scripts" decoding="async" loading="lazy">
-            </div>
-            <figcaption class="sys-diagram__foot">
-              <strong>Source:</strong> <code>docs/uml/development_process_quality_flow.puml</code>.
-              Green boxes represent helper scripts and CI checks used in the standard delivery path.
-            </figcaption>
-          </figure>
-          <p class="small">
-            Canonical end-to-end walkthrough:
-            <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
-          </p>
-        </section>
+          </div>
+          <div class="sys-diagram__canvas">
+            <img class="diagram diagram--uml" src="../uml/rendered/development_process_quality_flow.svg" alt="Development process with make commands and quality helper scripts" decoding="async" loading="lazy">
+          </div>
+          <figcaption class="sys-diagram__foot">
+            <strong>Source:</strong> <code>docs/uml/development_process_quality_flow.puml</code>.
+            Green boxes represent helper scripts and CI checks used in the standard delivery path.
+          </figcaption>
+        </figure>
+        <p class="small">
+          Canonical end-to-end walkthrough:
+          <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
+        </p>
+      </section>
 
-        <section id="golden-docs-only-path" class="card">
-          <h2>Golden docs-only path (documentation PRs)</h2>
-          <p>
-            Use this sequence when changes are limited to docs structure, wording, navigation, or standards.
-          </p>
-          <ol>
-            <li>Choose the right document type and required structure from the style guide.</li>
-            <li>Update content and cross-links in related hubs or indexes.</li>
-            <li>For internal pages, keep sidebar and layout consistent with internal docs rules.</li>
-            <li>Run normalization and generation: <code>make docs-fix</code>.</li>
-            <li>Run validation and drift checks: <code>make docs-check</code>.</li>
-          </ol>
-          <p class="small">
-            Mandatory standard for docs-only work:
-            <a href="./documentation-style-guide.html">Documentation style guide and audit standard</a>.
-          </p>
-        </section>
+      <section id="golden-docs-only-path" class="card">
+        <h2>Golden docs-only path (documentation PRs)</h2>
+        <p>
+          Use this sequence when changes are limited to docs structure, wording, navigation, or standards.
+        </p>
+        <ol>
+          <li>Choose the right document type and required structure from the style guide.</li>
+          <li>Update content and cross-links in related hubs or indexes.</li>
+          <li>For internal pages, keep sidebar and layout consistent with internal docs rules.</li>
+          <li>Run normalization and generation: <code>make docs-fix</code>.</li>
+          <li>Run validation and drift checks: <code>make docs-check</code>.</li>
+        </ol>
+        <p class="small">
+          Mandatory standard for docs-only work:
+          <a href="./documentation-style-guide.html">Documentation style guide and audit standard</a>.
+        </p>
+      </section>
 
-        <section id="developer-guides" class="card">
-          <h2>Developer guides by topic</h2>
-          <p>Primary guides from <code>docs/developer/</code> grouped by purpose.</p>
+      <section id="developer-guides" class="card">
+        <h2>Developer guides by topic</h2>
+        <p>Primary guides from <code>docs/developer/</code> grouped by purpose.</p>
 
-          <h3>Core architecture and contracts</h3>
-          <table>
+        <h3>Core architecture and contracts</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Guide</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="../developer/0001-requirements.html">Requirements guide</a></td>
+              <td>Functional and non-functional requirements interpretation for developers.</td>
+            </tr>
+            <tr>
+              <td><a href="../developer/0002-schemas-and-contracts.html">Schemas and contracts</a></td>
+              <td>Safe request/response/error evolution rules.</td>
+            </tr>
+            <tr>
+              <td><a href="../developer/0003-business-logic.html">Business logic guide</a></td>
+              <td>Layer boundaries, processing order, and service responsibilities.</td>
+            </tr>
+            <tr>
+              <td><a href="../developer/0005-error-matrix-by-status.html">Error matrix by status</a></td>
+              <td>COMMON vs domain-specific error contracts.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Delivery workflow and operations</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Guide</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></td>
+              <td>Canonical quality gates and grouped commands.</td>
+            </tr>
+            <tr>
+              <td><a href="./make-commands.html">Make commands reference (internal)</a></td>
+              <td>Project command catalog with workflows and full `Makefile` inventory.</td>
+            </tr>
+            <tr>
+              <td><a href="../developer/0007-local-development.html">Local development</a></td>
+              <td>Runtime setup, ports, observability stack, and daily loop.</td>
+            </tr>
+            <tr>
+              <td><a href="../developer/0009-docker-image-and-container.html">Docker image and container</a></td>
+              <td>Image build, manifests, and local cluster workflow.</td>
+            </tr>
+            <tr>
+              <td><a href="../developer/0006-api-load-testing.html">API load testing</a></td>
+              <td>Load-test scenarios and local execution workflow.</td>
+            </tr>
+            <tr>
+              <td><a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a></td>
+              <td>How <code>docs-fix</code>, generated docs, and sync checks work.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>How-to and onboarding</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Guide</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="../howto/0004-how-to-add-post-contract.html">Beginner endpoint guide</a></td>
+              <td>Step-by-step endpoint implementation example.</td>
+            </tr>
+            <tr>
+              <td><a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">Python docstrings and pdoc</a></td>
+              <td>Contributor rules for API docs generation.</td>
+            </tr>
+            <tr>
+              <td><a href="../adr/0017-branch-naming-and-repository-workflow.html">Branches and repository workflow</a></td>
+              <td>Branch naming, trunk strategy, releases, and hotfix flow.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="engineering-standards" class="card">
+        <h2>Engineering standards (mandatory)</h2>
+        <ul>
+          <li><strong>Contract-first:</strong> API behavior must match request/response/error contracts.</li>
+          <li><strong>Validation boundaries:</strong> validate at API boundary, avoid duplicated shape validation in inner layers.</li>
+          <li><strong>Error governance:</strong> existing <code>code</code> and <code>key</code> values are immutable; add, do not repurpose.</li>
+          <li><strong>Testing policy:</strong> API changes require success + failure tests and OpenAPI contract checks.</li>
+          <li><strong>Security baseline:</strong> protected endpoints must keep auth, limits, and security headers enabled.</li>
+          <li><strong>Observability baseline:</strong> maintain <code>/live</code>, <code>/ready</code>, <code>/metrics</code>, and request correlation IDs.</li>
+          <li><strong>Config governance:</strong> use explicit <code>APP_ENV</code> profiles and block insecure production defaults.</li>
+        </ul>
+      </section>
+
+      <section id="versioning-policy" class="card">
+        <h2>API versioning policy</h2>
+        <ul>
+          <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
+          <li>Breaking changes are not allowed in the same major version.</li>
+          <li>Breaking examples: remove or rename endpoints or fields, change field semantics or requiredness, repurpose existing error meanings.</li>
+          <li>Allowed within current major: new endpoints, optional fields, and additive error codes.</li>
+        </ul>
+        <p class="small">
+          Formal policy: <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
+        </p>
+      </section>
+
+      <section id="related-hubs" class="card">
+        <h2>Related hubs</h2>
+        <ul>
+          <li><a href="./README.html">Internal docs index</a></li>
+          <li><a href="./documentation-style-guide.html">Documentation style guide and audit standard</a></li>
+          <li><a href="./api/README.html">Internal HTTP API hub</a></li>
+          <li><a href="./make-commands.html">Make commands</a></li>
+          <li><a href="../openapi/openapi-explorer.html">OpenAPI (test)</a> and <a href="../api/index.html">Python API reference</a></li>
+          <li><a href="../adr/README.html">ADR index</a></li>
+          <li><a href="../runbooks/README.html">Runbooks</a>, <a href="../audit/README.html">Audit reports</a>, <a href="../backlog/README.html">Backlog</a></li>
+        </ul>
+      </section>
+
+      <section id="page-history" class="card">
+
+        <h2>Page history</h2>
+
+        <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+          <table class="docs-page-history">
+
             <thead>
+
               <tr>
-                <th>Guide</th>
-                <th>Description</th>
+
+                <th scope="col">Date</th>
+
+                <th scope="col">Change</th>
+
+                <th scope="col">Author</th>
+
               </tr>
+
             </thead>
+
             <tbody>
+
               <tr>
-                <td><a href="../developer/0001-requirements.html">Requirements guide</a></td>
-                <td>Functional and non-functional requirements interpretation for developers.</td>
+
+                <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                <td>Added Page history section (repository baseline).</td>
+
+                <td><a href="portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
               </tr>
-              <tr>
-                <td><a href="../developer/0002-schemas-and-contracts.html">Schemas and contracts</a></td>
-                <td>Safe request/response/error evolution rules.</td>
-              </tr>
-              <tr>
-                <td><a href="../developer/0003-business-logic.html">Business logic guide</a></td>
-                <td>Layer boundaries, processing order, and service responsibilities.</td>
-              </tr>
-              <tr>
-                <td><a href="../developer/0005-error-matrix-by-status.html">Error matrix by status</a></td>
-                <td>COMMON vs domain-specific error contracts.</td>
-              </tr>
+
             </tbody>
+
           </table>
 
-          <h3>Delivery workflow and operations</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Guide</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></td>
-                <td>Canonical quality gates and grouped commands.</td>
-              </tr>
-              <tr>
-                <td><a href="./make-commands.html">Make commands reference (internal)</a></td>
-                <td>Project command catalog with workflows and full `Makefile` inventory.</td>
-              </tr>
-              <tr>
-                <td><a href="../developer/0007-local-development.html">Local development</a></td>
-                <td>Runtime setup, ports, observability stack, and daily loop.</td>
-              </tr>
-              <tr>
-                <td><a href="../developer/0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a></td>
-                <td>Image build, manifests, and local cluster workflow.</td>
-              </tr>
-              <tr>
-                <td><a href="../developer/0006-api-load-testing.html">API load testing</a></td>
-                <td>Load-test scenarios and local execution workflow.</td>
-              </tr>
-              <tr>
-                <td><a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a></td>
-                <td>How <code>docs-fix</code>, generated docs, and sync checks work.</td>
-              </tr>
-            </tbody>
-          </table>
+        </div>
 
-          <h3>How-to and onboarding</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Guide</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><a href="../howto/0004-how-to-add-post-contract.html">Beginner endpoint guide</a></td>
-                <td>Step-by-step endpoint implementation example.</td>
-              </tr>
-              <tr>
-                <td><a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">Python docstrings and pdoc</a></td>
-                <td>Contributor rules for API docs generation.</td>
-              </tr>
-              <tr>
-                <td><a href="../adr/0017-branch-naming-and-repository-workflow.html">Branches and repository workflow</a></td>
-                <td>Branch naming, trunk strategy, releases, and hotfix flow.</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+      </section>
 
-        <section id="engineering-standards" class="card">
-          <h2>Engineering standards (mandatory)</h2>
-          <ul>
-            <li><strong>Contract-first:</strong> API behavior must match request/response/error contracts.</li>
-            <li><strong>Validation boundaries:</strong> validate at API boundary, avoid duplicated shape validation in inner layers.</li>
-            <li><strong>Error governance:</strong> existing <code>code</code> and <code>key</code> values are immutable; add, do not repurpose.</li>
-            <li><strong>Testing policy:</strong> API changes require success + failure tests and OpenAPI contract checks.</li>
-            <li><strong>Security baseline:</strong> protected endpoints must keep auth, limits, and security headers enabled.</li>
-            <li><strong>Observability baseline:</strong> maintain <code>/live</code>, <code>/ready</code>, <code>/metrics</code>, and request correlation IDs.</li>
-            <li><strong>Config governance:</strong> use explicit <code>APP_ENV</code> profiles and block insecure production defaults.</li>
-          </ul>
-        </section>
-
-        <section id="versioning-policy" class="card">
-          <h2>API versioning policy</h2>
-          <ul>
-            <li>Major version is part of URL prefix (current: <code>/api/v1</code>).</li>
-            <li>Breaking changes are not allowed in the same major version.</li>
-            <li>Breaking examples: remove or rename endpoints or fields, change field semantics or requiredness, repurpose existing error meanings.</li>
-            <li>Allowed within current major: new endpoints, optional fields, and additive error codes.</li>
-          </ul>
-          <p class="small">
-            Formal policy: <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.
-          </p>
-        </section>
-
-        <section id="related-hubs" class="card">
-          <h2>Related hubs</h2>
-          <ul>
-            <li><a href="./README.html">Internal docs index</a></li>
-            <li><a href="./documentation-style-guide.html">Documentation style guide and audit standard</a></li>
-            <li><a href="./api/README.html">Internal HTTP API hub</a></li>
-            <li><a href="./make-commands.html">Make commands</a></li>
-            <li><a href="../openapi/openapi-explorer.html">OpenAPI (test)</a> and <a href="../api/index.html">Python API reference</a></li>
-            <li><a href="../adr/README.html">ADR index</a></li>
-            <li><a href="../runbooks/README.html">Runbooks</a>, <a href="../audit/README.html">Audit reports</a>, <a href="../backlog/README.html">Backlog</a></li>
-          </ul>
-        </section>
-
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    </main>
   </div>
+</div>
 
 </body></html>

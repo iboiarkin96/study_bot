@@ -8,13 +8,17 @@
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body>
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="8">
     <h1>ADR 0024: Architecture and quality assessment documents (audit format)</h1>
     <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
     <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
 
     <section class="card">
@@ -161,20 +165,21 @@
           (same stack as other docs: <code>docs/assets/docs.css</code>, <code>docs/assets/docs-nav.js</code>).
         </li>
         <li>
-          <strong>Naming.</strong> Use the pattern
-          <code><var>YYYY-MM-DD</var>-<var>short-topic</var>-assessment.html</code>, all lowercase with hyphens in the
-          topic slug (example: <code>2026-04-14-api-assessment.html</code>). The ISO date is the <strong>assessment
-          date</strong> (when the review was performed or the document was last materially refreshed), not necessarily
-          the file creation date in git.
+          <strong>Naming.</strong> Put the <strong>formation / assessment date</strong> first in the filename (ISO
+          <code>YYYY-MM-DD</code>), then the topic slug, e.g.
+          <code><var>YYYY-MM-DD</var>-<var>short-topic</var>-assessment.html</code>, all lowercase with hyphens (example:
+          <code>2026-04-14-rest-api-assessment.html</code> under <code>docs/audit/api/</code>). The date is the
+          <strong>assessment date</strong> (when the review was performed or the document was last materially refreshed),
+          not necessarily the file creation date in git.
         </li>
         <li>
           <strong>Format.</strong> Each assessment follows the <a href="#published-assessment-backbone">published
-          backbone</a> below unless the author documents a deliberate deviation in the lead block (e.g. a one-page
+          backbone</a> below unless the author documents a deliberate deviation in Overview (e.g. a one-page
           addendum).
         </li>
         <li>
           <strong>Purpose.</strong> Assessments are for shared maturity understanding, traceability of what was checked,
-          prioritization of follow-ups, and onboarding of new leads. They are not a substitute for automated tests or
+          prioritization of follow-ups, and onboarding of new owners. They are not a substitute for automated tests or
           OpenAPI contract checks — they <strong>interpret</strong> results in a broader reference frame.
         </li>
         <li>
@@ -264,17 +269,27 @@
           <h2 id="published-assessment-backbone">Published assessment backbone (normative)</h2>
           <p>
             The working templates in this repository are
-            <a href="../audit/2026-04-14-api-assessment.html"><code>2026-04-14-api-assessment.html</code></a> and
-            <a href="../audit/2026-04-14-documentation-experience-assessment.html"><code>2026-04-14-documentation-experience-assessment.html</code></a>.
+            <a href="../audit/AUDIT_TEMPLATE.html"><code>docs/audit/AUDIT_TEMPLATE.html</code></a> (skeleton),
+            <a href="../audit/api/2026-04-14-rest-api-assessment.html"><code>docs/audit/api/2026-04-14-rest-api-assessment.html</code></a> (API),
+            and
+            <a href="../audit/docs/2026-04-14-documentation-experience-assessment.html"><code>docs/audit/docs/2026-04-14-documentation-experience-assessment.html</code></a>
+            (documentation DX).
             New assessments should match their <strong>section order and intent</strong> (anchors and numbering may differ
             slightly, e.g. optional “beyond baseline” only where useful).
           </p>
           <ol>
             <li>
-              <strong>Title, nav chrome, lead (<code>class="lead"</code>).</strong> Lead must include assessment date, scope,
-              stack or constraints when relevant, and document purpose.
+              <strong>Title, nav chrome, <code>&lt;section id="overview" class="card"&gt;</code>.</strong> Put the
+              <strong>formation / assessment date</strong> in both <code>&lt;title&gt;</code> and <code>&lt;h1&gt;</code>
+              (e.g. <code>— formed 14 Apr 2026</code> in the title and <code>(formed 14 Apr 2026)</code> in the heading) so
+              the browser tab matches the page; repeat or extend dates in <strong>Overview</strong>. Do not use a top
+              <code>class="lead"</code> paragraph (metadata belongs in Overview only).
             </li>
-            <li><strong>Table of contents</strong> — numbered <code>&lt;ol&gt;</code> linking to major <code>id</code>s.</li>
+            <li>
+              <strong>Navigation.</strong> Rely on <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code>
+              (injected sidebar TOC) and section <code>id</code>s — do <strong>not</strong> add a separate “Table of
+              contents” block after Overview unless there is a documented exception.
+            </li>
             <li>
               <strong>Scope and methodology</strong> — what was examined, method (often a short numbered list), what the
               assessment is not, and a short <strong>industry / PET applicability</strong> subsection (why some reference
@@ -286,11 +301,16 @@
               Typical benchmark (wording may vary by topic).
             </li>
             <li>
-              <strong>Table 2 — Mapping and scores.</strong> One row per Table 1 practice being scored; shared legend
-              placeholder immediately above the table (see <a href="#assessment-score-scale">score scale</a>); score cells
-              use the CSS classes above — no duplicated score rules in page-local <code>&lt;style&gt;</code>.
+              <strong>Table 2 — Mapping and scores.</strong> One row per Table 1 practice being scored; include a
+              <strong>Justification</strong> column (why this score vs the reference row); shared legend placeholder
+              immediately above the table (see <a href="#assessment-score-scale">score scale</a>); score cells use the CSS
+              classes above — no duplicated score rules in page-local <code>&lt;style&gt;</code>.
             </li>
-            <li><strong>Scoring summary</strong> — overall read and themes toward “top decile” for that scope.</li>
+            <li>
+              <strong>Scoring summary</strong> — narrative overall; optional explicit arithmetic (weighted model or Table 2
+              mean) in <code>pre.audit-scoring-formula</code>; <strong>Top‑5 gaps</strong> in
+              <code>table.audit-gap-table</code> with status (TODO / IN PROGRESS / DONE) and started / closed / PR columns.
+            </li>
             <li>
               <strong>Gaps, refactors, and recommendations</strong> — usually <strong>5.1</strong> should add,
               <strong>5.2</strong> refactor/tighten, <strong>5.3</strong> nice-to-have; link to table rows where helpful.
@@ -301,7 +321,8 @@
               only repeat Table 1.
             </li>
             <li><strong>Actionable checklist</strong> — concise bullets tied to rows or sections for backlog/issues.</li>
-            <li><strong>Document history</strong> — <strong>Date | Change</strong>; substantive edits only (not trivial
+            <li><strong>Page history</strong> — <strong>Date | Change | Author</strong> (see
+              <a href="../internal/documentation-style-guide.html#page-history">Documentation style guide</a>); substantive edits only (not trivial
               typos).</li>
             </ol>
 
@@ -324,7 +345,7 @@
             <h2>Goals and process</h2>
             <p>
               <strong>Goals:</strong> institutional memory; shared vocabulary from Table 1; prioritization via Table 2
-              and mitigations; onboarding without a live walkthrough; traceability via lead + history.
+              and mitigations; onboarding without a live walkthrough; traceability via Overview + history.
             </p>
             <ul>
               <li>
@@ -416,8 +437,8 @@
                     (injected via <code>.audit-score-legend-include</code> in <code>docs-nav.js</code>).</li>
                     <li><a href="../assets/docs-nav.js"><code>docs-nav.js</code></a> — loads the fragment into assessment pages.</li>
                     <li><code>docs/assets/docs.css</code> — <code>--audit-score-*</code> and <code>.audit-score-*</code> rules.</li>
-                    <li><a href="../audit/2026-04-14-api-assessment.html">API assessment</a> — reference layout.</li>
-                    <li><a href="../audit/2026-04-14-documentation-experience-assessment.html">DX assessment</a> — same backbone,
+                    <li><a href="../audit/api/2026-04-14-rest-api-assessment.html">API assessment</a> — reference layout.</li>
+                    <li><a href="../audit/docs/2026-04-14-documentation-experience-assessment.html">DX assessment</a> — same backbone,
                       Documentation Experience topic.</li>
                     </ul>
 
@@ -432,6 +453,28 @@
                       <code>make docs-fix</code> / <code>format_docs_html.py</code>.
                     </p>
                   </section>
+                  <section id="page-history" class="card">
+                    <h2>Page history</h2>
+                    <div class="docs-table-scroll" role="region" aria-label="Page history">
+                      <table class="docs-page-history">
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Change</th>
+                            <th scope="col">Author</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                            <td>Added Page history section (repository baseline).</td>
+                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
                   <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
                 </main>
 

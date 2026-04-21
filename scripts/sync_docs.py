@@ -609,7 +609,7 @@ _SKIP_DIRS = {
 }
 
 # Show only high-level architecture blocks at repository root.
-_ARCHITECTURE_ROOT_DIRS = ("app", "alembic", "docs", "k8s", "ops", "scripts")
+_ARCHITECTURE_ROOT_DIRS = ("app", "alembic", "docs", "ops", "scripts")
 
 # Default depth is 2 (root + one nested level), but some domains are worth 3.
 _MAX_DEPTH_DEFAULT = 2
@@ -637,8 +637,7 @@ _DIR_COMMENTS: dict[str, str] = {
     "docs/uml": "PlantUML diagrams",
     "docs/uml/include": "Shared PlantUML skin (merged at Kroki render)",
     "docs/uml/sequences": "Sequence diagram sources",
-    "docs/uml/rendered": "Rendered PNGs",
-    "k8s": "Kubernetes manifests; k8s/app.env sources the generated ConfigMap",
+    "docs/uml/rendered": "Rendered SVGs",
     "ops": "Prometheus, Grafana, Filebeat configs",
     "ops/filebeat": "Filebeat → Elasticsearch (local logging stack)",
     "ops/grafana": "Dashboards and provisioning",

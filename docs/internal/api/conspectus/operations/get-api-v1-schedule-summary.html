@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GET /api/v1/schedule/summary — Schedule (conspectuses) — Study App</title>
+  <link rel="stylesheet" href="../../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../../assets/internal-layout.css">
+  <script defer src="../../../../assets/docs-nav.js"></script>
+  <script defer src="../../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Schedule</p>
+        <h1 class="internal-doc-h1">
+          <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="GET /api/v1/schedule/summary">
+            <span class="badge badge--method-get">GET</span>
+            <code class="internal-http-tablet__path">/api/v1/schedule/summary</code>
+          </span>
+        </h1>
+        <p class="lead">
+          <strong>Specification.</strong> Intended: aggregate counts of <strong>conspectuses</strong> per slot (A–D), total
+          rows, and how many are due on or before <code>reference_time</code> (FR-5). Planned
+          <code>operationId</code>: <code>getScheduleSummary</code>.
+        </p>
+        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>getScheduleSummary</code></p>
+
+        <section class="card">
+          <h2>Query parameters</h2>
+          <p>
+            Required: <code>system_user_id</code>, <code>system_uuid</code>. Optional:
+            <code>reference_time</code> — instant used for <code>due_now_count</code> (defaults to UTC now).
+          </p>
+          <p>
+            <code>ScheduleService.summary</code> uses <code>ConspectusRepository.count_by_slot</code> and
+            <code>count_due_by</code>. Read-only; no idempotency.
+          </p>
+          <p><strong>Success:</strong> <code>200 OK</code> — <code>ScheduleSummaryResponse</code>.</p>
+        </section>
+
+        <section class="card">
+          <h2>Errors</h2>
+          <p><code>404</code> — <code>USER_404</code> if the user does not exist. <code>401</code> / <code>429</code> via middleware.</p>
+        </section>
+
+        <section class="card">
+          <h2>Related hub</h2>
+          <p><a href="../index.html#conspectus-op-getScheduleSummary">Conspectus resource hub — this operation</a></p>
+        </section>
+
+        <p class="small">
+          <a href="../index.html">← Conspectus resource hub</a>
+        </p>
+
+        <section id="page-history" class="card">
+
+          <h2>Page history</h2>
+
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+            <table class="docs-page-history">
+
+              <thead>
+
+                <tr>
+
+                  <th scope="col">Date</th>
+
+                  <th scope="col">Change</th>
+
+                  <th scope="col">Author</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr>
+
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                  <td>Added Page history section (repository baseline).</td>
+
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

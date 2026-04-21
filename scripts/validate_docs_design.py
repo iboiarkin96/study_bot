@@ -129,6 +129,17 @@ def _has_section_card(root_el) -> bool:
     return False
 
 
+def _has_page_history_section(root_el) -> bool:
+    """Standard hub pages use id=page-history; assessment reports use id=5-page-history."""
+    for node in root_el.iter():
+        if not isinstance(node.tag, str) or _local_name(node.tag) != "section":
+            continue
+        sid = (node.attrib.get("id") or "").strip()
+        if sid in ("page-history", "5-page-history"):
+            return True
+    return False
+
+
 def main() -> None:
     parser = html5lib.HTMLParser(tree=html5lib.getTreeBuilder("etree"))
     failures: list[str] = []
@@ -163,6 +174,12 @@ def main() -> None:
                 )
             if not swagger_layout and not _has_section_card(doc):
                 failures.append(f'{rel}: expected at least one <section class="card">')
+            if not swagger_layout and not _has_page_history_section(doc):
+                failures.append(
+                    f"{rel}: missing Page history section "
+                    f'(<section id="page-history"> or assessment <section> with id="5-page-history"); '
+                    f"see docs/internal/documentation-style-guide.html#page-history"
+                )
 
         if '<div class="card"' in text:
             failures.append(

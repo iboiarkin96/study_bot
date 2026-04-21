@@ -29,8 +29,8 @@ if TYPE_CHECKING:
 class User(Base):
     """End-user row keyed by external ``system_user_id`` and internal ``client_uuid``.
 
-    Relationships: :attr:`system`, :attr:`invalidation_reason`. Timezone must exist
-    in the ``timezones`` reference table.
+    Relationships: :attr:`system`, :attr:`invalidation_reason`. Timezone must exist in the
+    ``timezones`` reference table.
     """
 
     __tablename__ = "users"

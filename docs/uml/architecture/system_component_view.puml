@@ -1,33 +1,51 @@
 @startuml
-title Study App - C4 L3 Component View (Users)
+title ETR Study API — C4 Level 3 (components)
 
 top to bottom direction
 
-actor "Client" as Client
+actor "Integrator" as Client
 
-package "Presentation — HTTP API" as Pres {
-  [User router\nFastAPI] as Router
-  [Schemas\nPydantic] as Schema
-  Router -[hidden]right- Schema
+package "Presentation" as Pres {
+  together {
+    [User router] as UR
+    [Conspectus router] as CR
+    [Error-log router] as ER
+  }
+  [Pydantic schemas] as Sch
 }
 
-package "Application — services" as AppPkg {
-  [UserService] as Service
+package "Application" as AppPkg {
+  [UserService] as USvc
+  [ConspectusService] as CSvc
+  [ErrorLogService] as ESvc
+  [SchedulePolicy] as Pol
 }
 
-package "Persistence — data access" as PerPkg {
-  [UserRepository] as Repo
-  [Session factory\nSQLAlchemy] as Session
-  Repo -[hidden]right- Session
+package "Persistence" as PerPkg {
+  [Repositories] as Repo
+  [SQLAlchemy session] as Sess
 }
 
-database "SQLite\nstudy_app.db" as Db
+database "Database" as Db
 
-Client --> Router : HTTPS / JSON
-Router --> Schema : bind & validate
-Router --> Service : use case
-Service --> Repo : read / write
-Repo --> Session : ORM & unit of work
-Session --> Db : SQL
+Client --> UR
+Client --> CR
+Client --> ER
+
+UR --> Sch
+CR --> Sch
+ER --> Sch
+
+UR --> USvc
+CR --> CSvc
+ER --> ESvc
+
+CSvc --> Pol
+USvc --> Repo
+CSvc --> Repo
+ESvc --> Repo
+
+Repo --> Sess
+Sess --> Db
 
 @enduml

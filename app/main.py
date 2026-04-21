@@ -68,7 +68,7 @@ OPENAPI_TAGS = [
 app = FastAPI(
     title=settings.app_name,
     version="1.1.1",
-    description="Study App API",
+    description="ETR Study App API",
     docs_url=None,
     redoc_url=None,
     openapi_tags=OPENAPI_TAGS,
@@ -95,11 +95,11 @@ docs_search_telemetry_store = DocsSearchTelemetryStore(settings.sqlite_db_path)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=list(settings.cors_allow_origins),
+    allow_origins=list[str](settings.cors_allow_origins),
     allow_credentials=settings.cors_allow_credentials,
-    allow_methods=list(settings.cors_allow_methods),
-    allow_headers=list(settings.cors_allow_headers),
-    expose_headers=list(settings.cors_expose_headers),
+    allow_methods=list[str](settings.cors_allow_methods),
+    allow_headers=list[str](settings.cors_allow_headers),
+    expose_headers=list[str](settings.cors_expose_headers),
 )
 
 
@@ -324,7 +324,7 @@ readiness_probe = _readiness_probe
     response_model=LiveResponse,
 )
 def live() -> LiveResponse:
-    """Kubernetes-style liveness: process is up (no dependency checks).
+    """Liveness: process is up (no dependency checks).
 
     Returns:
         Payload with ``status="alive"`` and current ``app_env``.

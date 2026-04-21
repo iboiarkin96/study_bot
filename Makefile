@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-design-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build k8s-render-configmap k8s-apply
+.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-design-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build
 
 # ──────────────────────────────────────────────
 # Help
@@ -102,12 +102,12 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make docs-fix             Auto-update docs (UML + markers + k8s ConfigMap + md→html + HTML repair + format + pdoc API + search index)"
+	@echo "  make docs-fix             Auto-update docs (UML + markers + md→html + HTML repair + format + portal data JS + pdoc API + search index)"
 	@echo "  make docs-html-check      Validate HTML consistency (fails if docs HTML needs repair)"
 	@echo "  make docs-design-check    Baseline docs design consistency checks (page skeleton, cards, mounts)"
 	@echo "  make docs-a11y-check      Baseline accessibility checks (headings, landmarks, contrast, keyboard)"
 	@echo "  make docs-feedback-check  Smoke-check page-level feedback wiring for key docs pages"
-	@echo "  make uml-check            Verify docs/uml/rendered/*.png match docs/uml/**/*.puml (no writes)"
+	@echo "  make uml-check            Verify docs/uml/rendered/*.svg match docs/uml/**/*.puml (no writes)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
 	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)"
 	@echo ""
@@ -127,10 +127,8 @@ help:
 	@echo "  make logging-smoke        Check Elasticsearch and Kibana URLs"
 	@echo "  make logging-es-query     Query ES for study-app logs (optional QUERY=<uuid>)"
 	@echo ""
-	@echo "  # Container & local Kubernetes (see docs/developer/0009-docker-and-kubernetes-local.html)"
+	@echo "  # Container image (see docs/developer/0009-docker-image-and-container.html)"
 	@echo "  make docker-build         Build image study-app-api:local (requires Docker)"
-	@echo "  make k8s-render-configmap Render k8s/configmap.yaml from k8s/app.env (same as docs-fix step)"
-	@echo "  make k8s-apply            kubectl apply manifests (requires kubectl; see guide)"
 	@echo ""
 	@echo "  # Pre-commit Hooks"
 	@echo "  make pre-commit-install   Install git pre-commit hooks"
@@ -201,10 +199,11 @@ run:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
-	@printf "$(ICON_STEP) %s\n" "Starting server (reading $(ENV))…"
+	@printf "$(ICON_STEP) %s\n" "Applying migrations then starting server (reading $(ENV))…"
 	@set -a; . ./$(ENV); set +a; \
 	APP_HOST=$${APP_HOST:-127.0.0.1}; \
 	APP_PORT=$${APP_PORT:-8000}; \
+	$(PYTHON) -m alembic upgrade head && \
 	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload --no-access-log
 
 # Same sequence as the Docker image ENTRYPOINT: Alembic upgrade then Uvicorn (no --reload).
@@ -245,13 +244,14 @@ run-loadtest-api-serve:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
-	@printf "$(ICON_STEP) %s\n" "Starting server (loadtest rate limits; dev machine only)…"
+	@printf "$(ICON_STEP) %s\n" "Applying migrations then starting server (loadtest rate limits; dev machine only)…"
 	@set -a; . ./$(ENV); set +a; \
 	export API_RATE_LIMIT_REQUESTS="$${API_RATE_LIMIT_REQUESTS_LOADTEST:-1000000000}"; \
 	export API_RATE_LIMIT_WINDOW_SECONDS="$${API_RATE_LIMIT_WINDOW_SECONDS_LOADTEST:-60}"; \
 	printf "$(ICON_INFO) %s\n" "API_RATE_LIMIT_REQUESTS=$$API_RATE_LIMIT_REQUESTS API_RATE_LIMIT_WINDOW_SECONDS=$$API_RATE_LIMIT_WINDOW_SECONDS"; \
 	APP_HOST=$${APP_HOST:-127.0.0.1}; \
 	APP_PORT=$${APP_PORT:-8000}; \
+	$(PYTHON) -m alembic upgrade head && \
 	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload --no-access-log
 
 # Start Docker observability stack, then FastAPI (foreground). Requires Docker.
@@ -542,14 +542,14 @@ docs-fix:
 	@$(PYTHON) scripts/regenerate_docs.py
 	@printf "$(ICON_INFO) %s\n" "[2/8] sync marker-based documentation"
 	@$(PYTHON) scripts/sync_docs.py
-	@printf "$(ICON_INFO) %s\n" "[3/8] render Kubernetes ConfigMap from k8s/app.env"
-	@$(PYTHON) scripts/render_k8s_configmap.py
-	@printf "$(ICON_INFO) %s\n" "[4/8] render docs markdown to html companions"
+	@printf "$(ICON_INFO) %s\n" "[3/8] render docs markdown to html companions"
 	@$(PYTHON) scripts/render_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[5/8] repair docs html structure"
+	@printf "$(ICON_INFO) %s\n" "[4/8] repair docs html structure"
 	@$(PYTHON) scripts/repair_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[6/8] normalize docs html template"
+	@printf "$(ICON_INFO) %s\n" "[5/8] normalize docs html template"
 	@$(PYTHON) scripts/format_docs_html.py
+	@printf "$(ICON_INFO) %s\n" "[6/8] collect docs maintainer pages index"
+	@$(PYTHON) scripts/collect_docs_portal_data.py
 	@printf "$(ICON_INFO) %s\n" "[7/8] Python API reference (pdoc)"
 	@$(MAKE) api-docs
 	@printf "$(ICON_INFO) %s\n" "[8/8] build docs search index"
@@ -715,7 +715,7 @@ logging-es-query:
 	@printf "$(ICON_OK) %s\n" "Done (see output above)"
 
 # ──────────────────────────────────────────────
-# Container image & local Kubernetes
+# Container image
 # ──────────────────────────────────────────────
 docker-build:
 	@if ! command -v docker >/dev/null 2>&1; then \
@@ -724,32 +724,6 @@ docker-build:
 	@printf "$(ICON_STEP) %s\n" "Building image study-app-api:local…"
 	@docker build -t study-app-api:local .
 	@printf "$(ICON_OK) %s\n" "Image study-app-api:local ready"
-
-k8s-render-configmap:
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Rendering k8s/configmap.yaml from k8s/app.env…"
-	@$(PYTHON) scripts/render_k8s_configmap.py
-	@printf "$(ICON_OK) %s\n" "ConfigMap manifest updated"
-
-k8s-apply:
-	@if ! command -v kubectl >/dev/null 2>&1; then \
-		printf "$(ICON_ERR) %s\n" "kubectl not found"; exit 1; \
-	fi
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Rendering ConfigMap from k8s/app.env…"
-	@$(PYTHON) scripts/render_k8s_configmap.py
-	@printf "$(ICON_STEP) %s\n" "Ensuring namespace study-app…"
-	@kubectl apply -f k8s/namespace.yaml
-	@printf "$(ICON_STEP) %s\n" "Applying Kubernetes manifests…"
-	@kubectl apply -f k8s/configmap.yaml
-	@kubectl apply -f k8s/pvc.yaml
-	@kubectl apply -f k8s/deployment.yaml
-	@kubectl apply -f k8s/service.yaml
-	@printf "$(ICON_OK) %s\n" "Applied. Port-forward: kubectl -n study-app port-forward svc/study-app-api 8000:8000"
 
 # ──────────────────────────────────────────────
 # Health check

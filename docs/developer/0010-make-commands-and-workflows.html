@@ -8,13 +8,18 @@
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../assets/docs-diagram-lightbox.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body>
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
     <h1>Make commands and workflows (onboarding)</h1>
     <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
     <p class="lead">
       Make targets by topic, how composites chain, and simple if → then flows. Naming rules:
       <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>.
@@ -78,7 +83,7 @@
       <section id="composite-pipelines" class="card">
         <h2>Composite pipelines (diagram)</h2>
         <p>Diagram below shows how composite targets depend on each other. Arrows show order.</p>
-        <img class="diagram diagram--uml" src="../uml/rendered/make__composite_pipelines.png" alt="PlantUML: Makefile composite targets — fix, verify, verify-ci, release-check, release" decoding="async" loading="lazy">
+        <img class="diagram diagram--uml" src="../uml/rendered/make__composite_pipelines.svg" alt="PlantUML: Makefile composite targets — fix, verify, verify-ci, release-check, release" decoding="async" loading="lazy">
       </section>
 
       <section id="run-and-observability" class="card">
@@ -87,7 +92,7 @@
           Daily dev is usually <code>make run</code>. Use <code>run-project</code> when you want Compose + API in one
           flow (requires Docker).
         </p>
-        <img class="diagram diagram--uml" src="../uml/rendered/make__run_and_observability.png" alt="PlantUML: make run-project starts observability stack and make run; optional alongside link" decoding="async" loading="lazy">
+        <img class="diagram diagram--uml" src="../uml/rendered/make__run_and_observability.svg" alt="PlantUML: make run-project starts observability stack and make run; optional alongside link" decoding="async" loading="lazy">
         <p>
           Details and ports: <a href="./0007-local-development.html">Local development</a>. Load testing:
           <a href="./0006-api-load-testing.html">API load testing</a>.
@@ -253,8 +258,8 @@
           </table>
         </section>
 
-        <section id="observability-logging-container-kubernetes" class="card">
-          <h3>Observability, logging, container, Kubernetes</h3>
+        <section id="observability-logging-container" class="card">
+          <h3>Observability, logging, container</h3>
           <table>
             <thead>
               <tr>
@@ -274,116 +279,133 @@
                 </tr>
                 <tr>
                   <td><code>docker-build</code></td>
-                  <td>Build <code>study-app-api:local</code>.</td>
+                  <td>Build <code>study-app-api:local</code> (see <a href="./0009-docker-image-and-container.html">Docker image and container</a>).</td>
                 </tr>
-                <tr>
-                  <td><code>k8s-render-configmap</code>, <code>k8s-apply</code></td>
-                  <td>Render ConfigMap from <code>k8s/app.env</code>; apply manifests (see
-                    <a href="./0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a>).</td>
-                  </tr>
-                </tbody>
-              </table>
-            </section>
-
-            <section id="git-hooks" class="card">
-              <h3>Git hooks</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Target</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>pre-commit-install</code>, <code>pre-commit-check</code></td>
-                    <td>Install or run all hooks on the tree.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </section>
+              </tbody>
+            </table>
           </section>
 
-          <section id="if-then-scenarios" class="card">
-            <h2>If → then (scenarios)</h2>
+          <section id="git-hooks" class="card">
+            <h3>Git hooks</h3>
             <table>
               <thead>
                 <tr>
-                  <th>If you…</th>
-                  <th>Then…</th>
+                  <th>Target</th>
+                  <th>Role</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Just cloned the repo</td>
-                  <td><code>make venv &amp;&amp; make install &amp;&amp; make env-init</code>, edit <code>.env</code>,
-                    <code>make migrate</code>,
-                    <code>make run</code>
-                  </td>
+                  <td><code>pre-commit-install</code>, <code>pre-commit-check</code></td>
+                  <td>Install or run all hooks on the tree.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <section id="if-then-scenarios" class="card">
+          <h2>If → then (scenarios)</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>If you…</th>
+                <th>Then…</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Just cloned the repo</td>
+                <td><code>make venv &amp;&amp; make install &amp;&amp; make env-init</code>, edit <code>.env</code>,
+                  <code>make migrate</code>,
+                  <code>make run</code>
+                </td>
+              </tr>
+              <tr>
+                <td>Want auto-fixes before commit</td>
+                <td><code>make fix</code></td>
+              </tr>
+              <tr>
+                <td>Want full local gate and regenerated docs</td>
+                <td><code>make verify</code></td>
+              </tr>
+              <tr>
+                <td>Are about to push and need doc sync + audit like CI</td>
+                <td><code>make verify-ci</code></td>
+              </tr>
+              <tr>
+                <td>Changed the API intentionally</td>
+                <td>Review, <code>make openapi-accept-changes</code>, commit baseline, <code>make verify</code> or
+                  <code>make verify-ci</code>
+                </td>
+              </tr>
+              <tr>
+                <td>Debug one test</td>
+                <td><code>make test-one path=tests/…</code></td>
+              </tr>
+              <tr>
+                <td>Run like production Docker entrypoint locally</td>
+                <td><code>make container-start</code></td>
+              </tr>
+              <tr>
+                <td>Need metrics dashboards locally</td>
+                <td><code>make run-project</code> or <code>make observability-up</code> plus <code>make run</code> in another terminal</td>
+              </tr>
+              <tr>
+                <td>Want logs in Kibana / Elasticsearch locally</td>
+                <td><code>make logging-up</code>, run the API with NDJSON to <code>./logs</code> (default
+                  <code>LOG_FORMAT</code> is <code>json</code>), create Kibana data view <code>*study-app-logs*</code> —
+                  see <a href="./0007-local-development.html">Local development</a>.</td>
                 </tr>
                 <tr>
-                  <td>Want auto-fixes before commit</td>
-                  <td><code>make fix</code></td>
+                  <td>Prepare a release</td>
+                  <td><code>make release-check</code>; deploy with <code>make release DEPLOY_CMD='…'</code></td>
                 </tr>
-                <tr>
-                  <td>Want full local gate and regenerated docs</td>
-                  <td><code>make verify</code></td>
-                </tr>
-                <tr>
-                  <td>Are about to push and need doc sync + audit like CI</td>
-                  <td><code>make verify-ci</code></td>
-                </tr>
-                <tr>
-                  <td>Changed the API intentionally</td>
-                  <td>Review, <code>make openapi-accept-changes</code>, commit baseline, <code>make verify</code> or
-                    <code>make verify-ci</code>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Debug one test</td>
-                  <td><code>make test-one path=tests/…</code></td>
-                </tr>
-                <tr>
-                  <td>Run like production Docker entrypoint locally</td>
-                  <td><code>make container-start</code></td>
-                </tr>
-                <tr>
-                  <td>Need metrics dashboards locally</td>
-                  <td><code>make run-project</code> or <code>make observability-up</code> plus <code>make run</code> in another terminal</td>
-                </tr>
-                <tr>
-                  <td>Want logs in Kibana / Elasticsearch locally</td>
-                  <td><code>make logging-up</code>, run the API with NDJSON to <code>./logs</code> (default
-                    <code>LOG_FORMAT</code> is <code>json</code>), create Kibana data view <code>*study-app-logs*</code> —
-                    see <a href="./0007-local-development.html">Local development</a>.</td>
-                  </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="related-policy-and-automation" class="card">
+            <h2>Related policy and automation</h2>
+            <ul>
+              <li><a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a> — taxonomy and entrypoint rules.</li>
+              <li><a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a> — <code>verify</code> vs <code>verify-ci</code> and CI behavior.</li>
+              <li><a href="../../.github/workflows/ci.yml">GitHub Actions workflow</a> — <code>deps-audit</code> then <code>verify</code> on the runner.</li>
+            </ul>
+
+            <h2>See also</h2>
+            <ul>
+              <li><a href="../internal/developers.html#developer-guides">Developer guides index</a></li>
+              <li><a href="./0007-local-development.html">Local development</a></li>
+              <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and local Elasticsearch</a></li>
+              <li><a href="./0008-docs-pipeline.html">Documentation pipeline</a></li>
+              <li><a href="./0009-docker-image-and-container.html">Docker image and container</a></li>
+              <li><a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — PlantUML style for this repo</li>
+            </ul>
+          </section>
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
                   <tr>
-                    <td>Prepare a release</td>
-                    <td><code>make release-check</code>; deploy with <code>make release DEPLOY_CMD='…'</code></td>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added Page history section (repository baseline).</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                   </tr>
                 </tbody>
               </table>
-            </section>
+            </div>
+          </section>
 
-            <section id="related-policy-and-automation" class="card">
-              <h2>Related policy and automation</h2>
-              <ul>
-                <li><a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a> — taxonomy and entrypoint rules.</li>
-                <li><a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a> — <code>verify</code> vs <code>verify-ci</code> and CI behavior.</li>
-                <li><a href="../../.github/workflows/ci.yml">GitHub Actions workflow</a> — <code>deps-audit</code> then <code>verify</code> on the runner.</li>
-              </ul>
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </main>
 
-              <h2>See also</h2>
-              <ul>
-                <li><a href="../internal/developers.html#developer-guides">Developer guides index</a></li>
-                <li><a href="./0007-local-development.html">Local development</a></li>
-                <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and local Elasticsearch</a></li>
-                <li><a href="./0008-docs-pipeline.html">Documentation pipeline</a></li>
-                <li><a href="./0009-docker-and-kubernetes-local.html">Docker and local Kubernetes</a></li>
-                <li><a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — PlantUML style for this repo</li>
-              </ul>
-            </section>
-            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-          </main>
-
-        </body></html>
+      </body></html>

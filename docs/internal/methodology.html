@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,11 +9,14 @@
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
   <script defer src="../assets/internal-sidebar.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body class="internal-layout">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <p class="internal-layout__sidebar-title">Internal docs</p>
@@ -23,13 +26,15 @@
       <main class="container">
         <h1>Methodology</h1>
         <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
         <section class="card" aria-labelledby="overview">
           <h2 id="overview">Overview</h2>
           <p>
             This document is for <strong>idea discovery and learning science exploration only</strong>. It describes a
             human workflow for using the <abbr title="Extract–Transform–Retrieve">ETR</abbr> study pattern to improve
-            retention. It is <strong>not</strong> a specification of the <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API, database slots, or product
-            behavior. Implementation details, contracts, and authoritative domain rules live in <a href="./system-design.html">System design</a> and <a href="./api/README.html">internal API docs</a>.
+            retention. It is <strong>not</strong> a specification of the <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API, database schemas,
+            API contracts, or product behavior. Implementation details, contracts, and authoritative domain rules live
+            in <a href="./system-design.html">System design</a> and <a href="./api/README.html">internal API docs</a>.
           </p>
         </section>
 
@@ -46,7 +51,7 @@
           </p>
           <ul>
             <li><strong>During intake:</strong> a three-column cue sheet (anchors only, not full lecture notes).</li>
-            <li><strong>Right after:</strong> one dense paragraph plus Feynman-style bullets (teach it simply).</li>
+            <li><strong>Right after:</strong> one dense paragraph plus bullets (explain simply).</li>
             <li><strong>After that:</strong> spaced active recall on a predictable schedule, with an error log to fix
               weak cues.</li>
             </ul>
@@ -58,8 +63,7 @@
               Below, <strong>Extract</strong> is bounded consumption with capture, <strong>Transform</strong> is recall
               and
               compression without the source, and <strong>Retrieve</strong> is scheduled rehearsal from the single master
-              conspectus (paragraph + bullets). Optional: capture the conspectus screen for a study bot with metadata if
-              you use one — this page does not prescribe tooling.
+              conspectus (cue + dense paragraph + bullets).
             </p>
             <div class="docs-table-scroll" role="region" aria-label="Extract–Transform–Retrieve steps at home">
               <table>
@@ -261,6 +265,48 @@
                   </li>
                   <li><a href="./README.html">Welcome — Internal docs</a>.</li>
                 </ul>
+              </section>
+
+              <section id="page-history" class="card">
+
+                <h2>Page history</h2>
+
+                <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+                  <table class="docs-page-history">
+
+                    <thead>
+
+                      <tr>
+
+                        <th scope="col">Date</th>
+
+                        <th scope="col">Change</th>
+
+                        <th scope="col">Author</th>
+
+                      </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                      <tr>
+
+                        <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                        <td>Added Page history section (repository baseline).</td>
+
+                        <td><a href="portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                      </tr>
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
               </section>
 
               <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

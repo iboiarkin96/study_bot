@@ -17,7 +17,7 @@ from sqlalchemy import text
 # Configure test DB before importing app modules.
 TEST_DB_PATH = Path(__file__).resolve().parent / "test_app.sqlite3"
 os.environ["SQLITE_DB_PATH"] = str(TEST_DB_PATH)
-os.environ.setdefault("APP_NAME", "Study App API (tests)")
+os.environ.setdefault("APP_NAME", "ETR Study App API (tests)")
 os.environ["APP_ENV"] = "qa"
 os.environ.setdefault("APP_HOST", "127.0.0.1")
 os.environ.setdefault("APP_PORT", "8001")
@@ -96,11 +96,12 @@ def prepare_database() -> Iterator[None]:
 
 @pytest.fixture(autouse=True)
 def clean_users_table() -> None:
-    """Autouse: delete all rows from ``users`` before each test function.
+    """Autouse: delete dependent rows then ``users`` before each test function.
 
-    Ensures idempotency and user tests do not leak state across cases.
+    Ensures idempotency and API tests do not leak state across cases.
     """
     with SessionLocal() as session:
+        session.execute(text("DELETE FROM idempotency_keys"))
         session.execute(text("DELETE FROM users"))
         session.commit()
 

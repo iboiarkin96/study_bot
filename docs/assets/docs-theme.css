@@ -390,3 +390,42 @@ html[data-theme="dark"] .adr-current-status--done {
 html[data-theme="dark"] .adr-current-status--done .adr-current-status__value {
   color: #bbf7d0;
 }
+
+/* Audit Top-5 gaps — workflow status (dark: reuse backlog status tokens) */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) .audit-gap-table td.audit-gap-status--todo {
+    background: var(--status-todo-bg);
+    border-left-color: var(--status-todo-border);
+    color: var(--status-todo-text);
+  }
+
+  html:not([data-theme]) .audit-gap-table td.audit-gap-status--inprogress {
+    background: var(--status-in-progress-bg);
+    border-left-color: var(--status-in-progress-border);
+    color: var(--status-in-progress-text);
+  }
+
+  html:not([data-theme]) .audit-gap-table td.audit-gap-status--done {
+    background: var(--status-done-bg);
+    border-left-color: var(--status-done-border);
+    color: var(--status-done-text);
+  }
+}
+
+html[data-theme="dark"] .audit-gap-table td.audit-gap-status--todo {
+  background: var(--status-todo-bg);
+  border-left-color: var(--status-todo-border);
+  color: var(--status-todo-text);
+}
+
+html[data-theme="dark"] .audit-gap-table td.audit-gap-status--inprogress {
+  background: var(--status-in-progress-bg);
+  border-left-color: var(--status-in-progress-border);
+  color: var(--status-in-progress-text);
+}
+
+html[data-theme="dark"] .audit-gap-table td.audit-gap-status--done {
+  background: var(--status-done-bg);
+  border-left-color: var(--status-done-border);
+  color: var(--status-done-text);
+}

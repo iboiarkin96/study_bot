@@ -1,30 +1,31 @@
 @startuml
-title Study App - Sequence: Create Note
+title ETR Study API — Create conspectus
 
 autonumber
 hide footbox
 
-actor "Client app" as Client
+actor "Integrator" as Client
 boundary "HTTP API" as Api
 control "ConspectusService" as Service
 participant "SchedulePolicy" as Policy
-database "Repos + DB" as RepoDb
+database "DB (transaction)" as Db
 
-Client -> Api: POST /conspectuses
+Client -> Api: POST /api/v1/conspectuses
 activate Api
 Api -> Api: validate payload
 
-alt invalid payload
-  Api --> Client: 422 Validation Error
+alt invalid
+  Api --> Client: 422
   deactivate Api
-else valid payload
-  Api -> Service: create(user_id, payload)
+else valid
+  Api -> Service: create(user, payload)
   activate Service
-  Service -> Policy: calculate slot and review date
-  Policy --> Service: slot A, next_review_at
-  Service -> RepoDb: insert note (transaction)
-  RepoDb --> Service: created entity
-  Service --> Api: response DTO
+  Service -> Policy: initial slot / next_review_at
+  Policy --> Service
+  Service -> Db: INSERT conspectus, conspectus_schedule
+  Service -> Db: INSERT conspectus_events (CREATED)
+  Db --> Service
+  Service --> Api: DTO
   deactivate Service
   Api --> Client: 201 Created
   deactivate Api

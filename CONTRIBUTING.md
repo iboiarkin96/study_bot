@@ -20,11 +20,10 @@
 - **`docs-check`** fails if the docs pipeline would change any file compared to `HEAD` — your branch must already contain everything `docs-fix` would write.
 - Docs-only history: [docs/CHANGELOG.md](docs/CHANGELOG.md). ADR lifecycle and GitHub Issue flow: [ADR 0018](docs/adr/0018-adr-lifecycle-ratification-and-badges.html).
 
-## Kubernetes local manifests
+## Container image
 
-- **Optional for daily work** — features use **`make run`** and tests; Docker/Kubernetes are for packaging and “like production” runs. See the root **README** (*Container image & local Kubernetes*) and [0009-docker-and-kubernetes-local.html](docs/developer/0009-docker-and-kubernetes-local.html) for the usual dev loop vs a short **deploy** outline (registry → rollout).
-- Edit **`k8s/app.env`** for non-secret pod variables; run **`make k8s-render-configmap`** (or **`make docs-fix`**) so **`k8s/configmap.yaml`** stays in sync — it is generated, not edited by hand.
-- API keys for **`qa`** / **`prod`**-style runs belong in a Kubernetes **Secret**; see **`k8s/secret.example.yaml`**.
+- **Optional for daily work** — features use **`make run`** and tests; Docker is for packaging and “like production” runs. See the root **README** (*Container image*) and [0009-docker-image-and-container.html](docs/developer/0009-docker-image-and-container.html) for build and `docker run` notes.
+- For **`qa`** / **`prod`**-style runs, supply API keys and stricter settings via environment variables or your deployment platform’s secret mechanism — see **`env/example`** and **`app/core/config.py`**.
 - **`make container-start`** runs **`scripts/container_entrypoint.sh`** (migrate + Uvicorn, no `--reload`) — same as the Docker image. The image does not run **`make`**; there is no `.venv` inside the container.
 
 ## OpenAPI

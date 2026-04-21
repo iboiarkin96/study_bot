@@ -1,28 +1,32 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome — Internal docs — Study App</title>
+  <title>Internal docs - Home page</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <link rel="stylesheet" href="../assets/internal-layout.css">
-  <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
 </head>
 
-<body class="internal-layout">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
-      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <p class="internal-layout__sidebar-title">Internal docs - Home page</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Welcome — Internal docs</h1>
+        <h1>Internal docs - Home page</h1>
         <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
         <section id="overview" class="card">
           <h2>Overview</h2>
           <p>
@@ -48,17 +52,23 @@
 
             </li>
             <li>
+              <strong>Employee portal (profiles &amp; article ownership):</strong>
+              See <a href="./portal/index.html">Employee portal</a> for maintainer profiles and internal article ids.
+            </li>
+            <li>
               <strong>Looking for developer info and how to work on the code?</strong>
               Find guides, setup steps, and technical notes in the <a href="./developers.html">Developers Docs</a>.
             </li>
             <li>
               <strong>Need a single documentation writing and review standard?</strong>
-              Use <a href="./documentation-style-guide.html">Documentation style guide and audit standard</a> for required structure, tone, and conformance checks.
+              Use <a href="./documentation-style-guide.html">Documentation style guide and audit standard</a> for
+              required structure, tone, and conformance checks.
             </li>
             <li>
               <strong>Need architecture decisions and deep technical implementation specs?</strong>
               Read <a href="../adr/README.html">ADR Index</a> for decision rationale and
-              <a href="../rfc/README.html">RFC Index</a> for implementation-level details (including docs search internals).
+              <a href="../rfc/README.html">RFC Index</a> for implementation-level details (including docs search
+              internals).
             </li>
             <li>
               <strong>Need onboarding from zero to first endpoint and docs?</strong>
@@ -67,7 +77,9 @@
             </li>
             <li>
               <strong>Interested in the API itself?</strong>
-              See the <a href="./api/README.html">HTTP API (internal)</a> for endpoints and examples.
+              See the <a href="./api/README.html">HTTP API (internal)</a> for endpoints and examples. For ETR notes,
+              start
+              at the <a href="./api/conspectus/index.html">Conspectus hub</a> (field mapping and sample JSON).
             </li>
             <li>
               <strong>Need full error contract details?</strong>
@@ -138,7 +150,8 @@
           <p>
             External developers must use the <strong>OpenAPI document</strong> as the contract: committed snapshot at
             <code>docs/openapi/openapi-baseline.json</code>, explorer at
-            <a href="../openapi/openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at <code>/docs</code>.
+            <a href="../openapi/openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at
+            <code>/docs</code>.
             Release-to-release changes are summarized in the repository root <code>CHANGELOG.md</code>
             (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
           </p>
@@ -161,41 +174,49 @@
           </p>
         </section>
 
-        <section id="history" class="card">
-          <h2>Document history</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Summary</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2026-04-17</td>
-                <td>Overview IA (layering/observability, merged cards, sidebar “Overview”); added
-                  <a href="./methodology.html"><code>methodology.html</code></a> for human <abbr title="Extract–Transform–Retrieve">ETR</abbr> workflow (idea-discovery
-                  only), sidebar link, System design §2 pointer.
-                </td>
-              </tr>
-              <tr>
-                <td>2026-04-16</td>
-                <td>Merged former <code>service-overview.html</code> into this page; one overview for project context
-                  and
-                  service scope.</td>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Renamed section to Page history; added Author column (style guide alignment).</td>
+                  <td><a href="portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                 </tr>
                 <tr>
-                  <td>2026-04-14</td>
-                  <td>Initial internal service overview page; ADR 0025/0026 establish <code>docs/internal/</code> norms.
+                  <td><time datetime="2026-04-17">2026-04-17</time></td>
+                  <td>Overview IA (layering/observability, merged cards, sidebar “Overview”); added
+                    <a href="./methodology.html"><code>methodology.html</code></a> for human <abbr title="Extract–Transform–Retrieve">ETR</abbr> workflow (idea-discovery
+                    only), sidebar link, System design §2 pointer.
                   </td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-16">2026-04-16</time></td>
+                  <td>Merged former <code>service-overview.html</code> into this page; one overview for project context and service scope.</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-14">2026-04-14</time></td>
+                  <td>Initial internal service overview page; ADR 0025/0026 establish <code>docs/internal/</code> norms.</td>
+                  <td>—</td>
                 </tr>
               </tbody>
             </table>
-          </section>
+          </div>
+        </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
     </div>
+  </div>
 
-  </body></html>
+</body></html>

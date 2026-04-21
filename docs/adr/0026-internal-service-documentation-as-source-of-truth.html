@@ -8,13 +8,17 @@
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body>
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="1">
     <h1>ADR 0026: Internal service documentation as source of truth</h1>
     <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
     <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
 
     <section class="card">
@@ -97,7 +101,7 @@
                       </ul>
                     </li>
                     <li>
-                      <strong>History and traceability.</strong> Material pages include a short <strong>Document history</strong>
+                      <strong>History and traceability.</strong> Material pages include a short <strong>Page history</strong>
                       subsection (table: date, author optional, summary of change). Git history remains the full audit trail; the
                       table is for human scanning. Breaking behavioral changes also appear in root <code>CHANGELOG.md</code> per
                       <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>.
@@ -209,7 +213,7 @@
                           <li>Update the resource <code>api/&lt;resource&gt;/index.html</code> if business narrative, invariants, or
                             cross-cutting technical behavior (idempotency, logging, metrics) change.</li>
                             <li>Update affected <code>operations/*.html</code> pages when endpoint-specific detail changes.</li>
-                            <li>Update <code>INTERNAL_SIDEBAR_NAV</code> when adding routes or pages; add a row to <strong>Document history</strong>
+                            <li>Update <code>INTERNAL_SIDEBAR_NAV</code> when adding routes or pages; add a row to <strong>Page history</strong>
                               on substantive hub updates.</li>
                               <li>Reflect notable doc-tree changes in <code>docs/CHANGELOG.md</code> when the documentation set itself is part of
                                 the deliverable.</li>
@@ -278,6 +282,28 @@
                                     must move together when the HTTP surface changes, or authority of the doc set erodes.</li>
                                   </ul>
                                 </section>
+                                <section id="page-history" class="card">
+                                  <h2>Page history</h2>
+                                  <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                    <table class="docs-page-history">
+                                      <thead>
+                                        <tr>
+                                          <th scope="col">Date</th>
+                                          <th scope="col">Change</th>
+                                          <th scope="col">Author</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                          <td>Added Page history section (repository baseline).</td>
+                                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </section>
+
                                 <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
                               </main>
 

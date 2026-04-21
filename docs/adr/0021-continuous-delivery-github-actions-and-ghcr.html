@@ -8,13 +8,17 @@
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body>
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="7">
     <h1>ADR 0021: Continuous delivery — GitHub Actions and GitHub Container Registry</h1>
     <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
     <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
     <section class="card">
       <h2>Ratification</h2>
@@ -56,8 +60,8 @@
         </li>
         <li>
           <strong>Onboarding</strong> — New contributors read “we have a <code>Dockerfile</code>”
-          (<a href="./0015-container-image-and-local-kubernetes.html">ADR 0015</a>) but may not know how that image gets
-          to a place where Kubernetes, a VM, or a PaaS can consume it. This ADR documents the <strong>first automated
+          (<a href="./0015-container-image.html">ADR 0015</a>) but may not know how that image gets
+          to a place where a VM or a PaaS can consume it. This ADR documents the <strong>first automated
           hop</strong>: build → push to <strong>GHCR</strong>.
         </li>
       </ul>
@@ -76,7 +80,7 @@
         stops at <strong>registry delivery</strong> unless you add external steps yourself.
       </p>
       <p>
-        <strong>Why stop at the registry?</strong> Hosting (VM, Kubernetes cluster, managed service) needs secrets,
+        <strong>Why stop at the registry?</strong> Hosting (VM, managed service, or your deployment platform) needs secrets,
         database URLs, networking, and policies that are specific to <em>your</em> infrastructure. Those belong in the
         deployment platform or runbooks, not hard-coded in a generic open-source workflow. This ADR still delivers a
         concrete, automatable outcome: a published image per successful pipeline.
@@ -104,9 +108,9 @@
 
       <h3>How this relates to ADR 0015</h3>
       <p>
-        <a href="./0015-container-image-and-local-kubernetes.html">ADR 0015</a> defines <strong>what</strong> goes into
+        <a href="./0015-container-image.html">ADR 0015</a> defines <strong>what</strong> goes into
         the
-        image (Dockerfile layout, entrypoint, local Kubernetes manifests). This ADR defines <strong>automation</strong>
+        image (Dockerfile layout, entrypoint). This ADR defines <strong>automation</strong>
         that
         builds that image in CI and pushes it to GHCR after the same quality gates that protect merges. It does not
         replace
@@ -148,7 +152,7 @@
         <li>
           <strong>Runtime configuration</strong> — environment variables for the database, <code>APP_ENV</code>, API keys,
           and similar settings are <strong>not</strong> injected by this workflow; they are the responsibility of whoever
-          runs the container (host, PaaS, or Kubernetes), consistent with
+          runs the container (host, PaaS, or another runtime), consistent with
           <a href="./0010-env-profiles-and-config-governance.html">ADR 0010</a>.
         </li>
       </ul>
@@ -164,7 +168,7 @@
           documentation and ADR index updates.
         </li>
         <li>
-          <strong>Out of scope:</strong> automated deployment to a specific cloud, VM, or cluster; Helm or GitOps; image
+          <strong>Out of scope:</strong> automated deployment to a specific cloud, VM, or cluster; GitOps; image
           vulnerability scanning gates; multi-architecture image matrices; promoting images across staging/production
           environments with manual approvals. Those may be added later as separate decisions.
         </li>
@@ -189,7 +193,7 @@
           </ul>
         </li>
         <li>
-          <span class="code-ctx">Deploy to a host (SSH, <code>kubectl</code>) in the same job</span>
+          <span class="code-ctx">Deploy to a host (SSH or remote API) in the same job</span>
           <ul>
             <li><strong>Pros:</strong> end-to-end automation from push to running service.</li>
             <li><strong>Cons:</strong> requires secrets and target infrastructure; not generic. Deferred until a concrete environment exists.</li>
@@ -202,7 +206,7 @@
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
-        <li>Every successful merge to the integration branch (and version tags) yields a pullable image that matches the Dockerfile from <a href="./0015-container-image-and-local-kubernetes.html">ADR 0015</a>.</li>
+        <li>Every successful merge to the integration branch (and version tags) yields a pullable image that matches the Dockerfile from <a href="./0015-container-image.html">ADR 0015</a>.</li>
         <li>New contributors get one path: CI green → image on GHCR → pull and run anywhere Docker can reach the registry.</li>
         <li>The standard GitHub-hosted publish path does not require an extra personal access token for the push step.</li>
       </ul>
@@ -236,7 +240,7 @@
       <ul>
         <li>
           Related ADRs:
-          <a href="./0015-container-image-and-local-kubernetes.html">0015</a> (container image and local Kubernetes),
+          <a href="./0015-container-image.html">0015</a> (container image),
           <a href="./0013-changelog-and-release-notes.html">0013</a> (changelog gates),
           <a href="./0017-branch-naming-and-repository-workflow.html">0017</a> (branches and <code>v*</code> tags),
           <a href="./0010-env-profiles-and-config-governance.html">0010</a> (runtime configuration),
@@ -245,10 +249,32 @@
         <li>Workflow: <code>.github/workflows/ci.yml</code> (job <code>publish-image</code>).</li>
         <li>
           Developer guide:
-          <a href="../developer/0009-docker-and-kubernetes-local.html">Docker image and local Kubernetes</a> (local build; links to registry automation).
+          <a href="../developer/0009-docker-image-and-container.html">Docker image and container</a> (local build; links to registry automation).
         </li>
       </ul>
     </section>
+    <section id="page-history" class="card">
+      <h2>Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+              <td>Added Page history section (repository baseline).</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
   </main>
 

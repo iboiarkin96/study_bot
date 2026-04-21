@@ -1,47 +1,37 @@
 @startuml
-title Study App - Sequence: Review Retrieve
+title ETR Study API — Review (retrieve outcome)
 
 autonumber
 hide footbox
 
-actor "Client app" as Client
+actor "Integrator" as Client
 boundary "HTTP API" as Api
-control "RetrieveService" as Service
-database "Repos + DB" as RepoDb
+control "ConspectusService" as Service
+participant "SchedulePolicy" as Policy
+database "DB (transaction)" as Db
 
-Client -> Api: POST /conspectuses/{id}/review
+Client -> Api: POST .../actions/review
 activate Api
-Api -> Api: validate payload
+Api -> Service: apply_review(user, id, tag)
+activate Service
+Service -> Db: SELECT conspectus + schedule (ownership)
 
-alt invalid payload
-  Api --> Client: 422 Validation Error
+alt not found
+  Service --> Api: 404
+  deactivate Service
+  Api --> Client: 404
   deactivate Api
-else valid payload
-  Api -> Service: apply_review(user_id, id, tag)
-  activate Service
-  Service -> RepoDb: load conspectus
-  RepoDb --> Service: record or empty
-
-  alt conspectus not found
-    Service --> Api: NotFound
-    deactivate Service
-    Api --> Client: 404 Not Found
-    deactivate Api
-  else found
-    Service -> Service: compute next slot
-    Service -> RepoDb: update slot + insert log
-    alt transaction failed
-      Service --> Api: Conflict
-      deactivate Service
-      Api --> Client: 409 Conflict
-      deactivate Api
-    else transaction success
-      Service --> Api: ReviewResponse
-      deactivate Service
-      Api --> Client: 200 OK
-      deactivate Api
-    end
-  end
+else found
+  Service -> Policy: next schedule (tag, current)
+  Policy --> Service
+  Service -> Db: UPDATE schedule snapshot
+  Service -> Db: INSERT conspectus_review_log (before/after JSON)
+  note right: Option A: reviews live here;\nno duplicate in conspectus_events.
+  Db --> Service
+  Service --> Api: 200 + body
+  deactivate Service
+  Api --> Client: 200 OK
+  deactivate Api
 end
 
 @enduml

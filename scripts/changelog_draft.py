@@ -71,12 +71,12 @@ CHANGELOG_SYSTEM_PROMPT = (
     "- Do NOT summarize using diff statistics only (no answers like 'N files changed' or "
     "'X insertions, Y deletions' as the main content).\n"
     "- Derive meaning from commit subjects and bodies, and from which paths changed "
-    "(e.g. docs/, k8s/, app/, .github/).\n"
+    "(e.g. docs/, app/, .github/).\n"
     "- Each bullet should describe an outcome: feature, fix, doc, infra, or API behavior — "
     "not raw git metrics.\n"
     "- Merge related commits into one bullet when it reads better.\n"
     "- If commit messages are vague, infer from file paths and still write concrete bullets "
-    "(e.g. 'Document local Kubernetes workflow in developer guides').\n"
+    "(e.g. 'Document container image workflow in developer guides').\n"
 )
 
 

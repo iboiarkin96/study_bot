@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Same formation date in <title> and <h1>. Filename: docs/audit/.../YYYY-MM-DD-<topic>-assessment.html (date first). -->
+  <title>TOPIC — Assessment — formed YYYY-MM-DD</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
+</head>
+
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <main class="container">
+    <h1>TOPIC — Assessment (formed YYYY-MM-DD)</h1>
+    <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
+    <section id="overview" class="card">
+      <h2>Overview</h2>
+      <p>
+        Compare this area to common good practice, score it (Table 2), and track prioritized gaps (section 4.3).
+      </p>
+    </section>
+
+    <section class="card">
+      <h2 id="1-scope-and-methodology">1. Scope and methodology</h2>
+      <p>…</p>
+    </section>
+
+    <section class="card">
+      <h2 id="table-1-reference-practices">2. Table: Reference practices</h2>
+      <p>Legend: use <code>table.audit-ref-table</code>. …</p>
+      <p>…</p>
+    </section>
+
+    <section class="card">
+      <h2 id="table-2-study-app-scores">3. Table: AS-IS situation</h2>
+      <p>One row per Table 1 practice. …</p>
+      <div class="audit-score-legend-include" data-legend-id="topic"></div>
+      <noscript>
+        <p class="audit-score-legend-noscript">
+          Enable JavaScript to load the score legend, or see
+          <a href="../adr/0024-architecture-and-quality-assessment-documents.html#assessment-score-scale">ADR 0024</a>.
+        </p>
+      </noscript>
+      <p>
+        Use <code>table.audit-score-table</code>. Columns: <strong>#</strong>, <strong>Practice</strong>,
+        <strong>Evidence / notes</strong>, <strong>Justification</strong>, <strong>Score</strong>
+        (<code>td.score-excellent|score-good|score-needs-attention</code>).
+      </p>
+      <p>…</p>
+    </section>
+
+    <section class="card">
+      <h2 id="4-scoring-summary">4. Scoring summary</h2>
+
+      <h3 id="4-1-narrative-overall">4.1 Narrative overall (Table 2 judgment)</h3>
+      <p>
+        <strong>Overall (our guess, …):</strong> about <strong>X / 10</strong>.
+        <br>
+        <strong>To move toward top decile:</strong> … — see
+        <a href="#4-2-top-five-gaps-status">section 4.3 (Top five gaps)</a>.
+      </p>
+
+      <h3 id="4-1-weighted-axis-model">4.2 Weighted axis model (explicit arithmetic)</h3>
+      <p>
+        Optional cross-check: show reproducible math that is <strong>not</strong> the same as the narrative headline in
+        §4.1 (which may weight importance). Pick one style and stick to it:
+      </p>
+      <ul>
+        <li>
+          <strong>Docs (DX) style:</strong> a small set of axes with fixed weights summing to 100%; table columns
+          <strong>Axis</strong>, <strong>Weight</strong>, <strong>Score</strong>,
+          <strong>Contribution (weight × score)</strong>; total row → ≈ headline.
+        </li>
+        <li>
+          <strong>API style:</strong> unweighted mean of all Table 2 row scores; table columns
+          <strong>Step</strong>, <strong>Operation</strong>, <strong>Figures</strong>, <strong>Result</strong>; total row
+          for the explicit mean.
+        </li>
+      </ul>
+      <div style="overflow-x: auto">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">…</th>
+              <th scope="col">…</th>
+              <th scope="col">…</th>
+              <th scope="col">…</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>…</td>
+              <td>…</td>
+              <td>…</td>
+              <td>…</td>
+            </tr>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td><strong>…</strong></td>
+              <td>—</td>
+              <td><strong>≈ X / 10</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Interpretation (optional):</strong> one short paragraph reconciling the explicit arithmetic with the
+        narrative score.
+      </p>
+
+      <h3 id="4-2-top-five-gaps-status">4.3 Top five gaps — priority and workflow status</h3>
+      <p>
+        Status colours: <strong>TODO</strong> (not started), <strong>IN PROGRESS</strong> (owned work in flight),
+        <strong>DONE</strong> (accepted in main). Update started / closed / PR when you pick up or finish work.
+      </p>
+      <div style="overflow-x: auto">
+        <table class="audit-gap-table">
+          <thead>
+            <tr>
+              <th scope="col">Priority</th>
+              <th scope="col">Gap</th>
+              <th scope="col">Status</th>
+              <th scope="col">Started</th>
+              <th scope="col">Closed</th>
+              <th scope="col">PR / reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>P0</td>
+              <td>…</td>
+              <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 id="5-page-history">5. Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>YYYY-MM-DD</td>
+              <td>Initial publication.</td>
+              <td>Name or team</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-history" class="card">
+
+      <h2>Page history</h2>
+
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+        <table class="docs-page-history">
+
+          <thead>
+
+            <tr>
+
+              <th scope="col">Date</th>
+
+              <th scope="col">Change</th>
+
+              <th scope="col">Author</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr>
+
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+              <td>Added Page history section (repository baseline).</td>
+
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
+
+</body></html>

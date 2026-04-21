@@ -9,11 +9,14 @@
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
   <script defer src="../assets/internal-sidebar.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body class="internal-layout">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <p class="internal-layout__sidebar-title">Internal docs</p>
@@ -23,6 +26,7 @@
       <main class="container">
         <h1>Documentation style guide and audit standard</h1>
         <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
         <section id="overview" class="card">
           <h2>Overview</h2>
           <p>
@@ -83,145 +87,184 @@
             <li><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> top navigation mount.</li>
             <li>First content card: either <code>Overview</code> or <code>Status</code> (document type dependent).</li>
             <li>Body cards grouped by one topic per card.</li>
-            <li><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near end of <code>&lt;main&gt;</code>.</li>
-          </ol>
-          <p class="small">
-            Redirect pages are the only exception: short "Page moved" card plus canonical link.
-          </p>
-        </section>
-
-        <section id="document-type-matrix" class="card">
-          <h2>Document-type matrix</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Primary purpose</th>
-                <th>Must include</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>ADR</td>
-                <td>Decision and rationale</td>
-                <td>Status, Context, Decision, Consequences, Alternatives, change history</td>
-              </tr>
-              <tr>
-                <td>RFC</td>
-                <td>Implementation-level specification</td>
-                <td>Status, Goals/non-goals, architecture/flow, operations/troubleshooting</td>
-              </tr>
-              <tr>
-                <td>Runbook</td>
-                <td>Incident triage and recovery procedure</td>
-                <td>Symptoms, impact, pre-checks, step-by-step recovery, validation, escalation</td>
-              </tr>
-              <tr>
-                <td>How-to</td>
-                <td>Task-oriented instructional guide</td>
-                <td>Prerequisites, ordered steps, verification, related links</td>
-              </tr>
-              <tr>
-                <td>Internal API page</td>
-                <td>Engineering narrative of behavior and operational meaning</td>
-                <td>Contract summary, business rules, technical flow, error behavior, references</td>
-              </tr>
-              <tr>
-                <td>Audit report</td>
-                <td>Assessment against standards and references</td>
-                <td>Method, scored mapping, findings, mitigations, residual risk, review date</td>
-              </tr>
-              <tr>
-                <td>Index/hub</td>
-                <td>Navigation and orientation</td>
-                <td>Overview card, table/list of documents, concise "what this covers" descriptions</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section id="templates-by-type" class="card">
-          <h2>Minimal templates by type</h2>
-          <h3>ADR template baseline</h3>
-          <ol>
-            <li>Status</li>
-            <li>Context and problem statement</li>
-            <li>Decision</li>
-            <li>Consequences and trade-offs</li>
-            <li>Alternatives considered</li>
-            <li>References</li>
-            <li>History</li>
-          </ol>
-
-          <h3>RFC template baseline</h3>
-          <ol>
-            <li>Status</li>
-            <li>Goals and non-goals</li>
-            <li>Architecture or data flow</li>
-            <li>Implementation details</li>
-            <li>Operational guidance and troubleshooting</li>
-            <li>Change management</li>
-          </ol>
-
-          <h3>Runbook template baseline</h3>
-          <ol>
-            <li>Incident definition and trigger conditions</li>
-            <li>Immediate safety checks</li>
-            <li>Triage checklist</li>
-            <li>Recovery actions (ordered)</li>
-            <li>Post-recovery validation</li>
-            <li>Escalation and owner handoff</li>
-          </ol>
-        </section>
-
-        <section id="naming-conventions" class="card">
-          <h2>Naming and linking conventions</h2>
-          <ul>
-            <li><strong>File names:</strong> lowercase kebab-case with numeric prefix where series requires ordering (for example ADR/RFC/Runbook).</li>
-            <li><strong>Operation page names:</strong> HTTP method plus path pattern (for example <code>post-api-v1-user.html</code>).</li>
-            <li><strong>Link labels:</strong> keep style stable per index (for example always <code>ADR 00XX</code>, not mixed with <code>Open ADR 00XX</code>).</li>
-            <li><strong>Index descriptions:</strong> one sentence, same grammatical style across rows.</li>
-          </ul>
-        </section>
-
-        <section id="audit-protocol" class="card">
-          <h2>Audit protocol for documentation changes</h2>
-          <p>Use this protocol for every docs PR and for periodic audits.</p>
-          <ol>
-            <li>Run quality gates: <code>make docs-fix</code>, <code>make docs-html-check</code>, and project-required checks.</li>
-            <li>Verify links and navigation paths for all changed/added pages.</li>
-            <li>Verify section structure against this standard for the affected document type.</li>
-            <li>Check terminology consistency against nearby index/hub pages.</li>
-            <li>Confirm changelog and cross-links were updated when policy/process changed.</li>
-            <li>Record deviations and remediation in audit notes or PR checklist.</li>
-          </ol>
-        </section>
-
-        <section id="llm-conformance-checklist" class="card">
-          <h2>LLM conformance checklist (copy/paste)</h2>
-          <p>Use this checklist when asking an LLM to review docs changes.</p>
-          <pre><code>Validate changed docs against docs/internal/documentation-style-guide.html.
-            Return:
-            1) Violations grouped by severity (critical/major/minor).
-            2) For each violation: file path, violated rule, short evidence, concrete fix.
-            3) Missing required sections by document type.
-            4) Terminology inconsistencies (same concept, different naming).
-            5) Broken or suspicious links.
-            6) Final pass/fail verdict and residual risks.</code></pre>
+            <li><code>&lt;section id="page-history" class="card"&gt;</code> with a <strong>Page history</strong> table (see
+              <a href="#page-history">Page history</a>).</li>
+              <li><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near end of <code>&lt;main&gt;</code>.</li>
+            </ol>
+            <p class="small">
+              Redirect pages are the only exception: short "Page moved" card plus canonical link.
+            </p>
           </section>
 
-          <section id="governance" class="card">
-            <h2>Governance and updates</h2>
+          <section id="document-type-matrix" class="card">
+            <h2>Document-type matrix</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Primary purpose</th>
+                  <th>Must include</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ADR</td>
+                  <td>Decision and rationale</td>
+                  <td>Status, Context, Decision, Consequences, Alternatives, change history</td>
+                </tr>
+                <tr>
+                  <td>RFC</td>
+                  <td>Implementation-level specification</td>
+                  <td>Status, Goals/non-goals, architecture/flow, operations/troubleshooting</td>
+                </tr>
+                <tr>
+                  <td>Runbook</td>
+                  <td>Incident triage and recovery procedure</td>
+                  <td>Symptoms, impact, pre-checks, step-by-step recovery, validation, escalation</td>
+                </tr>
+                <tr>
+                  <td>How-to</td>
+                  <td>Task-oriented instructional guide</td>
+                  <td>Prerequisites, ordered steps, verification, related links</td>
+                </tr>
+                <tr>
+                  <td>Internal API page</td>
+                  <td>Engineering narrative of behavior and operational meaning</td>
+                  <td>Contract summary, business rules, technical flow, error behavior, references</td>
+                </tr>
+                <tr>
+                  <td>Audit report</td>
+                  <td>Assessment against standards and references</td>
+                  <td>Method, scored mapping, findings, mitigations, residual risk, review date</td>
+                </tr>
+                <tr>
+                  <td>Index/hub</td>
+                  <td>Navigation and orientation</td>
+                  <td>Overview card, table/list of documents, concise "what this covers" descriptions</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="templates-by-type" class="card">
+            <h2>Minimal templates by type</h2>
+            <h3>ADR template baseline</h3>
+            <ol>
+              <li>Status</li>
+              <li>Context and problem statement</li>
+              <li>Decision</li>
+              <li>Consequences and trade-offs</li>
+              <li>Alternatives considered</li>
+              <li>References</li>
+              <li>History</li>
+            </ol>
+
+            <h3>RFC template baseline</h3>
+            <ol>
+              <li>Status</li>
+              <li>Goals and non-goals</li>
+              <li>Architecture or data flow</li>
+              <li>Implementation details</li>
+              <li>Operational guidance and troubleshooting</li>
+              <li>Change management</li>
+            </ol>
+
+            <h3>Runbook template baseline</h3>
+            <ol>
+              <li>Incident definition and trigger conditions</li>
+              <li>Immediate safety checks</li>
+              <li>Triage checklist</li>
+              <li>Recovery actions (ordered)</li>
+              <li>Post-recovery validation</li>
+              <li>Escalation and owner handoff</li>
+            </ol>
+          </section>
+
+          <section id="naming-conventions" class="card">
+            <h2>Naming and linking conventions</h2>
             <ul>
-              <li>Any style-rule change must be updated in this page first, then reflected in related guides.</li>
-              <li>If a rule affects architecture/process, update the relevant ADR/RFC in the same PR.</li>
-              <li>When uncertainty exists, this document wins over local wording patterns in individual pages.</li>
+              <li><strong>File names:</strong> lowercase kebab-case with numeric prefix where series requires ordering (for example ADR/RFC/Runbook).</li>
+              <li><strong>Operation page names:</strong> HTTP method plus path pattern (for example <code>post-api-v1-user.html</code>).</li>
+              <li><strong>Link labels:</strong> keep style stable per index (for example always <code>ADR 00XX</code>, not mixed with <code>Open ADR 00XX</code>).</li>
+              <li><strong>Index descriptions:</strong> one sentence, same grammatical style across rows.</li>
             </ul>
           </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
-    </div>
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <p>
+              Every hand-written HTML page must end with a <strong>Page history</strong> card (before the in-page TOC mount).
+              Use one row per substantive edit (skip trivial typo-only fixes). In <strong>Author</strong>, use a link to the
+              maintainer’s <strong>Employee portal</strong> profile when it exists
+              (<code>&lt;a href="…/internal/portal/people/&lt;slug&gt;/index.html"&gt;…&lt;/a&gt;</code>, path relative to the current page).
+              Use an em dash (—) when the author is unknown for older rows.
+            </p>
+            <div class="docs-table-scroll" role="region" aria-label="Page history example">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Required Page history for all hand-written docs: table columns Date, Change, Author; assessment reports use <code>5. Page history</code> / <code>#5-page-history</code>.</td>
+                    <td><a href="portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small">
+              Markup: <code>&lt;section id="page-history" class="card"&gt;</code>, optional
+              <code>&lt;div class="docs-table-scroll" role="region" aria-label="Page history"&gt;</code>,
+              <code>&lt;table class="docs-page-history"&gt;</code>, dates as <code>&lt;time datetime="YYYY-MM-DD"&gt;</code>.
+              Author cells that name a person should use <code>&lt;a&gt;</code> to their portal profile (see
+              <code>scripts/link_page_history_authors.py</code> for Ivan Boyarkin baseline rows).
+              Numbered assessment reports may use <code>id="5-page-history"</code> and heading <code>5. Page history</code> instead.
+            </p>
+          </section>
 
-  </body></html>
+          <section id="audit-protocol" class="card">
+            <h2>Audit protocol for documentation changes</h2>
+            <p>Use this protocol for every docs PR and for periodic audits.</p>
+            <ol>
+              <li>Run quality gates: <code>make docs-fix</code>, <code>make docs-html-check</code>, and project-required checks.</li>
+              <li>Verify links and navigation paths for all changed/added pages.</li>
+              <li>Verify section structure against this standard for the affected document type.</li>
+              <li>Check terminology consistency against nearby index/hub pages.</li>
+              <li>Confirm changelog and cross-links were updated when policy/process changed.</li>
+              <li>Record deviations and remediation in audit notes or PR checklist.</li>
+            </ol>
+          </section>
+
+          <section id="llm-conformance-checklist" class="card">
+            <h2>LLM conformance checklist (copy/paste)</h2>
+            <p>Use this checklist when asking an LLM to review docs changes.</p>
+            <pre><code>Validate changed docs against docs/internal/documentation-style-guide.html.
+              Return:
+              1) Violations grouped by severity (critical/major/minor).
+              2) For each violation: file path, violated rule, short evidence, concrete fix.
+              3) Missing required sections by document type.
+              4) Terminology inconsistencies (same concept, different naming).
+              5) Broken or suspicious links.
+              6) Final pass/fail verdict and residual risks.</code></pre>
+            </section>
+
+            <section id="governance" class="card">
+              <h2>Governance and updates</h2>
+              <ul>
+                <li>Any style-rule change must be updated in this page first, then reflected in related guides.</li>
+                <li>If a rule affects architecture/process, update the relevant ADR/RFC in the same PR.</li>
+                <li>When uncertainty exists, this document wins over local wording patterns in individual pages.</li>
+              </ul>
+            </section>
+
+            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+          </main>
+        </div>
+      </div>
+
+    </body></html>

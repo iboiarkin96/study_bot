@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Documentation:** internal employee portal (`docs/internal/portal/`), generated portal data in `docs/assets/docs-portal-data.js`, page history sections and validation on hand-written HTML, and related scripts (`collect_docs_portal_data.py`, `ensure_docs_page_history.py`, and helpers). Details: [`docs/CHANGELOG.md`](docs/CHANGELOG.md#2026-04-21).
+
 - Documentation HTML pages now use a shared favicon (`docs/assets/favicon.svg`), including `docs/openapi/openapi-explorer.html`, with generation/backfill scripts keeping favicon links consistent across regenerated docs output.
+
+### Removed
+
+- Sample multi-file deployment manifests, the env-to-manifest render script, and the matching Make targets. Documentation and ADR 0015 now describe the Docker image only; see `docs/developer/0009-docker-image-and-container.html`.
 
 ## [1.1.1] — 2026-04-17
 
@@ -66,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- PlantUML in `docs/uml/`: diagram sources and rendered PNGs updated; shared style via `docs/uml/include/style.puml` ([ADR 0020](docs/adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
+- PlantUML in `docs/uml/`: diagram sources and rendered SVGs updated; shared style via `docs/uml/include/style.puml` ([ADR 0020](docs/adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
 
 - Documentation pipeline and contributor touchpoints: `scripts/regenerate_docs.py`, `scripts/sync_docs.py`, `Makefile`, `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/adr_discussion.md`, and synced HTML pages (e.g. engineering practices, system design, backlog, runbooks, developer docs) brought in line with ADR lifecycle and UML generation.
 
@@ -82,11 +88,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ADR document `docs/adr/0013-changelog-and-release-notes.html` outlining changelog and release‑notes policy.
 - New script `scripts/llm_client.py` providing an LLM client interface.
 - New script `scripts/llm_ping.py` for health‑checking the LLM service.
-- `Dockerfile`, `.dockerignore`, `scripts/container_entrypoint.sh`, and `k8s/` manifests (`namespace`, `deployment`, `service`, `configmap`, `pvc`, `secret.example.yaml`) for local Docker and Kubernetes workflows.
-- README and developer guide clarify that Docker/Kubernetes are optional for daily development, and outline how real-world deploys typically use a registry and target environment.
-- Developer guide [docs/developer/0009-docker-and-kubernetes-local.html](docs/developer/0009-docker-and-kubernetes-local.html) and ADR 0015 (container image and local Kubernetes).
-- Makefile targets `docker-build`, `container-start` (same entrypoint script as Docker), `k8s-render-configmap`, and `k8s-apply`.
-- `k8s/app.env` as the source for the generated `k8s/configmap.yaml` (`scripts/render_k8s_configmap.py`, wired into `make docs-fix`).
+- `Dockerfile`, `.dockerignore`, and `scripts/container_entrypoint.sh` for reproducible container builds.
+- README and developer guide clarify that Docker is optional for daily development, and outline how real-world deploys typically use a registry and target environment.
+- Developer guide for the container image and ADR 0015 (container image).
+- Makefile targets `docker-build`, `container-start` (same entrypoint script as Docker).
 - ADR 0016 (Google-style Python docstrings, alignment with `make api-docs` / pdoc), developer index entry, and `.cursor/rules/python-docstrings.mdc` for editor guidance; expanded module docstrings across `app/`.
 
 ### Changed
@@ -96,8 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Minor adjustments to `Makefile` for build and test targets.
 - Updated `requirements.txt` to include dependencies required by the new LLM scripts.
 - Refactored `scripts/changelog_draft.py` to integrate LLM generation logic and improve draft creation.
-- `CHANGELOG.md`, `README.md`, and `CONTRIBUTING.md` updated for container/Kubernetes workflows and discovery of new docs.
-- `docs/adr/README.html`, `docs/developer/README.html`, and `docs/internal/developers.html` link to ADR 0015 and the Docker/Kubernetes developer guide.
+- `CHANGELOG.md`, `README.md`, and `CONTRIBUTING.md` updated for container workflows and discovery of new docs.
+- `docs/adr/README.html`, `docs/developer/README.html`, and `docs/internal/developers.html` link to ADR 0015 and the Docker image developer guide.
 - `env/example`, `requirements.txt`, and `.gitignore` adjusted for new tooling and generated paths.
 - `scripts/format_docs_html.py` and `scripts/sync_docs.py` updated alongside the documentation pipeline.
 - `docs/developer/0008-docs-pipeline.html` updated (versioning notes, pdoc output path `docs/api/`, optional CI).

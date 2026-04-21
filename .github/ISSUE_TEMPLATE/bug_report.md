@@ -33,7 +33,7 @@ assignees: []
 <!-- Saves hours of debugging — fill this in when self-hosting. -->
 
 - **URL** (if shareable; otherwise describe the setup):
-- **Deployment:** <!-- docker-compose, systemd, k8s, bare metal, etc. -->
+- **Deployment:** <!-- docker-compose, systemd, bare metal, etc. -->
 - **Anything else:** <!-- proxy, TLS, env var names without secret values -->
 
 ## Additional context

@@ -7,93 +7,129 @@
   <title>Runbooks Index</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../assets/internal-sidebar.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
-<body>
-  <main class="container">
-    <h1>Runbooks Index</h1>
-    <div id="docs-top-nav"></div>
-    <section id="overview" class="card">
-      <h2>Overview</h2>
-      <p>
-        Use this page to pick a runbook by incident type. Each runbook lists triggers, quick checks, likely causes,
-        recovery steps, and how to confirm the problem is gone.
-      </p>
-    </section>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Runbooks Index</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            Use this page to pick a runbook by incident type. Each runbook lists triggers, quick checks, likely causes,
+            recovery steps, and how to confirm the problem is gone.
+          </p>
+        </section>
 
-    <section class="card">
-      <h2>Runbooks</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Document</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="./0000-template.html">Template</a></td>
-            <td>Shell for a new runbook (same sections every time).</td>
-          </tr>
-          <tr>
-            <td><a href="./0001-tests-failing.html">Tests failing</a></td>
-            <td>Failing tests in CI or locally: triage and fix.</td>
-          </tr>
-          <tr>
-            <td><a href="./0002-migrations-failing.html">Migrations failing</a></td>
-            <td>Alembic errors, bad migration files, or schema mismatch.</td>
-          </tr>
-          <tr>
-            <td><a href="./0003-logging-failing.html">Logging failing</a></td>
-            <td>No log lines, bad paths, or permissions on <code>logs/</code>.</td>
-          </tr>
-          <tr>
-            <td><a href="./0004-pre-commit-failing.html">Pre-commit failing</a></td>
-            <td>Hooks fail on commit; staging and auto-format conflicts.</td>
-          </tr>
-          <tr>
-            <td><a href="./0005-quality-check-failing.html">Quality check failing</a></td>
-            <td><code>make verify</code> fails: lint, types, tests, or docs sync.</td>
-          </tr>
-          <tr>
-            <td><a href="./0006-api-security-failing.html">API security failing</a></td>
-            <td>Auth, rate limits, CORS, headers, or body size problems.</td>
-          </tr>
-          <tr>
-            <td><a href="./0007-openapi-contract-test-failing.html">OpenAPI contract test failing</a></td>
-            <td>Contract test or OpenAPI baseline drift.</td>
-          </tr>
-          <tr>
-            <td><a href="./0008-observability-scrape-failing.html">Observability scrape failing</a></td>
-            <td>Prometheus down targets or empty Grafana panels.</td>
-          </tr>
-          <tr>
-            <td><a href="./0009-error-budget-exhaustion.html">Error budget exhaustion</a></td>
-            <td>SLO alerts, high 5xx, latency, or readiness failures.</td>
-          </tr>
-          <tr>
-            <td><a href="./0010-in-page-toc-missing.html">In-page TOC missing</a></td>
-            <td>“On this page” sidebar missing, empty, or wrong.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <section class="card">
-      <h2>Operational rule</h2>
-      <ul>
-        <li>If you find a <strong>policy or architecture</strong> gap, add or update an ADR.</li>
-        <li>If it is a <strong>process or step</strong> gap, update the runbook (this one or another).</li>
-      </ul>
-      <h2>Mini-SLA</h2>
-      <ul>
-        <li><strong>During an incident:</strong> add short notes or a checklist to the runbook within 30 minutes.</li>
-        <li><strong>After the fix:</strong> publish a clean runbook update within 24 hours.</li>
-        <li><strong>Same incident twice in 30 days:</strong> update the runbook and add a preventive action (docs or ADR).</li>
-      </ul>
-    </section>
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <section class="card">
+          <h2>Runbooks</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="./0000-template.html">Template</a></td>
+                <td>Shell for a new runbook (same sections every time).</td>
+              </tr>
+              <tr>
+                <td><a href="./0001-tests-failing.html">Tests failing</a></td>
+                <td>Failing tests in CI or locally: triage and fix.</td>
+              </tr>
+              <tr>
+                <td><a href="./0002-migrations-failing.html">Migrations failing</a></td>
+                <td>Alembic errors, bad migration files, or schema mismatch.</td>
+              </tr>
+              <tr>
+                <td><a href="./0003-logging-failing.html">Logging failing</a></td>
+                <td>No log lines, bad paths, or permissions on <code>logs/</code>.</td>
+              </tr>
+              <tr>
+                <td><a href="./0004-pre-commit-failing.html">Pre-commit failing</a></td>
+                <td>Hooks fail on commit; staging and auto-format conflicts.</td>
+              </tr>
+              <tr>
+                <td><a href="./0005-quality-check-failing.html">Quality check failing</a></td>
+                <td><code>make verify</code> fails: lint, types, tests, or docs sync.</td>
+              </tr>
+              <tr>
+                <td><a href="./0006-api-security-failing.html">API security failing</a></td>
+                <td>Auth, rate limits, CORS, headers, or body size problems.</td>
+              </tr>
+              <tr>
+                <td><a href="./0007-openapi-contract-test-failing.html">OpenAPI contract test failing</a></td>
+                <td>Contract test or OpenAPI baseline drift.</td>
+              </tr>
+              <tr>
+                <td><a href="./0008-observability-scrape-failing.html">Observability scrape failing</a></td>
+                <td>Prometheus down targets or empty Grafana panels.</td>
+              </tr>
+              <tr>
+                <td><a href="./0009-error-budget-exhaustion.html">Error budget exhaustion</a></td>
+                <td>SLO alerts, high 5xx, latency, or readiness failures.</td>
+              </tr>
+              <tr>
+                <td><a href="./0010-in-page-toc-missing.html">In-page TOC missing</a></td>
+                <td>“On this page” sidebar missing, empty, or wrong.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="card">
+          <h2>Operational rule</h2>
+          <ul>
+            <li>If you find a <strong>policy or architecture</strong> gap, add or update an ADR.</li>
+            <li>If it is a <strong>process or step</strong> gap, update the runbook (this one or another).</li>
+          </ul>
+          <h2>Mini-SLA</h2>
+          <ul>
+            <li><strong>During an incident:</strong> add short notes or a checklist to the runbook within 30 minutes.</li>
+            <li><strong>After the fix:</strong> publish a clean runbook update within 24 hours.</li>
+            <li><strong>Same incident twice in 30 days:</strong> update the runbook and add a preventive action (docs or ADR).</li>
+          </ul>
+        </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

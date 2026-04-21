@@ -587,12 +587,16 @@ details.docs-theory-help[open] summary {
 /* Raster diagrams (legacy PNG exports) */
 .diagram {
   width: 100%;
+  max-width: 960px;
   height: auto;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--diagram-bg);
   padding: 8px;
   margin: 8px 0 6px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
 }
 
 /* System / C4 diagrams — Mermaid diagram chrome (vector, scalable) */
@@ -605,14 +609,57 @@ details.docs-theory-help[open] summary {
   box-shadow: var(--sys-diagram-frame-shadow);
 }
 
+/* Badge + title share row 1; subtitle spans full width on row 2 (no huge gap beside badge). */
 .sys-diagram__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 10px 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 12px;
+  align-items: start;
   padding: 14px 18px 12px;
   border-bottom: 1px solid var(--line);
   background: var(--sys-diagram-head-bg);
+}
+
+.sys-diagram__head > .sys-diagram__badge {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+}
+
+.sys-diagram__titles {
+  display: contents;
+}
+
+.sys-diagram__titles > h3 {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  align-self: center;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.sys-diagram__titles > .sys-diagram__sub {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  margin-top: 4px;
+}
+
+/* Sequence diagrams: badge + h3 only (no .sys-diagram__titles wrapper). */
+.sys-diagram__head > h3 {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  align-self: center;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
 }
 
 .sys-diagram__badge {
@@ -630,21 +677,7 @@ details.docs-theory-help[open] summary {
   padding: 5px 11px;
 }
 
-.sys-diagram__titles {
-  flex: 1 1 220px;
-  min-width: 0;
-}
-
-.sys-diagram__title {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 650;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-
 .sys-diagram__sub {
-  margin: 4px 0 0;
   font-size: 0.88rem;
   color: var(--muted);
   line-height: 1.45;
@@ -667,18 +700,197 @@ details.docs-theory-help[open] summary {
   height: auto;
 }
 
-/* PlantUML PNGs: no double frame (card + .diagram already bordered globally). */
-.sys-diagram__canvas .diagram--uml {
+/* PlantUML SVG: keep **intrinsic** width/height — do not ``width: 100%`` or narrow diagrams
+   (e.g. sparse sequences) scale up in the column and look like a larger font than wide SVGs.
+   Wide exports are capped in style.puml; users zoom via expand/lightbox (docs-diagram-lightbox.js). */
+.sys-diagram__canvas img {
   display: block;
-  /* Intrinsic pixel size: avoid scaling width:100% which compresses labels (text-on-text). */
   width: auto;
-  max-width: none;
+  max-width: min(960px, 100%);
   height: auto;
   margin: 0 auto;
   border: none;
   padding: 0;
   box-shadow: none;
   background: transparent;
+}
+
+/* Override ``.diagram { width: 100% }`` (higher specificity) so PlantUML SVGs keep intrinsic size. */
+.sys-diagram__canvas img.diagram {
+  width: auto;
+  max-width: min(960px, 100%);
+  box-sizing: content-box;
+}
+
+/* Avoid double frame: outer .sys-diagram already has a border; strip .diagram chrome here. */
+.sys-diagram__canvas img.diagram--uml {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+/* Wrapper for UML diagram + expand control (see docs-diagram-lightbox.js). */
+.diagram-uml-wrap {
+  position: relative;
+}
+
+.diagram-expand-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.diagram-expand-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+body.docs-diagram-lightbox-open {
+  overflow: hidden;
+}
+
+.docs-diagram-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: min(24px, 4vw);
+}
+
+.docs-diagram-lightbox[hidden] {
+  display: none;
+}
+
+.docs-diagram-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: rgba(15, 23, 42, 0.82);
+}
+
+/* Panel: fixed footprint; toolbar + viewport so zoom/pan has room (docs-diagram-lightbox.js). */
+.docs-diagram-lightbox__panel {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(96vw, 1400px);
+  height: min(92vh, 900px);
+  max-height: 96vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px;
+}
+
+.docs-diagram-lightbox__close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+}
+
+.docs-diagram-lightbox__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 44px 10px 10px;
+  margin: 0 0 4px 0;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.docs-diagram-lightbox__tool-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.docs-diagram-lightbox__tool-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--table-th-bg, var(--card));
+}
+
+.docs-diagram-lightbox__hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-left: auto;
+  user-select: none;
+}
+
+.docs-diagram-lightbox__viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.docs-diagram-lightbox__viewport.is-panning {
+  cursor: grabbing;
+}
+
+.docs-diagram-lightbox__stage {
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.docs-diagram-lightbox__img {
+  display: block;
+  box-sizing: border-box;
+  margin: 0;
+  max-width: min(88vw, 1280px);
+  max-height: min(78vh, 820px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  /* Let viewport receive wheel / drag */
+  pointer-events: none;
+  user-select: none;
 }
 
 .sys-diagram__foot {
@@ -713,6 +925,26 @@ details.docs-theory-help[open] summary {
   width: max-content;
   min-width: 100%;
   margin: 0;
+}
+
+/* FR/NFR (system-design): fixed ID column; base table uses max-content which breaks % widths. */
+.docs-table-scroll.docs-table--req table {
+  width: 100%;
+  table-layout: fixed;
+  min-width: 100%;
+}
+
+.docs-table-scroll.docs-table--req col.docs-table__col--id {
+  width: 7rem;
+}
+
+.docs-table-scroll.docs-table--req col.docs-table__col--req {
+  width: 22%;
+}
+
+.docs-table-scroll.docs-table--req th:first-child,
+.docs-table-scroll.docs-table--req td:first-child {
+  white-space: nowrap;
 }
 
 /* Stacked endpoint rows (internal API docs): replaces wide 5-column tables. */
@@ -795,7 +1027,9 @@ th {
  * Hand-authored docs (`main.container`, not pdoc): keep tables in the content column on narrow viewports.
  * Skip: .docs-table-scroll (horizontal scroll region), audit score/reference tables (own layout + wrapper).
  */
-main.container:not(.container--swagger) :not(.docs-table-scroll) > table:not(.audit-ref-table):not(.audit-score-table) {
+main.container:not(.container--swagger)
+  :not(.docs-table-scroll)
+  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) {
   table-layout: fixed;
   width: 100%;
   max-width: 100%;
@@ -803,11 +1037,11 @@ main.container:not(.container--swagger) :not(.docs-table-scroll) > table:not(.au
 
 main.container:not(.container--swagger)
   :not(.docs-table-scroll)
-  > table:not(.audit-ref-table):not(.audit-score-table)
+  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table)
   th,
 main.container:not(.container--swagger)
   :not(.docs-table-scroll)
-  > table:not(.audit-ref-table):not(.audit-score-table)
+  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table)
   td {
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -815,7 +1049,7 @@ main.container:not(.container--swagger)
 
 main.container:not(.container--swagger)
   :not(.docs-table-scroll)
-  > table:not(.audit-ref-table):not(.audit-score-table)
+  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table)
   :not(pre)
   > code {
   white-space: pre-wrap;
@@ -931,6 +1165,73 @@ p.audit-score-legend-error {
 p.audit-score-legend-error {
   background: var(--audit-legend-error-bg);
   color: var(--audit-legend-error-fg);
+}
+
+/* Table 2 — optional justification column (why this score vs reference) */
+.audit-score-table td.audit-table-justification {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 22rem;
+}
+
+/* Weighted / formula summary blocks */
+.audit-scoring-formula {
+  margin: 0.75rem 0 1rem;
+  padding: 0.85rem 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  background: var(--inline-code-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+/* Top gaps — workflow status (distinct from score column colours) */
+table.audit-gap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+table.audit-gap-table th,
+table.audit-gap-table td {
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.65rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+table.audit-gap-table th {
+  background: var(--table-th-bg);
+}
+
+.audit-gap-table td.audit-gap-status {
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.audit-gap-table td.audit-gap-status--todo {
+  background: #e9ecef;
+  border-left: 3px solid #6c757d;
+  color: #343a40;
+}
+
+.audit-gap-table td.audit-gap-status--inprogress {
+  background: #fff3cd;
+  border-left: 3px solid #e0a800;
+  color: #664d03;
+}
+
+.audit-gap-table td.audit-gap-status--done {
+  background: #d1e7dd;
+  border-left: 3px solid #198754;
+  color: #0a3622;
 }
 
 /* openapi/openapi-explorer.html — OpenAPI (test), Swagger UI browse-only */
@@ -1177,6 +1478,80 @@ main.docs-page-layout [id] {
   outline-offset: 2px;
 }
 
+/* Page editors block (docs-internal-meta.js) — must work without internal-layout.css (e.g. ADR pages) */
+.docs-page-meta {
+  margin-bottom: 1.25rem;
+  padding: 16px 18px;
+}
+
+.docs-page-meta__title {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.docs-page-meta__label {
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  margin-right: 6px;
+}
+
+.docs-page-meta__editors {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+.docs-page-meta__editor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.docs-page-meta__avatar-link {
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.docs-page-meta__editor-name-link {
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text, #0f172a);
+}
+
+.docs-page-meta__editor-name-link:hover {
+  text-decoration: underline;
+}
+
+.docs-page-meta__avatar {
+  width: 40px;
+  height: 40px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  border: 1px solid var(--line, #dbe3ef);
+  display: block;
+}
+
+.docs-page-meta__warn {
+  margin: 0;
+  color: #b45309;
+}
+
+.docs-page-history td a {
+  color: var(--accent, #2563eb);
+  text-decoration: none;
+}
+
+.docs-page-history td a:hover {
+  text-decoration: underline;
+}
+
 /* Breadcrumb trail (docs-nav.js) — first child inside #docs-top-nav */
 .docs-breadcrumbs {
   margin: 0 0 12px;
@@ -1345,4 +1720,82 @@ main.docs-page-layout [id] {
     padding-top: 6px;
     padding-bottom: 6px;
   }
+}
+
+/* internal/api/conspectus — paper cue sheet vs cue_sheet JSON walkthrough */
+.cue-sheet-walkthrough {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem 1.5rem;
+  margin: 1.25rem 0 0.75rem;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .cue-sheet-walkthrough {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cue-sheet-walkthrough__label {
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cue-sheet-walkthrough__cap {
+  caption-side: top;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 0 0 0.5rem;
+  line-height: 1.35;
+}
+
+.cue-sheet-walkthrough__paper {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  background: var(--card);
+}
+
+.cue-sheet-walkthrough__paper th,
+.cue-sheet-walkthrough__paper td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  vertical-align: top;
+  text-align: left;
+}
+
+.cue-sheet-walkthrough__paper thead th {
+  background: rgba(37, 99, 235, 0.08);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.cue-sheet-walkthrough__pre {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="dark"] .cue-sheet-walkthrough__pre {
+  background: rgba(248, 250, 252, 0.06);
+}
+
+.cue-sheet-walkthrough__legend {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+  max-width: 58rem;
 }

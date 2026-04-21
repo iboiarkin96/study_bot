@@ -9,11 +9,14 @@
   <link rel="stylesheet" href="../../assets/docs-theme.css">
   <link rel="stylesheet" href="../../assets/internal-layout.css">
   <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+
   <script defer src="../../assets/internal-sidebar.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 </head>
 
-<body class="internal-layout">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <p class="internal-layout__sidebar-title">Internal docs</p>
@@ -23,6 +26,7 @@
       <main class="container">
         <h1>HTTP API (internal)</h1>
         <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
         <p class="lead">
           Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page (business
           context, data contract, links to methods), and each <code>operationId</code> has its own page so readers are
@@ -37,6 +41,12 @@
               <a href="./user/index.html">resource hub</a> is the single entry point (business context, contract summary,
               technical depth); per-method pages link back to anchors on that page.
             </li>
+            <li>
+              <a href="./conspectus/index.html">Conspectus</a> — ETR study note under <code>/api/v1/conspectuses</code>
+              (plus related <code>/schedule/summary</code> and <code>/errors</code>); the
+              <a href="./conspectus/index.html">resource hub</a> explains the entity, field mapping, API surface, and links
+              to <strong>per-method pages</strong> under <code>conspectus/operations/</code> (same pattern as User).
+            </li>
           </ul>
           <p class="small">Add a new list entry here when another router gains an internal hub.</p>
         </section>
@@ -48,6 +58,48 @@
             <a href="../../openapi/openapi-explorer.html">OpenAPI (test)</a>. Internal pages add narrative and operational
             semantics per <a href="../../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>.
           </p>
+        </section>
+
+        <section id="page-history" class="card">
+
+          <h2>Page history</h2>
+
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+
+            <table class="docs-page-history">
+
+              <thead>
+
+                <tr>
+
+                  <th scope="col">Date</th>
+
+                  <th scope="col">Change</th>
+
+                  <th scope="col">Author</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr>
+
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                  <td>Added Page history section (repository baseline).</td>
+
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
         </section>
 
         <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>

@@ -5,86 +5,129 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Architecture &amp; quality assessments — index</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+
+  <script defer src="../assets/internal-sidebar.js"></script>
 </head>
 
-<body>
-  <main class="container">
-    <h1>Architecture &amp; quality assessments</h1>
-    <div id="docs-top-nav"></div>
-    <section id="overview" class="card">
-      <h2>Overview</h2>
-      <p>
-        These pages are <strong>maturity assessments</strong> for this repo. Each report lists reference practices
-        (Table 1), scores how we match them (Table 2), then lists gaps and next steps. ADRs record <em>decisions</em>;
-        assessments record <em>how we compare</em> to common practice on a given date.
-      </p>
-    </section>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Architecture &amp; quality assessments</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            These pages are <strong>maturity assessments</strong> for this repo. Each report lists reference practices
+            (Table 1), scores how we match them (Table 2) with a short <strong>justification</strong> per row, then scoring
+            arithmetic, <strong>Top‑5 gaps</strong> with workflow status (TODO / IN PROGRESS / DONE), and next steps. ADRs
+            record <em>decisions</em>; assessments record <em>how we compare</em> to common practice on a given date.
+          </p>
+        </section>
 
-    <section class="card">
-      <h2>Format and location</h2>
-      <p>
-        Files live under <code>docs/audit/</code> as static HTML:
-        <code><var>YYYY-MM-DD</var>-<var>topic</var>-assessment.html</code>. Naming, score bands, and the Table 2 legend follow
-        <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
-      </p>
-    </section>
+        <section class="card">
+          <h2>Format and location</h2>
+          <p>
+            <strong>Unified template:</strong> <a href="./AUDIT_TEMPLATE.html"><code>docs/audit/AUDIT_TEMPLATE.html</code></a>
+            — use <code>&lt;section id="overview" class="card"&gt;</code> for metadata (do <strong>not</strong> use
+            <code>class="lead"</code> on a top paragraph). Table 2 uses the shared score legend and optional
+            <code>pre.audit-scoring-formula</code> plus <code>table.audit-gap-table</code> for Top‑5 tracking (see
+            <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>).
+          </p>
+          <p>
+            <strong>Layout:</strong> assessments are grouped by type:
+          </p>
+          <ul>
+            <li><a href="./docs/README.html"><code>docs/audit/docs/</code></a> — documentation / DX assessments.</li>
+            <li><a href="./api/README.html"><code>docs/audit/api/</code></a> — REST / HTTP API assessments.</li>
+          </ul>
+          <p>
+            File names may use <code><var>YYYY-MM-DD</var>-<var>topic</var>-assessment.html</code> or stable names under
+            each
+            folder; the assessment <strong>date</strong> belongs in Overview and document history.
+          </p>
+        </section>
 
-    <section class="card">
-      <h2>Industry context</h2>
-      <p>
-        Large firms often use <strong>design reviews</strong>, <strong>launch checklists</strong>,
-        <strong>security programs</strong>, and <strong>central dev portals</strong>. Here we use a
-        <strong>smaller, git-based</strong> version: Table 1 (what “good” looks like), Table 2 (our scores), then gaps and
-        fixes. Same general idea as big-company reviews; it does not replace tests, ADRs, or formal sign-off.
-      </p>
-      <p>
-        Unless stated, assessments assume <strong>PET-scale</strong> work. A low score often means “not done yet” or “not
-        worth it at this size,” not “you must build an enterprise portal.” See
-        <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR 0024
-          — industry context</a>.
-        </p>
-      </section>
+        <section class="card">
+          <h2>Industry context</h2>
+          <p>
+            Large firms often use <strong>design reviews</strong>, <strong>launch checklists</strong>,
+            <strong>security programs</strong>, and <strong>central dev portals</strong>. Here we use a
+            <strong>smaller, git-based</strong> version: Table 1 (what “good” looks like), Table 2 (our scores), then gaps
+            and
+            fixes. Same general idea as big-company reviews; it does not replace tests, ADRs, or formal sign-off.
+          </p>
+          <p>
+            Unless stated, assessments assume <strong>PET-scale</strong> work. A low score often means “not done yet” or
+            “not
+            worth it at this size,” not “you must build an enterprise portal.” See
+            <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR 0024
+              — industry context</a>.
+            </p>
+          </section>
 
-      <section class="card">
-        <h2>All published assessments</h2>
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Assessment</th>
-              <th scope="col">Date</th>
-              <th scope="col">Focus</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><a href="./2026-04-14-api-assessment.html">REST API assessment</a></td>
-              <td>2026-04-14</td>
-              <td>HTTP API, OpenAPI rules, idempotency, security headers, metrics, CI contract checks.</td>
-            </tr>
-            <tr>
-              <td><a href="./2026-04-14-documentation-experience-assessment.html">Documentation Experience (DX)
-                assessment</a></td>
-                <td>2026-04-14</td>
-                <td>IA, docs-as-code, discovery, API docs UX, accessibility, feedback.</td>
-              </tr>
-              <tr>
-                <td><a href="./2026-04-17-documentation-experience-world-class-gap-assessment.html">Documentation
-                  Experience
-                  (DX) world-class gap check</a></td>
-                  <td>2026-04-17</td>
-                  <td>Second pass vs top-tier doc standards; design maturity and how to close gaps.</td>
+          <section class="card">
+            <h2>All published assessments</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Assessment type</th>
+                  <th scope="col">Focus</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a href="./docs/README.html">Documentation Experience (DX)</a></td>
+                  <td>Gap assessment for documentation experience (DX)</td>
+                </tr>
+                <tr>
+                  <td><a href="./api/README.html">REST API</a></td>
+                  <td>Gap assessment for REST API</td>
                 </tr>
               </tbody>
             </table>
             <p>
-              Add new rows when you publish an assessment. Note changes in
+              Note changes in
               <a href="../CHANGELOG.md">docs/CHANGELOG.md</a>.
             </p>
           </section>
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added Page history section (repository baseline).</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
           <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
         </main>
+      </div>
+    </div>
 
-      </body></html>
+  </body></html>
