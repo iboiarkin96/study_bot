@@ -199,6 +199,22 @@ def _save_manifest_diagrams(diagrams: dict[str, dict[str, str]]) -> None:
         raise
 
 
+def _ensure_unix_eof_newline(path: Path) -> None:
+    """Normalize file bytes so the file ends with exactly one Unix newline.
+
+    Kroki SVG responses may omit a trailing newline; ``pre-commit``'s ``end-of-file-fixer``
+    then rewrites the file and fails CI. Normalizing here keeps ``make verify`` and hooks
+    consistent after a fresh render.
+
+    Args:
+        path: File written by :func:`render_one` (typically ``*.svg``).
+    """
+    data = path.read_bytes()
+    if not data:
+        return
+    path.write_bytes(data.rstrip(b"\r\n") + b"\n")
+
+
 def render_one(source_path: Path, output_path: Path) -> None:
     """Render one PlantUML file to SVG via POST to :data:`KROKI_URL` using ``curl``.
 
@@ -241,6 +257,7 @@ def render_one(source_path: Path, output_path: Path) -> None:
         subprocess.run(cmd, check=True)
     finally:
         Path(tmp_path).unlink(missing_ok=True)
+    _ensure_unix_eof_newline(output_path)
 
 
 def render_all(verbose: bool = True, *, force: bool = False) -> tuple[int, int]:
