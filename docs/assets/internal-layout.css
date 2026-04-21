@@ -413,6 +413,20 @@ h1.internal-doc-h1 {
   letter-spacing: -0.01em;
 }
 
+.portal-people-group__count {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--muted, #64748b);
+  background: var(--card, #fff);
+  vertical-align: middle;
+}
+
 .portal-people-group__empty {
   margin: 0;
   font-size: 0.9rem;
@@ -428,27 +442,69 @@ h1.internal-doc-h1 {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
 }
 
 .portal-people__item {
   margin: 0;
-  padding: 14px 16px;
+  padding: 12px;
+  min-height: 82px;
+  border: 1px solid var(--line, #dbe3ef);
+  background: var(--card, #fff);
+  transition:
+    border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .portal-people__link {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
+  min-height: 56px;
   text-decoration: none;
   color: var(--text, #0f172a);
   font-weight: 600;
 }
 
+.portal-people__item:hover {
+  border-color: color-mix(in srgb, var(--accent, #2563eb) 34%, var(--line, #dbe3ef));
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+  transform: translateY(-1px);
+}
+
+.portal-people__item:focus-within {
+  border-color: var(--accent, #2563eb);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #2563eb) 20%, transparent);
+}
+
 .portal-people__link:hover .portal-people__name {
   text-decoration: underline;
+}
+
+.portal-people__name {
+  display: block;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.portal-people__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.portal-people__meta {
+  display: block;
+  font-size: 0.74rem;
+  line-height: 1.25;
+  color: var(--muted, #64748b);
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .portal-people__avatar {
@@ -461,6 +517,68 @@ h1.internal-doc-h1 {
   flex-shrink: 0;
   border: 1px solid var(--line, #dbe3ef);
   display: block;
+  transition:
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.portal-people__item:hover .portal-people__avatar {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent, #2563eb) 30%, transparent),
+    0 8px 16px rgba(37, 99, 235, 0.18);
+  transform: translateY(-0.5px) scale(1.045);
+  filter: saturate(1.08) contrast(1.03);
+}
+
+.portal-people__avatar-link {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.portal-people__avatar-link::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg,
+    color-mix(in srgb, var(--accent, #2563eb) 32%, transparent),
+    transparent 40%,
+    color-mix(in srgb, var(--accent, #2563eb) 22%, transparent)
+  );
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1), transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.portal-people__item:hover .portal-people__avatar-link::after,
+.portal-people__item:focus-within .portal-people__avatar-link::after {
+  opacity: 0.95;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-people__avatar {
+    transition: box-shadow 0.01ms linear;
+  }
+
+  .portal-people__item:hover .portal-people__avatar {
+    transform: none;
+    filter: none;
+  }
+
+  .portal-people__avatar-link::after {
+    transition: opacity 0.01ms linear;
+  }
+}
+
+@media (max-width: 620px) {
+  .portal-people__list {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Site breadcrumbs + top nav sit above the profile card, not inside it */
@@ -486,6 +604,29 @@ h1.internal-doc-h1 {
   border: 1px solid var(--line, #dbe3ef);
   flex-shrink: 0;
   display: block;
+  transition:
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.portal-profile:hover .portal-profile__avatar {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent, #2563eb) 30%, transparent),
+    0 10px 24px rgba(37, 99, 235, 0.18);
+  transform: translateY(-1px) scale(1.02);
+  filter: saturate(1.06) contrast(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-profile__avatar {
+    transition: box-shadow 0.01ms linear;
+  }
+
+  .portal-profile:hover .portal-profile__avatar {
+    transform: none;
+    filter: none;
+  }
 }
 
 .portal-profile__text {

@@ -14,6 +14,7 @@ package "API process\n(single deployable)" as Proc {
 }
 
 database "Database" as Db
+queue "Redis\n(cache, rate limit, idempotency)" as Redis
 rectangle "Alembic" as Mig
 
 package "Observability\n(optional)" as Obs {
@@ -34,6 +35,7 @@ Client --> Http : HTTPS / JSON
 Http --> App
 App --> Persist
 Persist --> Db : SQL
+Persist ..> Redis : cache / counters / TTL keys
 Mig ..> Db : migrations
 
 App ..> LogFile

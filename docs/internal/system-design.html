@@ -520,7 +520,8 @@
                                                       <section class="card" id="architectural-decomposition">
                                                         <h2>C4 decomposition</h2>
                                                         <p>
-                                                          The service is a <strong>modular monolith</strong>: FastAPI, one database primary, optional metrics and log
+                                                          The service is a <strong>modular monolith</strong>: FastAPI, one database primary, Redis for distributed
+                                                          runtime concerns (rate limits, idempotency cache, short-lived keys), optional metrics and log
                                                           pipelines. Regenerate diagrams with <code>make docs-fix</code>.
                                                         </p>
                                                         <figure class="sys-diagram">
@@ -542,7 +543,7 @@
                                                               <span class="sys-diagram__badge">C4 · L2</span>
                                                               <div class="sys-diagram__titles">
                                                                 <h3>Containers</h3>
-                                                                <p class="sys-diagram__sub">API process, database, migrations, optional pipelines.</p>
+                                                                <p class="sys-diagram__sub">API process, database, Redis runtime store, migrations, optional pipelines.</p>
                                                               </div>
                                                             </div>
                                                             <div class="sys-diagram__canvas">
@@ -1514,6 +1515,7 @@
                                                                                                                         <li><strong>Body storage default (D2)</strong> — inline JSON/TEXT; externalise only when measured.</li>
                                                                                                                         <li><strong>Schedule table shape (D3)</strong> — 1:1 <code>conspectus_schedules</code>.</li>
                                                                                                                         <li><strong>RDBMS engine (D4)</strong> — SQLite for development; PostgreSQL for scale.</li>
+                                                                                                                        <li><strong>Distributed runtime store</strong> — Redis for shared rate limits, idempotency cache, and short-lived keys.</li>
                                                                                                                         <li><strong>Learning errors (D5)</strong> — separate from review tags; optional <code>review_log_id</code>.
                                                                                                                         </li>
                                                                                                                         <li><strong>Manual schedule edits (D6)</strong> — via events, not synthetic reviews.</li>
@@ -1595,6 +1597,16 @@
                                                                                                                                 </thead>
 
                                                                                                                                 <tbody>
+
+                                                                                                                                  <tr>
+
+                                                                                                                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+
+                                                                                                                                    <td>Added Redis to system stack description and C4 container schema references.</td>
+
+                                                                                                                                    <td><a href="portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                                                                                                                                  </tr>
 
                                                                                                                                   <tr>
 

@@ -18,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Shared styling:** `.docs-page-meta` (avatars, editor list) and page-history author links in [`docs/assets/docs.css`](assets/docs.css); portal chrome and pager styles in [`docs/assets/internal-layout.css`](assets/internal-layout.css), including dark-theme background for the pager.
 - [`docs/internal/documentation-style-guide.html`](internal/documentation-style-guide.html): documents page history and author linking.
 - **`make docs-fix`:** new step runs `collect_docs_portal_data.py` before pdoc and search index ([`Makefile`](../Makefile)).
+- **Premium docs UI polish:** top-nav links and command palette interactions in [`docs/assets/docs-nav.js`](assets/docs-nav.js), [`docs/assets/docs-site-nav.css`](assets/docs-site-nav.css), and [`docs/assets/docs.css`](assets/docs.css) now include consistent hover/focus motion, quick actions launcher, grouped command palette actions, and inline filtering.
+- **Page editors UX:** [`docs/assets/docs-internal-meta.js`](assets/docs-internal-meta.js) now renders a compact avatar stack by default and exposes the full editor list behind a click-to-expand **Page editors** toggle.
+- **Portal people cards:** [`docs/assets/internal-layout.css`](assets/internal-layout.css) and [`docs/assets/docs-internal-meta.js`](assets/docs-internal-meta.js) now use consistent card sizing, alphabetical sort inside groups, small group count badges, profile subtitle metadata, and matched avatar hover effects on both portal hub and profile pages.
+- **Frontend contract documentation:** [`docs/internal/documentation-style-guide.html`](internal/documentation-style-guide.html) now includes a dedicated **Docs frontend contract** section that defines required mounts/attributes/scripts for shared docs UI features.
+- **Skeleton loading states (demo visibility):** portal widgets in [`docs/assets/docs-internal-meta.js`](assets/docs-internal-meta.js) and [`docs/assets/docs.css`](assets/docs.css) now show skeleton placeholders for people and maintained pages with a minimum visible window (`SKELETON_MIN_VISIBLE_MS = 600`) for visual verification.
 
 ## 2026-04-18
 

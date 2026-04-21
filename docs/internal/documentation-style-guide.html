@@ -96,6 +96,55 @@
             </p>
           </section>
 
+          <section id="docs-frontend-contract" class="card">
+            <h2>Docs frontend contract (required mounts and attributes)</h2>
+            <p>
+              This section defines the required HTML mounts and <code>data-*</code> attributes for shared docs UI
+              features. Treat it as a stable frontend contract when creating or reviewing hand-written docs pages.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Required markup</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Top navigation and quick actions</td>
+                  <td><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code></td>
+                  <td>Mount for top nav, quick actions launcher, and command palette shortcuts.</td>
+                </tr>
+                <tr>
+                  <td>Page editors widget</td>
+                  <td><code>&lt;div id="docs-page-meta-mount" hidden&gt;&lt;/div&gt;</code> + <code>data-maintainer-ids</code> on <code>&lt;body&gt;</code></td>
+                  <td>Shows avatar stack by default; clicking <strong>Page editors</strong> reveals full maintainer list.</td>
+                </tr>
+                <tr>
+                  <td>Portal people listing</td>
+                  <td><code>&lt;div id="portal-people-mount"&gt;&lt;/div&gt;</code></td>
+                  <td>Used on <code>internal/portal/index.html</code>; includes group sections, sort, counts, and skeleton state.</td>
+                </tr>
+                <tr>
+                  <td>Profile maintained pages</td>
+                  <td><code>&lt;div id="portal-maintained-mount"&gt;&lt;/div&gt;</code> + <code>data-person-id</code> on <code>&lt;body&gt;</code></td>
+                  <td>Used on <code>internal/portal/people/*/index.html</code>; includes pagination and skeleton state.</td>
+                </tr>
+                <tr>
+                  <td>Auto in-page TOC</td>
+                  <td><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code></td>
+                  <td>Required for docs design checks; should be near the end of <code>&lt;main&gt;</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="small">
+              Script dependencies for this contract: <code>docs/assets/docs-nav.js</code>,
+              <code>docs/assets/docs-portal-data.js</code>, and <code>docs/assets/docs-internal-meta.js</code>.
+              If a page omits one of these mounts/attributes, the corresponding UI feature should be considered disabled by design.
+            </p>
+          </section>
+
           <section id="document-type-matrix" class="card">
             <h2>Document-type matrix</h2>
             <table>

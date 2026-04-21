@@ -117,6 +117,7 @@ const DOCS_SEARCH_SUCCESS_WINDOW_MS = 60_000;
 const DOCS_FEEDBACK_REPOSITORY = "iboiarkin96/etr-study-api";
 const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.yml";
 const DOCS_FEEDBACK_LABELS = ["docs-feedback"];
+const DOCS_FEEDBACK_CARD_ENABLED = false;
 const DOCS_THEME_STORAGE_KEY = "docs-theme-preference";
 
 /** Bump when the shared ADR/RFC lifecycle help copy in `injectDocsLifecycleHelp` changes. */
@@ -1474,6 +1475,9 @@ function docsFeedbackIssueUrl() {
 }
 
 function injectDocsFeedbackCard() {
+  if (!DOCS_FEEDBACK_CARD_ENABLED) {
+    return;
+  }
   const main = document.querySelector("main.container");
   if (!main) {
     return;
@@ -1782,6 +1786,213 @@ function initDocsSiteFooter() {
   document.body.appendChild(footer);
 }
 
+function buildDocsPageActions(fromDir, relPath) {
+  return [
+    { label: "Edit page", href: `https://github.com/${DOCS_FEEDBACK_REPOSITORY}/edit/main/docs/${relPath}`, group: "Page" },
+    { label: "Page history", href: "#page-history", group: "Page" },
+    { label: "Report issue", href: docsFeedbackIssueUrl(), group: "Page" },
+    { label: "Documentation home", href: relHref(fromDir, "index.html"), group: "Navigate" },
+    { label: "OpenAPI explorer", href: relHref(fromDir, "openapi/openapi-explorer.html"), group: "Navigate" },
+  ];
+}
+
+function injectDocsPageActions() {
+  const main = document.querySelector("main.container");
+  const navHost = document.getElementById("docs-top-nav");
+  if (!main || !navHost || main.querySelector(".docs-page-actions")) {
+    return;
+  }
+  const relPath = currentDocsRelPath();
+  const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
+  const wrap = document.createElement("div");
+  wrap.className = "docs-page-actions";
+  wrap.setAttribute("role", "toolbar");
+  wrap.setAttribute("aria-label", "Page actions");
+
+  const hint = document.createElement("span");
+  hint.className = "docs-page-actions__hint";
+  hint.textContent = "Quick actions";
+  wrap.appendChild(hint);
+
+  const launcher = document.createElement("button");
+  launcher.type = "button";
+  launcher.className = "docs-page-actions__button";
+  launcher.setAttribute("data-docs-quick-actions-open", "1");
+  launcher.textContent = "Open (⌘K)";
+  wrap.appendChild(launcher);
+
+  for (const item of buildDocsPageActions(fromDir, relPath)) {
+    const a = document.createElement("a");
+    a.className = "docs-page-actions__link";
+    a.textContent = item.label;
+    a.href = item.href;
+    if (item.href.startsWith("http")) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+    wrap.appendChild(a);
+  }
+  navHost.insertAdjacentElement("afterend", wrap);
+}
+
+function initDocsQuickActions() {
+  if (document.getElementById("docs-quick-actions")) {
+    return;
+  }
+  const relPath = currentDocsRelPath();
+  const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
+  const actions = buildDocsPageActions(fromDir, relPath);
+
+  const panel = document.createElement("div");
+  panel.id = "docs-quick-actions";
+  panel.className = "docs-quick-actions";
+  panel.hidden = true;
+  panel.innerHTML = `<div class="docs-quick-actions__backdrop" data-qa-close="1"></div>
+<div class="docs-quick-actions__panel" role="dialog" aria-modal="true" aria-labelledby="docs-quick-actions-title">
+  <p class="docs-quick-actions__title" id="docs-quick-actions-title">Quick actions</p>
+  <input class="docs-quick-actions__filter" type="search" autocomplete="off" spellcheck="false" placeholder="Filter actions..." aria-label="Filter quick actions" />
+  <ul class="docs-quick-actions__list"></ul>
+</div>`;
+  const filterInput = panel.querySelector(".docs-quick-actions__filter");
+  const list = panel.querySelector(".docs-quick-actions__list");
+  let lastGroup = "";
+  for (const item of actions) {
+    if (item.group && item.group !== lastGroup) {
+      const sep = document.createElement("li");
+      sep.className = "docs-quick-actions__group";
+      sep.textContent = item.group;
+      list.appendChild(sep);
+      lastGroup = item.group;
+    }
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = item.href;
+    a.textContent = item.label;
+    if (item.href.startsWith("http")) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+    li.appendChild(a);
+    list.appendChild(li);
+  }
+  const searchLi = document.createElement("li");
+  const searchBtn = document.createElement("button");
+  searchBtn.type = "button";
+  searchBtn.textContent = "Focus docs search";
+  searchBtn.addEventListener("click", () => {
+    const input = document.querySelector(".docs-search__input");
+    if (input) {
+      input.focus();
+      input.select();
+    }
+    panel.hidden = true;
+  });
+  searchLi.appendChild(searchBtn);
+  list.appendChild(searchLi);
+  document.body.appendChild(panel);
+
+  function visibleItems() {
+    return [...list.querySelectorAll("a, button")].filter(
+      (el) => el.closest("li") && !el.closest("li").hidden,
+    );
+  }
+
+  function applyFilter(query) {
+    const q = String(query || "").trim().toLowerCase();
+    for (const li of list.querySelectorAll("li")) {
+      const text = (li.textContent || "").toLowerCase();
+      li.hidden = q ? !text.includes(q) : false;
+    }
+  }
+
+  function closePanel() {
+    panel.hidden = true;
+    filterInput.value = "";
+    applyFilter("");
+  }
+  function openPanel() {
+    panel.hidden = false;
+    filterInput.value = "";
+    applyFilter("");
+    filterInput.focus();
+    filterInput.select();
+  }
+
+  const launcherBtn = document.querySelector("[data-docs-quick-actions-open]");
+  if (launcherBtn) {
+    launcherBtn.addEventListener("click", () => {
+      openPanel();
+    });
+  }
+
+  panel.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target && target.getAttribute && target.getAttribute("data-qa-close") === "1") {
+      closePanel();
+    }
+  });
+  filterInput.addEventListener("input", () => {
+    applyFilter(filterInput.value);
+  });
+  filterInput.addEventListener("keydown", (event) => {
+    const items = visibleItems();
+    if (items.length === 0) {
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      items[0].focus();
+      return;
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      items[0].click();
+    }
+  });
+  list.addEventListener("keydown", (event) => {
+    const items = visibleItems();
+    if (items.length === 0) {
+      return;
+    }
+    const currentIndex = items.findIndex((el) => el === document.activeElement);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      const next = currentIndex < 0 ? 0 : (currentIndex + 1) % items.length;
+      items[next].focus();
+      return;
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (currentIndex <= 0) {
+        filterInput.focus();
+      } else {
+        items[currentIndex - 1].focus();
+      }
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    const key = String(event.key).toLowerCase();
+    const code = String(event.code || "");
+    const isPrimaryK = (event.metaKey || event.ctrlKey) && (key === "k" || code === "KeyK");
+    const isPrimaryShiftK =
+      (event.metaKey || event.ctrlKey) && event.shiftKey && (key === "k" || code === "KeyK");
+    const isSlash = !event.metaKey && !event.ctrlKey && !event.altKey && (key === "/" || code === "Slash");
+    const isQuickActionHotkey = isPrimaryK || isPrimaryShiftK || isSlash;
+    if (isQuickActionHotkey) {
+      event.preventDefault();
+      if (panel.hidden) {
+        openPanel();
+      } else {
+        closePanel();
+      }
+      return;
+    }
+    if (event.key === "Escape" && !panel.hidden) {
+      closePanel();
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   injectDocsLifecycleHelp();
   renderTopNav();
@@ -1793,6 +2004,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   injectAuditScoreLegends();
   injectDocsFeedbackCard();
+  injectDocsPageActions();
+  initDocsQuickActions();
   initAutoInPageToc();
   initInPageTocScrollSpy();
   initBackToTopButton();

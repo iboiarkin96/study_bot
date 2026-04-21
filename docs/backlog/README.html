@@ -438,9 +438,11 @@
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              ADR (algorithm: token bucket / sliding window); Redis client and adapter implementing existing limiter
-              interface; Compose profile for local dev and CI; failure modes if Redis is down (fail-open vs fail-closed)
-              documented.
+              Replace <code>InMemoryRateLimiter</code> in <code>app/core/security.py</code> with a Redis-backed adapter
+              using shared counters + TTL windows, preserving existing 429 behavior and headers
+              (<code>X-RateLimit-*</code>, <code>Retry-After</code>); ADR (algorithm: token bucket or sliding window);
+              Compose profile for local dev/CI; clear fallback policy when Redis is unavailable (fail-open vs fail-closed)
+              and integration tests for multi-worker consistency.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
             <dd>
@@ -448,6 +450,44 @@
                 <div class="time-cell"><strong>3 h/day</strong> ~5 days (~14 h)</div>
                 <div class="time-cell"><strong>2 h/day</strong> ~7 days</div>
                 <div class="time-cell"><strong>1 h/day</strong> ~14 days</div>
+              </div>
+            </dd>
+          </dl>
+
+        </section>
+        <section class="card" id="item-24">
+          <h2>
+            <span class="priority-tag">P2</span>
+            Redis adoption: idempotency cache and short-lived platform data
+            <span class="status-pill status-pill--todo">To do</span>
+          </h2>
+          <dl>
+            <dt>1) Summary</dt>
+            <dd>
+              Add Redis as a shared fast-access layer for idempotency lookups and short-lived data, while keeping SQL as
+              the source of truth and audit trail.
+            </dd>
+            <dt>2) Problem &amp; value</dt>
+            <dd>
+              <strong>Problem:</strong> Idempotency currently checks SQL on each request and temporary runtime data has no
+              shared distributed store.<br>
+              <strong>Value:</strong> Lower latency/load for retries and repeated reads; enables safe scale-out patterns for
+              cache, one-time keys, and future background workers.
+            </dd>
+            <dt>3) Scope &amp; deliverables</dt>
+            <dd>
+              Redis read-through cache for <code>app/repositories/idempotency_repository.py</code>
+              (<code>idempotency_key -&gt; status/response/payload_hash</code> with TTL); SQL remains canonical persistence;
+              key schema + TTL policy doc; cache invalidation and observability metrics (hit ratio, errors, fallback rate);
+              optional adapters for hot GET cache (user/course cards), short-lived tokens/OTP/one-time keys, and
+              starter queue primitives for later worker adoption.
+            </dd>
+            <dt>4) Rough estimate (calendar days)</dt>
+            <dd>
+              <div class="time-grid">
+                <div class="time-cell"><strong>3 h/day</strong> ~6 days (~18 h)</div>
+                <div class="time-cell"><strong>2 h/day</strong> ~9 days</div>
+                <div class="time-cell"><strong>1 h/day</strong> ~18 days</div>
               </div>
             </dd>
           </dl>
@@ -979,6 +1019,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Expanded Redis rate-limiting backlog item and added Redis idempotency/cache adoption item.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-21">2026-04-21</time></td>
                   <td>Added Page history section (repository baseline).</td>

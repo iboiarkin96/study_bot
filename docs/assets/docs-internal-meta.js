@@ -133,6 +133,25 @@
     const relPath = currentDocsRelPath();
     const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
 
+    const knownEditors = ids
+      .map((pid) => personById(pid))
+      .filter(Boolean);
+    const stacked = knownEditors
+      .slice(0, 3)
+      .map((p) => {
+        const profileHref = relHref(fromDir, `internal/portal/people/${p.slug}/index.html`);
+        const photoHref = `${docsRootPrefixFromPage()}${p.photo}`;
+        return `<a class="docs-page-meta__stack-item" href="${profileHref}" aria-label="${escapeHtml(p.displayName)}">
+  <img class="docs-page-meta__stack-avatar" src="${photoHref}" width="24" height="24" alt="" />
+</a>`;
+      })
+      .join("");
+    const extra = knownEditors.length > 3 ? `<span class="docs-page-meta__stack-extra">+${knownEditors.length - 3}</span>` : "";
+    const stackHtml =
+      knownEditors.length > 0
+        ? `<div class="docs-page-meta__stack" aria-label="Editors overview">${stacked}${extra}</div>`
+        : "";
+
     const editorsHtml = ids
       .map((pid) => {
         const p = personById(pid);
@@ -151,10 +170,20 @@
       })
       .join("");
 
-    mount.innerHTML = `<section class="docs-page-meta card" aria-labelledby="docs-page-meta-title">
-  <h2 class="docs-page-meta__title" id="docs-page-meta-title">Page editors</h2>
-  <ul class="docs-page-meta__editors">${editorsHtml}</ul>
+    mount.innerHTML = `<section class="docs-page-meta docs-page-meta--premium" aria-labelledby="docs-page-meta-title">
+  <button type="button" class="docs-page-meta__title docs-page-meta__toggle" id="docs-page-meta-title" aria-expanded="false" aria-controls="docs-page-meta-list">Page editors</button>
+  ${stackHtml}
+  <ul class="docs-page-meta__editors" id="docs-page-meta-list" hidden>${editorsHtml}</ul>
 </section>`;
+    const toggle = mount.querySelector(".docs-page-meta__toggle");
+    const list = mount.querySelector("#docs-page-meta-list");
+    if (toggle && list) {
+      toggle.addEventListener("click", () => {
+        const isOpen = !list.hidden;
+        list.hidden = isOpen;
+        toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      });
+    }
     mount.hidden = false;
   }
 
@@ -214,6 +243,7 @@
 
   /** Items per page for Maintained pages on profile */
   const MAINTAINED_PAGE_SIZE = 10;
+  const SKELETON_MIN_VISIBLE_MS = 600;
 
   let maintainedPagerState = null;
 
@@ -233,13 +263,11 @@
     const prevDisabled = pageIndex <= 0;
     const nextDisabled = pageIndex >= totalPages - 1;
     return `<nav class="portal-maintained-pager__nav" aria-label="Maintained pages pagination">
-  <button type="button" class="portal-maintained-pager__btn" data-maintained-act="prev"${
-    prevDisabled ? " disabled" : ""
-  }>Previous</button>
+  <button type="button" class="portal-maintained-pager__btn" data-maintained-act="prev"${prevDisabled ? " disabled" : ""
+      }>Previous</button>
   <span class="portal-maintained-pager__status">Page ${pageIndex + 1} of ${totalPages}</span>
-  <button type="button" class="portal-maintained-pager__btn" data-maintained-act="next"${
-    nextDisabled ? " disabled" : ""
-  }>Next</button>
+  <button type="button" class="portal-maintained-pager__btn" data-maintained-act="next"${nextDisabled ? " disabled" : ""
+      }>Next</button>
 </nav>`;
   }
 
@@ -297,6 +325,7 @@
     if (!personId) {
       return;
     }
+    mount.innerHTML = `<ul class="portal-skeleton-list" aria-hidden="true"><li></li><li></li><li></li></ul>`;
     const d = window.__DOCS_PORTAL_DATA__ || {};
     const pages = (d.maintainerPages && d.maintainerPages[personId]) || [];
     const relPath = currentDocsRelPath();
@@ -308,17 +337,27 @@
       pageIndex: 0,
       pageSize: MAINTAINED_PAGE_SIZE,
     };
-    paintMaintainedPager(mount);
+    window.setTimeout(() => {
+      paintMaintainedPager(mount);
+    }, SKELETON_MIN_VISIBLE_MS);
   }
 
   function renderPersonCard(p, fromDir) {
     const profileHref = relHref(fromDir, `internal/portal/people/${p.slug}/index.html`);
     const photoHref = `${docsRootPrefixFromPage()}${p.photo}`;
     const name = escapeHtml(p.displayName);
+    const groupsRaw = Array.isArray(p.groups) ? p.groups : [];
+    const groups = groupsRaw.map((g) => escapeHtml(titleForGroupKey(g))).join(" · ");
+    const groupsHtml = groups ? `<span class="portal-people__meta">${groups}</span>` : "";
     return `<li class="portal-people__item card">
   <a class="portal-people__link" href="${profileHref}">
-    <img class="portal-people__avatar" src="${photoHref}" width="56" height="56" alt="" />
-    <span class="portal-people__name">${name}</span>
+    <span class="portal-people__avatar-link">
+      <img class="portal-people__avatar" src="${photoHref}" width="56" height="56" alt="" />
+    </span>
+    <span class="portal-people__text">
+      <span class="portal-people__name">${name}</span>
+      ${groupsHtml}
+    </span>
   </a>
 </li>`;
   }
@@ -328,6 +367,7 @@
     if (!mount) {
       return;
     }
+    mount.innerHTML = `<div class="portal-skeleton-grid" aria-hidden="true"><span></span><span></span><span></span></div>`;
     const fromDir = "internal/portal";
     const people = getPortalPeople();
 
@@ -342,21 +382,26 @@
     const blocks = groupEntries
       .map((g) => {
         const gid = portalGroupDomId(g.key);
-        const inGroup = people.filter(
-          (p) => Array.isArray(p.groups) && p.groups.includes(g.key),
-        );
+        const inGroup = people
+          .filter((p) => Array.isArray(p.groups) && p.groups.includes(g.key))
+          .slice()
+          .sort((a, b) => String(a.displayName || "").localeCompare(String(b.displayName || "")));
         const listItems = inGroup.map((p) => renderPersonCard(p, fromDir)).join("");
+        const count = inGroup.length;
+        const countBadge = `<span class="portal-people-group__count" aria-label="${escapeHtml(g.title)} people count">${count}</span>`;
         const body = listItems
           ? `<ul class="portal-people__list">${listItems}</ul>`
           : `<p class="portal-people-group__empty">No people listed yet.</p>`;
         return `<section class="portal-people-group" aria-labelledby="portal-group-${gid}">
-  <h3 class="portal-people-group__title" id="portal-group-${gid}">${escapeHtml(g.title)}</h3>
+  <h3 class="portal-people-group__title" id="portal-group-${gid}">${escapeHtml(g.title)} ${countBadge}</h3>
   ${body}
 </section>`;
       })
       .join("");
 
-    mount.innerHTML = blocks;
+    window.setTimeout(() => {
+      mount.innerHTML = blocks;
+    }, SKELETON_MIN_VISIBLE_MS);
   }
 
   function initDocsInternalMeta() {
