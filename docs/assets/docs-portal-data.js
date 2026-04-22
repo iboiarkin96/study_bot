@@ -381,6 +381,12 @@ window.__DOCS_PORTAL_DATA__ = {
         "path": "internal/api/errors.html",
         "title": "Error catalog and sync — Study App"
       }
+    ],
+    "16fc8b78537109162984a2fdbef6e143": [
+      {
+        "path": "internal/api/errors.html",
+        "title": "Error catalog and sync — Study App"
+      }
     ]
   },
   "people": [
@@ -403,6 +409,16 @@ window.__DOCS_PORTAL_DATA__ = {
       "groups": [
         "backend",
         "pm"
+      ]
+    },
+    {
+      "personId": "16fc8b78537109162984a2fdbef6e143",
+      "slug": "kirill-neustroev",
+      "github": "-",
+      "displayName": "Kirill Neustroev",
+      "photo": "internal/portal/people/kirill-neustroev/photo.png",
+      "groups": [
+        "devops"
       ]
     }
   ]
