@@ -138,6 +138,36 @@
   --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
   --shadow-premium-sm: 0 1px 4px rgba(15, 23, 42, 0.08);
   --shadow-premium-md: 0 8px 24px rgba(15, 23, 42, 0.14);
+  /* Inline glossary tooltips (.docs-tooltip) */
+  --docs-tooltip-bg: #1e293b;
+  --docs-tooltip-fg: #f8fafc;
+  --docs-tooltip-border: rgba(15, 23, 42, 0.25);
+  --docs-tooltip-shadow: 0 10px 28px rgba(15, 23, 42, 0.22);
+  /* Glossary: ETR (.docs-tooltip--etr) — single source for hint text */
+  --docs-tooltip-etr-text: "Extract–Transform–Retrieve — learning methodology acronym used in product and API naming (ETR Study API).";
+  /*
+   * Footer atmosphere: fog + dot “matter” (Grok-like), strongest toward the footer.
+   * Set --docs-footer-veil to 0 to disable without deleting rules.
+   * Scroll strength: 1 = full; docs-nav.js sets ~0.18…1 from scroll (weaker at top, full near end).
+   */
+  --docs-footer-veil: 1;
+  --docs-footer-scroll-strength: 1;
+  /* Tall band so mist + dots can ramp from ~viewport middle downward */
+  --docs-footer-veil-height: min(78vh, 900px);
+  /* Coarse dot grid */
+  --docs-footer-dot-step: 22px;
+  /* Fine grain (smaller step = denser haze) */
+  --docs-footer-fine-dot-step: 13px;
+  --docs-footer-glow-accent-mix: 11%;
+  --docs-footer-dot-line-mix: 56%;
+  --docs-footer-fine-dot-mix: 38%;
+  --docs-footer-veil-duration: 8s;
+  --docs-footer-fog-duration: 16s;
+  /* Dot wave (pre-GIF style): asymmetric path, smooth easing */
+  --docs-footer-wave-duration: 32s;
+  --docs-footer-fog-undulate-duration: 42s;
+  /* Keyframes use numeric opacity (not calc(var*var)) so Safari/file:// interpolates reliably. */
+  --docs-footer-breathe-min: 0.72;
 }
 
 * {
@@ -150,6 +180,234 @@ body {
   background: linear-gradient(180deg, var(--bg-gradient-top) 0%, var(--bg) 220px);
   color: var(--text);
   line-height: 1.55;
+  isolation: isolate;
+}
+
+/*
+ * Back layer: gray mist / depth ramps — thickens toward the bottom edge.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--docs-footer-veil-height);
+  z-index: 0;
+  pointer-events: none;
+  opacity: calc(var(--docs-footer-veil) * 0.96 * var(--docs-footer-scroll-strength, 1));
+  background:
+    radial-gradient(ellipse 95% 55% at 72% 100%, color-mix(in srgb, var(--muted) 18%, transparent) 0%, transparent 52%),
+    radial-gradient(ellipse 90% 60% at 28% 100%, color-mix(in srgb, var(--line) 14%, transparent) 0%, transparent 48%),
+    radial-gradient(ellipse 118% 72% at 50% 100%, color-mix(in srgb, var(--line) 26%, transparent) 0%, transparent 58%),
+    linear-gradient(to top,
+      color-mix(in srgb, var(--muted) 32%, var(--bg) 68%) 0%,
+      color-mix(in srgb, var(--line) 16%, transparent) 22%,
+      transparent 56%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  background-position: center bottom, center bottom, center bottom, center bottom;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+  /* Soft ramp: dense near footer, imperceptible toward mid-screen */
+  mask-image: linear-gradient(to top,
+      #000 0%,
+      #000 20%,
+      rgba(0, 0, 0, 0.9) 46%,
+      rgba(0, 0, 0, 0.38) 66%,
+      rgba(0, 0, 0, 0.1) 84%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to top,
+      #000 0%,
+      #000 20%,
+      rgba(0, 0, 0, 0.9) 46%,
+      rgba(0, 0, 0, 0.38) 66%,
+      rgba(0, 0, 0, 0.1) 84%,
+      transparent 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::before {
+    animation:
+      docs-footer-fog-swell var(--docs-footer-fog-duration) ease-in-out infinite,
+      docs-footer-fog-undulate var(--docs-footer-fog-undulate-duration) ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+}
+
+@keyframes docs-footer-fog-swell {
+
+  0%,
+  100% {
+    opacity: calc(var(--docs-footer-veil) * 0.82 * var(--docs-footer-scroll-strength, 1));
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: calc(var(--docs-footer-veil) * 0.98 * var(--docs-footer-scroll-strength, 1));
+    transform: translateY(-5px);
+  }
+}
+
+/* Very slow lateral drift of fog layers (pairs with dot wave). */
+@keyframes docs-footer-fog-undulate {
+
+  0%,
+  100% {
+    background-position: center bottom, center bottom, center bottom, center bottom;
+  }
+
+  20% {
+    background-position: 14px 8px, -12px 10px, 10px -8px, center bottom;
+  }
+
+  40% {
+    background-position: -10px 14px, 16px -6px, -14px 10px, center bottom;
+  }
+
+  60% {
+    background-position: 8px -10px, -8px 16px, 12px 8px, center bottom;
+  }
+
+  80% {
+    background-position: 12px 4px, 6px -12px, -10px -6px, center bottom;
+  }
+}
+
+/*
+ * Front layer: two repeating dot grids + glow (must use repeat on dot layers or the grid vanishes).
+ */
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--docs-footer-veil-height);
+  z-index: 0;
+  pointer-events: none;
+  opacity: calc(var(--docs-footer-veil) * var(--docs-footer-scroll-strength, 1));
+  background:
+    radial-gradient(circle at 1px 1px,
+      color-mix(in srgb, var(--muted) var(--docs-footer-fine-dot-mix), transparent) 1px,
+      transparent 0),
+    radial-gradient(circle at 1px 1px,
+      color-mix(in srgb, var(--line) var(--docs-footer-dot-line-mix), transparent) 1px,
+      transparent 0),
+    radial-gradient(ellipse 92% 88% at 50% 100%,
+      color-mix(in srgb, var(--accent) var(--docs-footer-glow-accent-mix), transparent) 0%,
+      transparent 58%),
+    linear-gradient(to top,
+      color-mix(in srgb, var(--line) 14%, transparent) 0%,
+      transparent 36%);
+  background-size:
+    var(--docs-footer-fine-dot-step) var(--docs-footer-fine-dot-step),
+    var(--docs-footer-dot-step) var(--docs-footer-dot-step),
+    100% 100%,
+    100% 100%;
+  background-position: 0 0, 16px 11px, center bottom, center bottom;
+  background-repeat: repeat, repeat, no-repeat, no-repeat;
+  /*
+   * Dots fade in gradually from ~mid-screen (soft mask), strongest at footer.
+   */
+  mask-image: linear-gradient(to top,
+      #000 0%,
+      #000 10%,
+      #000 32%,
+      rgba(0, 0, 0, 0.82) 52%,
+      rgba(0, 0, 0, 0.32) 70%,
+      rgba(0, 0, 0, 0.07) 86%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to top,
+      #000 0%,
+      #000 10%,
+      #000 32%,
+      rgba(0, 0, 0, 0.82) 52%,
+      rgba(0, 0, 0, 0.32) 70%,
+      rgba(0, 0, 0, 0.07) 86%,
+      transparent 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::after {
+    animation:
+      docs-footer-veil-breathe var(--docs-footer-veil-duration) ease-in-out infinite,
+      docs-footer-dot-wave var(--docs-footer-wave-duration) cubic-bezier(0.37, 0.02, 0.62, 0.98) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    animation: none;
+  }
+}
+
+@keyframes docs-footer-veil-breathe {
+
+  0%,
+  100% {
+    opacity: calc(var(--docs-footer-veil) * var(--docs-footer-breathe-min) * var(--docs-footer-scroll-strength, 1));
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    opacity: calc(var(--docs-footer-veil) * var(--docs-footer-scroll-strength, 1));
+    transform: translateY(-2px) scale(1.005);
+  }
+}
+
+/* Asymmetric wave (same as pre-GIF): two grids, uneven keyframe spacing */
+@keyframes docs-footer-dot-wave {
+
+  0%,
+  100% {
+    background-position: 0 0, 16px 11px, center bottom, center bottom;
+  }
+
+  9% {
+    background-position: 17px 3px, -3px 19px, center bottom, center bottom;
+  }
+
+  21% {
+    background-position: 24px 15px, -19px 23px, center bottom, center bottom;
+  }
+
+  34% {
+    background-position: 14px 26px, -20px 9px, center bottom, center bottom;
+  }
+
+  46% {
+    background-position: -9px 22px, 2px -10px, center bottom, center bottom;
+  }
+
+  57% {
+    background-position: -21px 9px, 19px -5px, center bottom, center bottom;
+  }
+
+  68% {
+    background-position: -18px -7px, 23px 12px, center bottom, center bottom;
+  }
+
+  78% {
+    background-position: 4px -5px, 14px 22px, center bottom, center bottom;
+  }
+
+  88% {
+    background-position: 14px 6px, 6px 16px, center bottom, center bottom;
+  }
+
+  95% {
+    background-position: 6px 2px, 20px 12px, center bottom, center bottom;
+  }
+}
+
+/* Keep page chrome above the decorative veil (::after paints after in-flow content by default). */
+body>* {
+  position: relative;
+  z-index: 1;
 }
 
 /* Embedded figures / diagrams: never spill past the content column on narrow viewports. */
@@ -528,22 +786,33 @@ p.adr-track-branch-note {
   }
 }
 
-.adr-status-log {
+details.adr-status-log {
   margin: 0 0 18px;
-  padding: 12px 14px;
+  padding: 10px 14px 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--adr-status-log-bg);
 }
 
-.adr-status-log__title {
-  display: block;
+.adr-status-log__summary {
+  cursor: pointer;
+  list-style-position: outside;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--adr-status-log-title);
+  user-select: none;
+}
+
+.adr-status-log__summary::-webkit-details-marker {
+  color: var(--muted);
+}
+
+details.adr-status-log[open] > .adr-status-log__summary {
   margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
 }
 
 .adr-status-log__row {
@@ -626,7 +895,7 @@ details.docs-theory-help[open] summary {
   background: var(--sys-diagram-head-bg);
 }
 
-.sys-diagram__head > .sys-diagram__badge {
+.sys-diagram__head>.sys-diagram__badge {
   grid-column: 1;
   grid-row: 1;
   align-self: center;
@@ -636,7 +905,7 @@ details.docs-theory-help[open] summary {
   display: contents;
 }
 
-.sys-diagram__titles > h3 {
+.sys-diagram__titles>h3 {
   grid-column: 2;
   grid-row: 1;
   margin: 0;
@@ -648,7 +917,7 @@ details.docs-theory-help[open] summary {
   line-height: 1.35;
 }
 
-.sys-diagram__titles > .sys-diagram__sub {
+.sys-diagram__titles>.sys-diagram__sub {
   grid-column: 1 / -1;
   grid-row: 2;
   margin: 0;
@@ -656,7 +925,7 @@ details.docs-theory-help[open] summary {
 }
 
 /* Sequence diagrams: badge + h3 only (no .sys-diagram__titles wrapper). */
-.sys-diagram__head > h3 {
+.sys-diagram__head>h3 {
   grid-column: 2;
   grid-row: 1;
   margin: 0;
@@ -1033,31 +1302,19 @@ th {
  * Hand-authored docs (`main.container`, not pdoc): keep tables in the content column on narrow viewports.
  * Skip: .docs-table-scroll (horizontal scroll region), audit score/reference tables (own layout + wrapper).
  */
-main.container:not(.container--swagger)
-  :not(.docs-table-scroll)
-  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) {
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) {
   table-layout: fixed;
   width: 100%;
   max-width: 100%;
 }
 
-main.container:not(.container--swagger)
-  :not(.docs-table-scroll)
-  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table)
-  th,
-main.container:not(.container--swagger)
-  :not(.docs-table-scroll)
-  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table)
-  td {
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) th,
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) td {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-main.container:not(.container--swagger)
-  :not(.docs-table-scroll)
-  > table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table)
-  :not(pre)
-  > code {
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) :not(pre)>code {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -1793,11 +2050,11 @@ main.docs-page-layout [id] {
   display: none;
 }
 
-.docs-page-meta--premium .docs-page-meta__editor + .docs-page-meta__editor {
+.docs-page-meta--premium .docs-page-meta__editor+.docs-page-meta__editor {
   position: relative;
 }
 
-.docs-page-meta--premium .docs-page-meta__editor + .docs-page-meta__editor::before {
+.docs-page-meta--premium .docs-page-meta__editor+.docs-page-meta__editor::before {
   content: "·";
   position: absolute;
   left: -9px;
@@ -1892,21 +2149,19 @@ main.docs-page-layout [id] {
   gap: 12px;
 }
 
-.portal-skeleton-grid > span,
-.portal-skeleton-list > li {
+.portal-skeleton-grid>span,
+.portal-skeleton-list>li {
   display: block;
   border-radius: 10px;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--card, #fff) 80%, var(--line, #dbe3ef)) 20%,
-    color-mix(in srgb, var(--card, #fff) 92%, var(--line, #dbe3ef)) 55%,
-    color-mix(in srgb, var(--card, #fff) 80%, var(--line, #dbe3ef)) 100%
-  );
+  background: linear-gradient(90deg,
+      color-mix(in srgb, var(--card, #fff) 80%, var(--line, #dbe3ef)) 20%,
+      color-mix(in srgb, var(--card, #fff) 92%, var(--line, #dbe3ef)) 55%,
+      color-mix(in srgb, var(--card, #fff) 80%, var(--line, #dbe3ef)) 100%);
   background-size: 220% 100%;
   animation: docs-skeleton-sweep 1.2s linear infinite;
 }
 
-.portal-skeleton-grid > span {
+.portal-skeleton-grid>span {
   height: 82px;
 }
 
@@ -1918,13 +2173,18 @@ main.docs-page-layout [id] {
   gap: 8px;
 }
 
-.portal-skeleton-list > li {
+.portal-skeleton-list>li {
   height: 18px;
 }
 
 @keyframes docs-skeleton-sweep {
-  from { background-position: 200% 0; }
-  to { background-position: -20% 0; }
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -20% 0;
+  }
 }
 
 @media (max-width: 700px) {
@@ -1936,7 +2196,7 @@ main.docs-page-layout [id] {
     flex-basis: 100%;
   }
 
-  .docs-page-meta--premium .docs-page-meta__editor + .docs-page-meta__editor::before {
+  .docs-page-meta--premium .docs-page-meta__editor+.docs-page-meta__editor::before {
     left: -8px;
   }
 }
@@ -1974,7 +2234,7 @@ main.docs-page-layout [id] {
   gap: 0.35rem;
 }
 
-.docs-breadcrumbs__item + .docs-breadcrumbs__item::before {
+.docs-breadcrumbs__item+.docs-breadcrumbs__item::before {
   content: "/";
   color: var(--line);
   font-weight: 500;
@@ -2000,15 +2260,104 @@ main.docs-page-layout [id] {
   color: var(--muted);
 }
 
-/* Site footer (docs-nav.js initDocsSiteFooter) */
+/* Site footer (docs-nav.js initDocsSiteFooter) — “tile” + subtle finish line above (pairs with dot veil). */
 .docs-site-footer {
+  position: relative;
   margin-top: 2.5rem;
   padding: 1.25rem 0 2rem;
   border-top: 1px solid var(--line);
-  background: color-mix(in srgb, var(--card) 65%, transparent);
+  box-shadow: 0 -1px 0 0 color-mix(in srgb, var(--accent) 16%, transparent);
+  background: linear-gradient(180deg,
+      color-mix(in srgb, var(--card) 82%, transparent) 0%,
+      color-mix(in srgb, var(--card) 62%, transparent) 100%);
+}
+
+/* Soft glow wash behind footer text (opacity-only keyframes — interpolates everywhere). */
+.docs-site-footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 100% 70% at 50% 0%,
+      color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+      transparent 62%);
+  opacity: 0.28;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .docs-site-footer::after {
+    animation: docs-site-footer-glow-pulse 6.5s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-site-footer::after {
+    animation: none;
+    opacity: 0.22;
+  }
+}
+
+@keyframes docs-site-footer-glow-pulse {
+
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+
+  50% {
+    opacity: 0.42;
+  }
+}
+
+.docs-site-footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  pointer-events: none;
+  border-radius: 0 0 2px 2px;
+  z-index: 1;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--accent) 52%, transparent) 50%,
+      transparent 100%);
+  background-size: 220% 100%;
+  opacity: 0.65;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .docs-site-footer::before {
+    animation: docs-site-footer-accent-sweep 11s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-site-footer::before {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+@keyframes docs-site-footer-accent-sweep {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.45;
+  }
+
+  50% {
+    background-position: 100% 50%;
+    opacity: 0.95;
+  }
 }
 
 .docs-site-footer__inner {
+  position: relative;
+  z-index: 2;
   padding-bottom: 0.5rem;
 }
 
@@ -2021,16 +2370,16 @@ main.docs-page-layout [id] {
   font-size: 0.88rem;
 }
 
-.docs-site-footer__links > a {
+.docs-site-footer__links>a {
   color: var(--accent);
   text-decoration: none;
 }
 
-.docs-site-footer__links > a:hover {
+.docs-site-footer__links>a:hover {
   text-decoration: underline;
 }
 
-.docs-site-footer__links > a + a::before {
+.docs-site-footer__links>a+a::before {
   content: "·";
   margin-right: 0.65rem;
   margin-left: 0.15rem;
@@ -2052,6 +2401,7 @@ main.docs-page-layout [id] {
  * Wider layout rules: docs-site-nav.css (720px), .docs-page-layout (960px), ADR tracks (640px).
  */
 @media (max-width: 520px) {
+
   main.container,
   .container {
     padding-top: max(20px, env(safe-area-inset-top, 0px));
@@ -2196,4 +2546,75 @@ main.docs-page-layout [id] {
   margin: 0.75rem 0 0;
   padding-left: 1.1rem;
   max-width: 58rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Glossary / definition tooltips (hover + keyboard focus; no extra JS)        */
+/* Usage: <span class="docs-tooltip" tabindex="0" data-tooltip="…">term</span> */
+/* -------------------------------------------------------------------------- */
+
+.docs-tooltip {
+  position: relative;
+  display: inline;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, var(--accent) 55%, var(--text));
+  text-underline-offset: 0.15em;
+  outline: none;
+}
+
+.docs-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 200;
+  left: 0;
+  bottom: calc(100% + 8px);
+  min-width: 12rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--docs-tooltip-border);
+  background: var(--docs-tooltip-bg);
+  color: var(--docs-tooltip-fg);
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  text-decoration: none;
+  white-space: normal;
+  box-shadow: var(--docs-tooltip-shadow);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-fast) var(--motion-ease-premium),
+    visibility var(--motion-fast) var(--motion-ease-premium);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-tooltip::after {
+    transition: none;
+  }
+}
+
+.docs-tooltip:hover::after,
+.docs-tooltip:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.docs-tooltip:focus-visible {
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
+}
+
+.docs-tooltip.docs-tooltip--etr::after {
+  content: var(--docs-tooltip-etr-text);
+}
+
+/* Nested glossary spans inside links/buttons: show hint when the control is focused (keyboard). */
+a:focus-within .docs-tooltip::after,
+button:focus-within .docs-tooltip::after {
+  opacity: 1;
+  visibility: visible;
 }

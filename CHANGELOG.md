@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Employee portal:** profile for **Kirill Neustroev** (DevOps) under `docs/internal/portal/people/kirill-neustroev/`; his person id is included in `data-maintainer-ids` on the internal error catalog page (`docs/internal/api/errors.html`).
+
+- **Documentation assessment:** UI/UX assessment for the docs experience, `docs/audit/docs/2026-04-21-ui-ux-assessment.html`, linked from `docs/audit/docs/README.html`; `docs/audit/README.html` expands guidance on assessment file naming, location, and structure.
+
 ### Changed
 
 - **Documentation:** internal employee portal (`docs/internal/portal/`), generated portal data in `docs/assets/docs-portal-data.js`, page history sections and validation on hand-written HTML, and related scripts (`collect_docs_portal_data.py`, `ensure_docs_page_history.py`, and helpers). Details: [`docs/CHANGELOG.md`](docs/CHANGELOG.md#2026-04-21).
+
+- **Docs UI:** follow-up polish to shared styles and chrome (`docs/assets/docs.css`, `docs-theme.css`, `docs-nav.js`, `internal-sidebar.js`, `docs-internal-meta.js`) and portal profile pages; regenerated `docs-portal-data.js` and client-side `search-index.json` to match maintained pages and the new assessment.
 
 - Documentation HTML pages now use a shared favicon (`docs/assets/favicon.svg`), including `docs/openapi/openapi-explorer.html`, with generation/backfill scripts keeping favicon links consistent across regenerated docs output.
 

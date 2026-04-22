@@ -109,7 +109,8 @@
   function currentDocsRelPath() {
     const path = window.location.pathname.replace(/\\/g, "/");
     const marker = "/docs/";
-    const idx = path.lastIndexOf(marker);
+    // First "/docs/" is the repo docs root; lastIndexOf fails for .../docs/audit/docs/...
+    const idx = path.indexOf(marker);
     if (idx >= 0) {
       return path.slice(idx + marker.length);
     }
@@ -214,7 +215,11 @@
           label: "Conspectus",
           expand: "after-api-hub",
           children: [
-            { label: "Hub — entity, ETR mapping & methods", path: "internal/api/conspectus/index.html" },
+            {
+              labelHtml:
+                'Hub — entity, <span class="docs-tooltip docs-tooltip--etr">ETR</span> mapping &amp; methods',
+              path: "internal/api/conspectus/index.html",
+            },
             { label: "POST /conspectuses", path: "internal/api/conspectus/operations/post-api-v1-conspectuses.html" },
             { label: "PATCH /conspectuses/{id}", path: "internal/api/conspectus/operations/patch-api-v1-conspectuses-conspectus_uuid.html" },
             { label: "POST …/actions/review", path: "internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html" },
@@ -256,7 +261,11 @@
       } else {
         const a = document.createElement("a");
         a.href = relHref(fromDir, node.path);
-        a.textContent = node.label;
+        if (node.labelHtml) {
+          a.innerHTML = node.labelHtml;
+        } else {
+          a.textContent = node.label;
+        }
         if (pathIsActive(currentPath, node.path)) {
           a.classList.add("is-active");
           a.setAttribute("aria-current", "page");

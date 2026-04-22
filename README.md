@@ -1,4 +1,4 @@
-# ETR Study App API
+# <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study App API
 
 FastAPI service for the Study App domain. Longer reads: [System design](docs/internal/system-design.html), [Developers](docs/internal/developers.html), [Architecture & quality assessments](docs/audit/README.html).
 

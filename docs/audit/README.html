@@ -31,8 +31,10 @@
           <h2>Overview</h2>
           <p>
             These pages are <strong>maturity assessments</strong> for this repo. Each report lists reference practices
-            (Table 1), scores how we match them (Table 2) with a short <strong>justification</strong> per row, then scoring
-            arithmetic, <strong>Top‑5 gaps</strong> with workflow status (TODO / IN PROGRESS / DONE), and next steps. ADRs
+            (Table 1), scores how we match them (Table 2) with a short <strong>justification</strong> per row, then
+            scoring
+            arithmetic, <strong>Top‑5 gaps</strong> with workflow status (TODO / IN PROGRESS / DONE), and next steps.
+            ADRs
             record <em>decisions</em>; assessments record <em>how we compare</em> to common practice on a given date.
           </p>
         </section>
@@ -61,73 +63,202 @@
         </section>
 
         <section class="card">
-          <h2>Industry context</h2>
+          <h2 id="how-to-create-assessments">How to create assessments (naming, structure, prompt)</h2>
+
+          <h3 id="file-naming-and-location">File naming and location</h3>
+          <ul>
+            <li>
+              <strong>Preferred file name:</strong>
+              <code><var>YYYY-MM-DD</var>-<var>topic</var>-assessment.html</code> — date first (ISO), then kebab-case
+              topic, then <code>-assessment.html</code>. Example:
+              <code>2026-04-21-ui-ux-assessment.html</code>.
+            </li>
+            <li>
+              <strong>Folder:</strong> put the file under the right type:
+              <code>docs/audit/docs/</code> (documentation / DX / UI of docs) or <code>docs/audit/api/</code> (REST / HTTP
+              API). Do not place new assessments in <code>docs/audit/</code> root unless you are updating the template
+              itself.
+            </li>
+            <li>
+              <strong>Title alignment:</strong> the same formation date must appear in
+              <code>&lt;title&gt;</code>, <code>&lt;h1&gt;</code>, Overview, and the first “Page history” row where
+              applicable (see comment in
+              <a href="./AUDIT_TEMPLATE.html"><code>AUDIT_TEMPLATE.html</code></a>).
+            </li>
+            <li>
+              <strong>Asset paths:</strong> for pages inside <code>docs/audit/docs/</code> or
+              <code>docs/audit/api/</code>, link shared CSS/JS with <code>../../assets/…</code> (two levels up to
+              <code>docs/assets/</code>).
+            </li>
+            <li>
+              <strong>Index:</strong> add a row to the matching index
+              (<a href="./docs/README.html"><code>docs/audit/docs/README.html</code></a> or
+              <a href="./api/README.html"><code>docs/audit/api/README.html</code></a>) and record the change in that page’s
+              Page history.
+            </li>
+          </ul>
+
+          <h3 id="required-html-structure">Required HTML structure (must match the repo template)</h3>
           <p>
-            Large firms often use <strong>design reviews</strong>, <strong>launch checklists</strong>,
-            <strong>security programs</strong>, and <strong>central dev portals</strong>. Here we use a
-            <strong>smaller, git-based</strong> version: Table 1 (what “good” looks like), Table 2 (our scores), then gaps
-            and
-            fixes. Same general idea as big-company reviews; it does not replace tests, ADRs, or formal sign-off.
+            Copy <a href="./AUDIT_TEMPLATE.html"><code>docs/audit/AUDIT_TEMPLATE.html</code></a> and replace placeholders.
+            Do not invent a different section order or skip numbered sections. Minimum skeleton:
           </p>
-          <p>
-            Unless stated, assessments assume <strong>PET-scale</strong> work. A low score often means “not done yet” or
-            “not
-            worth it at this size,” not “you must build an enterprise portal.” See
-            <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR 0024
-              — industry context</a>.
+          <ol>
+            <li><code>&lt;body data-maintainer-ids="…"&gt;</code> — maintainer person id(s) for Page editors.</li>
+            <li>
+              <code>&lt;main class="container"&gt;</code> with <code>&lt;h1&gt;</code>,
+              <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code>,
+              <code>&lt;div id="docs-page-meta-mount" hidden&gt;&lt;/div&gt;</code>.
+            </li>
+            <li><code>&lt;section id="overview" class="card"&gt;</code> — Overview.</li>
+            <li><code>&lt;h2 id="1-scope-and-methodology"&gt;</code> — Scope and methodology (subsections as needed).</li>
+            <li>
+              <code>&lt;h2 id="table-1-reference-practices"&gt;</code> — Table 1 in
+              <code>table.audit-ref-table</code> (reference practices).
+            </li>
+            <li>
+              <code>&lt;h2 id="table-2-study-app-scores"&gt;</code> — Table 2 in
+              <code>table.audit-score-table</code>, score cells
+              <code>td.score-excellent|score-good|score-needs-attention</code>, plus
+              <code>&lt;div class="audit-score-legend-include" data-legend-id="…"&gt;&lt;/div&gt;</code> and
+              <code>&lt;noscript&gt;</code> legend fallback per template.
+            </li>
+            <li>
+              <code>&lt;h2 id="4-scoring-summary"&gt;</code> — §4.1 narrative, §4.2 optional weighted model, §4.3 Top five
+              gaps in <code>table.audit-gap-table</code> with status cells
+              <code>audit-gap-status--todo|inprogress|done</code>.
+            </li>
+            <li>
+              <code>&lt;h2 id="5-page-history"&gt;</code> — numbered “5. Page history” table, plus the duplicate
+              <code>&lt;section id="page-history" class="card"&gt;</code> block as in the template (repository convention).
+            </li>
+            <li><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> before
+              <code>&lt;/main&gt;</code>.</li>
+            </ol>
+            <p class="small">
+              Score scale and governance:
+              <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>. Broader HTML rules:
+              <a href="../internal/documentation-style-guide.html">Documentation style guide</a>.
             </p>
-          </section>
 
-          <section class="card">
-            <h2>All published assessments</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Assessment type</th>
-                  <th scope="col">Focus</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><a href="./docs/README.html">Documentation Experience (DX)</a></td>
-                  <td>Gap assessment for documentation experience (DX)</td>
-                </tr>
-                <tr>
-                  <td><a href="./api/README.html">REST API</a></td>
-                  <td>Gap assessment for REST API</td>
-                </tr>
-              </tbody>
-            </table>
+            <h3 id="llm-prompt-audit-generation">LLM prompt — generate a new assessment (copy/paste)</h3>
             <p>
-              Note changes in
-              <a href="../CHANGELOG.md">docs/CHANGELOG.md</a>.
+              Paste into your assistant. Replace bracketed fields. Output must be a <strong>single valid HTML file</strong>
+              matching the structure above, saved under the correct <code>docs/audit/…</code> folder with the correct file
+              name.
             </p>
-          </section>
-          <section id="page-history" class="card">
-            <h2>Page history</h2>
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
-              <table class="docs-page-history">
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Change</th>
-                    <th scope="col">Author</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                    <td>Added Page history section (repository baseline).</td>
-                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+            <pre><code>You are a technical writer and quality auditor for the Study App repository.
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
-    </div>
+              Task: produce a new maturity assessment page as HTML only.
 
-  </body></html>
+              Hard requirements:
+              1) Follow the exact section order and heading ids from docs/audit/AUDIT_TEMPLATE.html (Overview; 1. Scope; 2. Table: Reference practices; 3. Table: AS-IS situation; 4. Scoring summary with subsections 4.1–4.3; 5. Page history; duplicate section id="page-history"; docs-inpage-toc-mount at end of main).
+              2) Use table.audit-ref-table for Table 1, table.audit-score-table for Table 2 with justification column, audit-score-legend-include + noscript fallback, table.audit-gap-table for Top five gaps.
+              3) Use body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" unless the user specifies another id.
+              4) For a file saved under docs/audit/docs/ or docs/audit/api/, use relative paths ../../assets/docs.css, ../../assets/docs-theme.css, ../../assets/docs-nav.js, ../../assets/docs-portal-data.js, ../../assets/docs-internal-meta.js, and ../../assets/favicon.svg.
+              5) File name: YYYY-MM-DD-&lt;topic&gt;-assessment.html. Put the same formation date in &lt;title&gt;, &lt;h1&gt;, and Overview.
+              6) Language: English. No markdown — output raw HTML only.
+
+              Context for this assessment:
+              - Assessment type: [docs/DX vs REST API — pick one]
+              - Topic: [short name]
+              - Formation date (YYYY-MM-DD): [date]
+              - Table 1 rows: [number and themes — or “match existing DX/API audit row count in the sibling assessment file”]
+              - Evidence to cite: [paths, ADRs, Makefile targets, OpenAPI, etc.]
+              - Top five gaps to track: [list]
+
+              Deliver: the full HTML document, nothing else.</code></pre>
+            </section>
+
+            <section class="card">
+              <h2>Industry context</h2>
+              <p>
+                Large firms often use <strong>design reviews</strong>, <strong>launch checklists</strong>,
+                <strong>security programs</strong>, and <strong>central dev portals</strong>. Here we use a
+                <strong>smaller, git-based</strong> version: Table 1 (what “good” looks like), Table 2 (our scores), then
+                gaps
+                and
+                fixes. Same general idea as big-company reviews; it does not replace tests, ADRs, or formal sign-off.
+              </p>
+              <p>
+                Unless stated, assessments assume <strong>PET-scale</strong> work. A low score often means “not done yet” or
+                “not
+                worth it at this size,” not “you must build an enterprise portal.” See
+                <a href="../adr/0024-architecture-and-quality-assessment-documents.html#industry-context-and-study-app">ADR
+                  0024
+                  — industry context</a>.
+                </p>
+              </section>
+
+              <section class="card">
+                <h2>All published assessments</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Assessment type</th>
+                      <th scope="col">Focus</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><a href="./docs/README.html">Documentation Experience (DX)</a></td>
+                      <td>Gap assessment for documentation experience (DX), including UI/UX audit templates and assessments.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><a href="./api/README.html">REST API</a></td>
+                      <td>Gap assessment for REST API</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>
+                  Note changes in
+                  <a href="../CHANGELOG.md">docs/CHANGELOG.md</a>.
+                </p>
+              </section>
+
+              <section id="page-history" class="card">
+                <h2>Page history</h2>
+                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                  <table class="docs-page-history">
+                    <thead>
+                      <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Change</th>
+                        <th scope="col">Author</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><time datetime="2026-04-22">2026-04-22</time></td>
+                        <td>Added “How to create assessments” (naming, required structure, LLM copy/paste prompt).</td>
+                        <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                      </tr>
+                      <tr>
+                        <td><time datetime="2026-04-21">2026-04-21</time></td>
+                        <td>Added direct link card for latest UI/UX assessment page.</td>
+                        <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                      </tr>
+                      <tr>
+                        <td><time datetime="2026-04-21">2026-04-21</time></td>
+                        <td>Updated Documentation Experience row to reflect UI/UX assessments under
+                          <code>docs/audit/docs/</code>.
+                        </td>
+                        <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                      </tr>
+                      <tr>
+                        <td><time datetime="2026-04-21">2026-04-21</time></td>
+                        <td>Added Page history section (repository baseline).</td>
+                        <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+            </main>
+          </div>
+        </div>
+
+      </body></html>

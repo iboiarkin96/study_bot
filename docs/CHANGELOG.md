@@ -4,6 +4,24 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-04-22
+
+### Added
+
+- **Portal profile [Kirill Neustroev](internal/portal/people/kirill-neustroev/index.html)** (DevOps): machine-readable `data-person-*` on `<body>`, avatar `photo.png`, **Page history** baseline. Co-maintainer on [`docs/internal/api/errors.html`](internal/api/errors.html) via `data-maintainer-ids`.
+
+- **[UI/UX assessment (2026-04-21)](audit/docs/2026-04-21-ui-ux-assessment.html)** — documentation experience assessment (tables, weighted axes, gaps); indexed under [`docs/audit/docs/README.html`](audit/docs/README.html).
+
+### Changed
+
+- **[`docs/audit/README.html`](audit/README.html):** new section **How to create assessments** (file naming such as `YYYY-MM-DD-topic-assessment.html`, folder choice under `docs/audit/docs/` or `docs/audit/api/`, title alignment, asset paths, ADR 0024 cross-links).
+
+- **[`docs/audit/docs/README.html`](audit/docs/README.html):** assessment table lists the UI/UX report alongside earlier DX assessments.
+
+- **Shared docs assets:** incremental updates to [`docs/assets/docs.css`](assets/docs.css), [`docs-theme.css`](assets/docs-theme.css), [`docs-nav.js`](assets/docs-nav.js), [`internal-sidebar.js`](assets/internal-sidebar.js), and [`docs-internal-meta.js`](assets/docs-internal-meta.js); portal profile tweaks for Cursor and Ivan Boyarkin; [`README.md`](../README.md), [`docs/index.html`](index.html), and selected internal pages (conspectus, methodology, backlog) refreshed in the same pass.
+
+- **Generated artifacts:** [`docs/assets/docs-portal-data.js`](assets/docs-portal-data.js) and [`docs/assets/search-index.json`](assets/search-index.json) regenerated (`collect_docs_portal_data.py`, `build_docs_search_index.py`).
+
 ## 2026-04-21
 
 ### Added

@@ -50,7 +50,8 @@
   function currentDocsRelPath() {
     const path = window.location.pathname.replace(/\\/g, "/");
     const marker = "/docs/";
-    const idx = path.lastIndexOf(marker);
+    // First "/docs/" is the repo docs root; lastIndexOf fails for .../docs/audit/docs/...
+    const idx = path.indexOf(marker);
     if (idx >= 0) {
       return path.slice(idx + marker.length);
     }

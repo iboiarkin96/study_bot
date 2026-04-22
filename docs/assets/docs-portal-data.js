@@ -144,6 +144,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Documentation Experience (DX) Assessment — Study App — formed 18 Apr 2026 (test snapshot)"
       },
       {
+        "path": "audit/docs/2026-04-21-ui-ux-assessment.html",
+        "title": "UI/UX Assessment — Study App docs experience — formed 2026-04-21"
+      },
+      {
         "path": "audit/docs/README.html",
         "title": "Documentation experience assessments — index"
       },
@@ -381,6 +385,12 @@ window.__DOCS_PORTAL_DATA__ = {
         "path": "internal/api/errors.html",
         "title": "Error catalog and sync — Study App"
       }
+    ],
+    "16fc8b78537109162984a2fdbef6e143": [
+      {
+        "path": "internal/api/errors.html",
+        "title": "Error catalog and sync — Study App"
+      }
     ]
   },
   "people": [
@@ -403,6 +413,16 @@ window.__DOCS_PORTAL_DATA__ = {
       "groups": [
         "backend",
         "pm"
+      ]
+    },
+    {
+      "personId": "16fc8b78537109162984a2fdbef6e143",
+      "slug": "kirill-neustroev",
+      "github": "-",
+      "displayName": "Kirill Neustroev",
+      "photo": "internal/portal/people/kirill-neustroev/photo.png",
+      "groups": [
+        "devops"
       ]
     }
   ]

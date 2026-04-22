@@ -35,7 +35,9 @@ function relHref(fromDir, targetRelPath) {
 function currentDocsRelPath() {
   const path = window.location.pathname.replace(/\\/g, "/");
   const marker = "/docs/";
-  const idx = path.lastIndexOf(marker);
+  // Use the first "/docs/" as the repo docs root. lastIndexOf breaks paths that also
+  // contain ".../audit/docs/..." (file:// and static hosts), yielding only the file name.
+  const idx = path.indexOf(marker);
   if (idx >= 0) {
     return path.slice(idx + marker.length);
   }
@@ -114,7 +116,7 @@ const DOCS_SEARCH_MAX_RESULTS = 10;
 const DOCS_SEARCH_DEBOUNCE_MS = 120;
 const DOCS_SEARCH_MAX_PREFIX_EXPANSIONS = 24;
 const DOCS_SEARCH_SUCCESS_WINDOW_MS = 60_000;
-const DOCS_FEEDBACK_REPOSITORY = "iboiarkin96/etr-study-api";
+const DOCS_FEEDBACK_REPOSITORY = "iboiarkin96/study_bot";
 const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.yml";
 const DOCS_FEEDBACK_LABELS = ["docs-feedback"];
 const DOCS_FEEDBACK_CARD_ENABLED = false;
@@ -163,7 +165,8 @@ function injectDocsLifecycleHelp() {
       el.innerHTML = `<summary>How to set status (author reference)</summary>
       <p class="small">
         On <code>&lt;main&gt;</code>, set <code>data-adr-weight</code> to the <strong>current</strong> milestone (−1 … 7).
-        The page shows <strong>Current status</strong> and the <strong>Status log</strong> from that value. Policy:
+        The page shows <strong>Current status</strong> and a collapsible <strong>Status log</strong> (expand to see all
+        steps) from that value. Policy:
         <a href="${h18}">ADR 0018</a>.
       </p>
       <table>
@@ -1201,15 +1204,12 @@ function renderAdrCurrentStatus(nav, globalMax) {
 }
 
 function renderAdrStatusLogAfter(anchor, globalMax) {
-  const wrap = document.createElement("div");
-  wrap.className = "adr-status-log";
-  wrap.setAttribute("role", "group");
-  wrap.setAttribute("aria-label", "Status log");
+  const details = document.createElement("details");
+  details.className = "adr-status-log";
 
-  const title = document.createElement("span");
-  title.className = "adr-status-log__title";
-  title.textContent = "Status log";
-  wrap.appendChild(title);
+  const summary = document.createElement("summary");
+  summary.className = "adr-status-log__summary";
+  summary.textContent = "Status log";
 
   const row = document.createElement("div");
   row.className = "adr-status-log__row";
@@ -1225,8 +1225,9 @@ function renderAdrStatusLogAfter(anchor, globalMax) {
     row.appendChild(sp);
   }
 
-  wrap.appendChild(row);
-  anchor.insertAdjacentElement("afterend", wrap);
+  details.appendChild(summary);
+  details.appendChild(row);
+  anchor.insertAdjacentElement("afterend", details);
 }
 
 function renderLifecycleStatusBlocks(main) {
@@ -1736,6 +1737,42 @@ function initBackToTopButton() {
   updateVisibility();
 }
 
+/**
+ * Scales footer atmosphere (docs.css body::before / body::after) by scroll: subtler at the top of
+ * the document, full strength near the bottom. Sets `--docs-footer-scroll-strength` on `<html>`.
+ * CSS default is 1 when this script does not run.
+ */
+function initDocsFooterAtmosphereScroll() {
+  const root = document.documentElement;
+  const minStrength = 0.18;
+
+  function computeStrength() {
+    const scrollable = root.scrollHeight - window.innerHeight;
+    if (scrollable <= 4) {
+      return 1;
+    }
+    const t = Math.min(1, Math.max(0, window.scrollY / scrollable));
+    return minStrength + (1 - minStrength) * t;
+  }
+
+  let ticking = false;
+  function apply() {
+    root.style.setProperty("--docs-footer-scroll-strength", computeStrength().toFixed(4));
+    ticking = false;
+  }
+
+  function onScrollOrResize() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(apply);
+    }
+  }
+
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize, { passive: true });
+  apply();
+}
+
 /** Site-wide footer on hand-written docs pages (presence of `#docs-top-nav`). */
 function initDocsSiteFooter() {
   if (document.getElementById("docs-site-footer")) {
@@ -1787,12 +1824,10 @@ function initDocsSiteFooter() {
 }
 
 function buildDocsPageActions(fromDir, relPath) {
+  void fromDir;
   return [
     { label: "Edit page", href: `https://github.com/${DOCS_FEEDBACK_REPOSITORY}/edit/main/docs/${relPath}`, group: "Page" },
-    { label: "Page history", href: "#page-history", group: "Page" },
     { label: "Report issue", href: docsFeedbackIssueUrl(), group: "Page" },
-    { label: "Documentation home", href: relHref(fromDir, "index.html"), group: "Navigate" },
-    { label: "OpenAPI explorer", href: relHref(fromDir, "openapi/openapi-explorer.html"), group: "Navigate" },
   ];
 }
 
@@ -1875,20 +1910,6 @@ function initDocsQuickActions() {
     li.appendChild(a);
     list.appendChild(li);
   }
-  const searchLi = document.createElement("li");
-  const searchBtn = document.createElement("button");
-  searchBtn.type = "button";
-  searchBtn.textContent = "Focus docs search";
-  searchBtn.addEventListener("click", () => {
-    const input = document.querySelector(".docs-search__input");
-    if (input) {
-      input.focus();
-      input.select();
-    }
-    panel.hidden = true;
-  });
-  searchLi.appendChild(searchBtn);
-  list.appendChild(searchLi);
   document.body.appendChild(panel);
 
   function visibleItems() {
@@ -2009,5 +2030,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initAutoInPageToc();
   initInPageTocScrollSpy();
   initBackToTopButton();
+  initDocsFooterAtmosphereScroll();
   initDocsSiteFooter();
 });

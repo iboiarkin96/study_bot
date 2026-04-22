@@ -144,6 +144,10 @@
     --status-rejected-bg: #5a1e1e;
     --status-rejected-border: #da3633;
     --status-rejected-text: #ffd8d8;
+    --docs-tooltip-bg: #e2e8f0;
+    --docs-tooltip-fg: #0f172a;
+    --docs-tooltip-border: rgba(15, 23, 42, 0.14);
+    --docs-tooltip-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -290,6 +294,10 @@ html[data-theme="dark"] {
   --status-rejected-bg: #5a1e1e;
   --status-rejected-border: #da3633;
   --status-rejected-text: #ffd8d8;
+  --docs-tooltip-bg: #e2e8f0;
+  --docs-tooltip-fg: #0f172a;
+  --docs-tooltip-border: rgba(15, 23, 42, 0.14);
+  --docs-tooltip-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
 }
 
 /* ADR “Current status” pill — inner fill + animated rim tuned for dark backgrounds */
@@ -428,4 +436,25 @@ html[data-theme="dark"] .audit-gap-table td.audit-gap-status--done {
   background: var(--status-done-bg);
   border-left-color: var(--status-done-border);
   color: var(--status-done-text);
+}
+
+/* Footer atmosphere (docs.css body::before/::after): dark — rarer grid, slightly brighter grain */
+html[data-theme="dark"] {
+  --docs-footer-dot-step: 28px;
+  --docs-footer-fine-dot-step: 16px;
+  --docs-footer-glow-accent-mix: 15%;
+  --docs-footer-dot-line-mix: 52%;
+  --docs-footer-fine-dot-mix: 44%;
+  --docs-footer-veil-height: min(74vh, 860px);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    --docs-footer-dot-step: 28px;
+    --docs-footer-fine-dot-step: 16px;
+    --docs-footer-glow-accent-mix: 15%;
+    --docs-footer-dot-line-mix: 52%;
+    --docs-footer-fine-dot-mix: 44%;
+    --docs-footer-veil-height: min(74vh, 860px);
+  }
 }

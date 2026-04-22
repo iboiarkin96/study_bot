@@ -32,13 +32,13 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1><abbr title="Extract–Transform–Retrieve">ETR</abbr> Study API — System design</h1>
+        <h1><span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> Study API — System design</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
         <section class="card" id="overview">
           <h2>Overview</h2>
           <p>
-            This document defines the <strong>system design</strong> of the ETR Study API: a single, versioned HTTP
+            This document defines the <strong>system design</strong> of the <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> Study API: a single, versioned HTTP
             surface backed by a relational model that supports Extract–Transform–Retrieve study flows, spaced retrieval,
             and auditable history. It is written for engineers who implement, integrate, or operate the service.
           </p>
@@ -110,7 +110,7 @@
                   </section>
 
                   <section class="card" id="etr-methodology">
-                    <h2>ETR methodology mapping</h2>
+                    <h2><span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> methodology mapping</h2>
                     <p class="small">
                       <strong>Level:</strong> <strong>Bridge to engineering.</strong> Methodology describes <em>how humans
                       study</em>;
@@ -415,7 +415,7 @@
 
                                                     <section class="card" id="problem-statement">
                                                       <h2>Problem statement</h2>
-                                                      <p><strong>Goal:</strong> a versioned HTTP API that durably supports ETR learning workflows.</p>
+                                                      <p><strong>Goal:</strong> a versioned HTTP API that durably supports <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> learning workflows.</p>
                                                       <p><strong>Problem:</strong> retention collapses when rehearsal and state are not persisted with clear
                                                         history.</p>
                                                         <p>
@@ -787,7 +787,7 @@
                                                                             <p>
                                                                               For <code>cue_sheet_schema_version = 1</code>, <code>cue_sheet</code> is an object with a <code>rows</code>
                                                                               array. Each row aligns with the three-column mental model in
-                                                                              <a href="./methodology.html#etr-home">Methodology · ETR at home</a>:
+                                                                              <a href="./methodology.html#etr-home">Methodology · <span class="docs-tooltip docs-tooltip--etr">ETR</span> at home</a>:
                                                                             </p>
                                                                             <ul>
                                                                               <li><code>keyword</code> — short anchor (one to three words).</li>
@@ -1215,7 +1215,7 @@
                                                                                                           <td><strong>FR-2</strong></td>
                                                                                                           <td>Conspectus create</td>
                                                                                                           <td>
-                                                                                                            Accept ETR-shaped payloads (<code>cue_sheet</code>, <code>dense_paragraph</code>,
+                                                                                                            Accept <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span>-shaped payloads (<code>cue_sheet</code>, <code>dense_paragraph</code>,
                                                                                                             <code>bullets</code>, optional <code>title</code>); persist snapshot and initial schedule per
                                                                                                             <code>SchedulePolicy</code>; append a <code>CREATED</code> domain event.
                                                                                                           </td>
