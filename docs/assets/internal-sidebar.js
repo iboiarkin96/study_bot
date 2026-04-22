@@ -549,6 +549,15 @@
         },
       ],
     },
+    {
+      label: "Docs documentation",
+      children: [{
+        label: "#1 Docs frontend navigation and theme controls",
+        path: "internal/docs-documentation-frontend-tz-menu-and-theme.html"
+      },
+
+      ]
+    },
   ];
 
   function renderTree(nodes, fromDir, currentPath) {
