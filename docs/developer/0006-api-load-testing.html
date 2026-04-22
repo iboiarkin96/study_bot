@@ -28,7 +28,7 @@
     </p>
     <section class="card">
 
-      <h2>1. Why run load-style traffic</h2>
+      <h2>Why run load-style traffic</h2>
       <ul>
         <li>
           Unit tests (<code>make test</code>) check contracts. A load run shows <strong>2xx / 4xx / 5xx</strong> mix,
@@ -41,7 +41,7 @@
     </section>
     <section class="card">
 
-      <h2>2. Environment setup</h2>
+      <h2>Environment setup</h2>
       <ol>
         <li>Virtualenv: <code>make venv &amp;&amp; make install</code> (or equivalent).</li>
         <li>
@@ -59,7 +59,7 @@
     </section>
     <section class="card">
 
-      <h2>3. Simulating HTTP 500 (local / non-prod only)</h2>
+      <h2>Simulating HTTP 500 (local / non-prod only)</h2>
       <p>
         Normal routes rarely return a steady 500. To emit 5xx from the <strong>same</strong> API process (so
         <code>http_requests_total</code> counts them), set in <code>.env</code>:
@@ -72,7 +72,7 @@
     </section>
     <section class="card">
 
-      <h2>4. Starting the API</h2>
+      <h2>Starting the API</h2>
       <p>From the repository root (adjust the path):</p>
       <pre><code>cd /path/to/study_app
         source .venv/bin/activate
@@ -87,7 +87,7 @@
       </section>
       <section class="card">
 
-        <h2>5. Generator configuration (Python)</h2>
+        <h2>Generator configuration (Python)</h2>
         <p>
           Scenarios live under <code>tools/load_testing/scenarios/</code>. See
           <code>tools/load_testing/README.html</code> for the full contract (with diagrams). Summary:
@@ -101,7 +101,7 @@
       </section>
       <section class="card">
 
-        <h2>6. Commands</h2>
+        <h2>Commands</h2>
         <p>Plan only (no network):</p>
         <pre><code>python -m tools.load_testing.runner --dry-run</code></pre>
         <p>Full run (default 100 requests; set <code>LOAD_TEST_BASE_URL</code> / <code>LOAD_TEST_API_KEY</code> if needed):</p>
@@ -111,7 +111,7 @@
       </section>
       <section class="card">
 
-        <h2>7. Layout</h2>
+        <h2>Layout</h2>
         <pre><code>tools/load_testing/
           runner.py
           README.html
@@ -124,7 +124,7 @@
         </section>
         <section class="card">
 
-          <h2>8. Observability</h2>
+          <h2>Observability</h2>
           <p>
             Start the stack before or alongside the API (<code>make run-project</code> or <code>make observability-up</code>).
             After the traffic run, open Grafana (port from <code>.env</code>, default 3001) and the Study App Observability
@@ -133,7 +133,7 @@
         </section>
         <section class="card">
 
-          <h2>9. Common issues</h2>
+          <h2>Common issues</h2>
           <ul>
             <li><strong>Connection refused</strong> — API not running or wrong <code>base_url</code>.</li>
             <li>

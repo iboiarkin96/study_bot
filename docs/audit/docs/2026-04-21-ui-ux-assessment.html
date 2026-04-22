@@ -36,15 +36,15 @@
     </section>
 
     <section class="card">
-      <h2 id="1-scope-and-methodology">1. Scope and methodology</h2>
+      <h2 id="1-scope-and-methodology">Scope and methodology</h2>
 
-      <h3 id="1-1-scope">1.1 Scope</h3>
+      <h3 id="1-1-scope">Scope</h3>
       <p>
         Platform assessed: documentation web experience under <code>docs/</code>. Core scenarios: discovery, navigation,
         in-page orientation, search, and content consumption on desktop/mobile.
       </p>
 
-      <h3 id="1-2-method">1.2 Method</h3>
+      <h3 id="1-2-method">Method</h3>
       <ol>
         <li><strong>Heuristic review</strong> using Nielsen heuristics, <span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines 2.1, conformance level AA — typical target for accessible sites: contrast, keyboard access, forms, semantics, readable text.">WCAG
           2.1 AA</span>, and interaction pattern standards.
@@ -55,7 +55,7 @@
         <li><strong>Impact mapping</strong> from UX defects to CR/CTR/Task success/Time on task/retention proxies.</li>
       </ol>
 
-      <h3 id="1-3-what-was-examined">1.3 What was examined</h3>
+      <h3 id="1-3-what-was-examined">What was examined</h3>
       <ul>
         <li><code>docs/assets/docs-nav.js</code> (navigation/search/feedback behavior and feature flags).</li>
         <li><code>docs/internal/documentation-style-guide.html</code> (quality bar and structure standards).</li>
@@ -66,7 +66,7 @@
     </section>
 
     <section class="card">
-      <h2 id="table-1-reference-practices">2. Table: Reference practices</h2>
+      <h2 id="table-1-reference-practices">Table: Reference practices</h2>
       <p>Legend:</p>
       <ul>
         <li><strong>Category</strong> = area being assessed</li>
@@ -185,7 +185,7 @@
         </section>
 
         <section class="card">
-          <h2 id="table-2-study-app-scores">3. Table: AS-IS situation</h2>
+          <h2 id="table-2-study-app-scores">Table: AS-IS situation</h2>
           <p>
             One row per Table 1 practice (rows <strong>1-13</strong>). Scores are 1-10 and reflect current repository
             evidence.
@@ -311,9 +311,9 @@
           </section>
 
           <section class="card">
-            <h2 id="4-scoring-summary">4. Scoring summary</h2>
+            <h2 id="4-scoring-summary">Scoring summary</h2>
 
-            <h3 id="4-1-executive-summary">4.1 Executive summary</h3>
+            <h3 id="4-1-executive-summary">Executive summary</h3>
             <ul>
               <li>Overall UX maturity: <strong>7.2 / 10</strong> (strong docs foundation, medium mobile/responsiveness risk).
               </li>
@@ -323,200 +323,160 @@
               <li>Strength: language consistency and documentation governance quality are high.</li>
             </ul>
 
-            <h3 id="4-2-issue-log">4.2 Issue log</h3>
-            <div style="overflow-x: auto">
-              <table>
-                <thead>
-                  <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Screen / scenario</th>
-                    <th scope="col">Problem</th>
-                    <th scope="col">Violated principle</th>
-                    <th scope="col">Severity</th>
-                    <th scope="col">Metric impact</th>
-                    <th scope="col">Recommendation</th>
-                    <th scope="col">Effort</th>
-                    <th scope="col">ICE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>UX-001</td>
-                    <td>Docs top shell on mobile</td>
-                    <td>Top nav renders poorly on iPhone-class viewport.</td>
-                    <td>Nielsen: aesthetic/minimalist; Fitts law</td>
-                    <td>High</td>
-                    <td>CTR, task success, time on task</td>
-                    <td>Rebuild mobile nav compact mode, safe-area aware spacing, 44px touch targets.</td>
-                    <td>M</td>
-                    <td>8.7</td>
-                  </tr>
-                  <tr>
-                    <td>UX-002</td>
-                    <td>Feedback loop</td>
-                    <td>In-page feedback card is disabled.</td>
-                    <td>Nielsen: visibility of system status</td>
-                    <td>High</td>
-                    <td>Retention proxy, docs quality cycle time</td>
-                    <td>Enable feedback card and connect to triage pipeline with SLA labels.</td>
-                    <td>S</td>
-                    <td>8.3</td>
-                  </tr>
-                  <tr>
-                    <td>UX-003</td>
-                    <td>Long-page scanning</td>
-                    <td>Cognitive load is high on dense pages for first-time readers.</td>
-                    <td>Hick's law</td>
-                    <td>Medium</td>
-                    <td>Time on task, scroll depth quality</td>
-                    <td>Add progressive disclosure blocks and first-action highlights.</td>
-                    <td>M</td>
-                    <td>7.5</td>
-                  </tr>
-                  <tr>
-                    <td>UX-004</td>
-                    <td>A11y verification</td>
-                    <td>No explicit full <span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines 2.1, conformance level AA — typical target for accessible sites: contrast, keyboard access, forms, semantics, readable text.">WCAG
-                      2.1 AA</span> evidence for all templates.</td>
-                      <td><span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines 2.1, conformance level AA — typical target for accessible sites: contrast, keyboard access, forms, semantics, readable text.">WCAG
-                        2.1 AA</span></td>
-                        <td>Medium</td>
-                        <td>Task success, legal/compliance risk</td>
-                        <td>Add page-level <span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines — W3C standard for web accessibility (success criteria in levels A, AA, and AAA).">WCAG</span>
-                          checklist and automated regression gate.</td>
-                          <td>M</td>
-                          <td>7.4</td>
+            <h3 id="4-2-issue-log">Issue log</h3>
+            <p>
+              The issues below are listed in priority order and include severity, expected metric impact, estimated effort,
+              and ICE score.
+            </p>
+            <ol>
+              <li>
+                <p><strong>UX-001 — Docs top shell on mobile</strong></p>
+                <ul>
+                  <li><strong>Problem:</strong> Top nav renders poorly on iPhone-class viewport.</li>
+                  <li><strong>Violated principle:</strong> Nielsen: aesthetic/minimalist; Fitts law.</li>
+                  <li><strong>Severity:</strong> High.</li>
+                  <li><strong>Metric impact:</strong> CTR, task success, time on task.</li>
+                  <li><strong>Recommendation:</strong> Rebuild mobile nav compact mode, safe-area aware spacing, 44px touch targets.</li>
+                  <li><strong>Effort:</strong> M.</li>
+                  <li><strong>ICE:</strong> 8.7.</li>
+                </ul>
+              </li>
+              <li>
+                <p><strong>UX-002 — Feedback loop</strong></p>
+                <ul>
+                  <li><strong>Problem:</strong> In-page feedback card is disabled.</li>
+                  <li><strong>Violated principle:</strong> Nielsen: visibility of system status.</li>
+                  <li><strong>Severity:</strong> High.</li>
+                  <li><strong>Metric impact:</strong> Retention proxy, docs quality cycle time.</li>
+                  <li><strong>Recommendation:</strong> Enable feedback card and connect to triage pipeline with SLA labels.</li>
+                  <li><strong>Effort:</strong> S.</li>
+                  <li><strong>ICE:</strong> 8.3.</li>
+                </ul>
+              </li>
+              <li>
+                <p><strong>UX-003 — Long-page scanning</strong></p>
+                <ul>
+                  <li><strong>Problem:</strong> Cognitive load is high on dense pages for first-time readers.</li>
+                  <li><strong>Violated principle:</strong> Hick's law.</li>
+                  <li><strong>Severity:</strong> Medium.</li>
+                  <li><strong>Metric impact:</strong> Time on task, scroll depth quality.</li>
+                  <li><strong>Recommendation:</strong> Add progressive disclosure blocks and first-action highlights.</li>
+                  <li><strong>Effort:</strong> M.</li>
+                  <li><strong>ICE:</strong> 7.5.</li>
+                </ul>
+              </li>
+              <li>
+                <p><strong>UX-004 — A11y verification</strong></p>
+                <ul>
+                  <li>
+                    <strong>Problem:</strong> No explicit full
+                    <span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines 2.1, conformance level AA — typical target for accessible sites: contrast, keyboard access, forms, semantics, readable text.">WCAG
+                      2.1 AA</span>
+                      evidence for all templates.
+                    </li>
+                    <li>
+                      <strong>Violated principle:</strong>
+                      <span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines 2.1, conformance level AA — typical target for accessible sites: contrast, keyboard access, forms, semantics, readable text.">WCAG
+                        2.1 AA</span>.
+                      </li>
+                      <li><strong>Severity:</strong> Medium.</li>
+                      <li><strong>Metric impact:</strong> Task success, legal/compliance risk.</li>
+                      <li>
+                        <strong>Recommendation:</strong> Add page-level
+                        <span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines — W3C standard for web accessibility (success criteria in levels A, AA, and AAA).">WCAG</span>
+                        checklist and automated regression gate.
+                      </li>
+                      <li><strong>Effort:</strong> M.</li>
+                      <li><strong>ICE:</strong> 7.4.</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <p><strong>UX-005 — Search confidence</strong></p>
+                    <ul>
+                      <li><strong>Problem:</strong> Search works but user confidence signals are limited.</li>
+                      <li><strong>Violated principle:</strong> Nielsen: match between system and real world.</li>
+                      <li><strong>Severity:</strong> Medium.</li>
+                      <li><strong>Metric impact:</strong> Search success, pogo-sticking rate.</li>
+                      <li><strong>Recommendation:</strong> Add query hints, result badges, and no-result guided actions.</li>
+                      <li><strong>Effort:</strong> S.</li>
+                      <li><strong>ICE:</strong> 7.1.</li>
+                    </ul>
+                  </li>
+                </ol>
+
+                <h3 id="4-3-quick-wins">Quick wins (up to 2 weeks)</h3>
+                <ul>
+                  <li>Ship mobile top-nav compact state and safe-area fix (expected: +10-15% mobile navigation task success).</li>
+                  <li>Enable in-page feedback card and route to existing docs feedback workflow.</li>
+                  <li>Add explicit empty-state guidance in search result panel.</li>
+                  <li>Normalize touch targets for nav and quick actions to at least 44px.</li>
+                </ul>
+
+                <h3 id="4-4-mid-long-roadmap">Mid/long-term roadmap (1-3 months)</h3>
+                <div style="overflow-x: auto">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Stage</th>
+                        <th scope="col">What</th>
+                        <th scope="col">Why</th>
+                        <th scope="col">Dependencies</th>
+                        <th scope="col">Risks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Month 1</td>
+                        <td>Mobile nav hardening + feedback UX reactivation</td>
+                        <td>Immediate friction reduction</td>
+                        <td>Docs shell CSS/JS updates</td>
+                        <td>Regression on desktop behavior</td>
+                      </tr>
+                      <tr>
+                        <td>Month 2</td>
+                        <td><span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines — W3C standard for web accessibility (success criteria in levels A, AA, and AAA).">WCAG</span>
+                          verification matrix + regression checks</td>
+                          <td>Reduce accessibility and legal risk</td>
+                          <td>QA checklist, automation updates</td>
+                          <td>False-positive noise in checks</td>
                         </tr>
                         <tr>
-                          <td>UX-005</td>
-                          <td>Search confidence</td>
-                          <td>Search works but user confidence signals are limited.</td>
-                          <td>Nielsen: match between system and real world</td>
-                          <td>Medium</td>
-                          <td>Search success, pogo-sticking rate</td>
-                          <td>Add query hints, result badges, and no-result guided actions.</td>
-                          <td>S</td>
-                          <td>7.1</td>
+                          <td>Month 3</td>
+                          <td>Search UX polish and telemetry loop</td>
+                          <td>Increase findability and user confidence</td>
+                          <td>Search UI and analytics instrumentation</td>
+                          <td>Telemetry interpretation errors</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
 
-                  <h3 id="4-3-quick-wins">4.3 Quick wins (up to 2 weeks)</h3>
-                  <ul>
-                    <li>Ship mobile top-nav compact state and safe-area fix (expected: +10-15% mobile navigation task success).</li>
-                    <li>Enable in-page feedback card and route to existing docs feedback workflow.</li>
-                    <li>Add explicit empty-state guidance in search result panel.</li>
-                    <li>Normalize touch targets for nav and quick actions to at least 44px.</li>
-                  </ul>
+                </section>
 
-                  <h3 id="4-4-mid-long-roadmap">4.4 Mid/long-term roadmap (1-3 months)</h3>
-                  <div style="overflow-x: auto">
-                    <table>
+                <section id="page-history" class="card">
+                  <h2 id="5-page-history">Page history</h2>
+                  <div class="docs-table-scroll" role="region" aria-label="Page history">
+                    <table class="docs-page-history">
                       <thead>
                         <tr>
-                          <th scope="col">Stage</th>
-                          <th scope="col">What</th>
-                          <th scope="col">Why</th>
-                          <th scope="col">Dependencies</th>
-                          <th scope="col">Risks</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Change</th>
+                          <th scope="col">Author</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td>Month 1</td>
-                          <td>Mobile nav hardening + feedback UX reactivation</td>
-                          <td>Immediate friction reduction</td>
-                          <td>Docs shell CSS/JS updates</td>
-                          <td>Regression on desktop behavior</td>
-                        </tr>
-                        <tr>
-                          <td>Month 2</td>
-                          <td><span class="docs-tooltip" tabindex="0" data-tooltip="Web Content Accessibility Guidelines — W3C standard for web accessibility (success criteria in levels A, AA, and AAA).">WCAG</span>
-                            verification matrix + regression checks</td>
-                            <td>Reduce accessibility and legal risk</td>
-                            <td>QA checklist, automation updates</td>
-                            <td>False-positive noise in checks</td>
-                          </tr>
-                          <tr>
-                            <td>Month 3</td>
-                            <td>Search UX polish and telemetry loop</td>
-                            <td>Increase findability and user confidence</td>
-                            <td>Search UI and analytics instrumentation</td>
-                            <td>Telemetry interpretation errors</td>
+                          <td><time datetime="2026-04-21">2026-04-21</time></td>
+                          <td>Published full UI/UX assessment with issue log, quick wins, roadmap, A/B hypotheses, metrics plan, and
+                            visual reference matrix.</td>
+                            <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
-
                   </section>
 
-                  <section class="card">
-                    <h2 id="5-page-history">5. Page history</h2>
-                    <div class="docs-table-scroll" role="region" aria-label="Page history">
-                      <table class="docs-page-history">
-                        <thead>
-                          <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Change</th>
-                            <th scope="col">Author</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><time datetime="2026-04-21">2026-04-21</time></td>
-                            <td>Published full UI/UX assessment with issue log, quick wins, roadmap, A/B hypotheses, metrics plan, and
-                              visual reference matrix.</td>
-                              <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
+                  <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                </main>
 
-                    <section id="page-history" class="card">
-
-                      <h2>Page history</h2>
-
-                      <div class="docs-table-scroll" role="region" aria-label="Page history">
-
-                        <table class="docs-page-history">
-
-                          <thead>
-
-                            <tr>
-
-                              <th scope="col">Date</th>
-
-                              <th scope="col">Change</th>
-
-                              <th scope="col">Author</th>
-
-                            </tr>
-
-                          </thead>
-
-                          <tbody>
-
-                            <tr>
-
-                              <td><time datetime="2026-04-21">2026-04-21</time></td>
-
-                              <td>Added Page history section (repository baseline).</td>
-
-                              <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-
-                            </tr>
-
-                          </tbody>
-
-                        </table>
-
-                      </div>
-
-                    </section>
-
-                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                  </main>
-
-                </body></html>
+              </body></html>

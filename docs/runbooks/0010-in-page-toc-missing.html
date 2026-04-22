@@ -10,11 +10,23 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
     <h1>Runbook: In-page “On this page” sidebar missing or empty</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
@@ -122,7 +134,9 @@
         </div>
       </section>
 
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
   </body></html>

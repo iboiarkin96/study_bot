@@ -29,6 +29,7 @@
       links: [
         { label: "Home", path: "index.html" },
         { label: "Internal docs", path: "internal/README.html" },
+        { label: "QA checklists", path: "qa/README.html" },
         { label: "Assessments", path: "audit/README.html" },
         { label: "Backlog", path: "backlog/README.html" },
       ],
@@ -415,6 +416,7 @@
       "howto",
       "internal",
       "openapi",
+      "qa",
       "rfc",
       "runbooks",
     ]);
@@ -455,6 +457,9 @@
     }
     if (sectionPath === "openapi/openapi-explorer.html") {
       return currentPath === "openapi/openapi-explorer.html" || currentPath === "openapi-explorer.html";
+    }
+    if (sectionPath === "qa/README.html") {
+      return currentPath.startsWith("qa/");
     }
     if (sectionPath === "api/index.html") {
       return currentPath.startsWith("api/");
@@ -505,6 +510,7 @@
     { label: "RFC", path: "rfc/README.html" },
     { label: "OpenAPI explorer", path: "openapi/openapi-explorer.html" },
     { label: "Runbooks", path: "runbooks/README.html" },
+    { label: "QA checklists", path: "qa/README.html" },
     // { label: "Backlog", path: "backlog/README.html" },
     // { label: "Architecture & quality assessments", path: "audit/README.html" },
     {

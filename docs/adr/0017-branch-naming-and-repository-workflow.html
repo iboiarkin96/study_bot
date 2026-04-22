@@ -46,7 +46,7 @@
     <section class="card">
       <h2>Decision</h2>
 
-      <h3>1. Integration branch</h3>
+      <h3>Integration branch</h3>
       <ul>
         <li>
           <strong><code>main</code></strong> is the default integration branch: it should remain <strong>releasable</strong>
@@ -55,7 +55,7 @@
         </li>
       </ul>
 
-      <h3>2. Branch naming</h3>
+      <h3>Branch naming</h3>
       <p>Use lowercase ASCII, hyphens as separators, and a short type prefix:</p>
       <table>
         <thead>
@@ -99,7 +99,7 @@
         matching an external id, and very long names—keep the slug readable in Git UI and terminal tabs.
       </p>
 
-      <h3>3. Lifespan and updates</h3>
+      <h3>Lifespan and updates</h3>
       <ul>
         <li>Prefer <strong>one logical change set per branch</strong> per PR when practical; split unrelated edits.</li>
         <li>Keep the branch reasonably current with <code>main</code> using <strong>rebase</strong> or <strong>merge</strong>
@@ -109,7 +109,7 @@
             clutter (local branches may be deleted by the author).</li>
           </ul>
 
-          <h3>4. Releases and tags</h3>
+          <h3>Releases and tags</h3>
           <ul>
             <li>Release versions follow <a href="https://semver.org/">Semantic Versioning</a> as already stated in
               <code>CHANGELOG.md</code> (see <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>).</li>
@@ -117,7 +117,7 @@
                 commit that corresponds to the released changelog section.</li>
               </ul>
 
-              <h3>5. Hotfixes</h3>
+              <h3>Hotfixes</h3>
               <p>
                 If a production fix must ship without taking everything on <code>main</code>, branch from the tagged release
                 (e.g. <code>fix/prod-1-1-2-null-deref</code>), fix, tag a patch, and forward-port the same commit to

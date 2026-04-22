@@ -10,14 +10,26 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
-    <h1>Runbook: Quality Check Failing</h1>
-    <div id="docs-top-nav"></div>
-    <div id="docs-page-meta-mount" hidden=""></div>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Runbook: Quality Check Failing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
     <section class="card">
       <h2>Trigger</h2>
       <ul>
@@ -44,22 +56,22 @@
     </section>
     <section class="card">
       <h2>Recovery steps by stage</h2>
-      <h3>1) Lint fails</h3>
+      <h3>Lint fails</h3>
       <ul>
         <li>Run <code>make lint-fix</code> and <code>make lint-check</code>.</li>
       </ul>
-      <h3>2) Type-check fails</h3>
+      <h3>Type-check fails</h3>
       <ul>
         <li>Run <code>make type-check</code>.</li>
         <li>Fix signatures/annotations/import types.</li>
       </ul>
-      <h3>3) Tests fail</h3>
+      <h3>Tests fail</h3>
       <ul>
         <li>Run <code>make test</code>.</li>
         <li>For focused debugging run <code>make test-one path=...</code>.</li>
         <li>If schema changed, validate migrations/fixtures.</li>
       </ul>
-      <h3>4) Docs sync fails or changes produced</h3>
+      <h3>Docs sync fails or changes produced</h3>
       <ul>
         <li>Run <code>make docs-fix</code>.</li>
         <li>Commit generated updates if valid.</li>
@@ -109,7 +121,9 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

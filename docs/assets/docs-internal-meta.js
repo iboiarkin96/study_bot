@@ -68,6 +68,7 @@
       "internal",
       "meta",
       "openapi",
+      "qa",
       "rfc",
       "runbooks",
     ]);
@@ -172,7 +173,7 @@
       .join("");
 
     mount.innerHTML = `<section class="docs-page-meta docs-page-meta--premium" aria-labelledby="docs-page-meta-title">
-  <button type="button" class="docs-page-meta__title docs-page-meta__toggle" id="docs-page-meta-title" aria-expanded="false" aria-controls="docs-page-meta-list">Page editors</button>
+  <button type="button" class="docs-page-meta__title docs-page-meta__toggle" id="docs-page-meta-title" aria-expanded="false" aria-controls="docs-page-meta-list">Edited by</button>
   ${stackHtml}
   <ul class="docs-page-meta__editors" id="docs-page-meta-list" hidden>${editorsHtml}</ul>
 </section>`;

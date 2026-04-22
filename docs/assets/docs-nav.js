@@ -56,6 +56,7 @@ function currentDocsRelPath() {
     "howto",
     "internal",
     "openapi",
+    "qa",
     "rfc",
     "runbooks",
   ]);
@@ -87,6 +88,9 @@ function activeTarget(relPath) {
   if (relPath.startsWith("rfc/")) {
     return "rfc/README.html";
   }
+  if (relPath.startsWith("qa/")) {
+    return "qa/README.html";
+  }
   if (relPath.startsWith("audit/")) {
     return "audit/README.html";
   }
@@ -117,9 +121,9 @@ const DOCS_SEARCH_DEBOUNCE_MS = 120;
 const DOCS_SEARCH_MAX_PREFIX_EXPANSIONS = 24;
 const DOCS_SEARCH_SUCCESS_WINDOW_MS = 60_000;
 const DOCS_FEEDBACK_REPOSITORY = "iboiarkin96/study_bot";
-const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.yml";
+const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.md";
 const DOCS_FEEDBACK_LABELS = ["docs-feedback"];
-const DOCS_FEEDBACK_CARD_ENABLED = false;
+const DOCS_FEEDBACK_CARD_ENABLED = true;
 
 /** Page toolbar + quick-actions modal: desktop only (matches internal top-nav “phone” breakpoint). */
 const DOCS_PAGE_ACTIONS_MIN_WIDTH = 761;
@@ -603,13 +607,78 @@ function buildSearchResultHref(fromDir, targetUrl) {
   return relHref(fromDir, rel);
 }
 
-function renderDocsSearchResults(list, results, fromDir, selectedIndex, listId) {
+function docsSearchResultKind(url) {
+  const safeUrl = String(url || "").toLowerCase();
+  if (!safeUrl) {
+    return "Docs";
+  }
+  if (safeUrl.startsWith("api/")) {
+    return "API";
+  }
+  if (safeUrl.startsWith("adr/")) {
+    return "ADR";
+  }
+  if (safeUrl.startsWith("runbooks/")) {
+    return "Runbook";
+  }
+  if (safeUrl.startsWith("howto/")) {
+    return "How-to";
+  }
+  if (safeUrl.startsWith("internal/")) {
+    return "Internal";
+  }
+  if (safeUrl.startsWith("audit/")) {
+    return "Audit";
+  }
+  return "Docs";
+}
+
+function renderDocsSearchResults(list, results, fromDir, selectedIndex, listId, queryText = "") {
   list.replaceChildren();
   if (!results || results.length === 0) {
     const empty = document.createElement("li");
     empty.className = "docs-search__empty";
     empty.setAttribute("role", "status");
-    empty.textContent = "No matches";
+    const safeQuery = String(queryText || "").trim();
+
+    const title = document.createElement("p");
+    title.className = "docs-search__empty-title";
+    title.textContent = safeQuery ? `No matches for "${safeQuery}"` : "No matches";
+
+    const tips = document.createElement("ul");
+    tips.className = "docs-search__empty-tips";
+    ["Check spelling", "Try shorter query", "Use related terms (openapi, runbook, qa)"].forEach((tipText) => {
+      const tip = document.createElement("li");
+      tip.textContent = tipText;
+      tips.appendChild(tip);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "docs-search__empty-actions";
+
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "docs-search__empty-action docs-search__empty-action--clear";
+    clearBtn.setAttribute("data-search-action", "clear");
+    clearBtn.textContent = "Clear query";
+
+    const quickLinks = [
+      { label: "Go to Internal README", href: buildSearchResultHref(fromDir, "internal/README.html") },
+      { label: "Go to API docs", href: buildSearchResultHref(fromDir, "api/index.html") },
+      { label: "Go to Runbooks", href: buildSearchResultHref(fromDir, "runbooks/README.html") },
+    ];
+    actions.appendChild(clearBtn);
+    quickLinks.forEach((item) => {
+      const link = document.createElement("a");
+      link.className = "docs-search__empty-action";
+      link.href = item.href;
+      link.textContent = item.label;
+      actions.appendChild(link);
+    });
+
+    empty.appendChild(title);
+    empty.appendChild(tips);
+    empty.appendChild(actions);
     list.appendChild(empty);
     return;
   }
@@ -632,16 +701,25 @@ function renderDocsSearchResults(list, results, fromDir, selectedIndex, listId) 
     title.className = "docs-search__result-title";
     title.textContent = item.title || item.url;
 
+    const kind = document.createElement("span");
+    kind.className = "docs-search__result-kind";
+    kind.textContent = docsSearchResultKind(item.url);
+
     const meta = document.createElement("span");
     meta.className = "docs-search__result-meta";
     const section = item.section ? `${item.section} - ` : "";
     meta.textContent = `${section}${item.url}`;
 
+    const topRow = document.createElement("span");
+    topRow.className = "docs-search__result-top";
+    topRow.appendChild(title);
+    topRow.appendChild(kind);
+
     const preview = document.createElement("span");
     preview.className = "docs-search__result-preview";
     preview.textContent = item.preview || "";
 
-    link.appendChild(title);
+    link.appendChild(topRow);
     link.appendChild(meta);
     if (item.preview) {
       link.appendChild(preview);
@@ -741,7 +819,7 @@ function mountDocsSearch(nav, fromDir) {
       } else {
         input.removeAttribute("aria-activedescendant");
       }
-      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId);
+      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId, query);
 
       const now = Date.now();
       if (!firstQueryTs) {
@@ -839,14 +917,14 @@ function mountDocsSearch(nav, fromDir) {
       event.preventDefault();
       selectedIndex = (selectedIndex + 1) % activeResults.length;
       input.setAttribute("aria-activedescendant", `${resultsId}-option-${selectedIndex}`);
-      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId);
+      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId, input.value);
       return;
     }
     if (event.key === "ArrowUp") {
       event.preventDefault();
       selectedIndex = (selectedIndex - 1 + activeResults.length) % activeResults.length;
       input.setAttribute("aria-activedescendant", `${resultsId}-option-${selectedIndex}`);
-      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId);
+      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId, input.value);
       return;
     }
     if (event.key === "Enter" && selectedIndex >= 0) {
@@ -866,6 +944,16 @@ function mountDocsSearch(nav, fromDir) {
 
   document.addEventListener("click", (event) => {
     const target = event.target;
+    const clearAction =
+      target && target.closest ? target.closest('.docs-search__empty-action[data-search-action="clear"]') : null;
+    if (clearAction && wrap.contains(clearAction)) {
+      event.preventDefault();
+      input.value = "";
+      hideResults();
+      resetSearchSession();
+      input.focus();
+      return;
+    }
     const link = target && target.closest ? target.closest(".docs-search__result-link") : null;
     if (link && wrap.contains(link)) {
       const links = [...results.querySelectorAll(".docs-search__result-link")];
@@ -996,6 +1084,7 @@ function docsHubHrefForPrefix(prefix) {
     "internal/api/conspectus": "internal/api/conspectus/index.html",
     "internal/api/error-log": "internal/api/error-log/index.html",
     openapi: "openapi/openapi-explorer.html",
+    qa: "qa/README.html",
     rfc: "rfc/README.html",
     runbooks: "runbooks/README.html",
   };
@@ -1022,6 +1111,7 @@ function docsBreadcrumbLabelForPrefix(prefix) {
     "internal/api/error-log": "Error log",
     "internal/api/user/operations": "Operations",
     openapi: "OpenAPI",
+    qa: "QA checklists",
     rfc: "RFCs",
     runbooks: "Runbooks",
     assets: "Assets",
@@ -1169,7 +1259,19 @@ function mountInternalDrawerMenuButton() {
     return existing;
   }
 
-  const h1 = main.querySelector("h1");
+  /*
+   * Only use a top-level page heading as an anchor.
+   * Some pages (e.g. profile cards) contain nested <h1> inside content blocks; mounting
+   * the menu row there breaks layout and misplaced theme control.
+   * Avoid `:scope` here for broader browser compatibility.
+   */
+  let h1 = null;
+  for (const child of main.children) {
+    if (child.tagName === "H1") {
+      h1 = child;
+      break;
+    }
+  }
   if (!h1) {
     return null;
   }
@@ -1218,6 +1320,111 @@ function syncInternalThemeTogglePlacement() {
   }
 }
 
+function syncDocsThemeToggleWithHeading() {
+  const main = document.querySelector("main.container");
+  if (!main) {
+    return;
+  }
+  const btn = document.querySelector("[data-docs-theme-toggle]");
+  const themeBar = document.querySelector(".top-nav .top-nav__theme-bar");
+  if (!btn || !themeBar) {
+    return;
+  }
+
+  let h1 = null;
+  for (const child of main.children) {
+    if (child.tagName === "H1") {
+      h1 = child;
+      break;
+    }
+  }
+  if (!h1) {
+    return;
+  }
+
+  let row = main.querySelector("[data-docs-page-title-row]");
+  if (!row) {
+    row = document.createElement("div");
+    row.className = "docs-page-title-row";
+    row.setAttribute("data-docs-page-title-row", "1");
+    h1.insertAdjacentElement("beforebegin", row);
+    row.appendChild(h1);
+  }
+
+  if (btn.parentElement !== row) {
+    row.appendChild(btn);
+  }
+}
+
+function ensureInternalLayoutForInternalSections() {
+  const relPath = currentDocsRelPath();
+  const internalPrefixes = [
+    "adr/",
+    "rfc/",
+    "runbooks/",
+    "howto/",
+    "developer/",
+    "audit/",
+    "backlog/",
+    "qa/",
+    "internal/",
+  ];
+  const shouldApply = internalPrefixes.some((prefix) => relPath.startsWith(prefix));
+  if (!shouldApply) {
+    return;
+  }
+
+  const body = document.body;
+  const main = document.querySelector("main.container");
+  if (!body || !main) {
+    return;
+  }
+
+  const hasSidebarMount = !!document.getElementById("internal-sidebar-mount");
+  if (!hasSidebarMount) {
+    const shell = document.createElement("div");
+    shell.className = "internal-layout__shell";
+
+    const sidebar = document.createElement("aside");
+    sidebar.className = "internal-layout__sidebar";
+
+    const title = document.createElement("p");
+    title.className = "internal-layout__sidebar-title";
+    title.textContent = "Internal docs";
+
+    const fallbackNav = document.createElement("nav");
+    fallbackNav.setAttribute("aria-label", "Internal documentation (fallback)");
+    fallbackNav.innerHTML =
+      '<ul class="internal-sidebar__tree"><li><a href="' +
+      relHref(docsPageDir(), "internal/README.html") +
+      '">Internal docs</a></li></ul>';
+
+    const mount = document.createElement("div");
+    mount.id = "internal-sidebar-mount";
+
+    sidebar.appendChild(title);
+    sidebar.appendChild(fallbackNav);
+    sidebar.appendChild(mount);
+
+    const mainWrap = document.createElement("div");
+    mainWrap.className = "internal-layout__main";
+
+    main.insertAdjacentElement("beforebegin", shell);
+    mainWrap.appendChild(main);
+    shell.appendChild(sidebar);
+    shell.appendChild(mainWrap);
+  }
+
+  body.classList.add("internal-layout");
+
+  if (!document.querySelector('script[src$="assets/internal-sidebar.js"]')) {
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = relHref(docsPageDir(), "assets/internal-sidebar.js");
+    document.head.appendChild(script);
+  }
+}
+
 function renderTopNav() {
   const host = document.getElementById("docs-top-nav");
   if (!host) {
@@ -1230,6 +1437,7 @@ function renderTopNav() {
   const internalItems = [
     { label: "Home", target: "index.html" },
     { label: "Internal docs", target: "internal/README.html" },
+    { label: "QA checklists", target: "qa/README.html" },
     { label: "Assessments", target: "audit/README.html" },
     { label: "⭐Backlog", target: "backlog/README.html" },
   ];
@@ -1343,6 +1551,8 @@ function renderTopNav() {
   if (isInternalLayoutChrome) {
     mountInternalDrawerMenuButton();
     syncInternalThemeTogglePlacement();
+  } else {
+    syncDocsThemeToggleWithHeading();
   }
 }
 
@@ -1689,10 +1899,11 @@ function removeLegacyManualContents(article) {
   }
 }
 
-function docsFeedbackIssueUrl() {
+function docsFeedbackIssueUrl(extraFeedback = "", feedbackType = "Other") {
   const pagePath = currentDocsRelPath();
-  const pageUrl = window.location.href;
+  const pageUrl = /^https?:/i.test(window.location.href) ? window.location.href : pagePath;
   const title = `[Docs feedback] ${pagePath}`;
+  const feedbackText = (extraFeedback || "").trim();
   const body = [
     "## Page",
     pagePath,
@@ -1700,8 +1911,14 @@ function docsFeedbackIssueUrl() {
     "## URL",
     pageUrl,
     "",
-    "## Feedback",
-    "<!-- What is unclear, missing, or incorrect? -->",
+    "## Feedback type",
+    feedbackType || "Other",
+    "",
+    "## What should be improved",
+    feedbackText || "<!-- Describe the issue and expected fix -->",
+    "",
+    "## Additional context",
+    "<!-- Optional: screenshots, references, related pages -->",
   ].join("\n");
 
   const query = new URLSearchParams({
@@ -1741,15 +1958,105 @@ function injectDocsFeedbackCard() {
   text.textContent =
     "Found something unclear or outdated? Open a prefilled GitHub issue for this page.";
 
-  const link = document.createElement("a");
-  link.href = docsFeedbackIssueUrl();
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.textContent = "Report feedback on GitHub";
+  const form = document.createElement("form");
+  form.className = "docs-feedback-card__form";
+
+  const inputLabel = document.createElement("label");
+  inputLabel.className = "docs-feedback-card__label";
+  inputLabel.setAttribute("for", "docs-feedback-input");
+  inputLabel.textContent = "What should be improved?";
+
+  const typeLabel = document.createElement("label");
+  typeLabel.className = "docs-feedback-card__label";
+  typeLabel.setAttribute("for", "docs-feedback-type");
+  typeLabel.textContent = "Feedback type";
+
+  const typeSelect = document.createElement("select");
+  typeSelect.id = "docs-feedback-type";
+  typeSelect.className = "docs-feedback-card__select";
+  ["Incorrect or outdated content", "Missing explanation", "Broken link or navigation", "Accessibility issue", "Other"].forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item;
+    option.textContent = item;
+    typeSelect.appendChild(option);
+  });
+  typeSelect.value = "Other";
+
+  const textarea = document.createElement("textarea");
+  textarea.id = "docs-feedback-input";
+  textarea.className = "docs-feedback-card__textarea";
+  textarea.rows = 4;
+  textarea.minLength = 10;
+  textarea.placeholder = "Example: This section needs a quick example for mobile setup.";
+  textarea.required = true;
+
+  const status = document.createElement("p");
+  status.className = "docs-feedback-card__status";
+  status.setAttribute("aria-live", "polite");
+  status.textContent = "Your feedback text will be prefilled in GitHub issue.";
+
+  const toast = document.createElement("div");
+  toast.className = "docs-feedback-card__toast";
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
+
+  const actions = document.createElement("div");
+  actions.className = "docs-feedback-card__actions";
+
+  const submitBtn = document.createElement("button");
+  submitBtn.type = "submit";
+  submitBtn.className = "docs-page-actions__button";
+  submitBtn.innerHTML = '<span class="docs-feedback-card__btn-text">Send feedback</span><span class="docs-feedback-card__btn-spinner" aria-hidden="true"></span>';
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const message = textarea.value.trim();
+    if (message.length < 10) {
+      status.className = "docs-feedback-card__status docs-feedback-card__status--error";
+      status.textContent = "Please enter at least 10 characters so we can understand the issue.";
+      textarea.focus();
+      return;
+    }
+    status.className = "docs-feedback-card__status docs-feedback-card__status--success";
+    status.textContent = "Preparing GitHub issue...";
+    submitBtn.disabled = true;
+    submitBtn.classList.add("docs-feedback-card__btn--loading");
+    const targetUrl = docsFeedbackIssueUrl(message, typeSelect.value);
+    try {
+      await navigator.clipboard.writeText(message);
+      status.textContent = "Text copied as backup.";
+    } catch (_error) {
+      // Clipboard may be unavailable for file:// pages; keep submit flow working.
+    }
+    toast.textContent = "Opening GitHub with prefilled feedback...";
+    toast.classList.add("docs-feedback-card__toast--visible");
+    textarea.value = "";
+    window.setTimeout(() => {
+      window.location.href = targetUrl;
+    }, 160);
+    window.setTimeout(() => {
+      if (!document.body.contains(status) || !document.body.contains(toast)) {
+        return;
+      }
+      status.textContent = "Thanks! You can submit another feedback item anytime.";
+      toast.classList.remove("docs-feedback-card__toast--visible");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("docs-feedback-card__btn--loading");
+    }, 900);
+  });
+
+  actions.appendChild(submitBtn);
+  form.appendChild(typeLabel);
+  form.appendChild(typeSelect);
+  form.appendChild(inputLabel);
+  form.appendChild(textarea);
+  form.appendChild(status);
+  form.appendChild(actions);
 
   section.appendChild(heading);
   section.appendChild(text);
-  section.appendChild(link);
+  section.appendChild(toast);
+  section.appendChild(form);
   mount.insertAdjacentElement("beforebegin", section);
 }
 
@@ -1932,6 +2239,8 @@ function initBackToTopButton() {
   const root = document.documentElement;
   const thresholdPx = 320;
   const minScrollExtra = 100;
+  let isLaunching = false;
+  let launchDirection = 1;
 
   const btn = document.createElement("button");
   btn.type = "button";
@@ -1940,7 +2249,20 @@ function initBackToTopButton() {
   btn.setAttribute("title", "Back to top");
   btn.setAttribute("aria-hidden", "true");
   btn.tabIndex = -1;
-  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`;
+  btn.innerHTML = `
+    <span class="docs-back-to-top__rocket-wrap" aria-hidden="true">
+      <svg class="docs-back-to-top__rocket" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3c3.4 1.9 5.5 5.5 5.5 9.3v1.1L12 19l-5.5-5.6v-1.1C6.5 8.5 8.6 4.9 12 3z"/>
+        <path d="M12 8.2a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"/>
+        <path d="M9.3 16.6l-1.8 3.1M14.7 16.6l1.8 3.1"/>
+        <path d="M10.8 19.3h2.4"/>
+      </svg>
+      <span class="docs-back-to-top__trail"></span>
+      <span class="docs-back-to-top__flame"></span>
+      <span class="docs-back-to-top__smoke docs-back-to-top__smoke--left"></span>
+      <span class="docs-back-to-top__smoke docs-back-to-top__smoke--mid"></span>
+      <span class="docs-back-to-top__smoke docs-back-to-top__smoke--right"></span>
+    </span>`;
 
   function pageIsScrollable() {
     return root.scrollHeight > window.innerHeight + minScrollExtra;
@@ -1951,6 +2273,12 @@ function initBackToTopButton() {
   }
 
   function updateVisibility() {
+    if (isLaunching) {
+      btn.classList.add("docs-back-to-top--visible");
+      btn.setAttribute("aria-hidden", "false");
+      btn.tabIndex = -1;
+      return;
+    }
     const show = pageIsScrollable() && isNearBottom();
     btn.classList.toggle("docs-back-to-top--visible", show);
     btn.setAttribute("aria-hidden", show ? "false" : "true");
@@ -1959,7 +2287,36 @@ function initBackToTopButton() {
 
   btn.addEventListener("click", () => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isLaunching) {
+      return;
+    }
+    if (!reduceMotion) {
+      isLaunching = true;
+      btn.classList.remove("docs-back-to-top--launch-left", "docs-back-to-top--launch-right");
+      btn.classList.add(launchDirection > 0 ? "docs-back-to-top--launch-right" : "docs-back-to-top--launch-left");
+      launchDirection *= -1;
+      btn.classList.add("docs-back-to-top--launching");
+      window.setTimeout(() => {
+        if (!isLaunching) {
+          return;
+        }
+        isLaunching = false;
+        btn.classList.remove("docs-back-to-top--launching");
+        btn.classList.remove("docs-back-to-top--launch-left", "docs-back-to-top--launch-right");
+        updateVisibility();
+      }, 1640);
+    }
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
+
+  btn.addEventListener("animationend", (event) => {
+    if (event.animationName !== "docs-rocket-launch") {
+      return;
+    }
+    isLaunching = false;
+    btn.classList.remove("docs-back-to-top--launching");
+    btn.classList.remove("docs-back-to-top--launch-left", "docs-back-to-top--launch-right");
+    updateVisibility();
   });
 
   window.addEventListener(
@@ -1973,6 +2330,63 @@ function initBackToTopButton() {
 
   document.body.appendChild(btn);
   updateVisibility();
+}
+
+/** Thin top progress indicator for long docs pages. */
+function initDocsReadingProgressBar() {
+  if (!document.getElementById("docs-top-nav")) {
+    return;
+  }
+  if (document.querySelector(".docs-reading-progress")) {
+    return;
+  }
+
+  const root = document.documentElement;
+  const bar = document.createElement("div");
+  bar.className = "docs-reading-progress is-hidden";
+  bar.setAttribute("role", "progressbar");
+  bar.setAttribute("aria-label", "Page reading progress");
+  bar.setAttribute("aria-valuemin", "0");
+  bar.setAttribute("aria-valuemax", "100");
+  bar.setAttribute("aria-valuenow", "0");
+
+  const fill = document.createElement("span");
+  fill.className = "docs-reading-progress__fill";
+  fill.setAttribute("aria-hidden", "true");
+  bar.appendChild(fill);
+  document.body.appendChild(bar);
+
+  let ticking = false;
+  function update() {
+    const maxScroll = Math.max(0, root.scrollHeight - window.innerHeight);
+    if (maxScroll <= 8) {
+      bar.classList.add("is-hidden");
+      fill.style.transform = "scaleX(0)";
+      bar.setAttribute("aria-valuenow", "0");
+      return;
+    }
+
+    bar.classList.remove("is-hidden");
+    const scrollTop = Math.max(0, window.scrollY || root.scrollTop || 0);
+    const ratio = Math.min(1, Math.max(0, scrollTop / maxScroll));
+    fill.style.transform = `scaleX(${ratio})`;
+    bar.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
+  }
+
+  function scheduleUpdate() {
+    if (ticking) {
+      return;
+    }
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      update();
+    });
+  }
+
+  window.addEventListener("scroll", scheduleUpdate, { passive: true });
+  window.addEventListener("resize", scheduleUpdate, { passive: true });
+  scheduleUpdate();
 }
 
 /**
@@ -2307,6 +2721,7 @@ function syncDocsPageActionsForViewport() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  ensureInternalLayoutForInternalSections();
   document.addEventListener("keydown", handleDocsQuickActionsGlobalKeydown);
   injectDocsLifecycleHelp();
   renderTopNav();
@@ -2327,6 +2742,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAutoInPageToc();
   initInPageTocScrollSpy();
   initBackToTopButton();
+  initDocsReadingProgressBar();
   initDocsFooterAtmosphereScroll();
   initDocsSiteFooter();
 });

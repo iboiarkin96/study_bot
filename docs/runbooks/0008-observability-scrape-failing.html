@@ -10,11 +10,23 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
     <h1>Runbook: Observability Scrape Failing</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
@@ -68,20 +80,20 @@
     <section class="card">
 
       <h2>Recovery steps</h2>
-      <h3>1) Endpoint-level checks</h3>
+      <h3>Endpoint-level checks</h3>
       <ul>
         <li>Run <code>curl -i http://127.0.0.1:8000/metrics</code> and confirm status <code>200</code>.</li>
         <li>Confirm payload contains metric names such as <code>http_requests_total</code>.</li>
       </ul>
 
-      <h3>2) Prometheus target checks</h3>
+      <h3>Prometheus target checks</h3>
       <ul>
         <li>Open <code>http://127.0.0.1:9090/targets</code>.</li>
         <li>If target is down, inspect <code>PROMETHEUS_SCRAPE_TARGET</code>, then re-run <code>make observability-up</code> to render and apply config.</li>
         <li>Restart stack: <code>make observability-down &amp;&amp; make observability-up</code>.</li>
       </ul>
 
-      <h3>3) Grafana checks</h3>
+      <h3>Grafana checks</h3>
       <ul>
         <li>Open Grafana (<code>http://127.0.0.1:3001</code>) and verify Prometheus datasource is healthy.</li>
         <li>Generate test traffic to create fresh metrics:</li>
@@ -127,7 +139,9 @@
         </div>
       </section>
 
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
   </body></html>

@@ -293,7 +293,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "internal/docs-documentation-frontend-tz-menu-and-theme.html",
-        "title": "TZ: Docs frontend navigation and theme controls"
+        "title": "#1 Docs frontend navigation and theme controls"
       },
       {
         "path": "internal/documentation-style-guide.html",

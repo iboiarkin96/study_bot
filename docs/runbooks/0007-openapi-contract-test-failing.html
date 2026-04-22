@@ -10,11 +10,23 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
     <h1>Runbook: OpenAPI Contract-Test Failing</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
@@ -50,14 +62,14 @@
     <section class="card">
 
       <h2>Recovery paths</h2>
-      <h3>1) Unintentional contract drift</h3>
+      <h3>Unintentional contract drift</h3>
       <ul>
         <li>Fix schema/router/validation code to restore expected contract.</li>
         <li>Re-run <code>make openapi-check</code> and <code>make contract-test</code>.</li>
         <li>Run <code>make verify</code> before commit.</li>
       </ul>
 
-      <h3>2) Intentional contract change</h3>
+      <h3>Intentional contract change</h3>
       <ul>
         <li>Confirm the change is safe for the current API major version.</li>
         <li>Update tests, examples, and related docs/ADR notes.</li>
@@ -113,7 +125,9 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

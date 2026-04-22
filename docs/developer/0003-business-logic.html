@@ -25,7 +25,7 @@
     </section>
 
     <section class="card">
-      <h2>1. Layering model</h2>
+      <h2>Layering model</h2>
       <ul>
         <li>API layer: <code>app/api/v1/</code> (transport only)</li>
         <li>Service layer: <code>app/services/</code> (business rules)</li>
@@ -39,7 +39,7 @@
         <li>Repository does not return HTTP-specific structures.</li>
       </ul>
 
-      <h3>1.1 Theoretical background</h3>
+      <h3>Theoretical background</h3>
       <details class="docs-theory-help" id="layered-architecture-theory">
         <summary>Layered architecture — theoretical background</summary>
         <div class="small">
@@ -58,7 +58,7 @@
         </div>
       </details>
 
-      <h3>1.2 Layer responsibilities (reference)</h3>
+      <h3>Layer responsibilities (reference)</h3>
       <p>
         The public API is described first in <strong>OpenAPI</strong> (“contract-first”): what you see in the spec is
         what
@@ -125,7 +125,7 @@
               </table>
             </div>
 
-            <h3>1.3 Where validation runs</h3>
+            <h3>Where validation runs</h3>
             <p><strong>Where checks happen</strong> (in order):</p>
             <ol>
               <li>
@@ -151,7 +151,7 @@
           </section>
           <section class="card">
 
-            <h2>2. Responsibility boundaries</h2>
+            <h2>Responsibility boundaries</h2>
             <p>Router:</p>
             <ul>
               <li>Parse and validate request.</li>
@@ -172,7 +172,7 @@
             </ul>
           </section>
           <section class="card">
-            <h2>3. Transactions and consistency</h2>
+            <h2>Transactions and consistency</h2>
             <ul>
               <li>Write operations must be atomic.</li>
               <li>Duplicate/conflict checks must be deterministic.</li>
@@ -180,7 +180,7 @@
             </ul>
           </section>
           <section class="card">
-            <h2>4. Logging and observability</h2>
+            <h2>Logging and observability</h2>
             <ul>
               <li>Request-level logging: middleware in <code>app/main.py</code>.</li>
               <li>Business event logs: service layer.</li>
@@ -188,7 +188,7 @@
             </ul>
           </section>
           <section class="card">
-            <h2>5. Typical change flow</h2>
+            <h2>Typical change flow</h2>
             <ol>
               <li>Define or adjust schema.</li>
               <li>Implement service rule.</li>

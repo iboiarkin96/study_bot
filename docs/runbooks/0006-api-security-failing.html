@@ -10,14 +10,26 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
-    <h1>Runbook: API Security Failing</h1>
-    <div id="docs-top-nav"></div>
-    <div id="docs-page-meta-mount" hidden=""></div>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Runbook: API Security Failing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
     <section class="card">
       <h2>Trigger</h2>
       <ul>
@@ -48,25 +60,25 @@
     </section>
     <section class="card">
       <h2>Recovery steps by category</h2>
-      <h3>1) Auth failures (<code>401</code>)</h3>
+      <h3>Auth failures (<code>401</code>)</h3>
       <ul>
         <li>Validate <code>API_AUTH_STRATEGY</code> is expected (<code>mock_api_key</code> or <code>disabled</code>).</li>
         <li>Confirm request sends <code>API_AUTH_HEADER</code> with <code>API_MOCK_API_KEY</code> value.</li>
         <li>Re-run tests: <code>make test-one path=tests/api/v1/test_user_create.py</code>.</li>
       </ul>
-      <h3>2) Rate-limit overblocking (<code>429</code>)</h3>
+      <h3>Rate-limit overblocking (<code>429</code>)</h3>
       <ul>
         <li>Check <code>API_RATE_LIMIT_REQUESTS</code> and <code>API_RATE_LIMIT_WINDOW_SECONDS</code>.</li>
         <li>Validate client retry/backoff behavior.</li>
         <li>Before raising limits, agree policy in an ADR and update docs.</li>
       </ul>
-      <h3>3) Body limit errors (<code>413</code>)</h3>
+      <h3>Body limit errors (<code>413</code>)</h3>
       <ul>
         <li>Measure actual payload size and compare with <code>API_BODY_MAX_BYTES</code>.</li>
         <li>Reduce request body or plan dedicated upload flow.</li>
         <li>If increasing limit, update <code>env/example</code>, docs, and test coverage.</li>
       </ul>
-      <h3>4) CORS / security headers</h3>
+      <h3>CORS / security headers</h3>
       <ul>
         <li>Ensure frontend origin is explicitly allowlisted.</li>
         <li>Verify response headers include CSP and frame/content-type protections.</li>
@@ -118,7 +130,9 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

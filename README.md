@@ -151,6 +151,7 @@ study_app/
 │   │   ├── api/
 │   │   └── portal/
 │   ├── openapi/
+│   ├── qa/
 │   ├── rfc/
 │   ├── runbooks/  # Operational troubleshooting guides
 │   └── uml/  # PlantUML diagrams
