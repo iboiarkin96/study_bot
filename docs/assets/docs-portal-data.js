@@ -144,8 +144,8 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Documentation Experience (DX) Assessment — Study App — formed 18 Apr 2026 (test snapshot)"
       },
       {
-        "path": "audit/docs/2026-04-21-ui-ux-assessment.html",
-        "title": "UI/UX Assessment — Study App docs experience — formed 2026-04-21"
+        "path": "audit/docs/2026-04-23-ui-ux-assessment.html",
+        "title": "UI/UX Assessment (repeat) — Study App docs experience — formed 2026-04-23"
       },
       {
         "path": "audit/docs/README.html",
@@ -288,20 +288,32 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "PUT /api/v1/user/{system_uuid}/{system_user_id} — User — Study App"
       },
       {
+        "path": "internal/api/user/user-http-api.html",
+        "title": "Moved — User resource"
+      },
+      {
         "path": "internal/developers.html",
         "title": "Developers Docs — Study App"
       },
       {
-        "path": "internal/docs-documentation-frontend-tz-menu-and-theme.html",
-        "title": "TZ: Docs frontend navigation and theme controls"
-      },
-      {
-        "path": "internal/documentation-style-guide.html",
-        "title": "Documentation style guide and audit standard"
-      },
-      {
         "path": "internal/errors.html",
         "title": "Moved: Error catalog"
+      },
+      {
+        "path": "internal/front/docs-frontend-hotkeys.html",
+        "title": "Docs frontend hotkeys"
+      },
+      {
+        "path": "internal/front/docs-frontend-menu-and-theme-controls.html",
+        "title": "#1 Docs frontend navigation and theme controls"
+      },
+      {
+        "path": "internal/front/docs-frontend-ui-kit.html",
+        "title": "Docs frontend UI kit (premium surfaces and interactions)"
+      },
+      {
+        "path": "internal/front/documentation-style-guide.html",
+        "title": "Documentation style guide and audit standard"
       },
       {
         "path": "internal/make-commands.html",
@@ -316,12 +328,40 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Employee portal — Study App"
       },
       {
+        "path": "internal/portal/people/cursor/index.html",
+        "title": "Cursor — Employee portal — Study App"
+      },
+      {
+        "path": "internal/portal/people/ivan-boyarkin/index.html",
+        "title": "Ivan Boyarkin — Employee portal — Study App"
+      },
+      {
+        "path": "internal/portal/people/kirill-neustroev/index.html",
+        "title": "Kirill Neustroev — Employee portal — Study App"
+      },
+      {
+        "path": "internal/service-overview.html",
+        "title": "Moved — Internal service documentation"
+      },
+      {
+        "path": "internal/system-analysis.html",
+        "title": "Moved — System design"
+      },
+      {
         "path": "internal/system-design.html",
         "title": "ETR Study API — System design"
       },
       {
         "path": "openapi/openapi-explorer.html",
         "title": "ETR Study App API — OpenAPI (test)"
+      },
+      {
+        "path": "qa/0001-documentation-pages-visual-checklist.html",
+        "title": "QA checklist 0001: Documentation pages visual verification"
+      },
+      {
+        "path": "qa/README.html",
+        "title": "QA checklists — Documentation testing hub"
       },
       {
         "path": "rfc/0001-docs-search-implementation.html",

@@ -28,3 +28,18 @@ repos:
         additional_dependencies: []
         args: [app, tests, scripts]
         pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: docs-maintainers-fix
+        name: docs maintainers autofix
+        entry: .venv/bin/python scripts/ensure_docs_maintainers.py
+        language: system
+        files: ^docs/.*\.html$
+        exclude: ^docs/(api|assets)/
+      - id: docs-design-maintainers
+        name: docs design/maintainers check
+        entry: .venv/bin/python scripts/validate_docs_design.py
+        language: system
+        files: ^docs/.*\.html$
+        exclude: ^docs/(api|assets)/

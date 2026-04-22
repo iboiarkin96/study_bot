@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend hotkeys</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend hotkeys</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page documents keyboard shortcuts used by docs frontend quick actions and command palette.
+          </p>
+        </section>
+
+        <section id="shortcuts" class="card">
+          <h2>Command palette and quick actions shortcuts</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Docs frontend hotkeys">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Action</th>
+                  <th scope="col">Shortcut</th>
+                  <th scope="col">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Toggle command palette panel</td>
+                  <td><kbd>Cmd</kbd> + <kbd>K</kbd> / <kbd>Ctrl</kbd> + <kbd>K</kbd></td>
+                  <td>Primary open/close shortcut. If panel is open, the same shortcut closes it.</td>
+                </tr>
+                <tr>
+                  <td>Alternative toggle shortcuts</td>
+                  <td>
+                    <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd>,
+                    <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>,
+                    <kbd>Shift</kbd> + <kbd>P</kbd>,
+                    <kbd>/</kbd>
+                  </td>
+                  <td>All map to the same quick actions panel toggle logic.</td>
+                </tr>
+                <tr>
+                  <td>Move selection up/down</td>
+                  <td><kbd>ArrowUp</kbd> / <kbd>ArrowDown</kbd></td>
+                  <td>Cycles through visible quick action items.</td>
+                </tr>
+                <tr>
+                  <td>Activate selected item</td>
+                  <td><kbd>Enter</kbd></td>
+                  <td>Opens selected page, section, or command.</td>
+                </tr>
+                <tr>
+                  <td>Open selected item in a new tab</td>
+                  <td><kbd>Cmd</kbd> + <kbd>Enter</kbd> (macOS), <kbd>Ctrl</kbd> + <kbd>Enter</kbd> (Windows/Linux)</td>
+                  <td>Works for navigation results when browser allows opening a new tab.</td>
+                </tr>
+                <tr>
+                  <td>Close command palette</td>
+                  <td><kbd>Escape</kbd></td>
+                  <td>Clears focus back to the page context.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="reading-mode-shortcuts" class="card">
+          <h2>Reading mode shortcuts</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Reading mode hotkeys">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Action</th>
+                  <th scope="col">Shortcut</th>
+                  <th scope="col">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Toggle reading mode</td>
+                  <td><kbd>Shift</kbd> + <kbd>F</kbd> (primary), <kbd>F</kbd> (fallback)</td>
+                  <td>Handled globally when focus is not in an input/textarea/select/contenteditable element.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="behavior-notes" class="card">
+          <h2>Behavior notes</h2>
+          <ul>
+            <li>Quick actions UI and keyboard handling are active on desktop/tablet widths and disabled on narrow mobile widths.</li>
+            <li><kbd>/</kbd> and <kbd>Shift</kbd> + <kbd>P</kbd> are ignored while typing in form fields to avoid input conflicts.</li>
+            <li>Shortcut labels in UI adapt to platform: <code>Cmd</code> on macOS and <code>Ctrl</code> elsewhere.</li>
+            <li>For accessibility, quick actions keep focus management and keyboard navigation in sync.</li>
+            <li>UI density presets are documented in <a href="./docs-frontend-ui-kit.html">Docs frontend UI kit</a>; runtime currently enables <code>docs-density-ultra-compact</code> by default.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Added required Page history section and standardized hotkeys page structure for docs design checks.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

@@ -30,7 +30,7 @@
     </p>
     <section class="card">
 
-      <h2>1. First-time setup</h2>
+      <h2>First-time setup</h2>
       <ol>
         <li><code>make venv</code> then <code>make install</code> (activate <code>.venv</code> if you prefer).</li>
         <li>Create <code>.env</code>: <code>make env-init</code> (or copy <code>env/example</code>), then set
@@ -41,7 +41,7 @@
       </section>
       <section class="card">
 
-        <h2>2. Run targets</h2>
+        <h2>Run targets</h2>
         <table>
           <thead>
             <tr>
@@ -79,7 +79,7 @@
       </section>
       <section class="card">
 
-        <h2>3. Default local ports</h2>
+        <h2>Default local ports</h2>
         <p>Override via <code>.env</code> where documented in <code>env/example</code>.</p>
         <ul>
           <li>API: <code>127.0.0.1:8000</code> (from <code>APP_HOST</code> / <code>APP_PORT</code>)</li>
@@ -90,7 +90,7 @@
       </section>
       <section class="card">
 
-        <h2>4. After you stop the API</h2>
+        <h2>After you stop the API</h2>
         <p>
           Containers from <code>make run-project</code> or <code>make observability-up</code> keep running until you run
           <code>make observability-down</code> (or <code>docker compose -f docker-compose.observability.yml down</code>).
@@ -98,7 +98,7 @@
       </section>
       <section class="card">
 
-        <h2>5. Optional logging stack (Elasticsearch, Kibana, Filebeat)</h2>
+        <h2>Optional logging stack (Elasticsearch, Kibana, Filebeat)</h2>
         <p>
           For searchable JSON logs, set NDJSON output (<code>LOG_FORMAT=json</code>, or leave unset — default is
           <strong><code>json</code></strong>; see <code>env/example</code> and <code>app/core/config.py</code>). Logs go under
@@ -158,7 +158,7 @@
       </section>
       <section class="card">
 
-        <h2>6. Local docs search smoke test (index + telemetry)</h2>
+        <h2>Local docs search smoke test (index + telemetry)</h2>
         <p>
           Checklist to verify docs search and telemetry on your machine.
         </p>
@@ -201,7 +201,7 @@
         </section>
         <section class="card">
 
-          <h2>7. Sanity checks</h2>
+          <h2>Sanity checks</h2>
           <ul>
             <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code> (responses
               include <code>X-Request-Id</code>)</li>

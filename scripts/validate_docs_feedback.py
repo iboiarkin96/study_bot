@@ -13,7 +13,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_NAV_JS = REPO_ROOT / "docs" / "assets" / "docs-nav.js"
-ISSUE_TEMPLATE = REPO_ROOT / ".github" / "ISSUE_TEMPLATE" / "docs_feedback.yml"
+ISSUE_TEMPLATE = REPO_ROOT / ".github" / "ISSUE_TEMPLATE" / "docs_feedback.md"
 KEY_DOC_PAGES = (
     REPO_ROOT / "docs" / "index.html",
     REPO_ROOT / "docs" / "internal" / "README.html",

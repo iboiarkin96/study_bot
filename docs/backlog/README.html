@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,17 +28,18 @@
         <h1>Backlog: priorities and status</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <p class="backlog-intro lead">
-          One ordered list of engineering work: most urgent first, nice-to-have last. Dates are <strong>rough
-          calendar-day ranges</strong> (weekends off), for <strong>3 / 2 / 1 hours of focused work per day</strong>. They are
-          not deadlines—only a shared guess for planning. To change status, edit the pill class (see the legend). This page
-          is <strong>not</strong> ADR lifecycle: ADRs use <code>data-adr-weight</code> and ratification
-          (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
-        </p>
-        <p class="backlog-intro">
-          <strong>See also:</strong> <a href="../audit/README.html">Architecture &amp; quality assessments</a> — maturity
-          notes under <code>docs/audit/</code> (<a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>).
-        </p>
+        <section class="card">
+          <h2>Overview</h2>
+          <p>
+            One ordered list of engineering work: most urgent first, nice-to-have last. Dates are <strong>rough
+            calendar-day ranges</strong> (weekends off), for <strong>3 / 2 / 1 hours of focused work per day</strong>.
+            They are
+            not deadlines—only a shared guess for planning. To change status, edit the pill class (see the legend). This
+            page
+            is <strong>not</strong> ADR lifecycle: ADRs use <code>data-adr-weight</code> and ratification
+            (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
+          </p>
+        </section>
 
         <section class="card" aria-labelledby="legend-title">
           <h2 id="legend-title">Status legend</h2>
@@ -74,8 +75,10 @@
               <li>Colors live in <code>docs/backlog/backlog.css</code> (CSS variables).</li>
               <li>To change colors globally, edit <code>--status-*</code> there.</li>
               <li>In each item’s <code>&lt;h2&gt;</code>, find
-                <code>&lt;span class="status-pill status-pill--..."&gt;</code> and set the part after <code>status-pill--</code> to
-                <code>todo</code>, <code>in-progress</code>, <code>done</code>, <code>blocked</code>, or <code>rejected</code>.
+                <code>&lt;span class="status-pill status-pill--..."&gt;</code> and set the part after
+                <code>status-pill--</code> to
+                <code>todo</code>, <code>in-progress</code>, <code>done</code>, <code>blocked</code>, or
+                <code>rejected</code>.
               </li>
             </ol>
           </div>
@@ -91,12 +94,14 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Keep a simple backlog in <code>docs/backlog/</code>: HTML, shared pill styles, and the same fields per item so
+              Keep a simple backlog in <code>docs/backlog/</code>: HTML, shared pill styles, and the same fields per
+              item so
               anyone reading the repo sees priorities without a separate tool.
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
-              Without one place to look, plans scatter across chat and tickets. This page is versioned with the code—good for
+              Without one place to look, plans scatter across chat and tickets. This page is versioned with the
+              code—good for
               reviews, onboarding, and release planning if you do not use Jira/Linear or want docs next to the source.
             </dd>
             <dt>3) Delivered (to date)</dt>
@@ -132,7 +137,8 @@
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
-              <strong>Problem:</strong> If CI is weak or missing, bad code and doc drift can merge to <code>main</code>.<br>
+              <strong>Problem:</strong> If CI is weak or missing, bad code and doc drift can merge to
+              <code>main</code>.<br>
               <strong>Value:</strong> Bugs surface earlier; reviewers see a green pipeline; standard gates on each PR.
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
@@ -171,17 +177,20 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Set SLIs/SLOs (and optional SLAs) for latency, uptime, and errors. Add dashboards and alerts in Prometheus (or
+              Set SLIs/SLOs (and optional SLAs) for latency, uptime, and errors. Add dashboards and alerts in Prometheus
+              (or
               your stack). Write what to do when the error budget runs out (freeze, incident flow).
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
               <strong>Problem:</strong> Metrics without targets do not guide releases or on-call.<br>
-              <strong>Value:</strong> Clear reliability goals; ops and product share the same numbers (error-budget style).
+              <strong>Value:</strong> Clear reliability goals; ops and product share the same numbers (error-budget
+              style).
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              ADR or runbook: e.g. p95 latency, <code>/ready</code>-based availability, max 5xx ratio; Grafana panels and
+              ADR or runbook: e.g. p95 latency, <code>/ready</code>-based availability, max 5xx ratio; Grafana panels
+              and
               Prometheus alert rules; runbook steps for budget exhaustion; link from existing observability docs.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -195,7 +204,8 @@
             <dt>5) Delivered (to date)</dt>
             <dd>
               <a href="../adr/0011-slo-sla-error-budget.html">ADR 0011</a>; Prometheus recording and alert rules in
-              <code>ops/prometheus/rules/study_app_slo.yml</code>; Grafana dashboard import and Blackbox probe wiring via
+              <code>ops/prometheus/rules/study_app_slo.yml</code>; Grafana dashboard import and Blackbox probe wiring
+              via
               <code>docker-compose.observability.yml</code> and <code>ops/prometheus/</code>; links from README and
               developer
               docs to local observability URLs.
@@ -213,17 +223,20 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Put business rules in the DB (unique constraints), map conflicts to the API error shape, and document races
+              Put business rules in the DB (unique constraints), map conflicts to the API error shape, and document
+              races
               (double submit, retries, idempotency) so behavior under load is clear.
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
               <strong>Problem:</strong> “Check then insert” without unique indexes can race and duplicate rows.<br>
-              <strong>Value:</strong> The database enforces truth; clients get stable errors; less guesswork for support.
+              <strong>Value:</strong> The database enforces truth; clients get stable errors; less guesswork for
+              support.
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              Add constraints on natural keys; consistent HTTP/status codes for conflicts; developer doc table: scenarios
+              Add constraints on natural keys; consistent HTTP/status codes for conflicts; developer doc table:
+              scenarios
               (duplicate create, idempotent retry) and expected outcomes.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -262,7 +275,8 @@
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              <code>make deps-audit</code> (or equivalent) using pip-audit; integrate into CI; ADR: pinning rules, review
+              <code>make deps-audit</code> (or equivalent) using pip-audit; integrate into CI; ADR: pinning rules,
+              review
               cadence, exception process.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -275,7 +289,8 @@
             </dd>
             <dt>5) Delivered (to date)</dt>
             <dd>
-              Policy ADR: <a href="../adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a>
+              Policy ADR: <a href="../adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR
+              0019</a>
               (pinning, pip-audit, cadence, exceptions). <code>pip_audit</code> pinned in <code>requirements.txt</code>;
               <code>make deps-audit</code> (OSV scan, <code>.pip-audit-cache</code>); CI quality job runs it before
               <code>make verify</code> (<code>.github/workflows/ci.yml</code>); <code>make verify-ci</code> includes
@@ -293,7 +308,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Add integration tests that hit real PostgreSQL in CI (Compose), with migrations and repositories—alongside fast
+              Add integration tests that hit real PostgreSQL in CI (Compose), with migrations and repositories—alongside
+              fast
               unit tests on SQLite or mocks.
             </dd>
             <dt>2) Problem &amp; Value</dt>
@@ -327,7 +343,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Pull pure validation into small functions; test them with unit tests and property tests (Hypothesis) so many
+              Pull pure validation into small functions; test them with unit tests and property tests (Hypothesis) so
+              many
               inputs are checked without slow E2E only.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -360,7 +377,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Add a few E2E tests: real HTTP → API → DB on a running stack, with real status codes, headers, and bodies—not
+              Add a few E2E tests: real HTTP → API → DB on a running stack, with real status codes, headers, and
+              bodies—not
               only mocks.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -393,7 +411,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Try mutation testing (e.g. cosmic-ray, mutmut) on one or two sensitive modules to see if tests really catch
+              Try mutation testing (e.g. cosmic-ray, mutmut) on one or two sensitive modules to see if tests really
+              catch
               broken code—not just high line coverage.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -428,7 +447,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Move rate limits from per-process memory to Redis so limits match across many API instances, still returning
+              Move rate limits from per-process memory to Redis so limits match across many API instances, still
+              returning
               HTTP 429 as today.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -441,7 +461,8 @@
               Replace <code>InMemoryRateLimiter</code> in <code>app/core/security.py</code> with a Redis-backed adapter
               using shared counters + TTL windows, preserving existing 429 behavior and headers
               (<code>X-RateLimit-*</code>, <code>Retry-After</code>); ADR (algorithm: token bucket or sliding window);
-              Compose profile for local dev/CI; clear fallback policy when Redis is unavailable (fail-open vs fail-closed)
+              Compose profile for local dev/CI; clear fallback policy when Redis is unavailable (fail-open vs
+              fail-closed)
               and integration tests for multi-worker consistency.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -469,16 +490,20 @@
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
-              <strong>Problem:</strong> Idempotency currently checks SQL on each request and temporary runtime data has no
+              <strong>Problem:</strong> Idempotency currently checks SQL on each request and temporary runtime data has
+              no
               shared distributed store.<br>
-              <strong>Value:</strong> Lower latency/load for retries and repeated reads; enables safe scale-out patterns for
+              <strong>Value:</strong> Lower latency/load for retries and repeated reads; enables safe scale-out patterns
+              for
               cache, one-time keys, and future background workers.
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
               Redis read-through cache for <code>app/repositories/idempotency_repository.py</code>
-              (<code>idempotency_key -&gt; status/response/payload_hash</code> with TTL); SQL remains canonical persistence;
-              key schema + TTL policy doc; cache invalidation and observability metrics (hit ratio, errors, fallback rate);
+              (<code>idempotency_key -&gt; status/response/payload_hash</code> with TTL); SQL remains canonical
+              persistence;
+              key schema + TTL policy doc; cache invalidation and observability metrics (hit ratio, errors, fallback
+              rate);
               optional adapters for hot GET cache (user/course cards), short-lived tokens/OTP/one-time keys, and
               starter queue primitives for later worker adoption.
             </dd>
@@ -502,17 +527,20 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Use PostgreSQL for staging/prod (Docker-friendly), keep schema in Alembic, and plan a safe move from SQLite
+              Use PostgreSQL for staging/prod (Docker-friendly), keep schema in Alembic, and plan a safe move from
+              SQLite
               where it still runs—including data migration runbooks if needed.
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
-              <strong>Problem:</strong> SQLite is fine for dev but weak for concurrent prod ops, backups, and tooling.<br>
+              <strong>Problem:</strong> SQLite is fine for dev but weak for concurrent prod ops, backups, and
+              tooling.<br>
               <strong>Value:</strong> Postgres matches usual ops expectations (backup, HA, metrics).
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              docker-compose for app + Postgres; environment profiles; SQLAlchemy compatibility checks; migration runbook;
+              docker-compose for app + Postgres; environment profiles; SQLAlchemy compatibility checks; migration
+              runbook;
               cutover or dual-write strategy as appropriate.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -545,7 +573,8 @@
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              Scripts under <code>ops/load/</code> or <code>tests/load/</code>; baseline profile (e.g. user CRUD); report
+              Scripts under <code>ops/load/</code> or <code>tests/load/</code>; baseline profile (e.g. user CRUD);
+              report
               artifact; optional nightly job with thresholds; link to SLO doc.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -609,7 +638,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Add simple feature flags (env and/or Redis) so risky behavior can flip without a full deploy—gradual rollout and
+              Add simple feature flags (env and/or Redis) so risky behavior can flip without a full deploy—gradual
+              rollout and
               fast rollback.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -643,7 +673,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Enforce layer rules in CI (e.g. routers do not import repositories directly)—import-linter or a graph check in
+              Enforce layer rules in CI (e.g. routers do not import repositories directly)—import-linter or a graph
+              check in
               <code>make verify</code>.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -677,7 +708,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Use <a href="https://keepachangelog.com/" rel="noopener noreferrer">Keep a Changelog</a> for user-visible and
+              Use <a href="https://keepachangelog.com/" rel="noopener noreferrer">Keep a Changelog</a> for user-visible
+              and
               breaking changes; optional CI check on release tags.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -700,7 +732,8 @@
             </dd>
             <dt>5) Delivered (to date)</dt>
             <dd>
-              <code>CHANGELOG.md</code> (Keep a Changelog); ADR 0013; <code>scripts/changelog_gate.py</code> and optional
+              <code>CHANGELOG.md</code> (Keep a Changelog); ADR 0013; <code>scripts/changelog_gate.py</code> and
+              optional
               <code>scripts/changelog_draft.py</code>; CI workflow runs the gate on PR/push to <code>main</code> /
               <code>master</code> (see <code>.github/workflows/ci.yml</code>).
             </dd>
@@ -742,7 +775,8 @@
             <dd>
               ADR 0014; Ruff F401 + RUF100 and <code>per-file-ignores</code> for <code>tests/conftest.py</code> (E402);
               <code>[tool.vulture]</code> in <code>pyproject.toml</code>; <code>make dead-code-check</code>; weekly
-              <code>.github/workflows/dead-code.yml</code>; checklist in <code>CONTRIBUTING.md</code>. Ongoing removal of
+              <code>.github/workflows/dead-code.yml</code>; checklist in <code>CONTRIBUTING.md</code>. Ongoing removal
+              of
               dead
               code remains manual with test-backed review.
             </dd>
@@ -758,7 +792,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Add OpenTelemetry (W3C): HTTP spans, outbound calls, DB spans where useful; export OTLP to Jaeger/Tempo or a
+              Add OpenTelemetry (W3C): HTTP spans, outbound calls, DB spans where useful; export OTLP to Jaeger/Tempo or
+              a
               host. Tie traces to logs/metrics with <code>trace_id</code> / <code>span_id</code>.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -794,7 +829,8 @@
             <dt>1) Summary</dt>
             <dd>
               Ship JSON logs in prod (optional in dev) with stable fields: time, level, logger, message, and correlation
-              (<code>request_id</code>; <code>trace_id</code> when OTel ships). Accept or set <code>X-Request-Id</code> per
+              (<code>request_id</code>; <code>trace_id</code> when OTel ships). Accept or set <code>X-Request-Id</code>
+              per
               request.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -845,7 +881,8 @@
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              GitHub Actions job after <code>publish-image</code> (or same workflow step with the built digest); artifact
+              GitHub Actions job after <code>publish-image</code> (or same workflow step with the built digest);
+              artifact
               retention policy; exception process for accepted CVEs.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -868,7 +905,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Treat OpenAPI like code: lint operation IDs, summaries, examples on writes and 422s, and block surprise breaks
+              Treat OpenAPI like code: lint operation IDs, summaries, examples on writes and 422s, and block surprise
+              breaks
               vs a checked-in baseline.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -949,7 +987,8 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              One version string (e.g. <code>pyproject.toml</code> or <code>app/__version__.py</code>) wired into FastAPI,
+              One version string (e.g. <code>pyproject.toml</code> or <code>app/__version__.py</code>) wired into
+              FastAPI,
               OpenAPI, and release notes so tags and docs match the running app.
             </dd>
             <dt>2) Problem &amp; value</dt>
@@ -959,7 +998,8 @@
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              Single import or TOML field; optional <code>/live</code> or <code>/version</code> payload field; contributor
+              Single import or TOML field; optional <code>/live</code> or <code>/version</code> payload field;
+              contributor
               note: bump process tied to release.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -993,7 +1033,8 @@
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              Workflow that starts API + DB (or uses test stack), runs scripted checks with thresholds; document flakiness
+              Workflow that starts API + DB (or uses test stack), runs scripted checks with thresholds; document
+              flakiness
               mitigations; keep optional or <code>workflow_dispatch</code> if cost is a concern.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -1021,15 +1062,19 @@
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
-              <strong>Problem:</strong> Without an explicit version marker, readers cannot quickly confirm whether they are
+              <strong>Problem:</strong> Without an explicit version marker, readers cannot quickly confirm whether they
+              are
               looking at the latest or expected revision.<br>
-              <strong>Value:</strong> Better traceability for reviews and audits; easier support communication when discussing
+              <strong>Value:</strong> Better traceability for reviews and audits; easier support communication when
+              discussing
               specific document revisions.
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              Define where <code>Document Version</code> is stored/rendered in docs templates; set increment rules (major /
-              minor / patch or date-based); update contributor guidance for version bumps; optionally add a docs check that
+              Define where <code>Document Version</code> is stored/rendered in docs templates; set increment rules
+              (major /
+              minor / patch or date-based); update contributor guidance for version bumps; optionally add a docs check
+              that
               validates version presence and format.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -1052,21 +1097,28 @@
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Create a dedicated QA/testing space and establish an end-to-end testing process for the project, covering both
-              frontend and backend with a clear testing pyramid (unit, integration, API/contract, E2E, and smoke/regression).
+              Create a dedicated QA/testing space and establish an end-to-end testing process for the project, covering
+              both
+              frontend and backend with a clear testing pyramid (unit, integration, API/contract, E2E, and
+              smoke/regression).
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
-              <strong>Problem:</strong> Testing coverage is currently near zero for both frontend and backend, and there is no
+              <strong>Problem:</strong> Testing coverage is currently near zero for both frontend and backend, and there
+              is no
               shared QA workflow, ownership model, or quality gate policy.<br>
-              <strong>Value:</strong> Predictable release quality, earlier bug detection, lower regression risk, and a stable
+              <strong>Value:</strong> Predictable release quality, earlier bug detection, lower regression risk, and a
+              stable
               team process where engineers and testers work with one quality baseline.
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              Define dedicated tester workspace and access model (test environment, test data, tooling); baseline quality
-              strategy document with entry/exit criteria; target coverage and test pyramid ratios per layer; frontend and
-              backend test suites with markers and ownership; CI gates for required checks; defect triage and bug lifecycle
+              Define dedicated tester workspace and access model (test environment, test data, tooling); baseline
+              quality
+              strategy document with entry/exit criteria; target coverage and test pyramid ratios per layer; frontend
+              and
+              backend test suites with markers and ownership; CI gates for required checks; defect triage and bug
+              lifecycle
               policy; release readiness checklist; onboarding guide for test practices and responsibilities.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
@@ -1084,27 +1136,34 @@
           <h2>
             <span class="priority-tag">P1</span>
             Mobile docs UX: fix top navigation rendering on iPhone 17 Pro Max and adaptive layout by screen size
-            <span class="status-pill status-pill--todo">To do</span>
+            <span class="status-pill status-pill--done">Done</span>
           </h2>
           <dl>
             <dt>1) Summary</dt>
             <dd>
-              Fix the broken/awkward top navigation rendering on iPhone 17 Pro Max and implement responsive/platform-aware
-              documentation layout behavior so reading and navigation stay comfortable across small, medium, and large screens.
+              Fix the broken/awkward top navigation rendering on iPhone 17 Pro Max and implement
+              responsive/platform-aware
+              documentation layout behavior so reading and navigation stay comfortable across small, medium, and large
+              screens.
             </dd>
             <dt>2) Problem &amp; value</dt>
             <dd>
-              <strong>Problem:</strong> The top of the docs navigation currently looks poor on iPhone 17 Pro Max, reducing
+              <strong>Problem:</strong> The top of the docs navigation currently looks poor on iPhone 17 Pro Max,
+              reducing
               usability and perceived quality on mobile devices.<br>
-              <strong>Value:</strong> Better mobile first impression, faster page navigation, and more predictable UX with
+              <strong>Value:</strong> Better mobile first impression, faster page navigation, and more predictable UX
+              with
               screen-size-specific behavior.
             </dd>
             <dt>3) Scope &amp; deliverables</dt>
             <dd>
-              Audit current docs shell/navigation on iOS Safari (including safe-area and notch behavior); define responsive
+              Audit current docs shell/navigation on iOS Safari (including safe-area and notch behavior); define
+              responsive
               breakpoints and layout rules for nav/sidebar/content; implement platform-friendly patterns
-              (<code>env(safe-area-inset-*)</code>, sticky/fixed header behavior, compact navigation states, touch target
-              sizing, and readable typography scale); verify on key viewport buckets and document the rules in internal docs.
+              (<code>env(safe-area-inset-*)</code>, sticky/fixed header behavior, compact navigation states, touch
+              target
+              sizing, and readable typography scale); verify on key viewport buckets and document the rules in internal
+              docs.
             </dd>
             <dt>4) Rough estimate (calendar days)</dt>
             <dd>
@@ -1114,54 +1173,67 @@
                 <div class="time-cell"><strong>1 h/day</strong> ~12 days</div>
               </div>
             </dd>
-          </dl>
+            <dt>5) Completion evidence / acceptance</dt>
+            <dd>
+              <ul>
+                <li>Mobile title row uses safe-area aware top spacing via <code>env(safe-area-inset-top)</code>.</li>
+                <li>Drawer panel uses safe-area top/bottom padding for notched devices.</li>
+                <li>Interactive controls in collapsed/compact states keep at least 44px touch target width.</li>
+                <li>Tablet/phone drawer mode hides desktop sidebar and keeps reliable open/close behavior.</li>
+                <li>Implemented behavior is documented in
+                  <code>docs/internal/front/docs-frontend-menu-and-theme-controls.html</code>.</li>
+                </ul>
+              </dd>
+            </dl>
 
-        </section>
-        <section id="page-history" class="card">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Change</th>
-                  <th scope="col">Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Added backlog item for iPhone 17 Pro Max navigation fix and adaptive docs layout by screen size.</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-                <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Added critical QA foundation backlog item for tester space and full frontend/backend testing process.</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-                <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Added backlog item for document versioning and Document Version field policy.</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-                <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Expanded Redis rate-limiting backlog item and added Redis idempotency/cache adoption item.</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-                <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Added Page history section (repository baseline).</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+          </section>
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added backlog item for iPhone 17 Pro Max navigation fix and adaptive docs layout by screen size.
+                    </td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added critical QA foundation backlog item for tester space and full frontend/backend testing
+                      process.</td>
+                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                    </tr>
+                    <tr>
+                      <td><time datetime="2026-04-21">2026-04-21</time></td>
+                      <td>Added backlog item for document versioning and Document Version field policy.</td>
+                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                    </tr>
+                    <tr>
+                      <td><time datetime="2026-04-21">2026-04-21</time></td>
+                      <td>Expanded Redis rate-limiting backlog item and added Redis idempotency/cache adoption item.</td>
+                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                    </tr>
+                    <tr>
+                      <td><time datetime="2026-04-21">2026-04-21</time></td>
+                      <td>Added Page history section (repository baseline).</td>
+                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
+            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+          </main>
+        </div>
+      </div>
 
-</body></html>
+    </body></html>

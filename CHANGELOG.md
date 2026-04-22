@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Employee portal:** profile for **Kirill Neustroev** (DevOps) under `docs/internal/portal/people/kirill-neustroev/`; his person id is included in `data-maintainer-ids` on the internal error catalog page (`docs/internal/api/errors.html`).
 
-- **Documentation assessment:** UI/UX assessment for the docs experience, `docs/audit/docs/2026-04-21-ui-ux-assessment.html`, linked from `docs/audit/docs/README.html`; `docs/audit/README.html` expands guidance on assessment file naming, location, and structure.
 
 ### Changed
 

@@ -68,6 +68,7 @@
       "internal",
       "meta",
       "openapi",
+      "qa",
       "rfc",
       "runbooks",
     ]);
@@ -143,7 +144,7 @@
         const profileHref = relHref(fromDir, `internal/portal/people/${p.slug}/index.html`);
         const photoHref = `${docsRootPrefixFromPage()}${p.photo}`;
         return `<a class="docs-page-meta__stack-item" href="${profileHref}" aria-label="${escapeHtml(p.displayName)}">
-  <img class="docs-page-meta__stack-avatar" src="${photoHref}" width="24" height="24" alt="" />
+  <img class="docs-page-meta__stack-avatar" src="${photoHref}" width="34" height="34" alt="" />
 </a>`;
       })
       .join("");
@@ -162,7 +163,7 @@
           const name = p.displayName;
           return `<li class="docs-page-meta__editor">
   <a class="docs-page-meta__avatar-link" href="${profileHref}">
-    <img class="docs-page-meta__avatar" src="${photoHref}" width="40" height="40" alt="" />
+    <img class="docs-page-meta__avatar" src="${photoHref}" width="38" height="38" alt="" />
   </a>
   <a class="docs-page-meta__editor-name-link" href="${profileHref}">${escapeHtml(name)}</a>
 </li>`;
@@ -172,7 +173,7 @@
       .join("");
 
     mount.innerHTML = `<section class="docs-page-meta docs-page-meta--premium" aria-labelledby="docs-page-meta-title">
-  <button type="button" class="docs-page-meta__title docs-page-meta__toggle" id="docs-page-meta-title" aria-expanded="false" aria-controls="docs-page-meta-list">Page editors</button>
+  <button type="button" class="docs-page-meta__title docs-page-meta__toggle" id="docs-page-meta-title" aria-expanded="false" aria-controls="docs-page-meta-list">Edited by</button>
   ${stackHtml}
   <ul class="docs-page-meta__editors" id="docs-page-meta-list" hidden>${editorsHtml}</ul>
 </section>`;

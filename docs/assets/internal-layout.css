@@ -27,6 +27,12 @@
   min-width: 0;
 }
 
+.internal-layout__page-title-row .top-nav__theme-btn--flashlight {
+  flex: 0 0 auto;
+  margin-left: auto;
+  align-self: center;
+}
+
 .internal-layout__page-menu-btn {
   flex: 0 0 auto;
   border: 1px solid var(--line, #dbe3ef);
@@ -105,11 +111,6 @@
     border-bottom: 1px solid color-mix(in srgb, var(--line, #dbe3ef) 70%, transparent);
   }
 
-  .internal-layout__page-title-row .top-nav__theme-btn--flashlight {
-    flex: 0 0 auto;
-    margin-left: auto;
-    align-self: center;
-  }
 }
 
 .internal-layout__shell {
@@ -426,11 +427,11 @@
   }
 }
 
-/* Reading width cap; center in the main grid column (avoid “stuck left” on wide viewports). */
+/* Internal docs: keep content wide while still centered on medium viewports. */
 .internal-layout__main .container {
   box-sizing: border-box;
   width: 100%;
-  max-width: min(880px, 100%);
+  max-width: min(1160px, 100%);
   margin-left: auto;
   margin-right: auto;
   padding: 0;

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,19 +27,24 @@
         <h1>ADR Index</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <p class="lead">
-          Architecture Decision Records (ADRs) explain <strong>what</strong> we decided, <strong>why</strong> it matters,
-          and
-          <strong>what</strong> we trade off—so the team does not re-litigate the same questions in chat or code review.
-        </p>
         <section class="card">
+          <h2>Overview</h2>
           <p>
             Early in a project, it is tempting to skip written decisions. That saves time until the second or third
-            teammate joins, a client integrates, or production breaks—then undocumented choices become expensive guesses.
+            teammate joins, a client integrates, or production breaks—then undocumented choices become expensive
+            guesses.
             Use this index to read the rationale behind API behavior, security, testing, delivery, and docs. New
             decisions should start from the <a href="./0000-template.html">ADR template</a> and follow
             <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> (lifecycle and ratification).
           </p>
+          Architecture Decision Records (ADRs) explain <strong>what</strong> we decided, <strong>why</strong> it
+          matters,
+          and
+          <strong>what</strong> we trade off—so the team does not re-litigate the same questions in chat or code review.
+          <ul>
+            <li>In scope: all ADRs under <code>docs/adr/</code>.</li>
+            <li>Out of scope: ADRs for API behavior, security, testing, delivery, and docs.</li>
+          </ul>
         </section>
 
         <section class="card">
@@ -51,7 +56,8 @@
           <h3>Process: how we record decisions</h3>
           <ul>
             <li>
-              <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> — status on pages, Issues, PRs, and
+              <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a> — status on pages, Issues, PRs,
+              and
               docs-only merges.
             </li>
             <li>
@@ -72,177 +78,194 @@
               <a href="../internal/README.html">Internal service documentation</a> — engineering-facing behavior and
               semantics under <code>docs/internal/</code>;
               <a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a> (external vs internal),
-              <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> (norms and authority).
+              <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> (norms and
+              authority).
             </li>
             <li><a href="../audit/README.html">Assessment reports (index)</a> — template and indexes under
-              <code>docs/audit/</code> (<code>docs/</code> vs <code>api/</code> subtrees).</li>
-              <li><a href="./0024-architecture-and-quality-assessment-documents.html">ADR 0024</a> — assessment (audit)
-                documents: location, HTML format, tables, scoring, process.</li>
-                <li><a href="./0001-docs-as-code.html">ADR 0001</a> — docs in git, generation, quality gates.</li>
-                <li><a href="./0013-changelog-and-release-notes.html">ADR 0013</a> — changelog at the root and PR rules.</li>
-                <li><a href="./0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a> — docstrings and pdoc.</li>
-                <li><a href="./0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — C4, PlantUML, shared style.
-                </li>
-              </ul>
-              <h3>API contract &amp; integrators</h3>
-              <ul>
-                <li><a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> — OpenAPI quality and
-                  snapshots.</li>
-                  <li><a href="./0003-error-contract-governance.html">ADR 0003</a> — stable error codes and catalogs.</li>
-                  <li><a href="./0004-api-versioning-policy.html">ADR 0004</a> — versioning and compatibility.</li>
-                  <li><a href="./0006-idempotency-write-operations.html">ADR 0006</a> — idempotent writes.</li>
-                  <li><a href="./0022-embedded-swagger-ui-openapi-sandbox.html">ADR 0022</a> — superseded browser validation
-                    note.</li>
+              <code>docs/audit/</code> (<code>docs/</code> vs <code>api/</code> subtrees).
+            </li>
+            <li><a href="./0024-architecture-and-quality-assessment-documents.html">ADR 0024</a> — assessment (audit)
+              documents: location, HTML format, tables, scoring, process.</li>
+              <li><a href="./0001-docs-as-code.html">ADR 0001</a> — docs in git, generation, quality gates.</li>
+              <li><a href="./0013-changelog-and-release-notes.html">ADR 0013</a> — changelog at the root and PR rules.
+              </li>
+              <li><a href="./0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a> — docstrings and pdoc.</li>
+              <li><a href="./0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — C4, PlantUML, shared
+                style.
+              </li>
+            </ul>
+            <h3>API contract &amp; integrators</h3>
+            <ul>
+              <li><a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> — OpenAPI quality and
+                snapshots.</li>
+                <li><a href="./0003-error-contract-governance.html">ADR 0003</a> — stable error codes and catalogs.</li>
+                <li><a href="./0004-api-versioning-policy.html">ADR 0004</a> — versioning and compatibility.</li>
+                <li><a href="./0006-idempotency-write-operations.html">ADR 0006</a> — idempotent writes.</li>
+                <li><a href="./0022-embedded-swagger-ui-openapi-sandbox.html">ADR 0022</a> — superseded browser validation
+                  note.</li>
+                </ul>
+                <h3>Security, config &amp; supply chain</h3>
+                <ul>
+                  <li><a href="./0005-api-security-defaults.html">ADR 0005</a> — API security baseline.</li>
+                  <li><a href="./0010-env-profiles-and-config-governance.html">ADR 0010</a> — profiles and env validation.
+                  </li>
+                  <li><a href="./0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a> — pins and
+                    pip-audit.</li>
                   </ul>
-                  <h3>Security, config &amp; supply chain</h3>
+                  <h3>Testing &amp; code health</h3>
                   <ul>
-                    <li><a href="./0005-api-security-defaults.html">ADR 0005</a> — API security baseline.</li>
-                    <li><a href="./0010-env-profiles-and-config-governance.html">ADR 0010</a> — profiles and env validation.</li>
-                    <li><a href="./0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a> — pins and
-                      pip-audit.</li>
+                    <li><a href="./0002-testing-policy.html">ADR 0002</a> — required API tests.</li>
+                    <li><a href="./0012-testing-strategy-and-load-testing.html">ADR 0012</a> — layers and optional load tests.
+                    </li>
+                    <li><a href="./0014-dead-code-analysis-and-repository-hygiene.html">ADR 0014</a> — Ruff + Vulture hygiene.
+                    </li>
+                  </ul>
+                  <h3>Running, observing &amp; SLOs</h3>
+                  <ul>
+                    <li><a href="./0009-health-readiness-and-observability.html">ADR 0009</a> — health, readiness, metrics.</li>
+                    <li><a href="./0011-slo-sla-error-budget.html">ADR 0011</a> — SLOs, error budget, alerts.</li>
+                    <li><a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a> — structured logs, request
+                      id, optional local Elasticsearch.</li>
                     </ul>
-                    <h3>Testing &amp; code health</h3>
+                    <h3>Day-to-day workflow &amp; Git</h3>
                     <ul>
-                      <li><a href="./0002-testing-policy.html">ADR 0002</a> — required API tests.</li>
-                      <li><a href="./0012-testing-strategy-and-load-testing.html">ADR 0012</a> — layers and optional load tests.
+                      <li><a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a> — Make entrypoints.
                       </li>
-                      <li><a href="./0014-dead-code-analysis-and-repository-hygiene.html">ADR 0014</a> — Ruff + Vulture hygiene.
+                      <li><a href="./0017-branch-naming-and-repository-workflow.html">ADR 0017</a> — branches, tags, hotfixes.
                       </li>
                     </ul>
-                    <h3>Running, observing &amp; SLOs</h3>
+                    <h3>Containers &amp; delivery</h3>
                     <ul>
-                      <li><a href="./0009-health-readiness-and-observability.html">ADR 0009</a> — health, readiness, metrics.</li>
-                      <li><a href="./0011-slo-sla-error-budget.html">ADR 0011</a> — SLOs, error budget, alerts.</li>
-                      <li><a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a> — structured logs, request
-                        id, optional local Elasticsearch.</li>
-                      </ul>
-                      <h3>Day-to-day workflow &amp; Git</h3>
-                      <ul>
-                        <li><a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a> — Make entrypoints.</li>
-                        <li><a href="./0017-branch-naming-and-repository-workflow.html">ADR 0017</a> — branches, tags, hotfixes.</li>
-                      </ul>
-                      <h3>Containers &amp; delivery</h3>
-                      <ul>
-                        <li><a href="./0015-container-image.html">ADR 0015</a> — container image (Dockerfile, entrypoint).</li>
-                        <li><a href="./0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a> — CI push to GHCR.</li>
-                      </ul>
-                    </section>
+                      <li><a href="./0015-container-image.html">ADR 0015</a> — container image (Dockerfile, entrypoint).</li>
+                      <li><a href="./0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a> — CI push to GHCR.</li>
+                    </ul>
+                  </section>
 
-                    <section class="card">
-                      <h2>Full index</h2>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Document</th>
-                            <th>Description</th>
-                            <th>Decision</th>
+                  <section class="card">
+                    <h2>Full index</h2>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Document</th>
+                          <th>Description</th>
+                          <th>Decision</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><a href="./0000-template.html">Template</a></td>
+                          <td>Copy-paste shell for a new ADR: sections, ratification block, and the full status-milestone table
+                            for
+                            authors.</td>
+                            <td>—</td>
                           </tr>
-                        </thead>
-                        <tbody>
                           <tr>
-                            <td><a href="./0000-template.html">Template</a></td>
-                            <td>Copy-paste shell for a new ADR: sections, ratification block, and the full status-milestone table for
-                              authors.</td>
-                              <td>—</td>
+                            <td><a href="./0001-docs-as-code.html">ADR 0001</a></td>
+                            <td>Docs as Code: narrative and generated docs live in git and pass the same quality gates as
+                              application
+                              changes.</td>
+                              <td>Accepted</td>
                             </tr>
                             <tr>
-                              <td><a href="./0001-docs-as-code.html">ADR 0001</a></td>
-                              <td>Docs as Code: narrative and generated docs live in git and pass the same quality gates as application
-                                changes.</td>
+                              <td><a href="./0002-testing-policy.html">ADR 0002</a></td>
+                              <td>API changes must include automated tests (happy path + at least one failure); unfinished work does
+                                not
+                                ship.</td>
                                 <td>Accepted</td>
                               </tr>
                               <tr>
-                                <td><a href="./0002-testing-policy.html">ADR 0002</a></td>
-                                <td>API changes must include automated tests (happy path + at least one failure); unfinished work does not
-                                  ship.</td>
+                                <td><a href="./0003-error-contract-governance.html">ADR 0003</a></td>
+                                <td>Stable machine-readable errors: shared transport catalog plus per-entity codes; OpenAPI and tests
+                                  stay
+                                  aligned.</td>
                                   <td>Accepted</td>
                                 </tr>
                                 <tr>
-                                  <td><a href="./0003-error-contract-governance.html">ADR 0003</a></td>
-                                  <td>Stable machine-readable errors: shared transport catalog plus per-entity codes; OpenAPI and tests stay
-                                    aligned.</td>
+                                  <td><a href="./0004-api-versioning-policy.html">ADR 0004</a></td>
+                                  <td>Major version in the URL; additive edits inside a major; breaking changes and error semantics need a
+                                    deliberate path.</td>
                                     <td>Accepted</td>
                                   </tr>
                                   <tr>
-                                    <td><a href="./0004-api-versioning-policy.html">ADR 0004</a></td>
-                                    <td>Major version in the URL; additive edits inside a major; breaking changes and error semantics need a
-                                      deliberate path.</td>
+                                    <td><a href="./0005-api-security-defaults.html">ADR 0005</a></td>
+                                    <td>Security baseline on protected routes: auth strategy, rate limits, CORS allowlist, headers, and
+                                      request size cap.</td>
                                       <td>Accepted</td>
                                     </tr>
                                     <tr>
-                                      <td><a href="./0005-api-security-defaults.html">ADR 0005</a></td>
-                                      <td>Security baseline on protected routes: auth strategy, rate limits, CORS allowlist, headers, and
-                                        request size cap.</td>
+                                      <td><a href="./0006-idempotency-write-operations.html">ADR 0006</a></td>
+                                      <td>Critical writes use <code>Idempotency-Key</code>; server dedupes so retries do not double-apply
+                                        business effects.</td>
                                         <td>Accepted</td>
                                       </tr>
                                       <tr>
-                                        <td><a href="./0006-idempotency-write-operations.html">ADR 0006</a></td>
-                                        <td>Critical writes use <code>Idempotency-Key</code>; server dedupes so retries do not double-apply
-                                          business effects.</td>
+                                        <td><a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a></td>
+                                        <td>OpenAPI is the product-facing contract: complete examples, links between operations, snapshots, and
+                                          CI
+                                          contract checks.</td>
                                           <td>Accepted</td>
                                         </tr>
                                         <tr>
-                                          <td><a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a></td>
-                                          <td>OpenAPI is the product-facing contract: complete examples, links between operations, snapshots, and CI
-                                            contract checks.</td>
+                                          <td><a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a></td>
+                                          <td>Make targets split into small primitives versus high-level <code>fix</code> / <code>verify</code> /
+                                            <code>release-check</code> entrypoints.
+                                          </td>
+                                          <td>Accepted</td>
+                                        </tr>
+                                        <tr>
+                                          <td><a href="./0009-health-readiness-and-observability.html">ADR 0009</a></td>
+                                          <td><code>/live</code> vs <code>/ready</code> for orchestrators; Prometheus metrics for latency, status,
+                                            and DB—same idea from laptop to prod.</td>
                                             <td>Accepted</td>
                                           </tr>
                                           <tr>
-                                            <td><a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a></td>
-                                            <td>Make targets split into small primitives versus high-level <code>fix</code> / <code>verify</code> /
-                                              <code>release-check</code> entrypoints.</td>
+                                            <td><a href="./0010-env-profiles-and-config-governance.html">ADR 0010</a></td>
+                                            <td>Explicit <code>dev</code> / <code>qa</code> / <code>prod</code> profiles, layered env files, and
+                                              rules
+                                              that block unsafe prod settings at startup.</td>
                                               <td>Accepted</td>
                                             </tr>
                                             <tr>
-                                              <td><a href="./0009-health-readiness-and-observability.html">ADR 0009</a></td>
-                                              <td><code>/live</code> vs <code>/ready</code> for orchestrators; Prometheus metrics for latency, status,
-                                                and DB—same idea from laptop to prod.</td>
+                                              <td><a href="./0011-slo-sla-error-budget.html">ADR 0011</a></td>
+                                              <td>SLIs and SLOs (availability, latency, readiness), error-budget style burn signals, and Prometheus
+                                                alerts—targets, not vibes.</td>
                                                 <td>Accepted</td>
                                               </tr>
                                               <tr>
-                                                <td><a href="./0010-env-profiles-and-config-governance.html">ADR 0010</a></td>
-                                                <td>Explicit <code>dev</code> / <code>qa</code> / <code>prod</code> profiles, layered env files, and rules
-                                                  that block unsafe prod settings at startup.</td>
+                                                <td><a href="./0012-testing-strategy-and-load-testing.html">ADR 0012</a></td>
+                                                <td>Testing map: required API and contract tests in CI; manual where it helps; load tests optional and
+                                                  tied to observability.</td>
                                                   <td>Accepted</td>
                                                 </tr>
                                                 <tr>
-                                                  <td><a href="./0011-slo-sla-error-budget.html">ADR 0011</a></td>
-                                                  <td>SLIs and SLOs (availability, latency, readiness), error-budget style burn signals, and Prometheus
-                                                    alerts—targets, not vibes.</td>
+                                                  <td><a href="./0013-changelog-and-release-notes.html">ADR 0013</a></td>
+                                                  <td>Root <code>CHANGELOG.md</code> (Keep a Changelog), when CI expects an update, skip tokens, and
+                                                    optional LLM-assisted drafting.</td>
                                                     <td>Accepted</td>
                                                   </tr>
                                                   <tr>
-                                                    <td><a href="./0012-testing-strategy-and-load-testing.html">ADR 0012</a></td>
-                                                    <td>Testing map: required API and contract tests in CI; manual where it helps; load tests optional and
-                                                      tied to observability.</td>
+                                                    <td><a href="./0014-dead-code-analysis-and-repository-hygiene.html">ADR 0014</a></td>
+                                                    <td>Hygiene: Ruff blocks unused imports on every PR; Vulture runs on a schedule for deeper dead
+                                                      code—delete only after triage.</td>
                                                       <td>Accepted</td>
                                                     </tr>
                                                     <tr>
-                                                      <td><a href="./0013-changelog-and-release-notes.html">ADR 0013</a></td>
-                                                      <td>Root <code>CHANGELOG.md</code> (Keep a Changelog), when CI expects an update, skip tokens, and
-                                                        optional LLM-assisted drafting.</td>
+                                                      <td><a href="./0015-container-image.html">ADR 0015</a></td>
+                                                      <td>Reproducible Docker image (migrations + app entrypoint) for CI and registry pulls—not a full
+                                                        deployment platform.</td>
                                                         <td>Accepted</td>
                                                       </tr>
                                                       <tr>
-                                                        <td><a href="./0014-dead-code-analysis-and-repository-hygiene.html">ADR 0014</a></td>
-                                                        <td>Hygiene: Ruff blocks unused imports on every PR; Vulture runs on a schedule for deeper dead
-                                                          code—delete only after triage.</td>
+                                                        <td><a href="./0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a></td>
+                                                        <td>Google-style docstrings in Python; generated API HTML via pdoc so internal modules stay as
+                                                          reviewable
+                                                          as HTTP docs.</td>
                                                           <td>Accepted</td>
                                                         </tr>
                                                         <tr>
-                                                          <td><a href="./0015-container-image.html">ADR 0015</a></td>
-                                                          <td>Reproducible Docker image (migrations + app entrypoint) for CI and registry pulls—not a full deployment platform.</td>
-                                                          <td>Accepted</td>
-                                                        </tr>
-                                                        <tr>
-                                                          <td><a href="./0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a></td>
-                                                          <td>Google-style docstrings in Python; generated API HTML via pdoc so internal modules stay as reviewable
-                                                            as HTTP docs.</td>
-                                                            <td>Accepted</td>
-                                                          </tr>
-                                                          <tr>
-                                                            <td><a href="./0017-branch-naming-and-repository-workflow.html">ADR 0017</a></td>
-                                                            <td>Branch naming, trunk flow on <code>main</code>, semver tags, and how rare hotfixes get forward-ported.</td>
+                                                          <td><a href="./0017-branch-naming-and-repository-workflow.html">ADR 0017</a></td>
+                                                          <td>Branch naming, trunk flow on <code>main</code>, semver tags, and how rare hotfixes get
+                                                            forward-ported.</td>
                                                             <td>Accepted</td>
                                                           </tr>
                                                           <tr>
@@ -253,7 +276,8 @@
                                                             </tr>
                                                             <tr>
                                                               <td><a href="./0019-python-dependency-security-pip-audit-and-pinning-policy.html">ADR 0019</a></td>
-                                                              <td>Pinned <code>requirements.txt</code>, <code>pip-audit</code> in Make/CI, severity-based response, and
+                                                              <td>Pinned <code>requirements.txt</code>, <code>pip-audit</code> in Make/CI, severity-based response,
+                                                                and
                                                                 time-boxed exceptions.</td>
                                                                 <td>Accepted</td>
                                                               </tr>
@@ -277,7 +301,8 @@
                                                                     </tr>
                                                                     <tr>
                                                                       <td><a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a></td>
-                                                                      <td>NDJSON logs, <code>X-Request-Id</code>, optional Docker Compose (Elasticsearch, Kibana, Filebeat) for
+                                                                      <td>NDJSON logs, <code>X-Request-Id</code>, optional Docker Compose (Elasticsearch, Kibana, Filebeat)
+                                                                        for
                                                                         local search—tracing in ES deferred to OpenTelemetry work.</td>
                                                                         <td>Accepted</td>
                                                                       </tr>
@@ -289,7 +314,8 @@
                                                                         </tr>
                                                                         <tr>
                                                                           <td><a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a></td>
-                                                                          <td>Split external (OpenAPI + changelog) vs internal (<code>docs/internal/</code>) documentation; OpenAPI
+                                                                          <td>Split external (OpenAPI + changelog) vs internal (<code>docs/internal/</code>) documentation;
+                                                                            OpenAPI
                                                                             baseline is the sole normative HTTP contract for integrators.</td>
                                                                             <td>Accepted</td>
                                                                           </tr>

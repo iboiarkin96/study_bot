@@ -27,7 +27,6 @@
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
-      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
@@ -281,7 +280,7 @@
                                           API does not own.
                                         </p>
 
-                                        <h3>1. Due set (server)</h3>
+                                        <h3>Due set (server)</h3>
                                         <p>
                                           For a learner, the <strong>due conspectuses</strong> at instant <code>t</code> (UTC) are those owned by the
                                           user where <code>conspectus_schedules.next_review_at &lt;= t</code>, subject to soft-delete or archive flags
@@ -299,7 +298,7 @@
                                           responses (see <a href="#risks-open-questions">Risks</a>).
                                         </p>
 
-                                        <h3>2. Ordering (stable tie-breakers)</h3>
+                                        <h3>Ordering (stable tie-breakers)</h3>
                                         <p>When multiple conspectuses are due, return order should be <strong>deterministic</strong>:</p>
                                         <ol>
                                           <li><code>next_review_at</code> ascending (most overdue first);</li>
@@ -311,7 +310,7 @@
                                           baseline stays explainable and replayable from timestamps alone.
                                         </p>
 
-                                        <h3>3. Applying a review (state transition)</h3>
+                                        <h3>Applying a review (state transition)</h3>
                                         <p>
                                           A <strong>review</strong> is one learner decision captured as <code>tag ∈ { easy, hard, forgot }</code> at
                                           time
@@ -333,7 +332,7 @@
                                                 different reviews racing on the same conspectus—distinct concerns (see <a href="#cross-cutting-spec">Cross-cutting notes</a>).
                                               </p>
 
-                                              <h3>4. What the API does not compute</h3>
+                                              <h3>What the API does not compute</h3>
                                               <ul>
                                                 <li><strong>Random evening sample</strong> — clients list candidates (e.g. filter by <code>slot = 'A'</code>
                                                   via summary API) and shuffle locally.</li>

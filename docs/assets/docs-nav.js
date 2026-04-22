@@ -56,6 +56,7 @@ function currentDocsRelPath() {
     "howto",
     "internal",
     "openapi",
+    "qa",
     "rfc",
     "runbooks",
   ]);
@@ -87,6 +88,9 @@ function activeTarget(relPath) {
   if (relPath.startsWith("rfc/")) {
     return "rfc/README.html";
   }
+  if (relPath.startsWith("qa/")) {
+    return "qa/README.html";
+  }
   if (relPath.startsWith("audit/")) {
     return "audit/README.html";
   }
@@ -117,15 +121,111 @@ const DOCS_SEARCH_DEBOUNCE_MS = 120;
 const DOCS_SEARCH_MAX_PREFIX_EXPANSIONS = 24;
 const DOCS_SEARCH_SUCCESS_WINDOW_MS = 60_000;
 const DOCS_FEEDBACK_REPOSITORY = "iboiarkin96/study_bot";
-const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.yml";
+const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.md";
 const DOCS_FEEDBACK_LABELS = ["docs-feedback"];
-const DOCS_FEEDBACK_CARD_ENABLED = false;
+const DOCS_FEEDBACK_CARD_ENABLED = true;
 
 /** Page toolbar + quick-actions modal: desktop only (matches internal top-nav “phone” breakpoint). */
 const DOCS_PAGE_ACTIONS_MIN_WIDTH = 761;
 const desktopDocsPageActionsMq = window.matchMedia(`(min-width: ${DOCS_PAGE_ACTIONS_MIN_WIDTH}px)`);
 let docsQuickActionsRuntime = null;
 const DOCS_THEME_STORAGE_KEY = "docs-theme-preference";
+const DOCS_READING_MODE_STORAGE_KEY = "docs-reading-mode-enabled";
+const DOCS_HOTKEY_HINT_DISMISSED_KEY = "docs-hotkey-hint-dismissed-v1";
+const DOCS_CONTINUE_READING_STORAGE_KEY = "docs-reading-progress-v1";
+const DOCS_CONTINUE_READING_TTL_MS = 14 * 24 * 60 * 60 * 1000;
+
+function docsPalettePrimaryHotkeyLabel() {
+  const platform = String(navigator.platform || "").toLowerCase();
+  return platform.includes("mac") ? "⌘K / ⌘⇧P" : "Ctrl+K / Ctrl+Shift+P";
+}
+
+function docsPaletteMetaEnterLabel() {
+  const platform = String(navigator.platform || "").toLowerCase();
+  return platform.includes("mac") ? "⌘↵" : "Ctrl↵";
+}
+
+function emitDocsPaletteTelemetry(eventName, payload = {}) {
+  const detail = {
+    event: eventName,
+    emitted_at_ms: Date.now(),
+    page_path: window.location.pathname,
+    ...payload,
+  };
+  document.dispatchEvent(
+    new CustomEvent("docs-palette-telemetry", {
+      detail,
+    }),
+  );
+}
+
+function isDocsReadingModeEnabled() {
+  try {
+    return window.localStorage.getItem(DOCS_READING_MODE_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setDocsReadingModeEnabled(enabled) {
+  try {
+    if (enabled) {
+      window.localStorage.setItem(DOCS_READING_MODE_STORAGE_KEY, "1");
+    } else {
+      window.localStorage.removeItem(DOCS_READING_MODE_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function syncDocsReadingModeControls(enabled) {
+  for (const btn of document.querySelectorAll("[data-docs-reading-mode-toggle]")) {
+    btn.setAttribute("aria-pressed", enabled ? "true" : "false");
+    btn.classList.toggle("docs-page-actions__button--active", enabled);
+    btn.textContent = enabled ? "Reading mode: on" : "Reading mode: off";
+  }
+}
+
+function applyDocsReadingMode(enabled, source = "unknown") {
+  const body = document.body;
+  if (!body) {
+    return;
+  }
+  body.classList.toggle("docs-reading-mode", !!enabled);
+  syncDocsReadingModeControls(!!enabled);
+  emitDocsPaletteTelemetry("reading_mode_toggle", {
+    enabled: !!enabled,
+    source,
+  });
+}
+
+function toggleDocsReadingMode(source = "unknown") {
+  const enabled = !document.body.classList.contains("docs-reading-mode");
+  setDocsReadingModeEnabled(enabled);
+  applyDocsReadingMode(enabled, source);
+}
+
+function isTypingElement(target) {
+  return (
+    target instanceof HTMLElement &&
+    (target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.tagName === "SELECT" ||
+      target.isContentEditable)
+  );
+}
+
+function isReadingModeHotkeyEvent(event) {
+  const key = String(event.key || "").toLowerCase();
+  const code = String(event.code || "");
+  if (event.metaKey || event.ctrlKey || event.altKey) {
+    return false;
+  }
+  // Primary gesture is Shift+F, but we also accept plain F to be resilient
+  // across local file:// contexts and keyboard-layout quirks.
+  return code === "KeyF" || key === "f" || key === "а";
+}
 
 /**
  * Minimal vertical flashlight (beam up): soft glow ellipse + reflector + grip + end cap.
@@ -162,14 +262,8 @@ function injectDocsLifecycleHelp() {
     const kind = el.getAttribute("data-docs-lifecycle");
     el.setAttribute("data-docs-lifecycle-version", v);
     if (kind === "adr-short") {
-      const h18 = docsLifecycleHelpHref("adr/0018-adr-lifecycle-ratification-and-badges.html");
-      const h0 = docsLifecycleHelpHref("adr/0000-template.html");
-      el.innerHTML = `<summary>ADR status on this page</summary>
-      <p class="small">
-        Set <code>data-adr-weight</code> on <code>&lt;main&gt;</code> to a value from −1 to 7. Read
-        <a href="${h18}">ADR 0018</a> for what each value means. The
-        <a href="${h0}">ADR template</a> has the full milestone table.
-      </p>`;
+      // Short ADR helper is now shown inside "Status log" callout.
+      el.remove();
     } else if (kind === "rfc-short") {
       const h18 = docsLifecycleHelpHref("adr/0018-adr-lifecycle-ratification-and-badges.html");
       el.innerHTML = `<summary>RFC status on this page</summary>
@@ -603,13 +697,224 @@ function buildSearchResultHref(fromDir, targetUrl) {
   return relHref(fromDir, rel);
 }
 
-function renderDocsSearchResults(list, results, fromDir, selectedIndex, listId) {
+function docsSearchResultKind(url) {
+  const safeUrl = String(url || "").toLowerCase();
+  if (!safeUrl) {
+    return "Docs";
+  }
+  if (safeUrl.startsWith("api/")) {
+    return "API";
+  }
+  if (safeUrl.startsWith("adr/")) {
+    return "ADR";
+  }
+  if (safeUrl.startsWith("runbooks/")) {
+    return "Runbook";
+  }
+  if (safeUrl.startsWith("howto/")) {
+    return "How-to";
+  }
+  if (safeUrl.startsWith("internal/")) {
+    return "Internal";
+  }
+  if (safeUrl.startsWith("audit/")) {
+    return "Audit";
+  }
+  return "Docs";
+}
+
+function escapeRegex(text) {
+  return String(text || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function appendSearchHighlightedText(target, text, queryText) {
+  const raw = String(text || "");
+  const tokens = tokenizeSearchText(queryText).filter((t) => t.length >= 2);
+  if (!raw || tokens.length === 0) {
+    target.textContent = raw;
+    return;
+  }
+  const pattern = tokens.map((token) => escapeRegex(token)).join("|");
+  if (!pattern) {
+    target.textContent = raw;
+    return;
+  }
+  const regex = new RegExp(`(${pattern})`, "ig");
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(raw)) !== null) {
+    if (match.index > lastIndex) {
+      target.appendChild(document.createTextNode(raw.slice(lastIndex, match.index)));
+    }
+    const mark = document.createElement("mark");
+    mark.className = "docs-search__match";
+    mark.textContent = match[0];
+    target.appendChild(mark);
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < raw.length) {
+    target.appendChild(document.createTextNode(raw.slice(lastIndex)));
+  }
+}
+
+function levenshteinDistance(a, b) {
+  const aa = String(a || "");
+  const bb = String(b || "");
+  if (aa === bb) {
+    return 0;
+  }
+  if (!aa) {
+    return bb.length;
+  }
+  if (!bb) {
+    return aa.length;
+  }
+  const prev = new Array(bb.length + 1);
+  const curr = new Array(bb.length + 1);
+  for (let j = 0; j <= bb.length; j++) {
+    prev[j] = j;
+  }
+  for (let i = 1; i <= aa.length; i++) {
+    curr[0] = i;
+    for (let j = 1; j <= bb.length; j++) {
+      const cost = aa[i - 1] === bb[j - 1] ? 0 : 1;
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+    }
+    for (let j = 0; j <= bb.length; j++) {
+      prev[j] = curr[j];
+    }
+  }
+  return prev[bb.length];
+}
+
+function suggestDocsSearchQuery(rawQuery, indexData) {
+  const query = normalizeSearchText(rawQuery);
+  const tokens = tokenizeSearchText(query);
+  if (!query || tokens.length === 0 || !indexData || !Array.isArray(indexData.vocabulary)) {
+    return "";
+  }
+  const fixed = tokens.map((token) => {
+    if (indexData.vocabulary.includes(token)) {
+      return token;
+    }
+    const first = token[0] || "";
+    const candidates = indexData.vocabulary.filter((v) =>
+      Math.abs(v.length - token.length) <= 2 && (!first || v[0] === first),
+    );
+    let best = "";
+    let bestScore = Number.POSITIVE_INFINITY;
+    for (const c of candidates.slice(0, 120)) {
+      const d = levenshteinDistance(token, c);
+      if (d < bestScore) {
+        bestScore = d;
+        best = c;
+      }
+    }
+    return bestScore <= 2 ? best : token;
+  });
+  const suggestion = fixed.join(" ");
+  return suggestion !== query ? suggestion : "";
+}
+
+function docsSearchRelatedQueries(queryText) {
+  const q = normalizeSearchText(queryText);
+  const base = ["openapi", "runbook", "adr", "howto", "internal", "qa checklist"];
+  if (!q) {
+    return base.slice(0, 4);
+  }
+  const out = [];
+  for (const item of base) {
+    if (!item.includes(q) && !q.includes(item)) {
+      out.push(item);
+    }
+    if (out.length >= 3) {
+      break;
+    }
+  }
+  return out;
+}
+
+function renderDocsSearchResults(list, results, fromDir, selectedIndex, listId, queryText = "", options = {}) {
   list.replaceChildren();
   if (!results || results.length === 0) {
     const empty = document.createElement("li");
     empty.className = "docs-search__empty";
     empty.setAttribute("role", "status");
-    empty.textContent = "No matches";
+    const safeQuery = String(queryText || "").trim();
+
+    const title = document.createElement("p");
+    title.className = "docs-search__empty-title";
+    title.textContent = safeQuery ? `No matches for "${safeQuery}"` : "No matches";
+    empty.appendChild(title);
+
+    const didYouMean = options.didYouMean || "";
+    if (didYouMean) {
+      const did = document.createElement("p");
+      did.className = "docs-search__didyoumean";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "docs-search__didyoumean-action";
+      btn.setAttribute("data-search-action", "didyoumean");
+      btn.setAttribute("data-search-query", didYouMean);
+      btn.textContent = didYouMean;
+      did.appendChild(document.createTextNode("Did you mean: "));
+      did.appendChild(btn);
+      did.appendChild(document.createTextNode("?"));
+      empty.appendChild(did);
+    }
+
+    const tips = document.createElement("ul");
+    tips.className = "docs-search__empty-tips";
+    ["Check spelling", "Try shorter query", "Use related terms (openapi, runbook, qa)"].forEach((tipText) => {
+      const tip = document.createElement("li");
+      tip.textContent = tipText;
+      tips.appendChild(tip);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "docs-search__empty-actions";
+
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "docs-search__empty-action docs-search__empty-action--clear";
+    clearBtn.setAttribute("data-search-action", "clear");
+    clearBtn.textContent = "Clear query";
+
+    const quickLinks = [
+      { label: "Go to Internal README", href: buildSearchResultHref(fromDir, "internal/README.html") },
+      { label: "Go to API docs", href: buildSearchResultHref(fromDir, "api/index.html") },
+      { label: "Go to Runbooks", href: buildSearchResultHref(fromDir, "runbooks/README.html") },
+    ];
+    actions.appendChild(clearBtn);
+    quickLinks.forEach((item) => {
+      const link = document.createElement("a");
+      link.className = "docs-search__empty-action";
+      link.href = item.href;
+      link.textContent = item.label;
+      actions.appendChild(link);
+    });
+
+    empty.appendChild(tips);
+    const related = docsSearchRelatedQueries(safeQuery);
+    if (related.length > 0) {
+      const relatedWrap = document.createElement("p");
+      relatedWrap.className = "docs-search__related-queries";
+      relatedWrap.appendChild(document.createTextNode("Try related queries: "));
+      related.forEach((term, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "docs-search__related-query";
+        btn.setAttribute("data-search-action", "related");
+        btn.setAttribute("data-search-query", term);
+        btn.textContent = term;
+        relatedWrap.appendChild(btn);
+        if (idx < related.length - 1) {
+          relatedWrap.appendChild(document.createTextNode(" "));
+        }
+      });
+      empty.appendChild(relatedWrap);
+    }
+    empty.appendChild(actions);
     list.appendChild(empty);
     return;
   }
@@ -630,18 +935,27 @@ function renderDocsSearchResults(list, results, fromDir, selectedIndex, listId) 
 
     const title = document.createElement("span");
     title.className = "docs-search__result-title";
-    title.textContent = item.title || item.url;
+    appendSearchHighlightedText(title, item.title || item.url, queryText);
+
+    const kind = document.createElement("span");
+    kind.className = "docs-search__result-kind";
+    kind.textContent = docsSearchResultKind(item.url);
 
     const meta = document.createElement("span");
     meta.className = "docs-search__result-meta";
     const section = item.section ? `${item.section} - ` : "";
     meta.textContent = `${section}${item.url}`;
 
+    const topRow = document.createElement("span");
+    topRow.className = "docs-search__result-top";
+    topRow.appendChild(title);
+    topRow.appendChild(kind);
+
     const preview = document.createElement("span");
     preview.className = "docs-search__result-preview";
-    preview.textContent = item.preview || "";
+    appendSearchHighlightedText(preview, item.preview || "", queryText);
 
-    link.appendChild(title);
+    link.appendChild(topRow);
     link.appendChild(meta);
     if (item.preview) {
       link.appendChild(preview);
@@ -692,6 +1006,7 @@ function mountDocsSearch(nav, fromDir) {
   let activeQueryCtx = null;
   let firstQueryTs = null;
   let successTracked = false;
+  let activeIndexData = null;
 
   function hideResults() {
     results.hidden = true;
@@ -700,6 +1015,7 @@ function mountDocsSearch(nav, fromDir) {
     results.replaceChildren();
     activeResults = [];
     selectedIndex = -1;
+    activeIndexData = null;
   }
 
   function resetSearchSession() {
@@ -719,6 +1035,10 @@ function mountDocsSearch(nav, fromDir) {
     results.replaceChildren(item);
   }
 
+  function applyKindFilter(items) {
+    return Array.isArray(items) ? items : [];
+  }
+
   async function searchNow(query) {
     const normalized = normalizeSearchText(query);
     if (!normalized) {
@@ -732,7 +1052,9 @@ function mountDocsSearch(nav, fromDir) {
     showStatus("Searching...", false);
     try {
       const indexData = await loadDocsSearchIndex(fromDir);
-      activeResults = runDocsSearch(indexData, query);
+      activeIndexData = indexData;
+      const rawResults = runDocsSearch(indexData, query);
+      activeResults = applyKindFilter(rawResults);
       selectedIndex = activeResults.length > 0 ? 0 : -1;
       results.hidden = false;
       input.setAttribute("aria-expanded", "true");
@@ -741,7 +1063,8 @@ function mountDocsSearch(nav, fromDir) {
       } else {
         input.removeAttribute("aria-activedescendant");
       }
-      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId);
+      const didYouMean = activeResults.length === 0 ? suggestDocsSearchQuery(query, indexData) : "";
+      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId, query, { didYouMean });
 
       const now = Date.now();
       if (!firstQueryTs) {
@@ -839,14 +1162,16 @@ function mountDocsSearch(nav, fromDir) {
       event.preventDefault();
       selectedIndex = (selectedIndex + 1) % activeResults.length;
       input.setAttribute("aria-activedescendant", `${resultsId}-option-${selectedIndex}`);
-      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId);
+      const didYouMean = activeResults.length === 0 ? suggestDocsSearchQuery(input.value, activeIndexData) : "";
+      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId, input.value, { didYouMean });
       return;
     }
     if (event.key === "ArrowUp") {
       event.preventDefault();
       selectedIndex = (selectedIndex - 1 + activeResults.length) % activeResults.length;
       input.setAttribute("aria-activedescendant", `${resultsId}-option-${selectedIndex}`);
-      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId);
+      const didYouMean = activeResults.length === 0 ? suggestDocsSearchQuery(input.value, activeIndexData) : "";
+      renderDocsSearchResults(results, activeResults, fromDir, selectedIndex, resultsId, input.value, { didYouMean });
       return;
     }
     if (event.key === "Enter" && selectedIndex >= 0) {
@@ -866,6 +1191,30 @@ function mountDocsSearch(nav, fromDir) {
 
   document.addEventListener("click", (event) => {
     const target = event.target;
+    const clearAction =
+      target && target.closest ? target.closest('.docs-search__empty-action[data-search-action="clear"]') : null;
+    if (clearAction && wrap.contains(clearAction)) {
+      event.preventDefault();
+      input.value = "";
+      hideResults();
+      resetSearchSession();
+      input.focus();
+      return;
+    }
+    const queryAction =
+      target && target.closest
+        ? target.closest('[data-search-action="didyoumean"], [data-search-action="related"]')
+        : null;
+    if (queryAction && wrap.contains(queryAction)) {
+      event.preventDefault();
+      const query = String(queryAction.getAttribute("data-search-query") || "").trim();
+      if (query) {
+        input.value = query;
+        searchNow(query);
+        input.focus();
+      }
+      return;
+    }
     const link = target && target.closest ? target.closest(".docs-search__result-link") : null;
     if (link && wrap.contains(link)) {
       const links = [...results.querySelectorAll(".docs-search__result-link")];
@@ -996,6 +1345,7 @@ function docsHubHrefForPrefix(prefix) {
     "internal/api/conspectus": "internal/api/conspectus/index.html",
     "internal/api/error-log": "internal/api/error-log/index.html",
     openapi: "openapi/openapi-explorer.html",
+    qa: "qa/README.html",
     rfc: "rfc/README.html",
     runbooks: "runbooks/README.html",
   };
@@ -1022,6 +1372,7 @@ function docsBreadcrumbLabelForPrefix(prefix) {
     "internal/api/error-log": "Error log",
     "internal/api/user/operations": "Operations",
     openapi: "OpenAPI",
+    qa: "QA checklists",
     rfc: "RFCs",
     runbooks: "Runbooks",
     assets: "Assets",
@@ -1169,7 +1520,19 @@ function mountInternalDrawerMenuButton() {
     return existing;
   }
 
-  const h1 = main.querySelector("h1");
+  /*
+   * Only use a top-level page heading as an anchor.
+   * Some pages (e.g. profile cards) contain nested <h1> inside content blocks; mounting
+   * the menu row there breaks layout and misplaced theme control.
+   * Avoid `:scope` here for broader browser compatibility.
+   */
+  let h1 = null;
+  for (const child of main.children) {
+    if (child.tagName === "H1") {
+      h1 = child;
+      break;
+    }
+  }
   if (!h1) {
     return null;
   }
@@ -1218,6 +1581,98 @@ function syncInternalThemeTogglePlacement() {
   }
 }
 
+function syncDocsThemeToggleWithHeading() {
+  const main = document.querySelector("main.container");
+  if (!main) {
+    return;
+  }
+  const btn = document.querySelector("[data-docs-theme-toggle]");
+  const themeBar = document.querySelector(".top-nav .top-nav__theme-bar");
+  if (!btn || !themeBar) {
+    return;
+  }
+
+  let h1 = null;
+  for (const child of main.children) {
+    if (child.tagName === "H1") {
+      h1 = child;
+      break;
+    }
+  }
+  if (!h1) {
+    return;
+  }
+
+  let row = main.querySelector("[data-docs-page-title-row]");
+  if (!row) {
+    row = document.createElement("div");
+    row.className = "docs-page-title-row";
+    row.setAttribute("data-docs-page-title-row", "1");
+    h1.insertAdjacentElement("beforebegin", row);
+    row.appendChild(h1);
+  }
+
+  if (btn.parentElement !== row) {
+    row.appendChild(btn);
+  }
+}
+
+function ensureInternalLayoutForInternalSections() {
+  const relPath = currentDocsRelPath();
+  const internalPrefixes = [
+    "adr/",
+    "rfc/",
+    "runbooks/",
+    "howto/",
+    "developer/",
+    "audit/",
+    "backlog/",
+    "qa/",
+    "internal/",
+  ];
+  const shouldApply = internalPrefixes.some((prefix) => relPath.startsWith(prefix));
+  if (!shouldApply) {
+    return;
+  }
+
+  const body = document.body;
+  const main = document.querySelector("main.container");
+  if (!body || !main) {
+    return;
+  }
+
+  const hasSidebarMount = !!document.getElementById("internal-sidebar-mount");
+  if (!hasSidebarMount) {
+    const shell = document.createElement("div");
+    shell.className = "internal-layout__shell";
+
+    const sidebar = document.createElement("aside");
+    sidebar.className = "internal-layout__sidebar";
+
+    const mount = document.createElement("div");
+    mount.id = "internal-sidebar-mount";
+
+    sidebar.appendChild(mount);
+
+    const mainWrap = document.createElement("div");
+    mainWrap.className = "internal-layout__main";
+
+    main.insertAdjacentElement("beforebegin", shell);
+    mainWrap.appendChild(main);
+    shell.appendChild(sidebar);
+    shell.appendChild(mainWrap);
+  }
+
+  body.classList.add("internal-layout");
+
+  if (!document.querySelector('script[src$="assets/internal-sidebar.js"]')) {
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = relHref(docsPageDir(), "assets/internal-sidebar.js");
+    document.head.appendChild(script);
+  }
+}
+
 function renderTopNav() {
   const host = document.getElementById("docs-top-nav");
   if (!host) {
@@ -1230,6 +1685,7 @@ function renderTopNav() {
   const internalItems = [
     { label: "Home", target: "index.html" },
     { label: "Internal docs", target: "internal/README.html" },
+    { label: "QA checklists", target: "qa/README.html" },
     { label: "Assessments", target: "audit/README.html" },
     { label: "⭐Backlog", target: "backlog/README.html" },
   ];
@@ -1343,6 +1799,8 @@ function renderTopNav() {
   if (isInternalLayoutChrome) {
     mountInternalDrawerMenuButton();
     syncInternalThemeTogglePlacement();
+  } else {
+    syncDocsThemeToggleWithHeading();
   }
 }
 
@@ -1437,7 +1895,6 @@ function renderAdrCurrentStatus(nav, globalMax) {
   box.appendChild(label);
   box.appendChild(document.createTextNode(" "));
   box.appendChild(value);
-  nav.insertAdjacentElement("afterend", box);
   return box;
 }
 
@@ -1448,6 +1905,13 @@ function renderAdrStatusLogAfter(anchor, globalMax) {
   const summary = document.createElement("summary");
   summary.className = "adr-status-log__summary";
   summary.textContent = "Status log";
+
+  const callout = document.createElement("p");
+  callout.className = "adr-status-log__callout";
+  callout.innerHTML = `💡 Set <code>data-adr-weight</code> on <code>&lt;main&gt;</code> to a value from −1 to 7. See
+    <a href="${docsLifecycleHelpHref("adr/0018-adr-lifecycle-ratification-and-badges.html")}">ADR 0018</a> for
+    milestone meanings, and the
+    <a href="${docsLifecycleHelpHref("adr/0000-template.html")}">ADR template</a> for the full milestone table.`;
 
   const row = document.createElement("div");
   row.className = "adr-status-log__row";
@@ -1463,9 +1927,47 @@ function renderAdrStatusLogAfter(anchor, globalMax) {
     row.appendChild(sp);
   }
 
+  const panel = document.createElement("div");
+  panel.className = "adr-status-log__panel";
+  panel.appendChild(callout);
+  panel.appendChild(row);
+
+  const updatePanelPlacement = () => {
+    details.classList.remove("adr-status-log--align-right");
+    if (!details.open) {
+      return;
+    }
+    const rect = panel.getBoundingClientRect();
+    if (rect.right > window.innerWidth - 12) {
+      details.classList.add("adr-status-log--align-right");
+    }
+  };
+
+  const closeOnOutsideClick = (event) => {
+    if (!details.open) {
+      return;
+    }
+    const target = event.target;
+    if (target instanceof Node && details.contains(target)) {
+      return;
+    }
+    details.open = false;
+  };
+  const closeOnEscape = (event) => {
+    if (event.key !== "Escape" || !details.open) {
+      return;
+    }
+    details.open = false;
+    summary.focus();
+  };
+  details.addEventListener("toggle", updatePanelPlacement);
+  window.addEventListener("resize", updatePanelPlacement);
+  document.addEventListener("pointerdown", closeOnOutsideClick);
+  document.addEventListener("keydown", closeOnEscape);
+
   details.appendChild(summary);
-  details.appendChild(row);
-  anchor.insertAdjacentElement("afterend", details);
+  details.appendChild(panel);
+  anchor.appendChild(details);
 }
 
 function renderLifecycleStatusBlocks(main) {
@@ -1484,8 +1986,11 @@ function renderLifecycleStatusBlocks(main) {
 
   const globalMax = parseAdrWeightValue(main.getAttribute(attr));
 
-  const anchor = renderAdrCurrentStatus(nav, globalMax);
-  renderAdrStatusLogAfter(anchor, globalMax);
+  const row = document.createElement("div");
+  row.className = "adr-status-row";
+  row.appendChild(renderAdrCurrentStatus(nav, globalMax));
+  renderAdrStatusLogAfter(row, globalMax);
+  nav.insertAdjacentElement("afterend", row);
 }
 
 /**
@@ -1689,10 +2194,11 @@ function removeLegacyManualContents(article) {
   }
 }
 
-function docsFeedbackIssueUrl() {
+function docsFeedbackIssueUrl(extraFeedback = "", feedbackType = "Other") {
   const pagePath = currentDocsRelPath();
-  const pageUrl = window.location.href;
+  const pageUrl = /^https?:/i.test(window.location.href) ? window.location.href : pagePath;
   const title = `[Docs feedback] ${pagePath}`;
+  const feedbackText = (extraFeedback || "").trim();
   const body = [
     "## Page",
     pagePath,
@@ -1700,8 +2206,14 @@ function docsFeedbackIssueUrl() {
     "## URL",
     pageUrl,
     "",
-    "## Feedback",
-    "<!-- What is unclear, missing, or incorrect? -->",
+    "## Feedback type",
+    feedbackType || "Other",
+    "",
+    "## What should be improved",
+    feedbackText || "<!-- Describe the issue and expected fix -->",
+    "",
+    "## Additional context",
+    "<!-- Optional: screenshots, references, related pages -->",
   ].join("\n");
 
   const query = new URLSearchParams({
@@ -1741,15 +2253,105 @@ function injectDocsFeedbackCard() {
   text.textContent =
     "Found something unclear or outdated? Open a prefilled GitHub issue for this page.";
 
-  const link = document.createElement("a");
-  link.href = docsFeedbackIssueUrl();
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.textContent = "Report feedback on GitHub";
+  const form = document.createElement("form");
+  form.className = "docs-feedback-card__form";
+
+  const inputLabel = document.createElement("label");
+  inputLabel.className = "docs-feedback-card__label";
+  inputLabel.setAttribute("for", "docs-feedback-input");
+  inputLabel.textContent = "What should be improved?";
+
+  const typeLabel = document.createElement("label");
+  typeLabel.className = "docs-feedback-card__label";
+  typeLabel.setAttribute("for", "docs-feedback-type");
+  typeLabel.textContent = "Feedback type";
+
+  const typeSelect = document.createElement("select");
+  typeSelect.id = "docs-feedback-type";
+  typeSelect.className = "docs-feedback-card__select";
+  ["Incorrect or outdated content", "Missing explanation", "Broken link or navigation", "Accessibility issue", "Other"].forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item;
+    option.textContent = item;
+    typeSelect.appendChild(option);
+  });
+  typeSelect.value = "Other";
+
+  const textarea = document.createElement("textarea");
+  textarea.id = "docs-feedback-input";
+  textarea.className = "docs-feedback-card__textarea";
+  textarea.rows = 4;
+  textarea.minLength = 10;
+  textarea.placeholder = "Example: This section needs a quick example for mobile setup.";
+  textarea.required = true;
+
+  const status = document.createElement("p");
+  status.className = "docs-feedback-card__status";
+  status.setAttribute("aria-live", "polite");
+  status.textContent = "Your feedback text will be prefilled in GitHub issue.";
+
+  const toast = document.createElement("div");
+  toast.className = "docs-feedback-card__toast";
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
+
+  const actions = document.createElement("div");
+  actions.className = "docs-feedback-card__actions";
+
+  const submitBtn = document.createElement("button");
+  submitBtn.type = "submit";
+  submitBtn.className = "docs-page-actions__button";
+  submitBtn.innerHTML = '<span class="docs-feedback-card__btn-text">Send feedback</span><span class="docs-feedback-card__btn-spinner" aria-hidden="true"></span>';
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const message = textarea.value.trim();
+    if (message.length < 10) {
+      status.className = "docs-feedback-card__status docs-feedback-card__status--error";
+      status.textContent = "Please enter at least 10 characters so we can understand the issue.";
+      textarea.focus();
+      return;
+    }
+    status.className = "docs-feedback-card__status docs-feedback-card__status--success";
+    status.textContent = "Preparing GitHub issue...";
+    submitBtn.disabled = true;
+    submitBtn.classList.add("docs-feedback-card__btn--loading");
+    const targetUrl = docsFeedbackIssueUrl(message, typeSelect.value);
+    try {
+      await navigator.clipboard.writeText(message);
+      status.textContent = "Text copied as backup.";
+    } catch (_error) {
+      // Clipboard may be unavailable for file:// pages; keep submit flow working.
+    }
+    toast.textContent = "Opening GitHub with prefilled feedback...";
+    toast.classList.add("docs-feedback-card__toast--visible");
+    textarea.value = "";
+    window.setTimeout(() => {
+      window.location.href = targetUrl;
+    }, 160);
+    window.setTimeout(() => {
+      if (!document.body.contains(status) || !document.body.contains(toast)) {
+        return;
+      }
+      status.textContent = "Thanks! You can submit another feedback item anytime.";
+      toast.classList.remove("docs-feedback-card__toast--visible");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("docs-feedback-card__btn--loading");
+    }, 900);
+  });
+
+  actions.appendChild(submitBtn);
+  form.appendChild(typeLabel);
+  form.appendChild(typeSelect);
+  form.appendChild(inputLabel);
+  form.appendChild(textarea);
+  form.appendChild(status);
+  form.appendChild(actions);
 
   section.appendChild(heading);
   section.appendChild(text);
-  section.appendChild(link);
+  section.appendChild(toast);
+  section.appendChild(form);
   mount.insertAdjacentElement("beforebegin", section);
 }
 
@@ -1932,6 +2534,8 @@ function initBackToTopButton() {
   const root = document.documentElement;
   const thresholdPx = 320;
   const minScrollExtra = 100;
+  let isLaunching = false;
+  let launchDirection = 1;
 
   const btn = document.createElement("button");
   btn.type = "button";
@@ -1940,7 +2544,20 @@ function initBackToTopButton() {
   btn.setAttribute("title", "Back to top");
   btn.setAttribute("aria-hidden", "true");
   btn.tabIndex = -1;
-  btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`;
+  btn.innerHTML = `
+    <span class="docs-back-to-top__rocket-wrap" aria-hidden="true">
+      <svg class="docs-back-to-top__rocket" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3c3.4 1.9 5.5 5.5 5.5 9.3v1.1L12 19l-5.5-5.6v-1.1C6.5 8.5 8.6 4.9 12 3z"/>
+        <path d="M12 8.2a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"/>
+        <path d="M9.3 16.6l-1.8 3.1M14.7 16.6l1.8 3.1"/>
+        <path d="M10.8 19.3h2.4"/>
+      </svg>
+      <span class="docs-back-to-top__trail"></span>
+      <span class="docs-back-to-top__flame"></span>
+      <span class="docs-back-to-top__smoke docs-back-to-top__smoke--left"></span>
+      <span class="docs-back-to-top__smoke docs-back-to-top__smoke--mid"></span>
+      <span class="docs-back-to-top__smoke docs-back-to-top__smoke--right"></span>
+    </span>`;
 
   function pageIsScrollable() {
     return root.scrollHeight > window.innerHeight + minScrollExtra;
@@ -1951,6 +2568,12 @@ function initBackToTopButton() {
   }
 
   function updateVisibility() {
+    if (isLaunching) {
+      btn.classList.add("docs-back-to-top--visible");
+      btn.setAttribute("aria-hidden", "false");
+      btn.tabIndex = -1;
+      return;
+    }
     const show = pageIsScrollable() && isNearBottom();
     btn.classList.toggle("docs-back-to-top--visible", show);
     btn.setAttribute("aria-hidden", show ? "false" : "true");
@@ -1959,7 +2582,36 @@ function initBackToTopButton() {
 
   btn.addEventListener("click", () => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isLaunching) {
+      return;
+    }
+    if (!reduceMotion) {
+      isLaunching = true;
+      btn.classList.remove("docs-back-to-top--launch-left", "docs-back-to-top--launch-right");
+      btn.classList.add(launchDirection > 0 ? "docs-back-to-top--launch-right" : "docs-back-to-top--launch-left");
+      launchDirection *= -1;
+      btn.classList.add("docs-back-to-top--launching");
+      window.setTimeout(() => {
+        if (!isLaunching) {
+          return;
+        }
+        isLaunching = false;
+        btn.classList.remove("docs-back-to-top--launching");
+        btn.classList.remove("docs-back-to-top--launch-left", "docs-back-to-top--launch-right");
+        updateVisibility();
+      }, 1640);
+    }
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
+
+  btn.addEventListener("animationend", (event) => {
+    if (event.animationName !== "docs-rocket-launch") {
+      return;
+    }
+    isLaunching = false;
+    btn.classList.remove("docs-back-to-top--launching");
+    btn.classList.remove("docs-back-to-top--launch-left", "docs-back-to-top--launch-right");
+    updateVisibility();
   });
 
   window.addEventListener(
@@ -1973,6 +2625,63 @@ function initBackToTopButton() {
 
   document.body.appendChild(btn);
   updateVisibility();
+}
+
+/** Thin top progress indicator for long docs pages. */
+function initDocsReadingProgressBar() {
+  if (!document.getElementById("docs-top-nav")) {
+    return;
+  }
+  if (document.querySelector(".docs-reading-progress")) {
+    return;
+  }
+
+  const root = document.documentElement;
+  const bar = document.createElement("div");
+  bar.className = "docs-reading-progress is-hidden";
+  bar.setAttribute("role", "progressbar");
+  bar.setAttribute("aria-label", "Page reading progress");
+  bar.setAttribute("aria-valuemin", "0");
+  bar.setAttribute("aria-valuemax", "100");
+  bar.setAttribute("aria-valuenow", "0");
+
+  const fill = document.createElement("span");
+  fill.className = "docs-reading-progress__fill";
+  fill.setAttribute("aria-hidden", "true");
+  bar.appendChild(fill);
+  document.body.appendChild(bar);
+
+  let ticking = false;
+  function update() {
+    const maxScroll = Math.max(0, root.scrollHeight - window.innerHeight);
+    if (maxScroll <= 8) {
+      bar.classList.add("is-hidden");
+      fill.style.transform = "scaleX(0)";
+      bar.setAttribute("aria-valuenow", "0");
+      return;
+    }
+
+    bar.classList.remove("is-hidden");
+    const scrollTop = Math.max(0, window.scrollY || root.scrollTop || 0);
+    const ratio = Math.min(1, Math.max(0, scrollTop / maxScroll));
+    fill.style.transform = `scaleX(${ratio})`;
+    bar.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
+  }
+
+  function scheduleUpdate() {
+    if (ticking) {
+      return;
+    }
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      update();
+    });
+  }
+
+  window.addEventListener("scroll", scheduleUpdate, { passive: true });
+  window.addEventListener("resize", scheduleUpdate, { passive: true });
+  scheduleUpdate();
 }
 
 /**
@@ -2062,11 +2771,163 @@ function initDocsSiteFooter() {
 }
 
 function buildDocsPageActions(fromDir, relPath) {
-  void fromDir;
+  const homeHref = relHref(fromDir, "index.html");
+  const internalHref = relHref(fromDir, "internal/README.html");
+  const qaHref = relHref(fromDir, "qa/README.html");
+  const auditHref = relHref(fromDir, "audit/README.html");
+  const backlogHref = relHref(fromDir, "backlog/README.html");
+  const runbooksHref = relHref(fromDir, "runbooks/README.html");
+  const howtoHref = relHref(fromDir, "howto/README.html");
+  const apiHref = relHref(fromDir, "api/index.html");
+  const openapiHref = relHref(fromDir, "openapi/openapi-explorer.html");
   return [
-    { label: "Edit page", href: `https://github.com/${DOCS_FEEDBACK_REPOSITORY}/edit/main/docs/${relPath}`, group: "Page" },
-    { label: "Report issue", href: docsFeedbackIssueUrl(), group: "Page" },
+    {
+      label: "Edit page",
+      hint: "Open GitHub editor for this file",
+      href: `https://github.com/${DOCS_FEEDBACK_REPOSITORY}/edit/main/docs/${relPath}`,
+      group: "Page",
+      keywords: ["edit", "github", "source"],
+      external: true,
+    },
+    {
+      label: "Report issue",
+      hint: "Open prefilled docs feedback issue",
+      href: docsFeedbackIssueUrl(),
+      group: "Page",
+      keywords: ["feedback", "bug", "issue"],
+      external: true,
+    },
+    {
+      label: "Copy page link",
+      hint: "Copy current URL to clipboard",
+      group: "Page",
+      keywords: ["copy", "url", "link", "share"],
+      action: () => {
+        if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          return navigator.clipboard.writeText(window.location.href);
+        }
+        return Promise.reject(new Error("Clipboard unavailable"));
+      },
+    },
+    {
+      label: "Toggle color theme",
+      hint: "Cycle automatic, light, dark theme",
+      group: "Commands",
+      keywords: ["theme", "dark", "light", "appearance"],
+      action: () => {
+        cycleDocsTheme();
+      },
+    },
+    {
+      label: "Toggle reading mode",
+      hint: "Focus content and hide navigation chrome",
+      group: "Commands",
+      keywords: ["reading", "focus", "mode", "distraction"],
+      action: () => {
+        toggleDocsReadingMode("palette");
+      },
+    },
+    {
+      label: "Go to documentation home",
+      hint: "Main docs landing page",
+      href: homeHref,
+      group: "Go to page",
+      keywords: ["home", "index", "landing"],
+    },
+    {
+      label: "Go to internal docs",
+      hint: "Internal project documentation hub",
+      href: internalHref,
+      group: "Go to page",
+      keywords: ["internal", "hub"],
+    },
+    {
+      label: "Go to QA checklists",
+      hint: "Testing and visual checks",
+      href: qaHref,
+      group: "Go to page",
+      keywords: ["qa", "checklist", "testing"],
+    },
+    {
+      label: "Go to assessments",
+      hint: "Quality and DX assessments",
+      href: auditHref,
+      group: "Go to page",
+      keywords: ["assessment", "audit", "dx"],
+    },
+    {
+      label: "Go to backlog",
+      hint: "Priorities and roadmap",
+      href: backlogHref,
+      group: "Go to page",
+      keywords: ["backlog", "roadmap", "priority"],
+    },
+    {
+      label: "Go to runbooks",
+      hint: "Operational troubleshooting docs",
+      href: runbooksHref,
+      group: "Go to page",
+      keywords: ["runbook", "ops", "incident"],
+    },
+    {
+      label: "Go to how-to guides",
+      hint: "Step-by-step implementation guides",
+      href: howtoHref,
+      group: "Go to page",
+      keywords: ["howto", "guide", "tutorial"],
+    },
+    {
+      label: "Go to API docs",
+      hint: "Generated API reference pages",
+      href: apiHref,
+      group: "Go to page",
+      keywords: ["api", "reference", "pdoc"],
+    },
+    {
+      label: "Go to OpenAPI explorer",
+      hint: "Interactive OpenAPI view",
+      href: openapiHref,
+      group: "Go to page",
+      keywords: ["openapi", "swagger", "contract"],
+    },
   ];
+}
+
+function buildDocsSectionActions() {
+  const main = document.querySelector("main.container");
+  if (!main) {
+    return [];
+  }
+  ensureTocAnchorIds(main);
+  const sectionNodes = [
+    ...main.querySelectorAll(
+      ".docs-page-layout__article h2[id], .docs-page-layout__article h3[id], section.card h2[id], section.card h3[id]",
+    ),
+  ];
+  const seen = new Set();
+  const actions = [];
+  for (const node of sectionNodes) {
+    if (!node.id || seen.has(node.id) || node.closest(".docs-inpage-toc")) {
+      continue;
+    }
+    seen.add(node.id);
+    const rawLabel = (node.textContent || "").trim().replace(/\s+/g, " ");
+    if (!rawLabel) {
+      continue;
+    }
+    const isNested = node.tagName === "H3";
+    actions.push({
+      label: isNested ? `Jump to ${rawLabel}` : `Jump to section: ${rawLabel}`,
+      hint: isNested ? "Subsection in current page" : "Section in current page",
+      href: `#${node.id}`,
+      group: "Jump to section",
+      keywords: ["jump", "section", "toc", rawLabel.toLowerCase()],
+    });
+    if (actions.length >= 18) {
+      break;
+    }
+  }
+  return actions;
 }
 
 function injectDocsPageActions() {
@@ -2087,7 +2948,7 @@ function injectDocsPageActions() {
 
   const hint = document.createElement("span");
   hint.className = "docs-page-actions__hint";
-  hint.textContent = "Quick actions";
+  hint.textContent = `Quick actions (${docsPalettePrimaryHotkeyLabel()})`;
   wrap.appendChild(hint);
 
   const launcher = document.createElement("button");
@@ -2097,9 +2958,19 @@ function injectDocsPageActions() {
   launcher.setAttribute("aria-haspopup", "dialog");
   launcher.setAttribute("aria-controls", "docs-quick-actions");
   launcher.setAttribute("aria-expanded", "false");
-  launcher.textContent = "Open (⌘K)";
+  launcher.textContent = `Open (${docsPalettePrimaryHotkeyLabel()})`;
   launcher.setAttribute("aria-label", "Open quick actions");
   wrap.appendChild(launcher);
+
+  const focusBtn = document.createElement("button");
+  focusBtn.type = "button";
+  focusBtn.className = "docs-page-actions__button";
+  focusBtn.setAttribute("data-docs-reading-mode-toggle", "1");
+  focusBtn.setAttribute("aria-pressed", "false");
+  focusBtn.addEventListener("click", () => {
+    toggleDocsReadingMode("toolbar_button");
+  });
+  wrap.appendChild(focusBtn);
 
   for (const item of buildDocsPageActions(fromDir, relPath)) {
     const a = document.createElement("a");
@@ -2112,6 +2983,7 @@ function injectDocsPageActions() {
     }
     wrap.appendChild(a);
   }
+  syncDocsReadingModeControls(document.body.classList.contains("docs-reading-mode"));
   navHost.insertAdjacentElement("afterend", wrap);
 }
 
@@ -2131,7 +3003,7 @@ function destroyDocsQuickActionsUi() {
 }
 
 function installDocsQuickActionsUi() {
-  if (!desktopDocsPageActionsMq.matches || docsQuickActionsRuntime) {
+  if (docsQuickActionsRuntime) {
     return;
   }
   if (document.getElementById("docs-quick-actions")) {
@@ -2139,7 +3011,6 @@ function installDocsQuickActionsUi() {
   }
   const relPath = currentDocsRelPath();
   const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
-  const actions = buildDocsPageActions(fromDir, relPath);
 
   const panel = document.createElement("div");
   panel.id = "docs-quick-actions";
@@ -2147,33 +3018,112 @@ function installDocsQuickActionsUi() {
   panel.hidden = true;
   panel.innerHTML = `<div class="docs-quick-actions__backdrop" data-qa-close="1"></div>
 <div class="docs-quick-actions__panel" role="dialog" aria-modal="true" aria-labelledby="docs-quick-actions-title">
-  <p class="docs-quick-actions__title" id="docs-quick-actions-title">Quick actions</p>
-  <input class="docs-quick-actions__filter" type="search" autocomplete="off" spellcheck="false" placeholder="Filter actions..." aria-label="Filter quick actions" />
+  <div class="docs-quick-actions__head">
+    <p class="docs-quick-actions__title" id="docs-quick-actions-title">Command Palette</p>
+    <p class="docs-quick-actions__kbd-hint" aria-hidden="true"></p>
+  </div>
+  <input class="docs-quick-actions__filter" type="search" autocomplete="off" spellcheck="false" placeholder="Type a command, page, or section..." aria-label="Filter quick actions" />
   <ul class="docs-quick-actions__list"></ul>
 </div>`;
   const filterInput = panel.querySelector(".docs-quick-actions__filter");
   const list = panel.querySelector(".docs-quick-actions__list");
-  let lastGroup = "";
-  for (const item of actions) {
-    if (item.group && item.group !== lastGroup) {
-      const sep = document.createElement("li");
-      sep.className = "docs-quick-actions__group";
-      sep.textContent = item.group;
-      list.appendChild(sep);
-      lastGroup = item.group;
-    }
-    const li = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = item.href;
-    a.textContent = item.label;
-    if (item.href.startsWith("http")) {
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-    }
-    li.appendChild(a);
-    list.appendChild(li);
+  const kbdHint = panel.querySelector(".docs-quick-actions__kbd-hint");
+  if (kbdHint) {
+    kbdHint.textContent = `${docsPalettePrimaryHotkeyLabel()} • Enter execute • ↑/↓ navigate • Esc close`;
   }
+  let activeActions = [];
+  let filteredActions = [];
+  let activeIndex = -1;
+  let lastFocusedElement = null;
   document.body.appendChild(panel);
+
+  function actionKey(item) {
+    return [item.group || "", item.label || "", item.href || "", typeof item.action === "function" ? "fn" : "href"].join("|");
+  }
+
+  function paletteGlyphForItem(item) {
+    const label = String(item.label || "").toLowerCase();
+    const hint = String(item.hint || "").toLowerCase();
+    const text = `${label} ${hint}`;
+    if (text.includes("theme")) {
+      return "☼";
+    }
+    if (text.includes("reading")) {
+      return "◧";
+    }
+    if (text.includes("copy") || text.includes("link")) {
+      return "⧉";
+    }
+    if (text.includes("report") || text.includes("issue") || text.includes("feedback")) {
+      return "⚑";
+    }
+    if (text.includes("openapi") || text.includes("api")) {
+      return "⌘";
+    }
+    if (text.includes("runbook")) {
+      return "✚";
+    }
+    const group = String(item.group || "").toLowerCase();
+    if (group.includes("commands")) {
+      return "✦";
+    }
+    if (group.includes("jump")) {
+      return "↳";
+    }
+    if (group.includes("page")) {
+      return "◦";
+    }
+    return "•";
+  }
+
+  function palettePillForItem(item) {
+    const group = String(item.group || "").toLowerCase();
+    if (group.includes("commands")) {
+      return "Command";
+    }
+    if (group.includes("jump")) {
+      return "Section";
+    }
+    if (group.includes("page")) {
+      return "Page";
+    }
+    return "Action";
+  }
+
+  function paletteKeycapsForItem(item) {
+    if (typeof item.action === "function") {
+      return ["↵"];
+    }
+    return ["↵", docsPaletteMetaEnterLabel()];
+  }
+
+  function appendHighlightedText(target, text, query) {
+    const raw = String(text || "");
+    const q = String(query || "").trim().toLowerCase();
+    if (!q) {
+      target.textContent = raw;
+      return;
+    }
+    const lower = raw.toLowerCase();
+    const idx = lower.indexOf(q);
+    if (idx < 0) {
+      target.textContent = raw;
+      return;
+    }
+    const before = raw.slice(0, idx);
+    const match = raw.slice(idx, idx + q.length);
+    const after = raw.slice(idx + q.length);
+    if (before) {
+      target.appendChild(document.createTextNode(before));
+    }
+    const mark = document.createElement("mark");
+    mark.className = "docs-quick-actions__match";
+    mark.textContent = match;
+    target.appendChild(mark);
+    if (after) {
+      target.appendChild(document.createTextNode(after));
+    }
+  }
 
   function visibleItems() {
     return [...list.querySelectorAll("a, button")].filter(
@@ -2181,24 +3131,234 @@ function installDocsQuickActionsUi() {
     );
   }
 
-  function applyFilter(query) {
+  function filterActions(query) {
     const q = String(query || "").trim().toLowerCase();
-    for (const li of list.querySelectorAll("li")) {
-      const text = (li.textContent || "").toLowerCase();
-      li.hidden = q ? !text.includes(q) : false;
+    if (!q) {
+      return activeActions.slice();
+    }
+    return activeActions.filter((item) => {
+      const hay = [
+        item.label || "",
+        item.hint || "",
+        item.group || "",
+        ...(Array.isArray(item.keywords) ? item.keywords : []),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }
+
+  function renderActions(items, query = "") {
+    list.replaceChildren();
+    if (!items || items.length === 0) {
+      const empty = document.createElement("li");
+      empty.className = "docs-quick-actions__empty";
+      empty.textContent = "No commands found. Try 'theme', 'runbook', or 'jump'.";
+      list.appendChild(empty);
+      activeIndex = -1;
+      return;
+    }
+
+    let lastGroup = "";
+    for (const item of items) {
+      if (item.group && item.group !== lastGroup) {
+        const sep = document.createElement("li");
+        sep.className = "docs-quick-actions__group";
+        sep.textContent = item.group;
+        list.appendChild(sep);
+        lastGroup = item.group;
+      }
+
+      const li = document.createElement("li");
+      let actionEl;
+      if (typeof item.action === "function") {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.addEventListener("click", () => {
+          Promise.resolve(item.action())
+            .then(() => {
+              closePanel();
+            })
+            .catch(() => {
+              closePanel();
+            });
+        });
+        actionEl = btn;
+      } else {
+        const a = document.createElement("a");
+        a.href = item.href || "#";
+        if (item.external) {
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+        }
+        a.addEventListener("click", () => {
+          closePanel();
+        });
+        actionEl = a;
+      }
+
+      const row = document.createElement("span");
+      row.className = "docs-quick-actions__item-row";
+      const meta = document.createElement("span");
+      meta.className = "docs-quick-actions__item-meta";
+      const glyph = document.createElement("span");
+      glyph.className = "docs-quick-actions__item-glyph";
+      glyph.setAttribute("aria-hidden", "true");
+      glyph.textContent = paletteGlyphForItem(item);
+      const pill = document.createElement("span");
+      pill.className = "docs-quick-actions__item-pill";
+      pill.textContent = palettePillForItem(item);
+      meta.appendChild(glyph);
+      meta.appendChild(pill);
+
+      const label = document.createElement("span");
+      label.className = "docs-quick-actions__item-label";
+      appendHighlightedText(label, item.label, query);
+      row.appendChild(label);
+      row.appendChild(meta);
+      actionEl.appendChild(row);
+
+      if (item.hint) {
+        const hint = document.createElement("span");
+        hint.className = "docs-quick-actions__item-hint";
+        appendHighlightedText(hint, item.hint, query);
+        actionEl.appendChild(hint);
+      }
+
+      const keycaps = document.createElement("span");
+      keycaps.className = "docs-quick-actions__item-keycaps";
+      for (const keycapLabel of paletteKeycapsForItem(item)) {
+        const keycap = document.createElement("kbd");
+        keycap.className = "docs-quick-actions__item-keycap";
+        keycap.textContent = keycapLabel;
+        keycaps.appendChild(keycap);
+      }
+      actionEl.appendChild(keycaps);
+
+      actionEl.setAttribute("data-action-key", actionKey(item));
+      li.appendChild(actionEl);
+      list.appendChild(li);
     }
   }
 
-  function closePanel() {
+  function setActiveIndex(nextIndex, opts = { focus: false }) {
+    const items = visibleItems();
+    if (items.length === 0) {
+      activeIndex = -1;
+      return;
+    }
+    const bounded = Math.max(0, Math.min(items.length - 1, nextIndex));
+    activeIndex = bounded;
+    items.forEach((itemEl, index) => {
+      const isActive = index === bounded;
+      itemEl.classList.toggle("docs-quick-actions__item--active", isActive);
+      itemEl.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    if (opts.focus) {
+      items[bounded].focus();
+    }
+  }
+
+  function moveActive(delta, opts = { focus: false }) {
+    const items = visibleItems();
+    if (items.length === 0) {
+      activeIndex = -1;
+      return;
+    }
+    const base = activeIndex >= 0 ? activeIndex : delta > 0 ? -1 : 0;
+    const next = (base + delta + items.length) % items.length;
+    setActiveIndex(next, opts);
+  }
+
+  function activateActiveItem(options = { newTab: false, source: "keyboard" }) {
+    const items = visibleItems();
+    if (items.length === 0) {
+      return false;
+    }
+    const idx = activeIndex >= 0 ? activeIndex : 0;
+    const target = items[idx];
+    if (!target) {
+      return false;
+    }
+    const selected = filteredActions[idx] || null;
+    if (options.newTab && target.tagName === "A") {
+      window.open(target.href, "_blank", "noopener");
+      if (selected) {
+        emitDocsPaletteTelemetry("palette_execute", {
+          source: options.source,
+          label: selected.label,
+          group: selected.group || "",
+          kind: selected.action ? "command" : "link",
+          new_tab: true,
+        });
+      }
+      closePanel("execute");
+      return true;
+    }
+    target.click();
+    if (selected) {
+      emitDocsPaletteTelemetry("palette_execute", {
+        source: options.source,
+        label: selected.label,
+        group: selected.group || "",
+        kind: selected.action ? "command" : "link",
+        new_tab: false,
+      });
+    }
+    return true;
+  }
+
+  function applyFilter(query) {
+    const q = String(query || "").trim().toLowerCase();
+    const prevIndex = activeIndex;
+    const prevAction = prevIndex >= 0 ? filteredActions[prevIndex] : null;
+    const prevKey = prevAction ? actionKey(prevAction) : "";
+    filteredActions = filterActions(q);
+    renderActions(filteredActions, q);
+    if (filteredActions.length > 0 && prevKey) {
+      const stickyIndex = filteredActions.findIndex((item) => actionKey(item) === prevKey);
+      if (stickyIndex >= 0) {
+        setActiveIndex(stickyIndex, { focus: false });
+      } else {
+        setActiveIndex(0, { focus: false });
+      }
+    } else if (filteredActions.length > 0) {
+      setActiveIndex(0, { focus: false });
+    } else {
+      activeIndex = -1;
+    }
+    emitDocsPaletteTelemetry("palette_filter", {
+      query_len: q.length,
+      results_count: filteredActions.length,
+    });
+  }
+
+  function refreshActionSet() {
+    const pageActions = buildDocsPageActions(fromDir, relPath);
+    const sectionActions = buildDocsSectionActions();
+    activeActions = [...pageActions, ...sectionActions];
+    filteredActions = activeActions.slice();
+  }
+
+  function closePanel(source = "manual") {
     panel.hidden = true;
     filterInput.value = "";
     applyFilter("");
+    activeIndex = -1;
     const launcherBtn = document.querySelector("[data-docs-quick-actions-open]");
     if (launcherBtn) {
       launcherBtn.setAttribute("aria-expanded", "false");
     }
+    if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+      lastFocusedElement.focus();
+    }
+    lastFocusedElement = null;
+    emitDocsPaletteTelemetry("palette_close", { source });
   }
   function openPanel() {
+    lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    refreshActionSet();
     panel.hidden = false;
     filterInput.value = "";
     applyFilter("");
@@ -2208,6 +3368,12 @@ function installDocsQuickActionsUi() {
     if (launcherBtn) {
       launcherBtn.setAttribute("aria-expanded", "true");
     }
+    try {
+      window.localStorage.setItem(DOCS_HOTKEY_HINT_DISMISSED_KEY, "1");
+    } catch {
+      // Ignore storage failures for private mode.
+    }
+    emitDocsPaletteTelemetry("palette_open", { source: "hotkey_or_button" });
   }
 
   docsQuickActionsRuntime = { panel, openPanel, closePanel };
@@ -2225,22 +3391,60 @@ function installDocsQuickActionsUi() {
       closePanel();
     }
   });
+  panel.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab" || panel.hidden) {
+      return;
+    }
+    const focusables = [...panel.querySelectorAll(
+      'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )].filter((el) => el instanceof HTMLElement && !el.hasAttribute("hidden"));
+    if (focusables.length === 0) {
+      event.preventDefault();
+      filterInput.focus();
+      return;
+    }
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey) {
+      if (active === first || !panel.contains(active)) {
+        event.preventDefault();
+        last.focus();
+      }
+      return;
+    }
+    if (active === last || !panel.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
   filterInput.addEventListener("input", () => {
     applyFilter(filterInput.value);
   });
   filterInput.addEventListener("keydown", (event) => {
     const items = visibleItems();
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closePanel();
+      return;
+    }
     if (items.length === 0) {
       return;
     }
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      items[0].focus();
+      moveActive(1, { focus: true });
+      return;
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveActive(-1, { focus: true });
       return;
     }
     if (event.key === "Enter") {
       event.preventDefault();
-      items[0].click();
+      const openInNewTab = event.metaKey || event.ctrlKey;
+      activateActiveItem({ newTab: openInNewTab, source: "filter_enter" });
     }
   });
   list.addEventListener("keydown", (event) => {
@@ -2251,8 +3455,10 @@ function installDocsQuickActionsUi() {
     const currentIndex = items.findIndex((el) => el === document.activeElement);
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      const next = currentIndex < 0 ? 0 : (currentIndex + 1) % items.length;
-      items[next].focus();
+      if (currentIndex >= 0) {
+        setActiveIndex(currentIndex, { focus: false });
+      }
+      moveActive(1, { focus: true });
       return;
     }
     if (event.key === "ArrowUp") {
@@ -2260,28 +3466,327 @@ function installDocsQuickActionsUi() {
       if (currentIndex <= 0) {
         filterInput.focus();
       } else {
-        items[currentIndex - 1].focus();
+        setActiveIndex(currentIndex - 1, { focus: true });
       }
+      return;
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (currentIndex >= 0) {
+        setActiveIndex(currentIndex, { focus: false });
+      }
+      const openInNewTab = event.metaKey || event.ctrlKey;
+      activateActiveItem({ newTab: openInNewTab, source: "list_enter" });
     }
   });
 }
 
-function handleDocsQuickActionsGlobalKeydown(event) {
+function injectDocsHotkeyHint() {
   if (!desktopDocsPageActionsMq.matches) {
     return;
   }
-  const rt = docsQuickActionsRuntime;
-  if (!rt || !rt.panel.isConnected) {
+  if (document.querySelector(".docs-hotkey-tip")) {
     return;
   }
-  const { panel, openPanel, closePanel } = rt;
+  const hasTopNav = !!document.getElementById("docs-top-nav");
+  if (!hasTopNav) {
+    return;
+  }
+  try {
+    if (window.localStorage.getItem(DOCS_HOTKEY_HINT_DISMISSED_KEY) === "1") {
+      return;
+    }
+  } catch {
+    // Ignore storage errors and still show one-time hint for this session.
+  }
+
+  const tip = document.createElement("div");
+  tip.className = "docs-hotkey-tip";
+  tip.setAttribute("role", "status");
+  tip.setAttribute("aria-live", "polite");
+  tip.innerHTML = `<p class="docs-hotkey-tip__text">Tip: press <kbd>${docsPalettePrimaryHotkeyLabel()}</kbd> to open Command Palette.</p>
+<button type="button" class="docs-hotkey-tip__close" aria-label="Dismiss hotkey tip">Got it</button>`;
+  const closeBtn = tip.querySelector(".docs-hotkey-tip__close");
+  closeBtn.addEventListener("click", () => {
+    tip.remove();
+    try {
+      window.localStorage.setItem(DOCS_HOTKEY_HINT_DISMISSED_KEY, "1");
+    } catch {
+      // Ignore storage failures.
+    }
+  });
+  document.body.appendChild(tip);
+}
+
+function injectDocsSkipToContentLink() {
+  if (document.querySelector(".docs-skip-link")) {
+    return;
+  }
+  const main = document.querySelector("main.container");
+  if (!main) {
+    return;
+  }
+  if (!main.id) {
+    main.id = "docs-main-content";
+  }
+  const link = document.createElement("a");
+  link.className = "docs-skip-link";
+  link.href = `#${main.id}`;
+  link.textContent = "Skip to content";
+  link.addEventListener("click", () => {
+    main.setAttribute("tabindex", "-1");
+    main.focus({ preventScroll: true });
+  });
+  document.body.insertAdjacentElement("afterbegin", link);
+}
+
+function readDocsContinueProgressMap() {
+  try {
+    const raw = window.localStorage.getItem(DOCS_CONTINUE_READING_STORAGE_KEY);
+    if (!raw) {
+      return {};
+    }
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function isDocsContinueProgressExpired(entry, nowMs = Date.now()) {
+  if (!entry || typeof entry !== "object") {
+    return true;
+  }
+  const updatedAt = Number(entry.updated_at_ms || 0);
+  if (!Number.isFinite(updatedAt) || updatedAt <= 0) {
+    return true;
+  }
+  return nowMs - updatedAt > DOCS_CONTINUE_READING_TTL_MS;
+}
+
+function pruneExpiredDocsContinueProgress() {
+  const mapValue = readDocsContinueProgressMap();
+  let changed = false;
+  const nowMs = Date.now();
+  for (const key of Object.keys(mapValue)) {
+    if (isDocsContinueProgressExpired(mapValue[key], nowMs)) {
+      delete mapValue[key];
+      changed = true;
+    }
+  }
+  if (changed) {
+    writeDocsContinueProgressMap(mapValue);
+  }
+}
+
+function writeDocsContinueProgressMap(mapValue) {
+  try {
+    window.localStorage.setItem(DOCS_CONTINUE_READING_STORAGE_KEY, JSON.stringify(mapValue));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function setDocsContinueProgressForPath(path, progress) {
+  pruneExpiredDocsContinueProgress();
+  const mapValue = readDocsContinueProgressMap();
+  mapValue[path] = progress;
+  writeDocsContinueProgressMap(mapValue);
+}
+
+function getDocsContinueProgressForPath(path) {
+  pruneExpiredDocsContinueProgress();
+  const mapValue = readDocsContinueProgressMap();
+  const item = mapValue[path];
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+  if (isDocsContinueProgressExpired(item)) {
+    delete mapValue[path];
+    writeDocsContinueProgressMap(mapValue);
+    return null;
+  }
+  return item;
+}
+
+function removeDocsContinueProgressForPath(path) {
+  const mapValue = readDocsContinueProgressMap();
+  if (!(path in mapValue)) {
+    return;
+  }
+  delete mapValue[path];
+  writeDocsContinueProgressMap(mapValue);
+}
+
+function currentContinueAnchorSnapshot() {
+  const headings = [
+    ...document.querySelectorAll(
+      ".docs-page-layout__article h2[id], .docs-page-layout__article h3[id], section.card h2[id], section.card h3[id]",
+    ),
+  ];
+  const activationLine = 130;
+  let active = null;
+  for (const heading of headings) {
+    const top = heading.getBoundingClientRect().top;
+    if (top <= activationLine) {
+      active = heading;
+    }
+  }
+  if (!active) {
+    active = headings[0] || null;
+  }
+  if (!active || !active.id) {
+    return null;
+  }
+  const label = String(active.textContent || "").trim().replace(/\s+/g, " ");
+  return {
+    anchor: `#${active.id}`,
+    label,
+  };
+}
+
+function initDocsContinueReadingPrompt() {
+  if (!document.getElementById("docs-top-nav")) {
+    return;
+  }
+  const relPath = currentDocsRelPath();
+
+  let saveTimer = null;
+  function saveProgress() {
+    const root = document.documentElement;
+    const maxScroll = Math.max(0, root.scrollHeight - window.innerHeight);
+    if (maxScroll < 260) {
+      removeDocsContinueProgressForPath(relPath);
+      return;
+    }
+    const y = Math.max(0, Math.round(window.scrollY || 0));
+    if (y < 120) {
+      removeDocsContinueProgressForPath(relPath);
+      return;
+    }
+    const snapshot = currentContinueAnchorSnapshot();
+    setDocsContinueProgressForPath(relPath, {
+      y,
+      anchor: snapshot ? snapshot.anchor : "",
+      label: snapshot ? snapshot.label : "",
+      updated_at_ms: Date.now(),
+    });
+  }
+
+  function scheduleSaveProgress() {
+    if (saveTimer) {
+      return;
+    }
+    saveTimer = window.setTimeout(() => {
+      saveTimer = null;
+      saveProgress();
+    }, 420);
+  }
+
+  window.addEventListener("scroll", scheduleSaveProgress, { passive: true });
+  window.addEventListener("beforeunload", saveProgress);
+
+  const saved = getDocsContinueProgressForPath(relPath);
+  if (!saved) {
+    return;
+  }
+  const savedY = Number(saved.y || 0);
+  const currentY = Math.max(0, window.scrollY || 0);
+  const distanceToSaved = Math.abs(savedY - currentY);
+  // Skip prompt only when user is already near saved location.
+  if (savedY < 220 || distanceToSaved < 140) {
+    return;
+  }
+
+  const prompt = document.createElement("aside");
+  prompt.className = "docs-continue-reading";
+  prompt.setAttribute("aria-label", "Continue reading");
+
+  const label = String(saved.label || "").trim();
+  const title = document.createElement("p");
+  title.className = "docs-continue-reading__title";
+  title.textContent = label ? `Continue from § ${label}` : "Continue where you left off";
+
+  const actions = document.createElement("div");
+  actions.className = "docs-continue-reading__actions";
+
+  const continueBtn = document.createElement("button");
+  continueBtn.type = "button";
+  continueBtn.className = "docs-continue-reading__btn docs-continue-reading__btn--continue";
+  continueBtn.textContent = "Continue";
+  continueBtn.addEventListener("click", () => {
+    if (saved.anchor) {
+      window.location.hash = saved.anchor;
+      if (savedY > 0) {
+        window.setTimeout(() => {
+          window.scrollTo({ top: savedY, behavior: "smooth" });
+        }, 20);
+      }
+    } else if (savedY > 0) {
+      window.scrollTo({ top: savedY, behavior: "smooth" });
+    }
+    prompt.remove();
+  });
+
+  const topBtn = document.createElement("button");
+  topBtn.type = "button";
+  topBtn.className = "docs-continue-reading__btn";
+  topBtn.textContent = "Start from top";
+  topBtn.addEventListener("click", () => {
+    removeDocsContinueProgressForPath(relPath);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    prompt.remove();
+  });
+
+  actions.appendChild(continueBtn);
+  actions.appendChild(topBtn);
+  prompt.appendChild(title);
+  prompt.appendChild(actions);
+  document.body.appendChild(prompt);
+
+  const dismissOnIntent = () => {
+    if (!document.body.contains(prompt)) {
+      return;
+    }
+    if ((window.scrollY || 0) > 120) {
+      prompt.remove();
+      window.removeEventListener("scroll", dismissOnIntent);
+    }
+  };
+  window.addEventListener("scroll", dismissOnIntent, { passive: true });
+}
+
+function handleDocsQuickActionsGlobalKeydown(event) {
+  const isTypingTarget = isTypingElement(event.target);
   const key = String(event.key).toLowerCase();
   const code = String(event.code || "");
   const isPrimaryK = (event.metaKey || event.ctrlKey) && (key === "k" || code === "KeyK");
   const isPrimaryShiftK =
     (event.metaKey || event.ctrlKey) && event.shiftKey && (key === "k" || code === "KeyK");
-  const isSlash = !event.metaKey && !event.ctrlKey && !event.altKey && (key === "/" || code === "Slash");
-  const isQuickActionHotkey = isPrimaryK || isPrimaryShiftK || isSlash;
+  const isPrimaryShiftP =
+    (event.metaKey || event.ctrlKey) && event.shiftKey && (key === "p" || code === "KeyP");
+  const isShiftPOnly = !event.metaKey && !event.ctrlKey && !event.altKey && event.shiftKey && (key === "p" || code === "KeyP");
+  const isSlash = !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey && (key === "/" || code === "Slash");
+  const isQuickActionHotkey = isPrimaryK || isPrimaryShiftK || isPrimaryShiftP || isShiftPOnly || isSlash;
+
+  if (isTypingTarget && (isSlash || isShiftPOnly)) {
+    return;
+  }
+
+  if (isQuickActionHotkey && (!docsQuickActionsRuntime || !docsQuickActionsRuntime.panel.isConnected)) {
+    try {
+      installDocsQuickActionsUi();
+    } catch {
+      return;
+    }
+  }
+
+  const rt = docsQuickActionsRuntime;
+  if (!rt || !rt.panel.isConnected) {
+    return;
+  }
+  const { panel, openPanel, closePanel } = rt;
+
   if (isQuickActionHotkey) {
     event.preventDefault();
     if (panel.hidden) {
@@ -2307,7 +3812,22 @@ function syncDocsPageActionsForViewport() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  document.body.classList.add("docs-density-ultra-compact");
+  ensureInternalLayoutForInternalSections();
+  injectDocsSkipToContentLink();
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (isReadingModeHotkeyEvent(event) && !isTypingElement(event.target)) {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleDocsReadingMode("global_hotkey");
+      }
+    },
+    true,
+  );
   document.addEventListener("keydown", handleDocsQuickActionsGlobalKeydown);
+  applyDocsReadingMode(isDocsReadingModeEnabled(), "initial_load");
   injectDocsLifecycleHelp();
   renderTopNav();
   applyDocsThemeFromMode(getEffectiveDocsThemeMode());
@@ -2318,7 +3838,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   injectAuditScoreLegends();
   injectDocsFeedbackCard();
-  syncDocsPageActionsForViewport();
+  try {
+    syncDocsPageActionsForViewport();
+  } catch {
+    // Keep the rest of docs chrome available even if palette init fails.
+  }
   if (typeof desktopDocsPageActionsMq.addEventListener === "function") {
     desktopDocsPageActionsMq.addEventListener("change", syncDocsPageActionsForViewport);
   } else if (typeof desktopDocsPageActionsMq.addListener === "function") {
@@ -2327,6 +3851,13 @@ document.addEventListener("DOMContentLoaded", () => {
   initAutoInPageToc();
   initInPageTocScrollSpy();
   initBackToTopButton();
+  initDocsReadingProgressBar();
   initDocsFooterAtmosphereScroll();
   initDocsSiteFooter();
+  initDocsContinueReadingPrompt();
+  try {
+    injectDocsHotkeyHint();
+  } catch {
+    // Non-critical helper; ignore failures.
+  }
 });

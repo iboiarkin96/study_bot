@@ -26,7 +26,7 @@
     </section>
 
     <section class="card">
-      <h2>1. Where schemas live</h2>
+      <h2>Where schemas live</h2>
       <ul>
         <li>Request/response schemas: <code>app/schemas/</code></li>
         <li>Error schemas: <code>app/schemas/errors.py</code></li>
@@ -35,7 +35,7 @@
       </ul>
     </section>
     <section class="card">
-      <h2>2. Contract rules</h2>
+      <h2>Contract rules</h2>
       <ul>
         <li>API contract is a public interface.</li>
         <li>Existing fields and semantics are backward-compatible within the same major.</li>
@@ -45,7 +45,7 @@
       </ul>
     </section>
     <section class="card">
-      <h2>3. Idempotency contract for writes</h2>
+      <h2>Idempotency contract for writes</h2>
       <ul>
         <li>Same key + same body → return the same success response as the first call.</li>
         <li>Same key + different body → return a clear conflict response.</li>
@@ -53,7 +53,7 @@
       </ul>
     </section>
     <section class="card">
-      <h2>4. Error contract</h2>
+      <h2>Error contract</h2>
       <p>Business error shape:</p>
       <ul>
         <li><code>{"code":"...","key":"...","message":"...","source":"business"}</code></li>
@@ -69,7 +69,7 @@
       </ul>
     </section>
     <section class="card">
-      <h2>5. How to evolve schemas</h2>
+      <h2>How to evolve schemas</h2>
       <ol>
         <li>Update schema classes in <code>app/schemas/</code>.</li>
         <li>Update endpoint declaration in <code>app/api/v1/...</code>.</li>
@@ -81,7 +81,7 @@
       </ol>
     </section>
     <section class="card">
-      <h2>6. Anti-patterns</h2>
+      <h2>Anti-patterns</h2>
       <ul>
         <li>Copy-pasting the same examples in many routers instead of one source.</li>
         <li>Reusing an error <code>code</code> for a new meaning.</li>

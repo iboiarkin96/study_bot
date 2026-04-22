@@ -1,12 +1,13 @@
 """Validate design-consistency baseline for docs HTML pages.
 
 This check enforces the shared page skeleton from
-``docs/internal/documentation-style-guide.html`` for non-generated docs pages.
+``docs/internal/front/documentation-style-guide.html`` for non-generated docs pages.
 It is intentionally lightweight: fail only on clear structural regressions.
 """
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import html5lib
@@ -21,9 +22,18 @@ def _local_name(tag: str) -> str:
     return tag
 
 
-def _iter_docs_pages() -> list[Path]:
+def _iter_docs_pages(candidates: list[str] | None = None) -> list[Path]:
     pages: list[Path] = []
-    for path in sorted(DOCS_ROOT.glob("**/*.html")):
+    if candidates:
+        raw_paths = [Path(item).resolve() for item in candidates]
+    else:
+        raw_paths = sorted(DOCS_ROOT.glob("**/*.html"))
+
+    for path in raw_paths:
+        if not path.is_file() or path.suffix.lower() != ".html":
+            continue
+        if DOCS_ROOT not in path.parents:
+            continue
         rel = path.relative_to(DOCS_ROOT)
         if rel.parts and rel.parts[0] in {"api", "assets"}:
             continue
@@ -140,11 +150,20 @@ def _has_page_history_section(root_el) -> bool:
     return False
 
 
+def _has_body_maintainers(root_el) -> bool:
+    for node in root_el.iter():
+        if not isinstance(node.tag, str) or _local_name(node.tag) != "body":
+            continue
+        maintainer_ids = (node.attrib.get("data-maintainer-ids") or "").strip()
+        return bool(maintainer_ids)
+    return False
+
+
 def main() -> None:
     parser = html5lib.HTMLParser(tree=html5lib.getTreeBuilder("etree"))
     failures: list[str] = []
 
-    for path in _iter_docs_pages():
+    for path in _iter_docs_pages(sys.argv[1:]):
         rel = path.relative_to(ROOT)
         text = path.read_text(encoding="utf-8")
         doc = parser.parse(text)
@@ -178,7 +197,11 @@ def main() -> None:
                 failures.append(
                     f"{rel}: missing Page history section "
                     f'(<section id="page-history"> or assessment <section> with id="5-page-history"); '
-                    f"see docs/internal/documentation-style-guide.html#page-history"
+                    f"see docs/internal/front/documentation-style-guide.html#page-history"
+                )
+            if not _has_body_maintainers(doc):
+                failures.append(
+                    f'{rel}: missing <body data-maintainer-ids="..."> required for the Edited by block'
                 )
 
         if '<div class="card"' in text:

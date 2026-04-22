@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend UI kit (premium surfaces and interactions)</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend UI kit (premium surfaces and interactions)</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page defines the visual system for premium docs frontend surfaces: command palette, page actions, hotkey tip,
+            continue-reading card, and page feedback card. The goal is consistent quality in both light and dark themes.
+          </p>
+          <ul>
+            <li><strong>Scope:</strong> interactive docs chrome provided by <code>docs/assets/docs-nav.js</code> and styled in <code>docs/assets/docs.css</code>.</li>
+            <li><strong>Audience:</strong> maintainers of docs frontend UI and contributors updating docs experience components.</li>
+            <li><strong>Design intent:</strong> compact, modern, low-noise premium UI with strong keyboard and accessibility support.</li>
+          </ul>
+        </section>
+
+        <section id="required-contract" class="card">
+          <h2>Required page contract</h2>
+          <p>Pages that rely on this UI kit must keep the shared docs frontend mounts and scripts.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Contract element</th>
+                <th>Required markup</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Top navigation and quick actions</td>
+                <td><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code></td>
+                <td>Mount for top nav and page actions toolbar with command palette launcher.</td>
+              </tr>
+              <tr>
+                <td>Page editors metadata</td>
+                <td><code>&lt;div id="docs-page-meta-mount" hidden&gt;&lt;/div&gt;</code> + <code>data-maintainer-ids</code></td>
+                <td>Maintainer avatars and editors panel.</td>
+              </tr>
+              <tr>
+                <td>Auto in-page TOC</td>
+                <td><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near end of <code>&lt;main&gt;</code></td>
+                <td>Stable insertion point for “Page feedback” card and TOC layout.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small">
+            Script dependencies: <code>docs/assets/docs-nav.js</code>, <code>docs/assets/docs-portal-data.js</code>, and
+            <code>docs/assets/docs-internal-meta.js</code>.
+          </p>
+        </section>
+
+        <section id="component-inventory" class="card">
+          <h2>Component inventory</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Main selectors</th>
+                <th>Behavior owner</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Page actions toolbar</td>
+                <td><code>.docs-page-actions</code>, <code>.docs-page-actions__button</code>, <code>.docs-page-actions__link</code></td>
+                <td><code>injectDocsPageActions()</code></td>
+              </tr>
+              <tr>
+                <td>Command palette</td>
+                <td><code>.docs-quick-actions*</code></td>
+                <td><code>installDocsQuickActionsUi()</code></td>
+              </tr>
+              <tr>
+                <td>Hotkey hint tip</td>
+                <td><code>.docs-hotkey-tip*</code></td>
+                <td><code>injectDocsHotkeyHint()</code></td>
+              </tr>
+              <tr>
+                <td>Continue reading card</td>
+                <td><code>.docs-continue-reading*</code></td>
+                <td><code>injectDocsContinueReading()</code></td>
+              </tr>
+              <tr>
+                <td>Page feedback card</td>
+                <td><code>.docs-feedback-card*</code></td>
+                <td><code>injectDocsFeedbackCard()</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="visual-principles" class="card">
+          <h2>Visual principles</h2>
+          <ul>
+            <li><strong>Premium surface:</strong> layered gradient plus subtle inner highlight, never flat gray blocks.</li>
+            <li><strong>Low-noise density:</strong> compact spacing and restrained shadows to keep focus on content.</li>
+            <li><strong>Modern corners:</strong> soft rounded rectangles (not old pill-heavy controls by default).</li>
+            <li><strong>Predictable states:</strong> hover, focus, and active use one coherent accent language.</li>
+            <li><strong>Theme parity:</strong> dark mode uses dedicated tokens, not naive inversion.</li>
+          </ul>
+        </section>
+
+        <section id="tokens" class="card">
+          <h2>Design tokens</h2>
+          <p>
+            Premium UI surfaces must use shared token variables from <code>:root</code> and <code>:root[data-theme="dark"]</code>,
+            not hard-coded per-component colors.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Token</th>
+                <th>Use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>--docs-premium-surface-border</code></td><td>Main panel/card border for command palette and premium cards.</td></tr>
+              <tr><td><code>--docs-premium-surface-bg</code></td><td>Primary layered surface background.</td></tr>
+              <tr><td><code>--docs-premium-surface-shadow</code></td><td>Depth model for primary panels.</td></tr>
+              <tr><td><code>--docs-premium-chip-bg</code></td><td>Buttons/chips background in toolbars and floating cards.</td></tr>
+              <tr><td><code>--docs-premium-chip-border</code></td><td>Buttons/chips border color.</td></tr>
+              <tr><td><code>--docs-premium-item-border</code></td><td>Command palette item border.</td></tr>
+              <tr><td><code>--docs-premium-item-bg</code></td><td>Default item background.</td></tr>
+              <tr><td><code>--docs-premium-item-hover-bg</code></td><td>Hover item background.</td></tr>
+              <tr><td><code>--docs-premium-item-active-bg</code></td><td>Active/focused item background.</td></tr>
+              <tr><td><code>--docs-premium-focus-glow-soft</code></td><td>Outer soft glow layer for focus-visible.</td></tr>
+              <tr><td><code>--docs-premium-focus-glow-strong</code></td><td>Inner strong glow ring for focus-visible.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="interaction-model" class="card">
+          <h2>Interaction model</h2>
+          <ul>
+            <li><strong>Open/close:</strong> command palette supports hotkeys and launcher button; repeated trigger toggles panel.</li>
+            <li><strong>Keyboard navigation:</strong> arrow keys move active item, <kbd>Enter</kbd> executes, <kbd>Esc</kbd> closes panel.</li>
+            <li><strong>New tab behavior:</strong> <kbd>Cmd/Ctrl</kbd> + <kbd>Enter</kbd> opens active navigation target in new tab.</li>
+            <li><strong>Motion profile:</strong> short premium easing and reduced-motion fallback are mandatory.</li>
+            <li><strong>Viewport policy:</strong> quick actions + page actions are desktop/tablet only; mobile widths disable them.</li>
+          </ul>
+        </section>
+
+        <section id="accessibility" class="card">
+          <h2>Accessibility requirements</h2>
+          <ul>
+            <li>Palette panel must preserve dialog semantics: <code>role="dialog"</code>, <code>aria-modal</code>, and labeled title.</li>
+            <li>Interactive controls must have visible <code>:focus-visible</code> states and sufficient contrast in both themes.</li>
+            <li>Feedback and toast surfaces must use live-region semantics where status updates are dynamic.</li>
+            <li>Keyboard shortcuts should not hijack typing behavior in form fields.</li>
+            <li>Reduced-motion mode must suppress non-essential transforms and animations.</li>
+          </ul>
+        </section>
+
+        <section id="implementation-map" class="card">
+          <h2>Implementation map</h2>
+          <ul>
+            <li><code>docs/assets/docs-nav.js</code> — lifecycle, rendering, keyboard handling, and runtime composition.</li>
+            <li><code>docs/assets/docs.css</code> — token definitions, theme overrides, component visuals, state styling.</li>
+            <li><code>docs/internal/front/docs-frontend-hotkeys.html</code> — end-user shortcut reference.</li>
+            <li><code>docs/internal/front/docs-frontend-menu-and-theme-controls.html</code> — broader docs frontend UX requirements.</li>
+          </ul>
+        </section>
+
+        <section id="qa-checklist" class="card">
+          <h2>QA checklist</h2>
+          <ol>
+            <li>Verify all premium surfaces in both light and dark themes (toolbar, palette, tip, continue-reading, feedback).</li>
+            <li>Run keyboard-only pass: open, navigate, execute, close, and return focus correctly.</li>
+            <li>Validate focus-visible rings and glow contrast on interactive controls.</li>
+            <li>Check reduced-motion mode to ensure animations are disabled or near-instant.</li>
+            <li>Check responsive behavior at desktop, tablet, and phone breakpoints.</li>
+            <li>Run <code>make docs-html-check</code> after UI changes.</li>
+          </ol>
+        </section>
+
+        <section id="change-management" class="card">
+          <h2>Change management rules</h2>
+          <ul>
+            <li>When adding a new premium docs component, define tokens first, then implement styles.</li>
+            <li>Avoid introducing one-off colors/shadows in component rules without token coverage.</li>
+            <li>Any visual update in one theme must be reviewed for parity in the other theme.</li>
+            <li>Update this page and hotkeys page whenever interaction model or shortcuts change.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Initial UI kit spec for docs premium surfaces, tokens, interaction model, accessibility, and QA baseline.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

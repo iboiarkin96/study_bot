@@ -10,93 +10,107 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
-    <h1>Runbook: Migrations Failing</h1>
-    <div id="docs-top-nav"></div>
-    <div id="docs-page-meta-mount" hidden=""></div>
-    <section class="card">
-      <h2>Trigger</h2>
-      <ul>
-        <li><code>make migrate</code> fails.</li>
-        <li><code>make migration name=...</code> generates incorrect diff.</li>
-        <li>App startup fails due to DB schema mismatch.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Fast triage</h2>
-      <ol>
-        <li>Confirm <code>.env</code> points at the DB you expect (<code>SQLITE_DB_PATH</code>).</li>
-        <li>Run migration command explicitly: <code>make migrate</code>.</li>
-        <li>Inspect current migration heads: <code>.venv/bin/python -m alembic heads</code>.</li>
-      </ol>
-    </section>
-    <section class="card">
-      <h2>Most common causes</h2>
-      <ul>
-        <li>Model changes were made but migration not generated.</li>
-        <li>Migration was built with stale or wrong model imports.</li>
-        <li>Wrong DB file/path in <code>.env</code>.</li>
-        <li>Someone changed the DB by hand; history no longer matches Alembic.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Recovery steps</h2>
-      <ol>
-        <li>Confirm model import chain includes new/changed model.</li>
-        <li>Generate migration from current models: <code>make migration name=describe_change</code>.</li>
-        <li>Review generated file in <code>alembic/versions/</code>.</li>
-        <li>Apply migration: <code>make migrate</code>.</li>
-        <li>Re-run tests: <code>make test</code>.</li>
-      </ol>
-    </section>
-    <section class="card">
-      <h2>Safe rollback strategy (local)</h2>
-      <ul>
-        <li>If the file is wrong and nobody else has it yet, delete it and generate again with fixed models/imports.</li>
-        <li>Do not rewrite shared migration history without team agreement.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Exit criteria</h2>
-      <ul>
-        <li><code>make migrate</code> passes.</li>
-        <li>App starts and uses expected schema.</li>
-        <li><code>make test</code> passes.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Follow-up</h2>
-      <ul>
-        <li>If the schema policy is non-obvious, capture it in an ADR.</li>
-      </ul>
-    </section>
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Runbook: Migrations Failing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section class="card">
+          <h2>Trigger</h2>
+          <ul>
+            <li><code>make migrate</code> fails.</li>
+            <li><code>make migration name=...</code> generates incorrect diff.</li>
+            <li>App startup fails due to DB schema mismatch.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Fast triage</h2>
+          <ol>
+            <li>Confirm <code>.env</code> points at the DB you expect (<code>SQLITE_DB_PATH</code>).</li>
+            <li>Run migration command explicitly: <code>make migrate</code>.</li>
+            <li>Inspect current migration heads: <code>.venv/bin/python -m alembic heads</code>.</li>
+          </ol>
+        </section>
+        <section class="card">
+          <h2>Most common causes</h2>
+          <ul>
+            <li>Model changes were made but migration not generated.</li>
+            <li>Migration was built with stale or wrong model imports.</li>
+            <li>Wrong DB file/path in <code>.env</code>.</li>
+            <li>Someone changed the DB by hand; history no longer matches Alembic.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Recovery steps</h2>
+          <ol>
+            <li>Confirm model import chain includes new/changed model.</li>
+            <li>Generate migration from current models: <code>make migration name=describe_change</code>.</li>
+            <li>Review generated file in <code>alembic/versions/</code>.</li>
+            <li>Apply migration: <code>make migrate</code>.</li>
+            <li>Re-run tests: <code>make test</code>.</li>
+          </ol>
+        </section>
+        <section class="card">
+          <h2>Safe rollback strategy (local)</h2>
+          <ul>
+            <li>If the file is wrong and nobody else has it yet, delete it and generate again with fixed models/imports.</li>
+            <li>Do not rewrite shared migration history without team agreement.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Exit criteria</h2>
+          <ul>
+            <li><code>make migrate</code> passes.</li>
+            <li>App starts and uses expected schema.</li>
+            <li><code>make test</code> passes.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Follow-up</h2>
+          <ul>
+            <li>If the schema policy is non-obvious, capture it in an ADR.</li>
+          </ul>
+        </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

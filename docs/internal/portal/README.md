@@ -2,7 +2,7 @@
 
 The hub page is [`index.html`](index.html). It lists people by role groups and links to each profile under [`people/`](people/).
 
-**Page history** on every docs page follows [`documentation-style-guide.html`](../documentation-style-guide.html#page-history) (table: Date, Change, Author).
+**Page history** on every docs page follows [`documentation-style-guide.html`](../front/documentation-style-guide.html#page-history) (table: Date, Change, Author).
 
 ## How it fits together
 

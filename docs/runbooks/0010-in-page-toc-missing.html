@@ -10,119 +10,133 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
-    <h1>Runbook: In-page “On this page” sidebar missing or empty</h1>
-    <div id="docs-top-nav"></div>
-    <div id="docs-page-meta-mount" hidden=""></div>
-    <section class="card">
-      <h2>Trigger</h2>
-      <ul>
-        <li>
-          A long HTML page under <code>docs/</code> (not <code>docs/api/</code>) has no “On this page” list, or the list is empty.
-        </li>
-        <li>
-          You expect a main column plus a right-hand (or stacked) table of contents from <code>docs/assets/docs-nav.js</code>.
-        </li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Fast triage</h2>
-      <ol>
-        <li>
-          The page loads <code>&lt;script defer src="…/assets/docs-nav.js"&gt;&lt;/script&gt;</code> (Network tab: no 404 for <code>docs-nav.js</code>).
-        </li>
-        <li>
-          JavaScript is on. For <code>file://</code> URLs some browsers block scripts; use a small server, e.g. <code>cd docs &amp;&amp; python -m http.server 8765</code>.
-        </li>
-        <li>
-          Console: no errors from <code>docs-nav.js</code> before the layout runs.
-        </li>
-        <li>
-          After load, <code>&lt;div id="docs-top-nav"&gt;</code> still exists (the script fills it; it should not disappear). It should contain <code>&lt;nav class="top-nav"&gt;</code>.
-        </li>
-        <li>
-          The page uses <code>&lt;main class="container"&gt;</code> and <code>&lt;div id="docs-top-nav"&gt;</code>; the script can add the TOC mount for you.
-        </li>
-      </ol>
-    </section>
-    <section class="card">
-      <h2>Most common causes</h2>
-      <ul>
-        <li>
-          <strong>Wrong page shell</strong> — Auto TOC needs <code>&lt;main class="container"&gt;</code> and <code>#docs-top-nav</code>.
-        </li>
-        <li>
-          <strong>No headings</strong> — TOC lists <code>h2</code>/<code>h3</code> (adds <code>id</code> if missing). <code>p.lead</code> is not listed.
-        </li>
-        <li>
-          <strong>Broken markup</strong> — The script sets <code>id</code> from heading text; bad HTML around a heading can hide it.
-        </li>
-        <li>
-          <strong>Diagram headings</strong> — <code>h3</code> inside <code>figure.sys-diagram</code> / <code>.sys-diagram</code> is skipped.
-        </li>
-        <li>
-          <strong>Long list</strong> — Many headings still use one mount; the sidebar scrolls. To hide the sidebar on one page, remove that page’s mount only.
-        </li>
-        <li>
-          <strong>Two TOCs</strong> — Old <code>Contents</code> blocks are removed by <code>docs-nav.js</code>; keep only the generated “On this page”.
-        </li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Recovery steps</h2>
-      <ol>
-        <li>
-          Ensure page shell is correct: <code>&lt;main class="container"&gt;</code> with
-          <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> near the top (see
-          <a href="../developer/0008-docs-pipeline.html#in-page-on-this-page-sidebar">Documentation pipeline → In-page
-            “On this page” sidebar</a>).
-          </li>
-          <li>
-            Ensure each section you want in the TOC has an <code>h2</code> or <code>h3</code> with a stable
-            <code>id</code> (or let the script generate one from heading text).
-          </li>
-          <li>
-            Use clear <code>h2</code>/<code>h3</code> structure. Cards do not change which headings appear.
-          </li>
-          <li>
-            Run <code>make docs-fix</code> so HTML normalization stays consistent, then <code>make docs-check</code>.
-          </li>
-        </ol>
-      </section>
-      <section class="card">
-        <h2>Exit criteria</h2>
-        <ul>
-          <li>“On this page” lists the right sections; the active link updates as you scroll.</li>
-          <li>No console errors from <code>docs-nav.js</code> on that page.</li>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
         </ul>
-      </section>
-      <section id="page-history" class="card">
-        <h2>Page history</h2>
-        <div class="docs-table-scroll" role="region" aria-label="Page history">
-          <table class="docs-page-history">
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Change</th>
-                <th scope="col">Author</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><time datetime="2026-04-21">2026-04-21</time></td>
-                <td>Added Page history section (repository baseline).</td>
-                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Runbook: In-page “On this page” sidebar missing or empty</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section class="card">
+          <h2>Trigger</h2>
+          <ul>
+            <li>
+              A long HTML page under <code>docs/</code> (not <code>docs/api/</code>) has no “On this page” list, or the list is empty.
+            </li>
+            <li>
+              You expect a main column plus a right-hand (or stacked) table of contents from <code>docs/assets/docs-nav.js</code>.
+            </li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Fast triage</h2>
+          <ol>
+            <li>
+              The page loads <code>&lt;script defer src="…/assets/docs-nav.js"&gt;&lt;/script&gt;</code> (Network tab: no 404 for <code>docs-nav.js</code>).
+            </li>
+            <li>
+              JavaScript is on. For <code>file://</code> URLs some browsers block scripts; use a small server, e.g. <code>cd docs &amp;&amp; python -m http.server 8765</code>.
+            </li>
+            <li>
+              Console: no errors from <code>docs-nav.js</code> before the layout runs.
+            </li>
+            <li>
+              After load, <code>&lt;div id="docs-top-nav"&gt;</code> still exists (the script fills it; it should not disappear). It should contain <code>&lt;nav class="top-nav"&gt;</code>.
+            </li>
+            <li>
+              The page uses <code>&lt;main class="container"&gt;</code> and <code>&lt;div id="docs-top-nav"&gt;</code>; the script can add the TOC mount for you.
+            </li>
+          </ol>
+        </section>
+        <section class="card">
+          <h2>Most common causes</h2>
+          <ul>
+            <li>
+              <strong>Wrong page shell</strong> — Auto TOC needs <code>&lt;main class="container"&gt;</code> and <code>#docs-top-nav</code>.
+            </li>
+            <li>
+              <strong>No headings</strong> — TOC lists <code>h2</code>/<code>h3</code> (adds <code>id</code> if missing). <code>p.lead</code> is not listed.
+            </li>
+            <li>
+              <strong>Broken markup</strong> — The script sets <code>id</code> from heading text; bad HTML around a heading can hide it.
+            </li>
+            <li>
+              <strong>Diagram headings</strong> — <code>h3</code> inside <code>figure.sys-diagram</code> / <code>.sys-diagram</code> is skipped.
+            </li>
+            <li>
+              <strong>Long list</strong> — Many headings still use one mount; the sidebar scrolls. To hide the sidebar on one page, remove that page’s mount only.
+            </li>
+            <li>
+              <strong>Two TOCs</strong> — Old <code>Contents</code> blocks are removed by <code>docs-nav.js</code>; keep only the generated “On this page”.
+            </li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Recovery steps</h2>
+          <ol>
+            <li>
+              Ensure page shell is correct: <code>&lt;main class="container"&gt;</code> with
+              <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> near the top (see
+              <a href="../developer/0008-docs-pipeline.html#in-page-on-this-page-sidebar">Documentation pipeline → In-page
+                “On this page” sidebar</a>).
+              </li>
+              <li>
+                Ensure each section you want in the TOC has an <code>h2</code> or <code>h3</code> with a stable
+                <code>id</code> (or let the script generate one from heading text).
+              </li>
+              <li>
+                Use clear <code>h2</code>/<code>h3</code> structure. Cards do not change which headings appear.
+              </li>
+              <li>
+                Run <code>make docs-fix</code> so HTML normalization stays consistent, then <code>make docs-check</code>.
+              </li>
+            </ol>
+          </section>
+          <section class="card">
+            <h2>Exit criteria</h2>
+            <ul>
+              <li>“On this page” lists the right sections; the active link updates as you scroll.</li>
+              <li>No console errors from <code>docs-nav.js</code> on that page.</li>
+            </ul>
+          </section>
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added Page history section (repository baseline).</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </main>
+      </div>
+    </div>
 
   </body></html>

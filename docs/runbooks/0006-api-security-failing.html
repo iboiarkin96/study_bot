@@ -10,115 +10,129 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
-    <h1>Runbook: API Security Failing</h1>
-    <div id="docs-top-nav"></div>
-    <div id="docs-page-meta-mount" hidden=""></div>
-    <section class="card">
-      <h2>Trigger</h2>
-      <ul>
-        <li><code>401</code> responses for protected endpoints even with expected credentials.</li>
-        <li><code>429</code> spikes on normal traffic profile.</li>
-        <li><code>413</code> responses after payload changes.</li>
-        <li>CORS errors in browser or missing expected security headers in responses.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Fast triage</h2>
-      <ol>
-        <li>Check current env values for security settings in <code>.env</code>.</li>
-        <li>Verify request contains auth header configured by <code>API_AUTH_HEADER</code>.</li>
-        <li>Reproduce with one endpoint: <code>POST /api/v1/user</code>.</li>
-        <li>Inspect application logs for security middleware warnings.</li>
-      </ol>
-    </section>
-    <section class="card">
-      <h2>Most common causes</h2>
-      <ul>
-        <li>Wrong <code>API_MOCK_API_KEY</code> or wrong header name.</li>
-        <li>Unexpected aggressive rate-limit settings for local/test load.</li>
-        <li>Payload grew beyond <code>API_BODY_MAX_BYTES</code>.</li>
-        <li>Frontend origin missing in <code>CORS_ALLOW_ORIGINS</code>.</li>
-        <li>Middleware order or behavior changed without tests or an ADR.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Recovery steps by category</h2>
-      <h3>1) Auth failures (<code>401</code>)</h3>
-      <ul>
-        <li>Validate <code>API_AUTH_STRATEGY</code> is expected (<code>mock_api_key</code> or <code>disabled</code>).</li>
-        <li>Confirm request sends <code>API_AUTH_HEADER</code> with <code>API_MOCK_API_KEY</code> value.</li>
-        <li>Re-run tests: <code>make test-one path=tests/api/v1/test_user_create.py</code>.</li>
-      </ul>
-      <h3>2) Rate-limit overblocking (<code>429</code>)</h3>
-      <ul>
-        <li>Check <code>API_RATE_LIMIT_REQUESTS</code> and <code>API_RATE_LIMIT_WINDOW_SECONDS</code>.</li>
-        <li>Validate client retry/backoff behavior.</li>
-        <li>Before raising limits, agree policy in an ADR and update docs.</li>
-      </ul>
-      <h3>3) Body limit errors (<code>413</code>)</h3>
-      <ul>
-        <li>Measure actual payload size and compare with <code>API_BODY_MAX_BYTES</code>.</li>
-        <li>Reduce request body or plan dedicated upload flow.</li>
-        <li>If increasing limit, update <code>env/example</code>, docs, and test coverage.</li>
-      </ul>
-      <h3>4) CORS / security headers</h3>
-      <ul>
-        <li>Ensure frontend origin is explicitly allowlisted.</li>
-        <li>Verify response headers include CSP and frame/content-type protections.</li>
-        <li>Confirm browser preflight (<code>OPTIONS</code>) behavior is not blocked by auth/rate-limit.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Final recovery sequence</h2>
-      <ol>
-        <li><code>make test</code></li>
-        <li><code>make verify</code></li>
-        <li><code>make docs-fix</code></li>
-      </ol>
-    </section>
-    <section class="card">
-      <h2>Exit criteria</h2>
-      <ul>
-        <li>Protected endpoints behave as expected for auth, rate limit, and body size.</li>
-        <li>CORS and security headers are present and validated.</li>
-        <li>CI passes and docs match the security settings you ship.</li>
-      </ul>
-    </section>
-    <section class="card">
-      <h2>Follow-up</h2>
-      <ul>
-        <li>Security policy changes belong in an ADR.</li>
-        <li>Add new repeating patterns to this runbook.</li>
-      </ul>
-    </section>
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Runbook: API Security Failing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section class="card">
+          <h2>Trigger</h2>
+          <ul>
+            <li><code>401</code> responses for protected endpoints even with expected credentials.</li>
+            <li><code>429</code> spikes on normal traffic profile.</li>
+            <li><code>413</code> responses after payload changes.</li>
+            <li>CORS errors in browser or missing expected security headers in responses.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Fast triage</h2>
+          <ol>
+            <li>Check current env values for security settings in <code>.env</code>.</li>
+            <li>Verify request contains auth header configured by <code>API_AUTH_HEADER</code>.</li>
+            <li>Reproduce with one endpoint: <code>POST /api/v1/user</code>.</li>
+            <li>Inspect application logs for security middleware warnings.</li>
+          </ol>
+        </section>
+        <section class="card">
+          <h2>Most common causes</h2>
+          <ul>
+            <li>Wrong <code>API_MOCK_API_KEY</code> or wrong header name.</li>
+            <li>Unexpected aggressive rate-limit settings for local/test load.</li>
+            <li>Payload grew beyond <code>API_BODY_MAX_BYTES</code>.</li>
+            <li>Frontend origin missing in <code>CORS_ALLOW_ORIGINS</code>.</li>
+            <li>Middleware order or behavior changed without tests or an ADR.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Recovery steps by category</h2>
+          <h3>Auth failures (<code>401</code>)</h3>
+          <ul>
+            <li>Validate <code>API_AUTH_STRATEGY</code> is expected (<code>mock_api_key</code> or <code>disabled</code>).</li>
+            <li>Confirm request sends <code>API_AUTH_HEADER</code> with <code>API_MOCK_API_KEY</code> value.</li>
+            <li>Re-run tests: <code>make test-one path=tests/api/v1/test_user_create.py</code>.</li>
+          </ul>
+          <h3>Rate-limit overblocking (<code>429</code>)</h3>
+          <ul>
+            <li>Check <code>API_RATE_LIMIT_REQUESTS</code> and <code>API_RATE_LIMIT_WINDOW_SECONDS</code>.</li>
+            <li>Validate client retry/backoff behavior.</li>
+            <li>Before raising limits, agree policy in an ADR and update docs.</li>
+          </ul>
+          <h3>Body limit errors (<code>413</code>)</h3>
+          <ul>
+            <li>Measure actual payload size and compare with <code>API_BODY_MAX_BYTES</code>.</li>
+            <li>Reduce request body or plan dedicated upload flow.</li>
+            <li>If increasing limit, update <code>env/example</code>, docs, and test coverage.</li>
+          </ul>
+          <h3>CORS / security headers</h3>
+          <ul>
+            <li>Ensure frontend origin is explicitly allowlisted.</li>
+            <li>Verify response headers include CSP and frame/content-type protections.</li>
+            <li>Confirm browser preflight (<code>OPTIONS</code>) behavior is not blocked by auth/rate-limit.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Final recovery sequence</h2>
+          <ol>
+            <li><code>make test</code></li>
+            <li><code>make verify</code></li>
+            <li><code>make docs-fix</code></li>
+          </ol>
+        </section>
+        <section class="card">
+          <h2>Exit criteria</h2>
+          <ul>
+            <li>Protected endpoints behave as expected for auth, rate limit, and body size.</li>
+            <li>CORS and security headers are present and validated.</li>
+            <li>CI passes and docs match the security settings you ship.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Follow-up</h2>
+          <ul>
+            <li>Security policy changes belong in an ADR.</li>
+            <li>Add new repeating patterns to this runbook.</li>
+          </ul>
+        </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>

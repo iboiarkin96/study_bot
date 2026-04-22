@@ -30,7 +30,7 @@
     </p>
     <section class="card">
 
-      <h2>1. <code>make docs-fix</code> stages</h2>
+      <h2><code>make docs-fix</code> stages</h2>
       <ol>
         <li>
           <strong>UML</strong> — <code>scripts/regenerate_docs.py</code> renders
@@ -66,7 +66,7 @@
     </section>
     <section class="card">
 
-      <h2>2. Generated and managed paths</h2>
+      <h2>Generated and managed paths</h2>
       <table>
         <thead>
           <tr>
@@ -112,7 +112,7 @@
     </section>
     <section class="card">
 
-      <h2>3. <code>make docs-check</code> (CI)</h2>
+      <h2><code>make docs-check</code> (CI)</h2>
       <p>
         <code>docs-check</code> saves <code>git diff HEAD</code>, runs <code>docs-fix</code>, then compares the new diff to
         the saved one. If they differ, <code>docs-fix</code> changed something — run it, review, and commit. The check
@@ -125,7 +125,7 @@
     </section>
     <section class="card">
 
-      <h2>4. Optional published doc site</h2>
+      <h2>Optional published doc site</h2>
       <p>
         Many teams only browse <code>docs/</code> in git. If you want site search, versions, or a branded site, add a
         generator (e.g. <a href="https://www.mkdocs.org/">MkDocs</a> or <a href="https://docusaurus.io/">Docusaurus</a>)
@@ -148,7 +148,7 @@
     </section>
     <section class="card">
 
-      <h2>5. Documentation versioning (policy)</h2>
+      <h2>Documentation versioning (policy)</h2>
       <p>
         <strong>Default in this repository:</strong> narrative and process docs live in git with the code (docs-as-code).
         After a feature merges to <code>main</code>, the <code>docs/</code> tree describes the current repository state.
@@ -180,7 +180,7 @@
     </section>
     <section class="card">
 
-      <h2>6. Python API reference (<code>make api-docs</code>)</h2>
+      <h2>Python API reference (<code>make api-docs</code>)</h2>
       <p>
         HTTP API contracts are documented via OpenAPI and developer guides; <strong>in-module Python API</strong> (packages,
         classes, functions) is documented from docstrings using
@@ -197,7 +197,7 @@
     </section>
     <section class="card">
 
-      <h2>7. Optional CI: versioned prose sites or extra artifacts</h2>
+      <h2>Optional CI: versioned prose sites or extra artifacts</h2>
       <p>
         <code>make verify</code> and <code>make docs-check</code> already run <code>docs-fix</code>, which regenerates
         <code>docs/api/</code>. If you add a separate static-site build (MkDocs, Docusaurus, etc.), run it in CI from the
@@ -211,7 +211,7 @@
     </section>
     <section class="card">
 
-      <h2 id="in-page-on-this-page-sidebar">8. In-page “On this page” sidebar (HTML docs)</h2>
+      <h2 id="in-page-on-this-page-sidebar">In-page “On this page” sidebar (HTML docs)</h2>
       <p>
         Long-form pages that load <code>docs/assets/docs-nav.js</code> show a sticky <strong>On this page</strong>
         outline beside the article. Keep this mount as the <strong>last child</strong> of <code>&lt;main&gt;</code>:

@@ -102,7 +102,7 @@ help:
 	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
-	@echo "  make docs-fix             Auto-update docs (UML + markers + md→html + HTML repair + format + portal data JS + pdoc API + search index)"
+	@echo "  make docs-fix             Auto-update docs (UML + markers + md→html + HTML repair + format + maintainers + portal data JS + pdoc API + search index)"
 	@echo "  make docs-html-check      Validate HTML consistency (fails if docs HTML needs repair)"
 	@echo "  make docs-design-check    Baseline docs design consistency checks (page skeleton, cards, mounts)"
 	@echo "  make docs-a11y-check      Baseline accessibility checks (headings, landmarks, contrast, keyboard)"
@@ -548,11 +548,13 @@ docs-fix:
 	@$(PYTHON) scripts/repair_docs_html.py
 	@printf "$(ICON_INFO) %s\n" "[5/8] normalize docs html template"
 	@$(PYTHON) scripts/format_docs_html.py
-	@printf "$(ICON_INFO) %s\n" "[6/8] collect docs maintainer pages index"
+	@printf "$(ICON_INFO) %s\n" "[6/9] ensure docs body maintainers"
+	@$(PYTHON) scripts/ensure_docs_maintainers.py
+	@printf "$(ICON_INFO) %s\n" "[7/9] collect docs maintainer pages index"
 	@$(PYTHON) scripts/collect_docs_portal_data.py
-	@printf "$(ICON_INFO) %s\n" "[7/8] Python API reference (pdoc)"
+	@printf "$(ICON_INFO) %s\n" "[8/9] Python API reference (pdoc)"
 	@$(MAKE) api-docs
-	@printf "$(ICON_INFO) %s\n" "[8/8] build docs search index"
+	@printf "$(ICON_INFO) %s\n" "[9/9] build docs search index"
 	@$(PYTHON) scripts/build_docs_search_index.py
 	@printf "$(COLOR_GREEN)== DOCS-FIX: SUCCESS ==$(COLOR_RESET)\n"
 

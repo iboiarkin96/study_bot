@@ -10,110 +10,124 @@
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
-<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container">
-    <h1>Runbook: OpenAPI Contract-Test Failing</h1>
-    <div id="docs-top-nav"></div>
-    <div id="docs-page-meta-mount" hidden=""></div>
-    <section class="card">
-      <h2>Trigger</h2>
-      <ul>
-        <li><code>make contract-test</code> fails.</li>
-        <li><code>make verify</code> fails on the <code>contract-test</code> stage.</li>
-        <li>CI reports OpenAPI snapshot drift vs baseline.</li>
-      </ul>
-    </section>
-    <section class="card">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <nav aria-label="Internal documentation (fallback)">
+        <ul class="internal-sidebar__tree">
+          <li><a href="../internal/README.html">Internal docs</a></li>
+        </ul>
+      </nav>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Runbook: OpenAPI Contract-Test Failing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <section class="card">
+          <h2>Trigger</h2>
+          <ul>
+            <li><code>make contract-test</code> fails.</li>
+            <li><code>make verify</code> fails on the <code>contract-test</code> stage.</li>
+            <li>CI reports OpenAPI snapshot drift vs baseline.</li>
+          </ul>
+        </section>
+        <section class="card">
 
-      <h2>Fast triage</h2>
-      <ol>
-        <li>Run <code>make contract-test</code> to see the diff summary.</li>
-        <li>Identify whether changes are intentional or accidental.</li>
-        <li>If accidental, revert/fix API contract changes in code.</li>
-        <li>If intentional, validate compatibility and docs, then accept baseline update.</li>
-      </ol>
-    </section>
-    <section class="card">
+          <h2>Fast triage</h2>
+          <ol>
+            <li>Run <code>make contract-test</code> to see the diff summary.</li>
+            <li>Identify whether changes are intentional or accidental.</li>
+            <li>If accidental, revert/fix API contract changes in code.</li>
+            <li>If intentional, validate compatibility and docs, then accept baseline update.</li>
+          </ol>
+        </section>
+        <section class="card">
 
-      <h2>Most common causes</h2>
-      <ul>
-        <li>Field type changed in request/response schema.</li>
-        <li>Error code/key mapping changed unintentionally.</li>
-        <li>Response status set changed (for example removed <code>422</code> or <code>404</code>).</li>
-        <li>A field or parameter flipped between required and optional.</li>
-        <li>OpenAPI examples or router response declarations diverged from implementation.</li>
-      </ul>
-    </section>
-    <section class="card">
+          <h2>Most common causes</h2>
+          <ul>
+            <li>Field type changed in request/response schema.</li>
+            <li>Error code/key mapping changed unintentionally.</li>
+            <li>Response status set changed (for example removed <code>422</code> or <code>404</code>).</li>
+            <li>A field or parameter flipped between required and optional.</li>
+            <li>OpenAPI examples or router response declarations diverged from implementation.</li>
+          </ul>
+        </section>
+        <section class="card">
 
-      <h2>Recovery paths</h2>
-      <h3>1) Unintentional contract drift</h3>
-      <ul>
-        <li>Fix schema/router/validation code to restore expected contract.</li>
-        <li>Re-run <code>make openapi-check</code> and <code>make contract-test</code>.</li>
-        <li>Run <code>make verify</code> before commit.</li>
-      </ul>
+          <h2>Recovery paths</h2>
+          <h3>Unintentional contract drift</h3>
+          <ul>
+            <li>Fix schema/router/validation code to restore expected contract.</li>
+            <li>Re-run <code>make openapi-check</code> and <code>make contract-test</code>.</li>
+            <li>Run <code>make verify</code> before commit.</li>
+          </ul>
 
-      <h3>2) Intentional contract change</h3>
-      <ul>
-        <li>Confirm the change is safe for the current API major version.</li>
-        <li>Update tests, examples, and related docs/ADR notes.</li>
-        <li>Accept new baseline: <code>make openapi-accept-changes</code>.</li>
-        <li>Re-run <code>make contract-test</code> and <code>make verify</code>.</li>
-      </ul>
-    </section>
-    <section class="card">
+          <h3>Intentional contract change</h3>
+          <ul>
+            <li>Confirm the change is safe for the current API major version.</li>
+            <li>Update tests, examples, and related docs/ADR notes.</li>
+            <li>Accept new baseline: <code>make openapi-accept-changes</code>.</li>
+            <li>Re-run <code>make contract-test</code> and <code>make verify</code>.</li>
+          </ul>
+        </section>
+        <section class="card">
 
-      <h2>Final recovery sequence</h2>
-      <ol>
-        <li><code>make openapi-check</code></li>
-        <li><code>make contract-test</code></li>
-        <li><code>make verify</code></li>
-      </ol>
-    </section>
-    <section class="card">
+          <h2>Final recovery sequence</h2>
+          <ol>
+            <li><code>make openapi-check</code></li>
+            <li><code>make contract-test</code></li>
+            <li><code>make verify</code></li>
+          </ol>
+        </section>
+        <section class="card">
 
-      <h2>Exit criteria</h2>
-      <ul>
-        <li><code>make contract-test</code> passes.</li>
-        <li><code>make verify</code> passes end-to-end.</li>
-        <li>If you updated the baseline, the commit message or PR explains why.</li>
-      </ul>
-    </section>
-    <section class="card">
+          <h2>Exit criteria</h2>
+          <ul>
+            <li><code>make contract-test</code> passes.</li>
+            <li><code>make verify</code> passes end-to-end.</li>
+            <li>If you updated the baseline, the commit message or PR explains why.</li>
+          </ul>
+        </section>
+        <section class="card">
 
-      <h2>Follow-up</h2>
-      <ul>
-        <li>If compatibility rules changed, update an ADR and developer docs.</li>
-        <li>If this keeps happening, tighten checks in <code>scripts/openapi_governance.py</code>.</li>
-      </ul>
-    </section>
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+          <h2>Follow-up</h2>
+          <ul>
+            <li>If compatibility rules changed, update an ADR and developer docs.</li>
+            <li>If this keeps happening, tighten checks in <code>scripts/openapi_governance.py</code>.</li>
+          </ul>
+        </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
 
 </body></html>
