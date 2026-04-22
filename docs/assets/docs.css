@@ -1694,6 +1694,69 @@ main.docs-page-layout [id] {
   color: #7f1d1d;
 }
 
+/* Theme cycle pillow toast (docs-nav.js `showDocsThemePillowToast`). */
+.docs-theme-toast-host {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2400;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  width: min(440px, calc(100vw - 28px));
+}
+
+.docs-theme-toast--pillow {
+  max-width: 100%;
+  padding: 11px 20px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-align: center;
+  color: var(--text);
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  box-shadow:
+    0 10px 28px color-mix(in srgb, var(--text) 10%, transparent),
+    0 2px 10px color-mix(in srgb, var(--accent) 8%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(-12px) scale(0.96);
+  transition:
+    opacity 0.28s ease,
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="dark"] .docs-theme-toast--pillow {
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.45),
+    0 2px 12px color-mix(in srgb, var(--accent) 14%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+}
+
+.docs-theme-toast--pillow.docs-theme-toast--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.docs-theme-toast--pillow.docs-theme-toast--leaving {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  transition-duration: 0.26s, 0.28s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-theme-toast--pillow {
+    transition: none;
+  }
+}
+
 .docs-page-actions {
   margin: 0 0 12px;
   display: flex;
@@ -1755,6 +1818,17 @@ main.docs-page-layout [id] {
   box-shadow: var(--focus-ring);
 }
 
+@media (max-width: 760px) {
+  .docs-page-actions {
+    display: none !important;
+  }
+
+  .docs-quick-actions {
+    display: none !important;
+    pointer-events: none !important;
+  }
+}
+
 .docs-quick-actions[hidden] {
   display: none;
 }
@@ -1762,7 +1836,7 @@ main.docs-page-layout [id] {
 .docs-quick-actions {
   position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: 1200;
   display: grid;
   place-items: start center;
   padding: clamp(12px, 6vh, 72px) 12px 12px;
@@ -1872,15 +1946,19 @@ main.docs-page-layout [id] {
   border-color: var(--accent);
 }
 
-@media (max-width: 560px) {
+@media (max-width: 520px) {
   .docs-quick-actions {
-    padding-top: 10px;
+    padding: 0;
+    align-items: end;
   }
 
   .docs-quick-actions__panel {
-    max-height: calc(100vh - 20px);
-    border-radius: 12px;
-    padding: 10px;
+    width: 100%;
+    max-width: none;
+    max-height: min(78dvh, 720px);
+    border-radius: 16px 16px 0 0;
+    padding: 12px 12px max(12px, env(safe-area-inset-bottom, 0px));
+    box-shadow: var(--shadow-premium-md), 0 -18px 44px rgba(2, 6, 23, 0.18);
   }
 
   .docs-quick-actions__list a,
@@ -2258,6 +2336,27 @@ main.docs-page-layout [id] {
 
 .docs-breadcrumbs__text {
   color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .docs-breadcrumbs {
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .docs-breadcrumbs__item:not(:first-child):not(:last-child) {
+    display: none;
+  }
+
+  .docs-breadcrumbs__item:last-child::before {
+    content: "… /";
+    color: var(--line);
+    font-weight: 500;
+    margin-right: 0.15rem;
+    user-select: none;
+  }
+
 }
 
 /* Site footer (docs-nav.js initDocsSiteFooter) — “tile” + subtle finish line above (pairs with dot veil). */

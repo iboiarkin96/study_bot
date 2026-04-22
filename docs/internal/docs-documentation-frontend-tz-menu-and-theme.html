@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TZ: Docs frontend navigation and theme controls</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>TZ: Docs frontend navigation and theme controls</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <p class="lead">
+          This technical specification fixes the final frontend requirements for documentation navigation behavior and
+          theme controls across desktop, tablet, and phone layouts.
+        </p>
+
+        <section class="card" aria-labelledby="tz-scope">
+          <h2 id="tz-scope">1. Scope and goals</h2>
+          <ul>
+            <li>Applies to docs pages using shared docs frontend assets and internal layout chrome.</li>
+            <li>Covers the main navigation experience: title row, Menu button, drawer, top navigation groups, and theme toggle.</li>
+            <li>Covers responsive behavior by platform width: desktop, tablet, and phone.</li>
+            <li>Defines final behavior for Quick actions on mobile vs desktop.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-platform-model">
+          <h2 id="tz-platform-model">2. Platform model (breakpoints)</h2>
+          <ul>
+            <li><strong>Desktop:</strong> width <code>&gt;= 1025px</code>.</li>
+            <li><strong>Tablet:</strong> width <code>761px ... 1024px</code>.</li>
+            <li><strong>Phone:</strong> width <code>&lt;= 760px</code>.</li>
+          </ul>
+          <p>
+            Breakpoints for drawer and internal title row behavior are aligned with JavaScript/CSS implementation.
+          </p>
+        </section>
+
+        <section class="card" aria-labelledby="tz-menu-drawer">
+          <h2 id="tz-menu-drawer">3. Menu and drawer requirements</h2>
+          <ul>
+            <li>Drawer direction is always left-to-right (panel opens from the left edge).</li>
+            <li>On internal-layout pages, Menu launcher is attached near <code>h1</code> in a dedicated title row.</li>
+            <li>Menu launcher is visible on tablet and phone, and hidden on desktop.</li>
+            <li>Drawer must keep keyboard and screen-reader semantics (<code>role="dialog"</code>, <code>aria-modal</code>, <code>aria-controls</code>, <code>aria-expanded</code>).</li>
+            <li>Drawer closes on phone after navigation click; supports Escape and backdrop close.</li>
+            <li>Drawer should not blur text or break link activation; navigation links must route reliably.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-project-code">
+          <h2 id="tz-project-code">4. Project / Code blocks requirements</h2>
+          <ul>
+            <li><strong>Desktop:</strong> top navigation groups Project and Code are visible on page.</li>
+            <li><strong>Tablet and phone:</strong> top navigation groups Project and Code are hidden in top nav, available via drawer blocks.</li>
+            <li>Drawer top sections include Project links (Home, Internal docs, Assessments, Backlog).</li>
+            <li>Drawer top sections include Code links (OpenAPI explorer, Pdoc API docs).</li>
+            <li>Active-state matching must work for directory prefixes, not only exact file path.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-theme-flashlight">
+          <h2 id="tz-theme-flashlight">5. Theme control ("flashlight") requirements</h2>
+          <ul>
+            <li>Theme toggle is a compact flashlight icon control, not a text label button.</li>
+            <li>Flashlight orientation is vertical with beam pointing up.</li>
+            <li>On internal-layout pages, flashlight aligns with the same title row as <code>h1</code> (desktop and mobile).</li>
+            <li>Theme cycle order: automatic (system) -> light -> dark -> automatic.</li>
+            <li>When explicit dark mode is selected, flashlight receives a yellow lit state.</li>
+            <li>Control must keep accessibility attributes and clear <code>aria-label</code> text describing active mode and action.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-theme-toast">
+          <h2 id="tz-theme-toast">6. Theme switch notification ("pillow")</h2>
+          <ul>
+            <li>On each theme change, show top-centered pill-shaped toast notification.</li>
+            <li>Toast messages: Automatic theme, Light theme, Dark theme.</li>
+            <li>Toast should be non-blocking, auto-dismissed, and animated.</li>
+            <li>For reduced-motion users, transition is removed.</li>
+            <li>Toast has <code>role="status"</code> and <code>aria-live="polite"</code> for assistive tech.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-quick-actions">
+          <h2 id="tz-quick-actions">7. Quick actions requirements</h2>
+          <ul>
+            <li><strong>Desktop only:</strong> page actions toolbar and quick-actions dialog are enabled.</li>
+            <li><strong>Tablet and phone:</strong> page actions and quick-actions UI are disabled/hidden.</li>
+            <li>Desktop keyboard shortcuts (for quick actions) must not hijack behavior on mobile widths.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-wide-layout">
+          <h2 id="tz-wide-layout">8. Wide-screen layout stability requirements</h2>
+          <ul>
+            <li>Desktop must not reuse mobile narrow-column visual proportions.</li>
+            <li>Internal shell uses two-column layout with stable sidebar + flexible main content area.</li>
+            <li>Main content should avoid accidental narrow clamp from mobile-oriented caps.</li>
+            <li>Desktop overrides must be placed late enough in CSS cascade so they win over base rules.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-acceptance">
+          <h2 id="tz-acceptance">9. Acceptance checklist</h2>
+          <ul>
+            <li>Phone <code>&lt;=760px</code>: Menu works, drawer opens from left, Project/Code available in drawer, quick actions hidden.</li>
+            <li>Tablet <code>761...1024px</code>: same as phone behavior for top groups and drawer availability.</li>
+            <li>Desktop <code>&gt;=1025px</code>: Project/Code visible in top nav, flashlight in title row with <code>h1</code>, Menu hidden.</li>
+            <li>Theme cycle and yellow lit state in dark mode work consistently.</li>
+            <li>Theme toast appears and auto-dismisses without breaking focus/navigation.</li>
+          </ul>
+        </section>
+
+        <section class="card" aria-labelledby="tz-reference-files">
+          <h2 id="tz-reference-files">10. Reference implementation files</h2>
+          <ul>
+            <li><code>docs/assets/internal-sidebar.js</code> — drawer lifecycle, content cloning, drawer sections, navigation handling.</li>
+            <li><code>docs/assets/internal-layout.css</code> — shell layout, title row, drawer styling, responsive rules.</li>
+            <li><code>docs/assets/docs-nav.js</code> — top-nav render, Menu mount, theme flashlight logic, toast behavior, quick actions viewport sync.</li>
+            <li><code>docs/assets/docs-site-nav.css</code> — top-nav groups visibility rules by viewport and flashlight visual styling.</li>
+            <li><code>docs/assets/docs.css</code> — quick-actions styles and theme toast ("pillow") styling.</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

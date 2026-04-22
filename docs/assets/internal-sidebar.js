@@ -19,6 +19,29 @@
  */
 (function () {
   const INTERNAL_SIDEBAR_COLLAPSED_STORAGE_KEY = "docs.internal.sidebar.collapsed";
+  const INTERNAL_SIDEBAR_DRAWER_OPEN_STORAGE_KEY = "docs.internal.sidebar.drawer.open";
+  const PHONE_MAX_WIDTH = 760;
+  const DRAWER_MAX_WIDTH = 1024;
+  const DRAWER_TOP_NAV_SECTIONS = [
+    {
+      title: "Project",
+      kind: "internal",
+      links: [
+        { label: "Home", path: "index.html" },
+        { label: "Internal docs", path: "internal/README.html" },
+        { label: "Assessments", path: "audit/README.html" },
+        { label: "Backlog", path: "backlog/README.html" },
+      ],
+    },
+    {
+      title: "Code",
+      kind: "public",
+      links: [
+        { label: "OpenAPI explorer", path: "openapi/openapi-explorer.html" },
+        { label: "Pdoc API docs", path: "api/index.html" },
+      ],
+    },
+  ];
 
   function readSidebarCollapsedPreference() {
     try {
@@ -31,6 +54,22 @@
   function persistSidebarCollapsedPreference(isCollapsed) {
     try {
       window.localStorage.setItem(INTERNAL_SIDEBAR_COLLAPSED_STORAGE_KEY, isCollapsed ? "1" : "0");
+    } catch {
+      // Ignore storage failures and keep interaction working.
+    }
+  }
+
+  function readDrawerOpenPreference() {
+    try {
+      return window.sessionStorage.getItem(INTERNAL_SIDEBAR_DRAWER_OPEN_STORAGE_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function persistDrawerOpenPreference(isOpen) {
+    try {
+      window.sessionStorage.setItem(INTERNAL_SIDEBAR_DRAWER_OPEN_STORAGE_KEY, isOpen ? "1" : "0");
     } catch {
       // Ignore storage failures and keep interaction working.
     }
@@ -69,11 +108,258 @@
 
     let isCollapsed = readSidebarCollapsedPreference();
     applyCollapsedState(isCollapsed);
+    shell.__internalSidebarApplyCollapsedState = applyCollapsedState;
+    shell.__internalSidebarToggle = toggle;
+    shell.__internalSidebarHost = sidebarHost;
     toggle.addEventListener("click", () => {
       isCollapsed = !isCollapsed;
       applyCollapsedState(isCollapsed);
       persistSidebarCollapsedPreference(isCollapsed);
     });
+  }
+
+  function buildDrawerTopSections(fromDir, currentPath) {
+    const wrap = document.createElement("div");
+    wrap.className = "internal-layout__drawer-sections";
+    for (const section of DRAWER_TOP_NAV_SECTIONS) {
+      const block = document.createElement("section");
+      block.className = `internal-layout__drawer-section internal-layout__drawer-section--${section.kind}`;
+
+      const title = document.createElement("p");
+      title.className = "internal-layout__drawer-section-title";
+      title.textContent = section.title;
+      block.appendChild(title);
+
+      const links = document.createElement("div");
+      links.className = "internal-layout__drawer-section-links";
+      for (const item of section.links) {
+        const a = document.createElement("a");
+        a.href = relHref(fromDir, item.path);
+        a.textContent = item.label;
+        if (pathMatchesSection(currentPath, item.path)) {
+          a.classList.add("is-active");
+          a.setAttribute("aria-current", "page");
+        }
+        links.appendChild(a);
+      }
+      block.appendChild(links);
+      wrap.appendChild(block);
+    }
+    return wrap;
+  }
+
+  function ensureDrawerInteractions(sidebar, shell, fromDir, currentPath) {
+    if (!sidebar || !shell) {
+      return;
+    }
+
+    const drawerMedia = window.matchMedia(`(max-width: ${DRAWER_MAX_WIDTH}px)`);
+    const phoneMedia = window.matchMedia(`(max-width: ${PHONE_MAX_WIDTH}px)`);
+    let isOpen = false;
+    const initialOpen = readDrawerOpenPreference();
+    let lastLauncherFocus = null;
+
+    let drawerRoot = document.getElementById("internal-docs-drawer");
+    if (!drawerRoot) {
+      drawerRoot = document.createElement("div");
+      drawerRoot.id = "internal-docs-drawer";
+      drawerRoot.className = "internal-layout__drawer";
+      drawerRoot.setAttribute("role", "dialog");
+      drawerRoot.setAttribute("aria-modal", "true");
+      drawerRoot.setAttribute("aria-labelledby", "internal-docs-drawer-title");
+
+      const backdrop = document.createElement("button");
+      backdrop.type = "button";
+      backdrop.className = "internal-layout__drawer-backdrop";
+      backdrop.setAttribute("aria-label", "Close internal documentation menu");
+
+      const panel = document.createElement("div");
+      panel.className = "internal-layout__drawer-panel";
+
+      const header = document.createElement("div");
+      header.className = "internal-layout__drawer-header";
+
+      const title = document.createElement("p");
+      title.id = "internal-docs-drawer-title";
+      title.className = "internal-layout__drawer-title";
+      title.textContent = "Internal docs";
+
+      const closeBtn = document.createElement("button");
+      closeBtn.type = "button";
+      closeBtn.className = "internal-layout__drawer-close";
+      closeBtn.textContent = "Close";
+
+      const body = document.createElement("div");
+      body.className = "internal-layout__drawer-body";
+
+      header.appendChild(title);
+      header.appendChild(closeBtn);
+      panel.appendChild(header);
+      panel.appendChild(body);
+      drawerRoot.appendChild(backdrop);
+      drawerRoot.appendChild(panel);
+      document.body.appendChild(drawerRoot);
+
+      backdrop.addEventListener("click", () => {
+        closeDrawer(true);
+      });
+      closeBtn.addEventListener("click", () => {
+        closeDrawer(true);
+      });
+    }
+
+    const drawerBody = drawerRoot.querySelector(".internal-layout__drawer-body");
+
+    if (!sidebar.id) {
+      sidebar.id = "internal-sidebar-drawer";
+    }
+
+    function inDrawerMode() {
+      return drawerMedia.matches;
+    }
+
+    function syncDrawerNavFromSource() {
+      const sourceNav = sidebar.querySelector("nav");
+      if (!sourceNav || !drawerBody) {
+        return;
+      }
+      const navClone = sourceNav.cloneNode(true);
+      drawerBody.replaceChildren(buildDrawerTopSections(fromDir, currentPath), navClone);
+    }
+
+    function applyDrawerState(nextOpen, shouldPersist) {
+      const active = inDrawerMode();
+      const open = active && nextOpen;
+      isOpen = open;
+
+      shell.classList.toggle("is-drawer-mode", active);
+      document.body.classList.toggle("internal-sidebar-drawer-open", open);
+
+      const applyCollapsedState = shell.__internalSidebarApplyCollapsedState;
+      const collapseToggle = shell.__internalSidebarToggle;
+      if (active) {
+        if (typeof applyCollapsedState === "function") {
+          applyCollapsedState(false);
+        }
+        if (collapseToggle) {
+          collapseToggle.hidden = true;
+        }
+      } else {
+        if (typeof applyCollapsedState === "function") {
+          applyCollapsedState(readSidebarCollapsedPreference());
+        }
+        if (collapseToggle) {
+          collapseToggle.hidden = false;
+        }
+      }
+
+      if (open) {
+        syncDrawerNavFromSource();
+        drawerRoot.removeAttribute("hidden");
+        drawerRoot.classList.add("is-open");
+      } else {
+        drawerRoot.classList.remove("is-open");
+        drawerRoot.setAttribute("hidden", "");
+      }
+
+      if (shouldPersist && active) {
+        if (phoneMedia.matches) {
+          persistDrawerOpenPreference(false);
+        } else {
+          persistDrawerOpenPreference(open);
+        }
+      }
+
+      document.dispatchEvent(
+        new CustomEvent("internal-sidebar:drawer-state", {
+          detail: {
+            open,
+            drawerMode: active,
+            drawerId: drawerRoot.id,
+          },
+        }),
+      );
+    }
+
+    function openDrawer(shouldPersist) {
+      applyDrawerState(true, shouldPersist);
+      const firstLink = drawerBody ? drawerBody.querySelector("a, button, summary") : null;
+      if (firstLink && typeof firstLink.focus === "function") {
+        firstLink.focus();
+      }
+    }
+
+    function closeDrawer(shouldPersist) {
+      applyDrawerState(false, shouldPersist);
+      if (lastLauncherFocus && typeof lastLauncherFocus.focus === "function") {
+        lastLauncherFocus.focus();
+      }
+    }
+
+    function toggleDrawer() {
+      if (!inDrawerMode()) {
+        return;
+      }
+      if (isOpen) {
+        closeDrawer(true);
+      } else {
+        openDrawer(true);
+      }
+    }
+
+    function syncForViewport() {
+      if (!inDrawerMode()) {
+        closeDrawer(false);
+        shell.classList.remove("is-drawer-mode");
+        return;
+      }
+      if (phoneMedia.matches) {
+        closeDrawer(false);
+        return;
+      }
+      openDrawer(false);
+      if (!initialOpen) {
+        closeDrawer(false);
+      }
+    }
+
+    if (drawerBody && !drawerBody.__internalDrawerNavBound) {
+      drawerBody.__internalDrawerNavBound = true;
+      drawerBody.addEventListener("click", (event) => {
+        const target = event.target;
+        const link = target && target.closest ? target.closest("a[href]") : null;
+        if (!link || !inDrawerMode() || !isOpen) {
+          return;
+        }
+        if (event.defaultPrevented) {
+          return;
+        }
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+          return;
+        }
+        const href = link.getAttribute("href");
+        if (!href || href.startsWith("#")) {
+          return;
+        }
+        event.preventDefault();
+        window.location.assign(link.href);
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && isOpen) {
+        closeDrawer(true);
+      }
+    });
+
+    document.addEventListener("internal-sidebar:toggle-drawer", () => {
+      lastLauncherFocus = document.activeElement;
+      toggleDrawer();
+    });
+
+    drawerMedia.addEventListener("change", syncForViewport);
+    phoneMedia.addEventListener("change", syncForViewport);
+    syncForViewport();
   }
 
   function normalizeParts(parts) {
@@ -149,6 +435,31 @@
     const a = normalizePath(current);
     const b = normalizePath(target);
     return a === b;
+  }
+
+  function pathMatchesSection(currentPath, sectionPath) {
+    if (pathIsActive(currentPath, sectionPath)) {
+      return true;
+    }
+    if (sectionPath === "index.html") {
+      return currentPath === "index.html";
+    }
+    if (sectionPath === "internal/README.html") {
+      return currentPath.startsWith("internal/");
+    }
+    if (sectionPath === "audit/README.html") {
+      return currentPath.startsWith("audit/");
+    }
+    if (sectionPath === "backlog/README.html") {
+      return currentPath.startsWith("backlog/");
+    }
+    if (sectionPath === "openapi/openapi-explorer.html") {
+      return currentPath === "openapi/openapi-explorer.html" || currentPath === "openapi-explorer.html";
+    }
+    if (sectionPath === "api/index.html") {
+      return currentPath.startsWith("api/");
+    }
+    return false;
   }
 
   function navHasActiveChild(node, currentPath) {
@@ -291,6 +602,7 @@
     nav.appendChild(renderTree(INTERNAL_SIDEBAR_NAV, fromDir, relPath));
     host.replaceChildren(nav);
     ensureSidebarToggle(sidebar, host, shell);
+    ensureDrawerInteractions(sidebar, shell, fromDir, relPath);
   }
 
   if (document.readyState === "loading") {

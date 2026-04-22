@@ -120,7 +120,24 @@ const DOCS_FEEDBACK_REPOSITORY = "iboiarkin96/study_bot";
 const DOCS_FEEDBACK_TEMPLATE = "docs_feedback.yml";
 const DOCS_FEEDBACK_LABELS = ["docs-feedback"];
 const DOCS_FEEDBACK_CARD_ENABLED = false;
+
+/** Page toolbar + quick-actions modal: desktop only (matches internal top-nav “phone” breakpoint). */
+const DOCS_PAGE_ACTIONS_MIN_WIDTH = 761;
+const desktopDocsPageActionsMq = window.matchMedia(`(min-width: ${DOCS_PAGE_ACTIONS_MIN_WIDTH}px)`);
+let docsQuickActionsRuntime = null;
 const DOCS_THEME_STORAGE_KEY = "docs-theme-preference";
+
+/**
+ * Minimal vertical flashlight (beam up): soft glow ellipse + reflector + grip + end cap.
+ * Beam uses `.top-nav__theme-flashlight-beam` for “lit” styling in docs-site-nav.css.
+ */
+const DOCS_THEME_FLASHLIGHT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+  <ellipse class="top-nav__theme-flashlight-beam" cx="12" cy="4.35" rx="5" ry="1.9" fill="currentColor" />
+  <path fill="currentColor" d="M7.65 10.85c0-1.45 1.18-2.62 2.62-2.62h3.46c1.45 0 2.62 1.18 2.62 2.62v0.42c0 .38-.31.7-.7.7H8.35c-.38 0-.7-.31-.7-.7v-.42z" />
+  <path fill="currentColor" opacity="0.9" d="M8.2 11.85h7.6v1.05c0 .34-.28.62-.62.62H8.82c-.34 0-.62-.28-.62-.62v-1.05z" />
+  <rect x="9.1" y="13.35" width="5.8" height="8.35" rx="1.35" fill="currentColor" />
+  <rect x="9.85" y="21.2" width="4.3" height="1.7" rx="0.5" fill="currentColor" opacity="0.88" />
+</svg>`;
 
 /** Bump when the shared ADR/RFC lifecycle help copy in `injectDocsLifecycleHelp` changes. */
 const DOCS_LIFECYCLE_HELP_SNIPPET_VERSION = "2";
@@ -271,6 +288,41 @@ function cycleDocsTheme() {
   setStoredDocsTheme(next === "system" ? null : next);
   applyDocsThemeFromMode(next);
   syncDocsThemeToggleLabel();
+  showDocsThemePillowToast(next);
+}
+
+function showDocsThemePillowToast(mode) {
+  const labels = {
+    system: "Automatic theme — follows your system",
+    light: "Light theme",
+    dark: "Dark theme",
+  };
+  const text = labels[mode] || labels.system;
+  let host = document.getElementById("docs-theme-toast-host");
+  if (!host) {
+    host = document.createElement("div");
+    host.id = "docs-theme-toast-host";
+    host.className = "docs-theme-toast-host";
+    document.body.appendChild(host);
+  }
+  host.replaceChildren();
+  const el = document.createElement("div");
+  el.className = "docs-theme-toast docs-theme-toast--pillow";
+  el.setAttribute("role", "status");
+  el.setAttribute("aria-live", "polite");
+  el.textContent = text;
+  host.appendChild(el);
+  requestAnimationFrame(() => {
+    el.classList.add("docs-theme-toast--visible");
+  });
+  window.clearTimeout(host.__docsThemeToastTimer);
+  host.__docsThemeToastTimer = window.setTimeout(() => {
+    el.classList.remove("docs-theme-toast--visible");
+    el.classList.add("docs-theme-toast--leaving");
+    window.setTimeout(() => {
+      el.remove();
+    }, 320);
+  }, 2600);
 }
 
 function syncDocsThemeToggleLabel() {
@@ -279,17 +331,22 @@ function syncDocsThemeToggleLabel() {
     return;
   }
   const mode = getEffectiveDocsThemeMode();
-  const labels = {
-    system: "Theme: Auto",
-    light: "Theme: Light",
-    dark: "Theme: Dark",
+  const lit = mode === "dark";
+  btn.classList.toggle("top-nav__theme-btn--lit", lit);
+  btn.setAttribute("data-theme-mode", mode);
+  const modeWords = {
+    system: "Automatic (follows system)",
+    light: "Light",
+    dark: "Dark",
   };
-  btn.textContent = labels[mode];
   btn.setAttribute(
     "title",
-    "Cycle documentation color theme: follow system → light → dark → follow system",
+    "Cycle documentation color theme: automatic → light → dark",
   );
-  btn.setAttribute("aria-label", `${labels[mode]}. Activate to cycle documentation color theme.`);
+  btn.setAttribute(
+    "aria-label",
+    `Color theme: ${modeWords[mode] || modeWords.system}. Activate to cycle: automatic, light, dark.`,
+  );
 }
 let docsSearchIndexPromise = null;
 let docsSearchSessionId = null;
@@ -840,6 +897,86 @@ function appendTopNavLinks(container, items, fromDir, active) {
   }
 }
 
+function initCompactTopNav(nav) {
+  if (!nav) {
+    return;
+  }
+  const media = window.matchMedia("(max-width: 760px)");
+  const groups = [...nav.querySelectorAll(".top-nav__group")];
+  const toggles = [];
+  let mobileStateSeeded = false;
+
+  function ensureToggle(group, body) {
+    let controls = group.querySelector(".top-nav__group-controls");
+    if (!controls) {
+      controls = document.createElement("div");
+      controls.className = "top-nav__group-controls";
+      const head = group.querySelector(".top-nav__group-head");
+      if (head) {
+        head.appendChild(controls);
+      }
+    }
+    let toggle = controls.querySelector(".top-nav__toggle");
+    if (!toggle) {
+      toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "top-nav__toggle";
+      controls.appendChild(toggle);
+    }
+    const bodyId = body.id || `top-nav-group-body-${Math.random().toString(36).slice(2, 8)}`;
+    body.id = bodyId;
+    toggle.setAttribute("aria-controls", bodyId);
+    return toggle;
+  }
+
+  function setCollapsed(group, body, toggle, isCollapsed) {
+    group.classList.toggle("is-collapsed", isCollapsed);
+    body.hidden = isCollapsed;
+    toggle.textContent = isCollapsed ? "Show links" : "Hide links";
+    toggle.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
+  }
+
+  for (const group of groups) {
+    const body = group.querySelector(".top-nav__group-body");
+    if (!body) {
+      continue;
+    }
+    const toggle = ensureToggle(group, body);
+    toggles.push({ group, body, toggle });
+    toggle.addEventListener("click", () => {
+      setCollapsed(group, body, toggle, !group.classList.contains("is-collapsed"));
+    });
+  }
+
+  function applyByViewport() {
+    if (!media.matches) {
+      for (const item of toggles) {
+        item.toggle.hidden = true;
+        setCollapsed(item.group, item.body, item.toggle, false);
+      }
+      return;
+    }
+    for (const item of toggles) {
+      item.toggle.hidden = false;
+      if (!mobileStateSeeded) {
+        const hasActive = !!item.body.querySelector("a.is-active");
+        setCollapsed(item.group, item.body, item.toggle, !hasActive);
+      } else {
+        setCollapsed(
+          item.group,
+          item.body,
+          item.toggle,
+          item.group.classList.contains("is-collapsed"),
+        );
+      }
+    }
+    mobileStateSeeded = true;
+  }
+
+  applyByViewport();
+  media.addEventListener("change", applyByViewport);
+}
+
 /** Hub HTML file for a path prefix (directory trail), or null if there is no index page. */
 function docsHubHrefForPrefix(prefix) {
   const hubs = {
@@ -998,6 +1135,89 @@ function renderDocsBreadcrumbNav(fromDir, relPath) {
   return el;
 }
 
+function ensureInternalDrawerMenuAriaSync() {
+  if (window.__docsInternalDrawerMenuAriaSyncInstalled) {
+    return;
+  }
+  window.__docsInternalDrawerMenuAriaSyncInstalled = true;
+  document.addEventListener("internal-sidebar:drawer-state", (event) => {
+    const detail = event && event.detail ? event.detail : {};
+    const expanded = !!(detail && detail.open && detail.drawerMode);
+    const drawerId = detail && detail.drawerId ? String(detail.drawerId) : "";
+    for (const btn of document.querySelectorAll("[data-internal-drawer-menu]")) {
+      if (drawerId) {
+        btn.setAttribute("aria-controls", drawerId);
+      }
+      btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+      btn.setAttribute(
+        "aria-label",
+        expanded ? "Close documentation menu" : "Open documentation menu",
+      );
+    }
+  });
+}
+
+function mountInternalDrawerMenuButton() {
+  ensureInternalDrawerMenuAriaSync();
+  const main = document.querySelector("main.container");
+  if (!main) {
+    return null;
+  }
+
+  const existing = main.querySelector("[data-internal-drawer-menu]");
+  if (existing) {
+    return existing;
+  }
+
+  const h1 = main.querySelector("h1");
+  if (!h1) {
+    return null;
+  }
+
+  const row = document.createElement("div");
+  row.className = "internal-layout__page-title-row";
+  row.setAttribute("data-internal-drawer-menu-row", "1");
+
+  const menuBtn = document.createElement("button");
+  menuBtn.type = "button";
+  menuBtn.className = "internal-layout__page-menu-btn";
+  menuBtn.setAttribute("data-internal-drawer-menu", "1");
+  menuBtn.setAttribute("aria-label", "Open documentation menu");
+  menuBtn.setAttribute("aria-controls", "internal-sidebar-drawer");
+  menuBtn.setAttribute("aria-expanded", "false");
+  menuBtn.textContent = "Menu";
+
+  menuBtn.addEventListener("click", () => {
+    document.dispatchEvent(
+      new CustomEvent("internal-sidebar:toggle-drawer", {
+        detail: { source: "page-title" },
+      }),
+    );
+  });
+
+  h1.insertAdjacentElement("beforebegin", row);
+  row.appendChild(menuBtn);
+  row.appendChild(h1);
+  return menuBtn;
+}
+
+function syncInternalThemeTogglePlacement() {
+  const hasChrome =
+    document.body.classList.contains("internal-layout") && document.getElementById("internal-sidebar-mount");
+  if (!hasChrome) {
+    return;
+  }
+  const btn = document.querySelector("[data-docs-theme-toggle]");
+  const row = document.querySelector("[data-internal-drawer-menu-row]");
+  const themeBar = document.querySelector(".top-nav .top-nav__theme-bar");
+  if (!btn || !row || !themeBar) {
+    return;
+  }
+  if (btn.parentElement !== row) {
+    row.appendChild(btn);
+  }
+}
+
 function renderTopNav() {
   const host = document.getElementById("docs-top-nav");
   if (!host) {
@@ -1018,8 +1238,14 @@ function renderTopNav() {
     { label: "Pdoc API docs", target: "api/index.html" },
   ];
 
+  const isInternalLayoutChrome =
+    document.body.classList.contains("internal-layout") && document.getElementById("internal-sidebar-mount");
+
   const nav = document.createElement("nav");
   nav.className = "top-nav";
+  if (isInternalLayoutChrome) {
+    nav.classList.add("top-nav--internal-page");
+  }
   nav.setAttribute("aria-label", "Documentation navigation");
 
   const groups = document.createElement("div");
@@ -1048,9 +1274,12 @@ function renderTopNav() {
   internalLinks.className = "top-nav__links";
   internalLinks.id = "top-nav-internal-links";
   appendTopNavLinks(internalLinks, internalItems, fromDir, active);
+  const internalBody = document.createElement("div");
+  internalBody.className = "top-nav__group-body";
+  internalBody.appendChild(internalLinks);
 
   internalSection.appendChild(internalHead);
-  internalSection.appendChild(internalLinks);
+  internalSection.appendChild(internalBody);
 
   const split = document.createElement("div");
   split.className = "top-nav__split";
@@ -1078,9 +1307,12 @@ function renderTopNav() {
   const publicLinks = document.createElement("div");
   publicLinks.className = "top-nav__links";
   appendTopNavLinks(publicLinks, publicItems, fromDir, active);
+  const publicBody = document.createElement("div");
+  publicBody.className = "top-nav__group-body";
+  publicBody.appendChild(publicLinks);
 
   publicSection.appendChild(publicHead);
-  publicSection.appendChild(publicLinks);
+  publicSection.appendChild(publicBody);
 
   groups.appendChild(internalSection);
   groups.appendChild(split);
@@ -1088,9 +1320,9 @@ function renderTopNav() {
 
   const themeBtn = document.createElement("button");
   themeBtn.type = "button";
-  themeBtn.className = "top-nav__theme-btn";
+  themeBtn.className = "top-nav__theme-btn top-nav__theme-btn--flashlight";
   themeBtn.setAttribute("data-docs-theme-toggle", "1");
-  themeBtn.textContent = "Theme: Auto";
+  themeBtn.innerHTML = `<span class="top-nav__theme-btn__icon">${DOCS_THEME_FLASHLIGHT_SVG}</span>`;
   themeBtn.addEventListener("click", () => {
     cycleDocsTheme();
   });
@@ -1101,11 +1333,17 @@ function renderTopNav() {
   nav.appendChild(themeBar);
   nav.appendChild(groups);
   mountDocsSearch(nav, fromDir);
+  initCompactTopNav(nav);
 
   const breadcrumbNav = renderDocsBreadcrumbNav(fromDir, relPath);
 
   /* Keep `#docs-top-nav` in the DOM — `initAutoInPageToc` and formatters anchor off this host. */
   host.replaceChildren(breadcrumbNav, nav);
+
+  if (isInternalLayoutChrome) {
+    mountInternalDrawerMenuButton();
+    syncInternalThemeTogglePlacement();
+  }
 }
 
 /**
@@ -1832,6 +2070,9 @@ function buildDocsPageActions(fromDir, relPath) {
 }
 
 function injectDocsPageActions() {
+  if (!desktopDocsPageActionsMq.matches) {
+    return;
+  }
   const main = document.querySelector("main.container");
   const navHost = document.getElementById("docs-top-nav");
   if (!main || !navHost || main.querySelector(".docs-page-actions")) {
@@ -1853,7 +2094,11 @@ function injectDocsPageActions() {
   launcher.type = "button";
   launcher.className = "docs-page-actions__button";
   launcher.setAttribute("data-docs-quick-actions-open", "1");
+  launcher.setAttribute("aria-haspopup", "dialog");
+  launcher.setAttribute("aria-controls", "docs-quick-actions");
+  launcher.setAttribute("aria-expanded", "false");
   launcher.textContent = "Open (⌘K)";
+  launcher.setAttribute("aria-label", "Open quick actions");
   wrap.appendChild(launcher);
 
   for (const item of buildDocsPageActions(fromDir, relPath)) {
@@ -1870,7 +2115,25 @@ function injectDocsPageActions() {
   navHost.insertAdjacentElement("afterend", wrap);
 }
 
-function initDocsQuickActions() {
+function removeDocsPageActionsToolbar() {
+  for (const el of document.querySelectorAll(".docs-page-actions")) {
+    el.remove();
+  }
+}
+
+function destroyDocsQuickActionsUi() {
+  const panel = document.getElementById("docs-quick-actions");
+  if (panel) {
+    panel.hidden = true;
+    panel.remove();
+  }
+  docsQuickActionsRuntime = null;
+}
+
+function installDocsQuickActionsUi() {
+  if (!desktopDocsPageActionsMq.matches || docsQuickActionsRuntime) {
+    return;
+  }
   if (document.getElementById("docs-quick-actions")) {
     return;
   }
@@ -1930,6 +2193,10 @@ function initDocsQuickActions() {
     panel.hidden = true;
     filterInput.value = "";
     applyFilter("");
+    const launcherBtn = document.querySelector("[data-docs-quick-actions-open]");
+    if (launcherBtn) {
+      launcherBtn.setAttribute("aria-expanded", "false");
+    }
   }
   function openPanel() {
     panel.hidden = false;
@@ -1937,7 +2204,13 @@ function initDocsQuickActions() {
     applyFilter("");
     filterInput.focus();
     filterInput.select();
+    const launcherBtn = document.querySelector("[data-docs-quick-actions-open]");
+    if (launcherBtn) {
+      launcherBtn.setAttribute("aria-expanded", "true");
+    }
   }
+
+  docsQuickActionsRuntime = { panel, openPanel, closePanel };
 
   const launcherBtn = document.querySelector("[data-docs-quick-actions-open]");
   if (launcherBtn) {
@@ -1991,30 +2264,50 @@ function initDocsQuickActions() {
       }
     }
   });
-  document.addEventListener("keydown", (event) => {
-    const key = String(event.key).toLowerCase();
-    const code = String(event.code || "");
-    const isPrimaryK = (event.metaKey || event.ctrlKey) && (key === "k" || code === "KeyK");
-    const isPrimaryShiftK =
-      (event.metaKey || event.ctrlKey) && event.shiftKey && (key === "k" || code === "KeyK");
-    const isSlash = !event.metaKey && !event.ctrlKey && !event.altKey && (key === "/" || code === "Slash");
-    const isQuickActionHotkey = isPrimaryK || isPrimaryShiftK || isSlash;
-    if (isQuickActionHotkey) {
-      event.preventDefault();
-      if (panel.hidden) {
-        openPanel();
-      } else {
-        closePanel();
-      }
-      return;
-    }
-    if (event.key === "Escape" && !panel.hidden) {
+}
+
+function handleDocsQuickActionsGlobalKeydown(event) {
+  if (!desktopDocsPageActionsMq.matches) {
+    return;
+  }
+  const rt = docsQuickActionsRuntime;
+  if (!rt || !rt.panel.isConnected) {
+    return;
+  }
+  const { panel, openPanel, closePanel } = rt;
+  const key = String(event.key).toLowerCase();
+  const code = String(event.code || "");
+  const isPrimaryK = (event.metaKey || event.ctrlKey) && (key === "k" || code === "KeyK");
+  const isPrimaryShiftK =
+    (event.metaKey || event.ctrlKey) && event.shiftKey && (key === "k" || code === "KeyK");
+  const isSlash = !event.metaKey && !event.ctrlKey && !event.altKey && (key === "/" || code === "Slash");
+  const isQuickActionHotkey = isPrimaryK || isPrimaryShiftK || isSlash;
+  if (isQuickActionHotkey) {
+    event.preventDefault();
+    if (panel.hidden) {
+      openPanel();
+    } else {
       closePanel();
     }
-  });
+    return;
+  }
+  if (event.key === "Escape" && !panel.hidden) {
+    closePanel();
+  }
+}
+
+function syncDocsPageActionsForViewport() {
+  if (desktopDocsPageActionsMq.matches) {
+    injectDocsPageActions();
+    installDocsQuickActionsUi();
+  } else {
+    removeDocsPageActionsToolbar();
+    destroyDocsQuickActionsUi();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("keydown", handleDocsQuickActionsGlobalKeydown);
   injectDocsLifecycleHelp();
   renderTopNav();
   applyDocsThemeFromMode(getEffectiveDocsThemeMode());
@@ -2025,8 +2318,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   injectAuditScoreLegends();
   injectDocsFeedbackCard();
-  injectDocsPageActions();
-  initDocsQuickActions();
+  syncDocsPageActionsForViewport();
+  if (typeof desktopDocsPageActionsMq.addEventListener === "function") {
+    desktopDocsPageActionsMq.addEventListener("change", syncDocsPageActionsForViewport);
+  } else if (typeof desktopDocsPageActionsMq.addListener === "function") {
+    desktopDocsPageActionsMq.addListener(syncDocsPageActionsForViewport);
+  }
   initAutoInPageToc();
   initInPageTocScrollSpy();
   initBackToTopButton();
