@@ -292,6 +292,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Developers Docs — Study App"
       },
       {
+        "path": "internal/docs-documentation-frontend-tz-menu-and-theme.html",
+        "title": "TZ: Docs frontend navigation and theme controls"
+      },
+      {
         "path": "internal/documentation-style-guide.html",
         "title": "Documentation style guide and audit standard"
       },
