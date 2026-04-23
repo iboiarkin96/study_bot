@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <link rel="stylesheet" href="../assets/internal-layout.css">
   <link rel="stylesheet" href="backlog.css">
+  <script defer src="backlog.js"></script>
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
@@ -28,7 +29,7 @@
         <h1>Backlog: priorities and status</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="card">
+        <section class="card" id="overview-section">
           <h2>Overview</h2>
           <p>
             One ordered list of engineering work: most urgent first, nice-to-have last. Dates are <strong>rough
@@ -41,53 +42,115 @@
           </p>
         </section>
 
-        <section class="card" aria-labelledby="legend-title">
-          <h2 id="legend-title">Status legend</h2>
+        <section class="card" id="quick-views-section" aria-labelledby="views-title">
+          <h2 id="views-title">Quick views and filtering</h2>
+          <p class="backlog-intro">
+            Execution estimates in each task card are recalibrated for one senior developer with LLM assistance.
+          </p>
+          <details class="backlog-model-dropdown">
+            <summary>Backlog model: blocks, priority, status</summary>
+            <p class="backlog-intro">
+              Keep the backlog easy to scan by using a fixed taxonomy: a small tag set, one priority scale, and one status
+              workflow.
+            </p>
 
-          <dl class="backlog-legend">
-            <dt style="text-align: left; font-weight: bold; margin-bottom: .5em;">Work item states</dt>
-            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.75em;">
-              <div style="display: flex; align-items: center; gap: .75em;">
-                <span class="status-pill status-pill--todo">To do</span>
-                <span style="text-align:left;">— not started</span>
+            <h3>Work blocks (tags)</h3>
+            <ul class="backlog-key-list">
+              <li><code>bug</code> — defects, regressions, broken UX/flows</li>
+              <li><code>frontend</code> — UI, client integration, frontend tooling</li>
+              <li><code>backend</code> — API/service/domain/data-layer logic</li>
+              <li><code>devops</code> — CI/CD, runtime, infra, observability, security ops</li>
+              <li><code>docs</code> — internal/external docs, guides, specs readability</li>
+              <li><code>tech-debt</code> — refactors, architecture cleanup, maintainability</li>
+            </ul>
+
+            <h3>Priority levels</h3>
+            <ul class="backlog-key-list">
+              <li><code>P0</code> — critical (release blocker or production risk)</li>
+              <li><code>P1</code> — high (next sprint / near-term delivery)</li>
+              <li><code>P2</code> — medium (planned improvements)</li>
+              <li><code>P3</code> — low (later or optional improvements)</li>
+            </ul>
+
+            <h3>Status workflow</h3>
+            <dl class="backlog-legend">
+              <dt style="text-align: left; font-weight: bold; margin-bottom: .5em;">Work item states</dt>
+              <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.75em;">
+                <div style="display: flex; align-items: center; gap: .75em;">
+                  <span class="status-pill status-pill--todo">To do</span>
+                  <span style="text-align:left;">— not started</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: .75em;">
+                  <span class="status-pill status-pill--in-progress">In progress</span>
+                  <span style="text-align:left;">— someone is working on it</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: .75em;">
+                  <span class="status-pill status-pill--done">Done</span>
+                  <span style="text-align:left;">— finished and accepted</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: .75em;">
+                  <span class="status-pill status-pill--blocked">Blocked</span>
+                  <span style="text-align:left;">— waiting on someone or a decision</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: .75em;">
+                  <span class="status-pill status-pill--rejected">Rejected</span>
+                  <span style="text-align:left;">— we decided not to do this (out of scope or obsolete)</span>
+                </div>
               </div>
-              <div style="display: flex; align-items: center; gap: .75em;">
-                <span class="status-pill status-pill--in-progress">In progress</span>
-                <span style="text-align:left;">— someone is working on it</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: .75em;">
-                <span class="status-pill status-pill--done">Done</span>
-                <span style="text-align:left;">— finished and accepted</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: .75em;">
-                <span class="status-pill status-pill--blocked">Blocked</span>
-                <span style="text-align:left;">— waiting on someone or a decision</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: .75em;">
-                <span class="status-pill status-pill--rejected">Rejected</span>
-                <span style="text-align:left;">— we decided not to do this (out of scope or obsolete)</span>
-              </div>
+            </dl>
+            <div class="meta">
+              <p><strong>How to edit backlog cards (<code>README.html</code>)</strong></p>
+              <ol>
+                <li>For each item set <code>data-tags</code>, <code>data-priority</code>, <code>data-status</code>, and <code>data-group</code> on the card section.</li>
+                <li>Allowed tag values: <code>bug</code>, <code>frontend</code>, <code>backend</code>, <code>devops</code>, <code>docs</code>, <code>tech-debt</code>.</li>
+                <li>Allowed priorities: <code>P0</code>, <code>P1</code>, <code>P2</code>, <code>P3</code>.</li>
+                <li>Allowed status classes: <code>status-pill--todo</code>, <code>status-pill--in-progress</code>, <code>status-pill--blocked</code>, <code>status-pill--done</code>, <code>status-pill--rejected</code>.</li>
+              </ol>
             </div>
-          </dl>
-          <div class="meta">
-            <p><strong>How to change status (<code>README.html</code>)</strong></p>
-            <ol>
-              <li>Colors live in <code>docs/backlog/backlog.css</code> (CSS variables).</li>
-              <li>To change colors globally, edit <code>--status-*</code> there.</li>
-              <li>In each item’s <code>&lt;h2&gt;</code>, find
-                <code>&lt;span class="status-pill status-pill--..."&gt;</code> and set the part after
-                <code>status-pill--</code> to
-                <code>todo</code>, <code>in-progress</code>, <code>done</code>, <code>blocked</code>, or
-                <code>rejected</code>.
-              </li>
-            </ol>
+          </details>
+          <div class="backlog-filter-row">
+            <strong>Block:</strong>
+            <button type="button" class="backlog-filter-btn is-active" data-filter-group="all">All</button>
+            <button type="button" class="backlog-filter-btn" data-filter-group="bug">Bug</button>
+            <button type="button" class="backlog-filter-btn" data-filter-group="frontend">Frontend</button>
+            <button type="button" class="backlog-filter-btn" data-filter-group="backend">Backend</button>
+            <button type="button" class="backlog-filter-btn" data-filter-group="devops">DevOps</button>
+            <button type="button" class="backlog-filter-btn" data-filter-group="docs">Docs</button>
+            <button type="button" class="backlog-filter-btn" data-filter-group="tech-debt">Tech debt</button>
+          </div>
+          <div class="backlog-filter-row">
+            <strong>Priority:</strong>
+            <button type="button" class="backlog-filter-btn is-active" data-filter-priority="all">All</button>
+            <button type="button" class="backlog-filter-btn" data-filter-priority="P0">P0</button>
+            <button type="button" class="backlog-filter-btn" data-filter-priority="P1">P1</button>
+            <button type="button" class="backlog-filter-btn" data-filter-priority="P2">P2</button>
+            <button type="button" class="backlog-filter-btn" data-filter-priority="P3">P3</button>
+          </div>
+          <div class="backlog-filter-row">
+            <strong>Status:</strong>
+            <button type="button" class="backlog-filter-btn is-active" data-filter-view="all">All</button>
+            <button type="button" class="backlog-filter-btn" data-filter-view="open">Open only</button>
+            <button type="button" class="backlog-filter-btn" data-filter-view="done">Done</button>
           </div>
         </section>
 
+        <section class="card" id="backlog-blocks" aria-labelledby="blocks-title">
+          <h2 id="blocks-title">All tasks group</h2>
+          <p class="backlog-intro">
+            Use these sections for quick orientation. Each list shows tasks for one block.
+          </p>
+          <div id="backlog-group-sections"></div>
+        </section>
+
+        <section class="card" id="all-tasks-section" aria-labelledby="all-tasks-title">
+          <h2 id="all-tasks-title">All tasks</h2>
+          <div id="backlog-task-list"></div>
+        </section>
+
         <!-- 0 Meta -->
-        <section class="card" id="item-0">
+        <section class="card backlog-item" id="item-0" data-group="tech-debt" data-tags="docs tech-debt" data-priority="P3" data-status="done">
           <h2>
-            <span class="priority-tag">Meta</span>
+            <span class="priority-tag">P3</span>
             Backlog page and <code>docs/backlog/</code> layout
             <span class="status-pill status-pill--done">Done</span>
           </h2>
@@ -123,9 +186,9 @@
 
           <!-- P0 -->
         </section>
-        <section class="card" id="item-1">
+        <section class="card backlog-item" id="item-1" data-group="devops" data-tags="devops tech-debt" data-priority="P0" data-status="done">
           <h2>
-            <span class="priority-tag">P0 — critical</span>
+            <span class="priority-tag">P0</span>
             CI pipeline: quality gates, coverage threshold, docs-check
             <span class="status-pill status-pill--done">Done</span>
           </h2>
@@ -168,7 +231,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-2">
+        <section class="card backlog-item" id="item-2" data-group="devops" data-tags="devops" data-priority="P0" data-status="done">
           <h2>
             <span class="priority-tag">P0</span>
             SLOs / SLAs, error budget, and monitoring alerts
@@ -214,7 +277,7 @@
 
           <!-- P1 -->
         </section>
-        <section class="card" id="item-3">
+        <section class="card backlog-item" id="item-3" data-group="backend" data-tags="backend tech-debt" data-priority="P1" data-status="done">
           <h2>
             <span class="priority-tag">P1</span>
             DB uniqueness, race safety, and documented concurrency behavior
@@ -256,7 +319,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-4">
+        <section class="card backlog-item" id="item-4" data-group="devops" data-tags="devops tech-debt" data-priority="P1" data-status="done">
           <h2>
             <span class="priority-tag">P1</span>
             Dependency security (<code>pip-audit</code>) and update policy
@@ -299,7 +362,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-5">
+        <section class="card backlog-item" id="item-5" data-group="backend" data-tags="backend devops" data-priority="P1" data-status="todo">
           <h2>
             <span class="priority-tag">P1</span>
             Integration tests against the database (CI)
@@ -334,7 +397,7 @@
 
           <!-- P2 -->
         </section>
-        <section class="card" id="item-6">
+        <section class="card backlog-item" id="item-6" data-group="tech-debt" data-tags="backend tech-debt" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             Test pyramid: unit tests + property-based tests (Hypothesis)
@@ -368,7 +431,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-7">
+        <section class="card backlog-item" id="item-7" data-group="backend" data-tags="backend bug" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             E2E: HTTP scenarios against a running application
@@ -402,7 +465,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-8">
+        <section class="card backlog-item" id="item-8" data-group="tech-debt" data-tags="backend tech-debt" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             Mutation testing pilot for critical rules
@@ -438,7 +501,7 @@
 
           <!-- P3 -->
         </section>
-        <section class="card" id="item-9">
+        <section class="card backlog-item" id="item-9" data-group="devops" data-tags="devops backend" data-priority="P3" data-status="todo">
           <h2>
             <span class="priority-tag">P3</span>
             Distributed rate limiting with Redis (multi-instance)
@@ -476,7 +539,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-24">
+        <section class="card backlog-item" id="item-24" data-group="backend" data-tags="backend devops" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             Redis adoption: idempotency cache and short-lived platform data
@@ -518,7 +581,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-10">
+        <section class="card backlog-item" id="item-10" data-group="devops" data-tags="devops backend" data-priority="P3" data-status="todo">
           <h2>
             <span class="priority-tag">P3</span>
             PostgreSQL as primary database and migration path from SQLite
@@ -554,7 +617,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-11">
+        <section class="card backlog-item" id="item-11" data-group="devops" data-tags="devops backend" data-priority="P3" data-status="done">
           <h2>
             <span class="priority-tag">P3</span>
             Load testing (k6 / Locust) and SLO validation
@@ -596,9 +659,9 @@
 
           <!-- P4 -->
         </section>
-        <section class="card" id="item-12">
+        <section class="card backlog-item" id="item-12" data-group="tech-debt" data-tags="backend tech-debt" data-priority="P3" data-status="todo">
           <h2>
-            <span class="priority-tag">P4</span>
+            <span class="priority-tag">P3</span>
             Test data: seeds, fixtures, runbook
             <span class="status-pill status-pill--todo">To do</span>
           </h2>
@@ -629,9 +692,9 @@
           </dl>
 
         </section>
-        <section class="card" id="item-13">
+        <section class="card backlog-item" id="item-13" data-group="backend" data-tags="backend devops" data-priority="P3" data-status="todo">
           <h2>
-            <span class="priority-tag">P4</span>
+            <span class="priority-tag">P3</span>
             Feature flags (safe rollout)
             <span class="status-pill status-pill--todo">To do</span>
           </h2>
@@ -664,9 +727,9 @@
           </dl>
 
         </section>
-        <section class="card" id="item-14">
+        <section class="card backlog-item" id="item-14" data-group="tech-debt" data-tags="backend tech-debt" data-priority="P3" data-status="todo">
           <h2>
-            <span class="priority-tag">P4</span>
+            <span class="priority-tag">P3</span>
             Architecture fitness: enforced layer boundaries
             <span class="status-pill status-pill--todo">To do</span>
           </h2>
@@ -699,9 +762,9 @@
           </dl>
 
         </section>
-        <section class="card" id="item-15">
+        <section class="card backlog-item" id="item-15" data-group="docs" data-tags="docs devops" data-priority="P3" data-status="done">
           <h2>
-            <span class="priority-tag">P4</span>
+            <span class="priority-tag">P3</span>
             Changelog and release-time verification
             <span class="status-pill status-pill--done">Done</span>
           </h2>
@@ -740,9 +803,9 @@
           </dl>
 
         </section>
-        <section class="card" id="item-16">
+        <section class="card backlog-item" id="item-16" data-group="tech-debt" data-tags="tech-debt" data-priority="P3" data-status="done">
           <h2>
-            <span class="priority-tag">P4 — lower priority</span>
+            <span class="priority-tag">P3</span>
             Repository cleanup and dead code removal
             <span class="status-pill status-pill--done">Done</span>
           </h2>
@@ -783,7 +846,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-17">
+        <section class="card backlog-item" id="item-17" data-group="devops" data-tags="devops backend" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             Distributed tracing (OpenTelemetry) and trace context
@@ -819,7 +882,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-18">
+        <section class="card backlog-item" id="item-18" data-group="devops" data-tags="devops backend" data-priority="P3" data-status="done">
           <h2>
             <span class="priority-tag">P3</span>
             Structured logging (JSON) and request correlation IDs
@@ -862,7 +925,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-19">
+        <section class="card backlog-item" id="item-19" data-group="devops" data-tags="devops" data-priority="P3" data-status="todo">
           <h2>
             <span class="priority-tag">P3</span>
             CI: container image SBOM and vulnerability scan (published GHCR image)
@@ -896,7 +959,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-20">
+        <section class="card backlog-item" id="item-20" data-group="docs" data-tags="docs backend" data-priority="P1" data-status="done">
           <h2>
             <span class="priority-tag">P1</span>
             OpenAPI governance: lint, semantic baseline, and strict contract test
@@ -938,7 +1001,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-21">
+        <section class="card backlog-item" id="item-21" data-group="devops" data-tags="devops" data-priority="P1" data-status="done">
           <h2>
             <span class="priority-tag">P1</span>
             Continuous delivery: publish container image to GHCR from <code>main</code> / tags
@@ -978,7 +1041,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-22">
+        <section class="card backlog-item" id="item-22" data-group="docs" data-tags="docs backend" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             Single source of truth for application / OpenAPI version metadata
@@ -1013,7 +1076,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-23">
+        <section class="card backlog-item" id="item-23" data-group="devops" data-tags="devops backend" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             CI: optional HTTP smoke or load-regression job (post-<code>main</code> or nightly)
@@ -1048,7 +1111,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-25">
+        <section class="card backlog-item" id="item-25" data-group="docs" data-tags="docs tech-debt" data-priority="P2" data-status="todo">
           <h2>
             <span class="priority-tag">P2</span>
             Document versioning: Document Version field and change policy
@@ -1088,9 +1151,9 @@
           </dl>
 
         </section>
-        <section class="card" id="item-26">
+        <section class="card backlog-item" id="item-26" data-group="tech-debt" data-tags="frontend backend tech-debt" data-priority="P0" data-status="todo">
           <h2>
-            <span class="priority-tag">P0 — critical</span>
+            <span class="priority-tag">P0</span>
             QA foundation: dedicated tester space, test process, and full testing pyramid (frontend + backend)
             <span class="status-pill status-pill--todo">To do</span>
           </h2>
@@ -1132,7 +1195,7 @@
           </dl>
 
         </section>
-        <section class="card" id="item-27">
+        <section class="card backlog-item" id="item-27" data-group="bug" data-tags="bug frontend docs" data-priority="P1" data-status="done">
           <h2>
             <span class="priority-tag">P1</span>
             Mobile docs UX: fix top navigation rendering on iPhone 17 Pro Max and adaptive layout by screen size
@@ -1187,6 +1250,77 @@
             </dl>
 
           </section>
+          <section class="card backlog-item" id="item-28" data-group="frontend" data-tags="frontend docs" data-priority="P1" data-status="todo">
+            <h2>
+              <span class="priority-tag">P1</span>
+              Working Swagger for frontend validation only
+              <span class="status-pill status-pill--todo">To do</span>
+            </h2>
+            <dl>
+              <dt>1) Summary</dt>
+              <dd>
+                Ensure Swagger/OpenAPI docs are consistently available and up to date so the frontend team can use them
+                as the single source for request/response validation and integration checks.
+              </dd>
+              <dt>2) Problem &amp; value</dt>
+              <dd>
+                <strong>Problem:</strong> Without a stable Swagger contract, frontend validation drifts and integration
+                bugs appear late.<br>
+                <strong>Value:</strong> Faster frontend development with predictable API shapes and fewer contract
+                mismatches.
+              </dd>
+              <dt>3) Scope &amp; deliverables</dt>
+              <dd>
+                Keep <code>/docs</code> and generated OpenAPI schema stable in local/dev environments; define minimal
+                workflow for frontend consumption (schema pull/export and version reference); add acceptance checklist
+                focused on frontend validation usage only (not API gateway or external publishing scope).
+              </dd>
+              <dt>4) Rough estimate (calendar days)</dt>
+              <dd>
+                <div class="time-grid">
+                  <div class="time-cell"><strong>3 h/day</strong> ~2 days (~6 h)</div>
+                  <div class="time-cell"><strong>2 h/day</strong> ~3 days</div>
+                  <div class="time-cell"><strong>1 h/day</strong> ~6 days</div>
+                </div>
+              </dd>
+            </dl>
+
+          </section>
+          <section class="card backlog-item" id="item-29" data-group="docs" data-tags="docs tech-debt" data-priority="P2" data-status="todo">
+            <h2>
+              <span class="priority-tag">P2</span>
+              PDoc: navigation and unified application theme
+              <span class="status-pill status-pill--todo">To do</span>
+            </h2>
+            <dl>
+              <dt>1) Summary</dt>
+              <dd>
+                Add and configure PDoc documentation with project navigation and a visual theme aligned with the rest of
+                the application.
+              </dd>
+              <dt>2) Problem &amp; value</dt>
+              <dd>
+                <strong>Problem:</strong> API/code docs without navigation and shared styling are harder to use and feel
+                disconnected from the product.<br>
+                <strong>Value:</strong> Better discoverability, consistent UX, and easier onboarding for engineers.
+              </dd>
+              <dt>3) Scope &amp; deliverables</dt>
+              <dd>
+                Set up PDoc generation and hosting path; implement cross-page navigation (index, module sections, and
+                quick links); apply shared color/typography theme compatible with existing docs/app design; document
+                local build/update flow.
+              </dd>
+              <dt>4) Rough estimate (calendar days)</dt>
+              <dd>
+                <div class="time-grid">
+                  <div class="time-cell"><strong>3 h/day</strong> ~3 days (~9 h)</div>
+                  <div class="time-cell"><strong>2 h/day</strong> ~5 days</div>
+                  <div class="time-cell"><strong>1 h/day</strong> ~9 days</div>
+                </div>
+              </dd>
+            </dl>
+
+          </section>
           <section id="page-history" class="card">
             <h2>Page history</h2>
             <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -1199,6 +1333,16 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-23">2026-04-23</time></td>
+                    <td>Simplified backlog model: fixed tags, normalized priorities, grouped block view, and lightweight filters.</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                  <tr>
+                    <td><time datetime="2026-04-23">2026-04-23</time></td>
+                    <td>Added backlog items for frontend validation Swagger and PDoc with unified navigation/theme.</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
                   <tr>
                     <td><time datetime="2026-04-21">2026-04-21</time></td>
                     <td>Added backlog item for iPhone 17 Pro Max navigation fix and adaptive docs layout by screen size.
