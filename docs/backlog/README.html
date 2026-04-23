@@ -120,7 +120,32 @@
                 <button type="button" class="backlog-filter-btn" data-filter-status="blocked">Blocked</button>
                 <button type="button" class="backlog-filter-btn" data-filter-status="rejected">Rejected</button>
               </div>
+              <div class="backlog-filter-row">
+                <span class="backlog-filter-row__label">Owner</span>
+                <span id="backlog-owner-filter-buttons">
+                  <button type="button" class="backlog-filter-btn is-active" data-filter-owner="all">All</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-owner="ivan-boyarkin">Ivan Boyarkin</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-owner="unassigned">Unassigned</button>
+                </span>
+              </div>
+              <div class="backlog-filter-row">
+                <span class="backlog-filter-row__label">ETA range</span>
+                <span id="backlog-eta-range-filter-buttons">
+                  <button type="button" class="backlog-filter-btn is-active" data-filter-eta-range="all">All</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="le-1">&lt;= 1d</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="1-3">1-3d</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="3-5">3-5d</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="gt-5">&gt; 5d</button>
+                </span>
+              </div>
             </details>
+            <div class="backlog-filter-insights" aria-live="polite">
+              <div class="backlog-filter-insights__top">
+                <p class="backlog-filter-summary" id="backlog-filter-summary">Found 0 tasks • 0 active filters</p>
+                <button type="button" class="backlog-filter-reset-btn" data-filter-reset>Reset filters</button>
+              </div>
+              <div class="backlog-active-filter-chips" id="backlog-active-filter-chips"></div>
+            </div>
           </div>
 
           <details class="backlog-model-dropdown backlog-cockpit__legend">

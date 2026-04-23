@@ -40,6 +40,8 @@
     risks: new Set(),
     confidences: new Set(),
     statuses: new Set(),
+    owners: new Set(),
+    etaRanges: new Set(),
     search: "",
     quickPreset: "all",
     viewMode: "board",
@@ -99,10 +101,13 @@
     }
     let emptyState = document.getElementById("backlog-task-list-empty");
     if (!emptyState) {
-      emptyState = document.createElement("p");
+      emptyState = document.createElement("div");
       emptyState.id = "backlog-task-list-empty";
       emptyState.className = "backlog-empty-state";
-      emptyState.textContent = "No tasks matching current filter.";
+      emptyState.innerHTML = `
+        <p class="backlog-empty-state__title">No tasks matching current filter.</p>
+        <p class="backlog-empty-state__hint" id="backlog-task-list-empty-hint">Try resetting one filter.</p>
+      `;
       emptyState.hidden = true;
       taskListMount.insertAdjacentElement("beforebegin", emptyState);
     }
@@ -319,6 +324,42 @@
       return explicit;
     }
     return "medium";
+  };
+  const resolveOwner = (item) => {
+    const owner = (item.dataset.owner || "Ivan Boyarkin").trim();
+    if (!owner || /^unassigned$/i.test(owner)) {
+      return { name: "Unassigned", key: "unassigned" };
+    }
+    return { name: owner, key: normalize(owner).replace(/\s+/g, "-") };
+  };
+  const etaRangeFor = (item) => {
+    const explicitEtaMax = Number.parseFloat(item.dataset.etaMaxDays || "");
+    if (Number.isFinite(explicitEtaMax)) {
+      if (explicitEtaMax <= 1) return "le-1";
+      if (explicitEtaMax <= 3) return "1-3";
+      if (explicitEtaMax <= 5) return "3-5";
+      return "gt-5";
+    }
+
+    const etaDaysRaw = (item.dataset.etaDays || "").trim();
+    if (etaDaysRaw) {
+      const parts = etaDaysRaw.split("-").map((part) => Number.parseFloat(part.trim()));
+      const parsedMax = parts.length === 2 && Number.isFinite(parts[1])
+        ? parts[1]
+        : Number.parseFloat(etaDaysRaw);
+      if (Number.isFinite(parsedMax)) {
+        if (parsedMax <= 1) return "le-1";
+        if (parsedMax <= 3) return "1-3";
+        if (parsedMax <= 5) return "3-5";
+        return "gt-5";
+      }
+    }
+
+    const { maxDays } = estimateForItem(item);
+    if (maxDays <= 1) return "le-1";
+    if (maxDays <= 3) return "1-3";
+    if (maxDays <= 5) return "3-5";
+    return "gt-5";
   };
 
   const readDtSectionText = (item, matcher) => {
@@ -607,6 +648,8 @@
   const hasRiskFilter = () => state.risks.size > 0;
   const hasConfidenceFilter = () => state.confidences.size > 0;
   const hasStatusFilter = () => state.statuses.size > 0;
+  const hasOwnerFilter = () => state.owners.size > 0;
+  const hasEtaRangeFilter = () => state.etaRanges.size > 0;
   const openStatuses = ["todo", "in-progress", "blocked"];
   const isExactStatusSet = (expected) =>
     state.statuses.size === expected.length &&
@@ -681,9 +724,87 @@
       button.classList.toggle("is-active", state.statuses.has(value));
     });
   };
+  const ownerLabelByKey = new Map();
+  const etaRangeOrder = ["le-1", "1-3", "3-5", "gt-5"];
+  const renderEtaRangeFilterButtons = () => {
+    const mount = document.getElementById("backlog-eta-range-filter-buttons");
+    if (!mount) {
+      return;
+    }
+    const counts = new Map(etaRangeOrder.map((key) => [key, 0]));
+    items.forEach((item) => {
+      const range = etaRangeFor(item);
+      counts.set(range, (counts.get(range) || 0) + 1);
+    });
+    const buttons = [
+      `<button type="button" class="backlog-filter-btn${state.etaRanges.size === 0 ? " is-active" : ""}" data-filter-eta-range="all">All</button>`,
+      ...etaRangeOrder
+        .filter((range) => (counts.get(range) || 0) > 0)
+        .map((range) => {
+          const count = counts.get(range) || 0;
+          return `<button type="button" class="backlog-filter-btn${state.etaRanges.has(range) ? " is-active" : ""}" data-filter-eta-range="${range}">${etaRangeLabel[range]} (${count})</button>`;
+        }),
+    ];
+    mount.innerHTML = buttons.join("");
+  };
+  const renderOwnerFilterButtons = () => {
+    const mount = document.getElementById("backlog-owner-filter-buttons");
+    if (!mount) {
+      return;
+    }
+    const ownersByKey = new Map();
+    items.forEach((item) => {
+      const owner = resolveOwner(item);
+      ownersByKey.set(owner.key, owner.name);
+    });
 
-  const matchesQuickPreset = (item, status, priority) => {
-    switch (state.quickPreset) {
+    ownerLabelByKey.clear();
+    Array.from(ownersByKey.entries())
+      .sort((a, b) => a[1].localeCompare(b[1]))
+      .forEach(([key, label]) => {
+        ownerLabelByKey.set(key, label);
+      });
+    if (!ownerLabelByKey.has("unassigned")) {
+      ownerLabelByKey.set("unassigned", "Unassigned");
+    }
+
+    const ownerButtons = [
+      `<button type="button" class="backlog-filter-btn${state.owners.size === 0 ? " is-active" : ""}" data-filter-owner="all">All</button>`,
+      ...Array.from(ownerLabelByKey.entries())
+        .filter(([key]) => key !== "unassigned")
+        .map(([key, label]) =>
+          `<button type="button" class="backlog-filter-btn${state.owners.has(key) ? " is-active" : ""}" data-filter-owner="${key}">${label}</button>`),
+      `<button type="button" class="backlog-filter-btn${state.owners.has("unassigned") ? " is-active" : ""}" data-filter-owner="unassigned">Unassigned</button>`,
+    ];
+    mount.innerHTML = ownerButtons.join("");
+  };
+  const activateOwnerButtons = () => {
+    renderOwnerFilterButtons();
+    const hasActiveOwner = hasOwnerFilter();
+    document.querySelectorAll("[data-filter-owner]").forEach((button) => {
+      const value = button.getAttribute("data-filter-owner") || "all";
+      if (value === "all") {
+        button.classList.toggle("is-active", !hasActiveOwner);
+        return;
+      }
+      button.classList.toggle("is-active", state.owners.has(value));
+    });
+  };
+  const activateEtaRangeButtons = () => {
+    renderEtaRangeFilterButtons();
+    const hasActiveEtaRange = hasEtaRangeFilter();
+    document.querySelectorAll("[data-filter-eta-range]").forEach((button) => {
+      const value = button.getAttribute("data-filter-eta-range") || "all";
+      if (value === "all") {
+        button.classList.toggle("is-active", !hasActiveEtaRange);
+        return;
+      }
+      button.classList.toggle("is-active", state.etaRanges.has(value));
+    });
+  };
+
+  const matchesQuickPreset = (item, status, priority, preset = state.quickPreset) => {
+    switch (preset) {
       case "my-focus":
         return isOpenStatus(status) && (priority === "P0" || priority === "P1");
       case "open":
@@ -699,7 +820,8 @@
 
   const syncQuickPresetFromDetailed = () => {
     const hasGroupFilter = state.group !== "all";
-    if (!hasGroupFilter && !hasStatusFilter() && !hasPriorityFilter() && !hasTaskTypeFilter() && !hasRiskFilter() && !hasConfidenceFilter()) {
+    const hasSearchFilter = Boolean(state.search);
+    if (!hasGroupFilter && !hasStatusFilter() && !hasPriorityFilter() && !hasTaskTypeFilter() && !hasRiskFilter() && !hasConfidenceFilter() && !hasOwnerFilter() && !hasEtaRangeFilter() && !hasSearchFilter) {
       state.quickPreset = "all";
     } else if (
       !hasGroupFilter &&
@@ -707,7 +829,10 @@
       hasExactPriorities(["P0", "P1"]) &&
       !hasTaskTypeFilter() &&
       !hasRiskFilter() &&
-      !hasConfidenceFilter()
+      !hasConfidenceFilter() &&
+      !hasOwnerFilter() &&
+      !hasEtaRangeFilter() &&
+      !hasSearchFilter
     ) {
       state.quickPreset = "my-focus";
     } else if (
@@ -716,7 +841,10 @@
       !hasPriorityFilter() &&
       !hasTaskTypeFilter() &&
       !hasRiskFilter() &&
-      !hasConfidenceFilter()
+      !hasConfidenceFilter() &&
+      !hasOwnerFilter() &&
+      !hasEtaRangeFilter() &&
+      !hasSearchFilter
     ) {
       state.quickPreset = "open";
     } else if (
@@ -725,7 +853,10 @@
       !hasPriorityFilter() &&
       !hasTaskTypeFilter() &&
       !hasRiskFilter() &&
-      !hasConfidenceFilter()
+      !hasConfidenceFilter() &&
+      !hasOwnerFilter() &&
+      !hasEtaRangeFilter() &&
+      !hasSearchFilter
     ) {
       state.quickPreset = "blocked";
     } else if (
@@ -734,6 +865,9 @@
       hasExactPriorities(["P0"]) &&
       !hasRiskFilter() &&
       !hasConfidenceFilter() &&
+      !hasOwnerFilter() &&
+      !hasEtaRangeFilter() &&
+      !hasSearchFilter &&
       state.taskTypes.size === 2 &&
       state.taskTypes.has("bug") &&
       state.taskTypes.has("tech-debt")
@@ -752,6 +886,8 @@
     state.risks.clear();
     state.confidences.clear();
     state.statuses.clear();
+    state.owners.clear();
+    state.etaRanges.clear();
 
     switch (preset) {
       case "my-focus":
@@ -780,28 +916,47 @@
     activateRiskButtons();
     activateConfidenceButtons();
     activateStatusButtons();
+    activateOwnerButtons();
+    activateEtaRangeButtons();
   };
-
-  const matches = (item) => {
+  const createFilterSnapshot = (source = state) => ({
+    group: source.group,
+    priorities: new Set(source.priorities),
+    taskTypes: new Set(source.taskTypes),
+    risks: new Set(source.risks),
+    confidences: new Set(source.confidences),
+    statuses: new Set(source.statuses),
+    owners: new Set(source.owners),
+    etaRanges: new Set(source.etaRanges),
+    search: source.search,
+    quickPreset: source.quickPreset,
+  });
+  const matchesSnapshot = (item, snapshot) => {
     const group = normalize(item.dataset.group);
     const priority = (item.dataset.priority || "").trim();
     const tags = readTags(item);
     const risk = resolveRisk(item);
     const confidence = resolveConfidence(item);
     const status = readStatus(item);
+    const ownerKey = resolveOwner(item).key;
+    const etaRange = etaRangeFor(item);
     const searchHaystack = searchableTextFor(item);
-    const searchOk = !state.search || searchHaystack.includes(state.search);
+    const searchOk = !snapshot.search || searchHaystack.includes(snapshot.search);
 
-    const groupOk = state.group === "all" || group === state.group;
-    const priorityOk = !hasPriorityFilter() || state.priorities.has(priority);
-    const taskTypeOk = !hasTaskTypeFilter() || tags.some((tag) => state.taskTypes.has(tag));
-    const riskOk = !hasRiskFilter() || state.risks.has(risk);
-    const confidenceOk = !hasConfidenceFilter() || state.confidences.has(confidence);
-    const statusOk = !hasStatusFilter() || state.statuses.has(status);
-    const quickPresetOk = matchesQuickPreset(item, status, priority);
+    const groupOk = snapshot.group === "all" || group === snapshot.group;
+    const priorityOk = !snapshot.priorities.size || snapshot.priorities.has(priority);
+    const taskTypeOk = !snapshot.taskTypes.size || tags.some((tag) => snapshot.taskTypes.has(tag));
+    const riskOk = !snapshot.risks.size || snapshot.risks.has(risk);
+    const confidenceOk = !snapshot.confidences.size || snapshot.confidences.has(confidence);
+    const statusOk = !snapshot.statuses.size || snapshot.statuses.has(status);
+    const ownerOk = !snapshot.owners.size || snapshot.owners.has(ownerKey);
+    const etaRangeOk = !snapshot.etaRanges.size || snapshot.etaRanges.has(etaRange);
+    const quickPresetOk = matchesQuickPreset(item, status, priority, snapshot.quickPreset);
 
-    return groupOk && priorityOk && taskTypeOk && riskOk && confidenceOk && statusOk && quickPresetOk && searchOk;
+    return groupOk && priorityOk && taskTypeOk && riskOk && confidenceOk && statusOk && ownerOk && etaRangeOk && quickPresetOk && searchOk;
   };
+  const countMatchesForSnapshot = (snapshot) =>
+    items.reduce((count, item) => count + (matchesSnapshot(item, snapshot) ? 1 : 0), 0);
 
   const renderCockpitStats = () => {
     const mount = document.getElementById("backlog-cockpit-stats");
@@ -997,6 +1152,153 @@
       ${more}
     `;
   };
+  const etaRangeLabel = {
+    "le-1": "<= 1d",
+    "1-3": "1-3d",
+    "3-5": "3-5d",
+    "gt-5": "> 5d",
+  };
+  const filterHintLabel = {
+    group: "Block",
+    priorities: "Priority",
+    taskTypes: "Task type",
+    risks: "Risk",
+    confidences: "Confidence",
+    statuses: "Status",
+    owners: "Owner",
+    etaRanges: "ETA range",
+    search: "Search",
+  };
+  const removeSingleFilterValue = (dimension, value) => {
+    if (dimension === "group") {
+      state.group = "all";
+      activateFilterButtons("[data-filter-group]", state.group);
+      return;
+    }
+    if (dimension === "search") {
+      state.search = "";
+      const searchInput = document.getElementById("backlog-global-search");
+      if (searchInput) {
+        searchInput.value = "";
+      }
+      return;
+    }
+    const setByDimension = {
+      priorities: state.priorities,
+      taskTypes: state.taskTypes,
+      risks: state.risks,
+      confidences: state.confidences,
+      statuses: state.statuses,
+      owners: state.owners,
+      etaRanges: state.etaRanges,
+    };
+    const activeSet = setByDimension[dimension];
+    if (!activeSet) {
+      return;
+    }
+    activeSet.delete(value);
+    if (dimension === "priorities") activatePriorityButtons();
+    if (dimension === "taskTypes") activateTaskTypeButtons();
+    if (dimension === "risks") activateRiskButtons();
+    if (dimension === "confidences") activateConfidenceButtons();
+    if (dimension === "statuses") activateStatusButtons();
+    if (dimension === "owners") activateOwnerButtons();
+    if (dimension === "etaRanges") activateEtaRangeButtons();
+  };
+  const activeFilterChips = () => {
+    const chips = [];
+    if (state.group !== "all") {
+      chips.push({ label: `Block: ${groupLabel[state.group] || state.group}`, dimension: "group", value: state.group });
+    }
+    Array.from(state.priorities).forEach((value) => chips.push({ label: `Priority: ${value}`, dimension: "priorities", value }));
+    Array.from(state.taskTypes).forEach((value) => chips.push({ label: `Task type: ${value}`, dimension: "taskTypes", value }));
+    Array.from(state.risks).forEach((value) => chips.push({ label: `Risk: ${value}`, dimension: "risks", value }));
+    Array.from(state.confidences).forEach((value) => chips.push({ label: `Confidence: ${value}`, dimension: "confidences", value }));
+    Array.from(state.statuses).forEach((value) => chips.push({ label: `Status: ${value}`, dimension: "statuses", value }));
+    Array.from(state.owners).forEach((value) => chips.push({ label: `Owner: ${ownerLabelByKey.get(value) || value.replace(/-/g, " ")}`, dimension: "owners", value }));
+    Array.from(state.etaRanges).forEach((value) => chips.push({ label: `ETA: ${etaRangeLabel[value] || value}`, dimension: "etaRanges", value }));
+    if (state.search) {
+      chips.push({ label: `Search: ${state.search}`, dimension: "search", value: state.search });
+    }
+    return chips;
+  };
+  const bestNoResultsHint = () => {
+    const snapshot = createFilterSnapshot();
+    const activeDimensions = [];
+    if (snapshot.group !== "all") activeDimensions.push("group");
+    if (snapshot.priorities.size) activeDimensions.push("priorities");
+    if (snapshot.taskTypes.size) activeDimensions.push("taskTypes");
+    if (snapshot.risks.size) activeDimensions.push("risks");
+    if (snapshot.confidences.size) activeDimensions.push("confidences");
+    if (snapshot.statuses.size) activeDimensions.push("statuses");
+    if (snapshot.owners.size) activeDimensions.push("owners");
+    if (snapshot.etaRanges.size) activeDimensions.push("etaRanges");
+    if (snapshot.search) activeDimensions.push("search");
+    if (!activeDimensions.length) {
+      return "No tasks available in the current backlog scope.";
+    }
+    let best = null;
+    activeDimensions.forEach((dimension) => {
+      const relaxed = createFilterSnapshot(snapshot);
+      if (dimension === "group") relaxed.group = "all";
+      if (dimension === "priorities") relaxed.priorities.clear();
+      if (dimension === "taskTypes") relaxed.taskTypes.clear();
+      if (dimension === "risks") relaxed.risks.clear();
+      if (dimension === "confidences") relaxed.confidences.clear();
+      if (dimension === "statuses") relaxed.statuses.clear();
+      if (dimension === "owners") relaxed.owners.clear();
+      if (dimension === "etaRanges") relaxed.etaRanges.clear();
+      if (dimension === "search") relaxed.search = "";
+      const count = countMatchesForSnapshot(relaxed);
+      if (!best || count > best.count) {
+        best = { dimension, count };
+      }
+    });
+    if (!best || best.count === 0) {
+      return "Current filter combination is very strict. Try removing one chip or reset all filters.";
+    }
+    return `${filterHintLabel[best.dimension]} is the strongest limiter now (${best.count} tasks would match without it).`;
+  };
+  const renderFilterInsights = (visibleCount) => {
+    const chips = activeFilterChips();
+    const summary = document.getElementById("backlog-filter-summary");
+    const chipsMount = document.getElementById("backlog-active-filter-chips");
+    if (summary) {
+      summary.textContent = `Found ${visibleCount} tasks • ${chips.length} active filters`;
+    }
+    if (chipsMount) {
+      chipsMount.innerHTML = chips.map((chip) => `
+        <button type="button" class="backlog-active-filter-chip" data-chip-dimension="${chip.dimension}" data-chip-value="${chip.value}" aria-label="Remove filter ${chip.label}">
+          ${chip.label} <span aria-hidden="true">×</span>
+        </button>
+      `).join("");
+    }
+  };
+  const resetAllFilters = () => {
+    state.group = "all";
+    state.priorities.clear();
+    state.taskTypes.clear();
+    state.risks.clear();
+    state.confidences.clear();
+    state.statuses.clear();
+    state.owners.clear();
+    state.etaRanges.clear();
+    state.search = "";
+    state.quickPreset = "all";
+    const searchInput = document.getElementById("backlog-global-search");
+    if (searchInput) {
+      searchInput.value = "";
+    }
+    activateFilterButtons("[data-filter-group]", state.group);
+    activatePriorityButtons();
+    activateTaskTypeButtons();
+    activateRiskButtons();
+    activateConfidenceButtons();
+    activateStatusButtons();
+    activateOwnerButtons();
+    activateEtaRangeButtons();
+    setQuickPresetButtons(state.quickPreset);
+  };
 
   const applyFilter = () => {
     if (taskListMount) {
@@ -1005,14 +1307,22 @@
         taskListMount.classList.remove("backlog-task-list--transition");
       }, 220);
     }
+    const snapshot = createFilterSnapshot();
     items.forEach((item) => {
-      item.hidden = !matches(item);
+      item.hidden = !matchesSnapshot(item, snapshot);
     });
     const visibleCount = items.filter((item) => !item.hidden).length;
     const emptyState = ensureEmptyState();
     if (emptyState) {
       emptyState.hidden = visibleCount !== 0;
+      if (visibleCount === 0) {
+        const hint = emptyState.querySelector("#backlog-task-list-empty-hint");
+        if (hint) {
+          hint.textContent = bestNoResultsHint();
+        }
+      }
     }
+    renderFilterInsights(visibleCount);
     renderGroupSections();
     renderCockpitStats();
     renderIntelligencePanel();
@@ -1027,6 +1337,8 @@
         button.getAttribute("data-filter-risk") ||
         button.getAttribute("data-filter-confidence") ||
         button.getAttribute("data-filter-status") ||
+        button.getAttribute("data-filter-owner") ||
+        button.getAttribute("data-filter-eta-range") ||
         button.getAttribute("data-quick-preset") ||
         button.getAttribute("data-view-mode") ||
         "";
@@ -1123,6 +1435,46 @@
         applyFilter();
       });
     });
+    const ownerButtonsMount = document.getElementById("backlog-owner-filter-buttons");
+    if (ownerButtonsMount) {
+      ownerButtonsMount.addEventListener("click", (event) => {
+        const button = event.target instanceof Element ? event.target.closest("[data-filter-owner]") : null;
+        if (!button) {
+          return;
+        }
+        const selectedOwner = button.getAttribute("data-filter-owner") || "all";
+        if (selectedOwner === "all") {
+          state.owners.clear();
+        } else if (state.owners.has(selectedOwner)) {
+          state.owners.delete(selectedOwner);
+        } else {
+          state.owners.add(selectedOwner);
+        }
+        activateOwnerButtons();
+        syncQuickPresetFromDetailed();
+        applyFilter();
+      });
+    }
+    const etaButtonsMount = document.getElementById("backlog-eta-range-filter-buttons");
+    if (etaButtonsMount) {
+      etaButtonsMount.addEventListener("click", (event) => {
+        const button = event.target instanceof Element ? event.target.closest("[data-filter-eta-range]") : null;
+        if (!button) {
+          return;
+        }
+        const selectedEtaRange = button.getAttribute("data-filter-eta-range") || "all";
+        if (selectedEtaRange === "all") {
+          state.etaRanges.clear();
+        } else if (state.etaRanges.has(selectedEtaRange)) {
+          state.etaRanges.delete(selectedEtaRange);
+        } else {
+          state.etaRanges.add(selectedEtaRange);
+        }
+        activateEtaRangeButtons();
+        syncQuickPresetFromDetailed();
+        applyFilter();
+      });
+    }
 
     document.querySelectorAll("[data-quick-preset]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -1145,6 +1497,28 @@
     if (searchInput) {
       searchInput.addEventListener("input", () => {
         state.search = normalize(searchInput.value);
+        syncQuickPresetFromDetailed();
+        applyFilter();
+      });
+    }
+    const resetButton = document.querySelector("[data-filter-reset]");
+    if (resetButton) {
+      resetButton.addEventListener("click", () => {
+        resetAllFilters();
+        applyFilter();
+      });
+    }
+    const chipsMount = document.getElementById("backlog-active-filter-chips");
+    if (chipsMount) {
+      chipsMount.addEventListener("click", (event) => {
+        const target = event.target instanceof Element ? event.target.closest("[data-chip-dimension]") : null;
+        if (!target) {
+          return;
+        }
+        const dimension = target.getAttribute("data-chip-dimension") || "";
+        const value = target.getAttribute("data-chip-value") || "";
+        removeSingleFilterValue(dimension, value);
+        syncQuickPresetFromDetailed();
         applyFilter();
       });
     }
@@ -1282,6 +1656,8 @@
   activateRiskButtons();
   activateConfidenceButtons();
   activateStatusButtons();
+  activateOwnerButtons();
+  activateEtaRangeButtons();
   setQuickPresetButtons(state.quickPreset);
   validateTaxonomy();
   applyViewMode();

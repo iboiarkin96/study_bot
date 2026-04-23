@@ -514,6 +514,68 @@ section.card .meta {
   border-color: var(--accent);
 }
 
+.backlog-filter-insights {
+  margin-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 82%, var(--accent) 18%);
+  padding-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.backlog-filter-insights__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.backlog-filter-summary {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.backlog-filter-reset-btn {
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.backlog-filter-reset-btn:hover {
+  border-color: var(--accent);
+}
+
+.backlog-active-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.backlog-active-filter-chip {
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  color: var(--text);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.backlog-active-filter-chip:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
 .backlog-item-summary {
   display: flex;
   flex-wrap: wrap;
@@ -707,7 +769,21 @@ section.card .meta {
 .backlog-empty-state {
   margin: 12px 0 4px;
   color: var(--muted);
-  font-weight: 600;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface-neutral) 80%, transparent);
+  padding: 10px 12px;
+}
+
+.backlog-empty-state__title {
+  margin: 0 0 4px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.backlog-empty-state__hint {
+  margin: 0;
+  font-size: 0.85rem;
 }
 
 .backlog-validation-alert {
