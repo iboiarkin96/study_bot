@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend navigation, search, and discovery</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend navigation, search, and discovery</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page documents how readers discover content in docs frontend: global navigation, sidebar/drawer
+            navigation,
+            search, command palette, and section-level navigation aids.
+          </p>
+        </section>
+
+        <section id="global-navigation" class="card">
+          <h2>Global navigation architecture</h2>
+          <ul>
+            <li><strong>Top nav mount:</strong> <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> is required for
+              runtime injection.</li>
+              <li><strong>Top nav renderer:</strong> <code>renderTopNav()</code> in <code>docs/assets/docs-nav.js</code>
+                builds groups, theme bar, search, and breadcrumbs.</li>
+                <li><strong>Groups model:</strong> Project and Code links are generated with active-state logic from
+                  <code>activeTarget()</code>.</li>
+                  <li><strong>Responsive policy:</strong> <code>docs/assets/docs-site-nav.css</code> hides top groups for
+                    internal pages on tablet/phone and keeps them on desktop.</li>
+                  </ul>
+                </section>
+
+                <section id="internal-sidebar-drawer" class="card">
+                  <h2>Internal sidebar and drawer navigation</h2>
+                  <ul>
+                    <li><strong>Tree source:</strong> <code>INTERNAL_SIDEBAR_NAV</code> in
+                      <code>docs/assets/internal-sidebar.js</code> is the single source of nav entries.</li>
+                      <li><strong>Desktop mode:</strong> collapsible sidebar with stored preference
+                        (<code>docs.internal.sidebar.collapsed</code>).</li>
+                        <li><strong>Tablet/phone mode:</strong> drawer from left edge with dialog semantics and backdrop close
+                          behavior.</li>
+                          <li><strong>Menu button:</strong> mounted near page <code>h1</code> by
+                            <code>mountInternalDrawerMenuButton()</code> in <code>docs/assets/docs-nav.js</code>.</li>
+                            <li><strong>ARIA sync:</strong> <code>internal-sidebar:drawer-state</code> custom event updates
+                              <code>aria-expanded</code>/<code>aria-controls</code> on Menu launcher.</li>
+                              <li><strong>Project/Code in drawer:</strong> top drawer sections are injected from
+                                <code>DRAWER_TOP_NAV_SECTIONS</code>.</li>
+                              </ul>
+                            </section>
+
+                            <section id="docs-search" class="card">
+                              <h2>Client-side docs search</h2>
+                              <ul>
+                                <li><strong>Index source:</strong> <code>docs/assets/search-index.json</code> loaded lazily by
+                                  <code>loadDocsSearchIndex()</code>.</li>
+                                  <li><strong>Ranking model:</strong> weighted fields + IDF + boosts for exact/prefix matches
+                                    (<code>runDocsSearch()</code>).</li>
+                                    <li><strong>Query UX:</strong> debounce, keyboard combobox, highlighted matches, did-you-mean, related
+                                      queries, and empty-state quick links.</li>
+                                      <li><strong>Error handling:</strong> explicit <code>file://</code> warning when index cannot be loaded
+                                        outside HTTP(S).</li>
+                                        <li><strong>Telemetry:</strong> emits <code>search_query</code>, <code>search_result_click</code>,
+                                          <code>search_success</code>, and error events.</li>
+                                        </ul>
+                                        <p class="small">
+                                          Implementation: <code>mountDocsSearch()</code>, <code>runDocsSearch()</code>,
+                                          <code>emitDocsSearchTelemetry()</code> in
+                                          <code>docs/assets/docs-nav.js</code>.
+                                        </p>
+                                      </section>
+
+                                      <section id="search-index-lifecycle" class="card">
+                                        <h2>Search index lifecycle and change workflow</h2>
+                                        <ol>
+                                          <li><strong>Source of truth:</strong> index data lives in generated <code>docs/assets/search-index.json</code>.</li>
+                                          <li><strong>When to regenerate:</strong> after material content additions, heading changes, or IA rewrites that impact discoverability.</li>
+                                          <li><strong>Validation pass:</strong> run a query smoke set (entity names, API terms, internal page titles) and confirm ranking and highlights.</li>
+                                          <li><strong>Failure behavior:</strong> if index fails to load, runtime shows explicit fallback guidance (including <code>file://</code> constraints).</li>
+                                          <li><strong>Documentation sync:</strong> update this page and <a href="../../howto/how-to-change-docs-frontend-safely.html">frontend playbooks</a> when index generation process changes.</li>
+                                        </ol>
+                                      </section>
+
+                                      <section id="command-palette" class="card">
+                                        <h2>Command palette (quick actions)</h2>
+                                        <ul>
+                                          <li><strong>Desktop scope:</strong> enabled for <code>min-width: 761px</code>, disabled on smaller
+                                            viewports.</li>
+                                            <li><strong>Open shortcuts:</strong> <kbd>Cmd/Ctrl</kbd>+<kbd>K</kbd>,
+                                              <kbd>Cmd/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>, <kbd>Cmd/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>,
+                                              <kbd>Shift</kbd>+<kbd>P</kbd>, <kbd>/</kbd>.</li>
+                                              <li><strong>Command source:</strong> page actions + section-jump actions generated from
+                                                <code>buildDocsPageActions()</code> and <code>buildDocsSectionActions()</code>.</li>
+                                                <li><strong>Execution modes:</strong> enter to execute, meta-enter to open links in new tab.</li>
+                                                <li><strong>Accessibility:</strong> dialog semantics, focus trap, keyboard navigation, and focus return to
+                                                  launcher.</li>
+                                                </ul>
+                                              </section>
+
+                                              <section id="command-palette-implementation-details" class="card">
+                                                <h2>Command Palette implementation details</h2>
+                                                <table>
+                                                  <thead>
+                                                    <tr>
+                                                      <th>Area</th>
+                                                      <th>Implementation details</th>
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    <tr>
+                                                      <td>Runtime lifecycle</td>
+                                                      <td><code>syncDocsPageActionsForViewport()</code> enables or removes palette runtime depending on media
+                                                        query, using <code>installDocsQuickActionsUi()</code> and <code>destroyDocsQuickActionsUi()</code>.
+                                                      </td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td>Global shortcuts</td>
+                                                      <td><code>handleDocsQuickActionsGlobalKeydown()</code> handles primary and fallback hotkeys, toggles
+                                                        open/close, and ignores slash/shift+P while typing in inputs.</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Filtering model</td>
+                                                        <td>Items are filtered from combined action sources via label, hint, group, and keyword matching in
+                                                          <code>filterActions()</code>, then rendered in grouped lists by <code>renderActions()</code>.</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>Keyboard model</td>
+                                                          <td><kbd>ArrowUp</kbd>/<kbd>ArrowDown</kbd> move active item, <kbd>Enter</kbd> executes, <kbd>Esc</kbd>
+                                                            closes; list and filter input each maintain expected focus behavior.</td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td>New-tab behavior</td>
+                                                            <td><kbd>Cmd/Ctrl</kbd> + <kbd>Enter</kbd> executes selected link through
+                                                              <code>window.open(..., "_blank", "noopener")</code> and emits execution telemetry with
+                                                              <code>new_tab: true</code>.</td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>Telemetry</td>
+                                                              <td>Palette emits <code>palette_open</code>, <code>palette_close</code>, <code>palette_filter</code>,
+                                                                and <code>palette_execute</code> events via <code>emitDocsPaletteTelemetry()</code>.</td>
+                                                              </tr>
+                                                            </tbody>
+                                                          </table>
+                                                          <p class="small">
+                                                            Main implementation file: <code>docs/assets/docs-nav.js</code>; style selectors:
+                                                            <code>.docs-quick-actions*</code> in <code>docs/assets/docs.css</code>.
+                                                          </p>
+                                                        </section>
+
+                                                        <section id="section-navigation" class="card">
+                                                          <h2>In-page navigation and section discovery</h2>
+                                                          <ul>
+                                                            <li><strong>Auto TOC:</strong> generated from <code>h2</code>/<code>h3</code> by
+                                                              <code>initAutoInPageToc()</code>.</li>
+                                                              <li><strong>Anchor normalization:</strong> missing heading ids are generated by
+                                                                <code>ensureTocAnchorIds()</code>.</li>
+                                                                <li><strong>Legacy cleanup:</strong> old manual “Contents” blocks are removed by
+                                                                  <code>removeLegacyManualContents()</code>.</li>
+                                                                  <li><strong>Scroll spy:</strong> current section link is highlighted by
+                                                                    <code>initInPageTocScrollSpy()</code>.</li>
+                                                                    <li><strong>Desktop collapse control:</strong> On desktop, TOC includes a toggle button
+                                                                      (<code>&lt;</code> collapse, <code>&gt;</code> expand).</li>
+                                                                      <li><strong>Viewport policy:</strong> rendered TOC aside is desktop-only in CSS.</li>
+                                                                    </ul>
+                                                                  </section>
+
+                                                                  <section id="on-this-page-collapse-control" class="card">
+                                                                    <h2>On this page collapse control (desktop-only)</h2>
+                                                                    <table>
+                                                                      <thead>
+                                                                        <tr>
+                                                                          <th>Aspect</th>
+                                                                          <th>Details</th>
+                                                                        </tr>
+                                                                      </thead>
+                                                                      <tbody>
+                                                                        <tr>
+                                                                          <td>Control behavior</td>
+                                                                          <td>When expanded, toggle shows <code>&lt;</code> and collapses TOC. When collapsed, toggle shows <code>&gt;</code> and expands TOC.</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                          <td>Desktop-only scope</td>
+                                                                          <td>Feature exists only where TOC exists: desktop viewports. On tablet/phone, TOC is hidden by responsive CSS and toggle is not visible.</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                          <td>Runtime implementation</td>
+                                                                          <td><code>initAutoInPageToc()</code> creates the toggle button and applies collapsed state classes on click.</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                          <td>CSS state classes</td>
+                                                                          <td><code>.docs-inpage-toc--collapsed</code> hides TOC nav; <code>.docs-page-layout__inner--toc-collapsed</code> keeps compact left rail width for the collapsed control.</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                          <td>Accessibility</td>
+                                                                          <td>Toggle updates <code>aria-expanded</code>, <code>aria-controls</code>, and <code>aria-label</code> ("Hide On this page" / "Show On this page").</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                          <td>Visual style</td>
+                                                                          <td>Uses premium surface and chip tokens in <code>docs/assets/docs.css</code> to stay consistent with the project design language.</td>
+                                                                        </tr>
+                                                                      </tbody>
+                                                                    </table>
+                                                                  </section>
+
+                                                                  <section id="supporting-discovery-features" class="card">
+                                                                    <h2>Supporting discovery features</h2>
+                                                                    <ul>
+                                                                      <li><strong>Breadcrumbs:</strong> built from path prefixes and hub mapping in
+                                                                        <code>buildDocsBreadcrumbItems()</code>.</li>
+                                                                        <li><strong>Skip link:</strong> <code>injectDocsSkipToContentLink()</code> adds keyboard-first jump to main
+                                                                          content.</li>
+                                                                          <li><strong>Continue reading:</strong> prompts readers to resume previous section and scroll position.</li>
+                                                                        </ul>
+                                                                      </section>
+
+                                                                      <section id="continue-reading-details" class="card">
+                                                                        <h2>Continue reading details (for example: Continue from § Guides catalog)</h2>
+                                                                        <ul>
+                                                                          <li><strong>Storage key:</strong> reading progress map is stored in local storage at
+                                                                            <code>docs-reading-progress-v1</code>.</li>
+                                                                            <li><strong>Persistence logic:</strong> <code>initDocsContinueReadingPrompt()</code> saves position and
+                                                                              heading snapshot with throttled updates.</li>
+                                                                              <li><strong>Anchor snapshot:</strong> <code>currentContinueAnchorSnapshot()</code> captures nearest active
+                                                                                heading <code>h2/h3</code> id and label.</li>
+                                                                                <li><strong>Prompt title:</strong> if label exists, UI shows <code>Continue from § {label}</code>; for
+                                                                                  example, when the label is <code>Guides catalog</code>, users see <strong>Continue from § Guides
+                                                                                  catalog</strong>.</li>
+                                                                                  <li><strong>TTL policy:</strong> old entries expire after 14 days
+                                                                                    (<code>DOCS_CONTINUE_READING_TTL_MS</code>).</li>
+                                                                                    <li><strong>Actions:</strong> <strong>Continue</strong> restores hash/scroll position; <strong>Start from
+                                                                                      top</strong> clears saved progress and scrolls to top.</li>
+                                                                                    </ul>
+                                                                                  </section>
+
+                                                                                  <section id="acceptance-checklist" class="card">
+                                                                                    <h2>Acceptance checklist for navigation and discovery changes</h2>
+                                                                                    <ol>
+                                                                                      <li>Desktop: top groups visible, sidebar available, search and quick actions working.</li>
+                                                                                      <li>Tablet/phone: drawer works with Menu button, quick actions disabled by design.</li>
+                                                                                      <li>Search returns relevant results and keyboard navigation activates the selected hit.</li>
+                                                                                      <li>In-page TOC renders from headings and active link tracks scroll.</li>
+                                                                                      <li>No keyboard shortcut collisions while typing in form fields.</li>
+                                                                                    </ol>
+                                                                                  </section>
+
+                                                                                  <section id="page-history" class="card">
+                                                                                    <h2>Page history</h2>
+                                                                                    <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                      <table class="docs-page-history">
+                                                                                        <thead>
+                                                                                          <tr>
+                                                                                            <th scope="col">Date</th>
+                                                                                            <th scope="col">Change</th>
+                                                                                            <th scope="col">Author</th>
+                                                                                          </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                                                            <td>Added search-index lifecycle workflow and validation guidance for discoverability changes.</td>
+                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                                                            <td>Documented desktop-only On this page collapse control (<code>&lt;</code> collapse, <code>&gt;</code> expand), including runtime, CSS, and accessibility details.</td>
+                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                                                            <td>Added detailed implementation map for navigation, search, command palette, and in-page discovery.
+                                                                                            </td>
+                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                        </tbody>
+                                                                                      </table>
+                                                                                    </div>
+                                                                                  </section>
+
+                                                                                  <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                                                                                </main>
+                                                                              </div>
+                                                                            </div>
+
+                                                                          </body></html>

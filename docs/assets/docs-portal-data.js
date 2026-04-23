@@ -208,6 +208,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "How-to guides — Study App"
       },
       {
+        "path": "howto/how-to-change-docs-frontend-safely.html",
+        "title": "How to change docs frontend safely (playbooks)"
+      },
+      {
         "path": "howto/internal-service-docs-layout.html",
         "title": "Internal service docs — layout and how to add pages"
       },
@@ -304,16 +308,44 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Moved — User resource"
       },
       {
+        "path": "internal/front/docs-frontend-architecture-map.html",
+        "title": "Docs frontend architecture map and feature inventory"
+      },
+      {
+        "path": "internal/front/docs-frontend-diagrams-and-lightbox.html",
+        "title": "Docs frontend diagrams and lightbox"
+      },
+      {
+        "path": "internal/front/docs-frontend-fast-entry-by-role.html",
+        "title": "Docs frontend quick entry by role"
+      },
+      {
+        "path": "internal/front/docs-frontend-feedback-and-editorial-workflow.html",
+        "title": "Docs frontend feedback and editorial workflow"
+      },
+      {
+        "path": "internal/front/docs-frontend-glossary.html",
+        "title": "Docs frontend glossary"
+      },
+      {
         "path": "internal/front/docs-frontend-hotkeys.html",
         "title": "Docs frontend hotkeys"
       },
       {
         "path": "internal/front/docs-frontend-menu-and-theme-controls.html",
-        "title": "#1 Docs frontend navigation and theme controls"
+        "title": "Docs frontend navigation and theme controls (normative contract)"
+      },
+      {
+        "path": "internal/front/docs-frontend-navigation-search-and-discovery.html",
+        "title": "Docs frontend navigation, search, and discovery"
       },
       {
         "path": "internal/front/docs-frontend-ui-kit.html",
-        "title": "Docs frontend UI kit (premium surfaces and interactions)"
+        "title": "Docs frontend UI kit (component style spec)"
+      },
+      {
+        "path": "internal/front/docs-frontend-ui-motion-and-adaptivity.html",
+        "title": "Docs frontend UI system, motion, and adaptivity"
       },
       {
         "path": "internal/front/documentation-style-guide.html",

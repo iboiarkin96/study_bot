@@ -1518,54 +1518,50 @@ function mountInternalDrawerMenuButton() {
   if (!main) {
     return null;
   }
-
-  const existing = main.querySelector("[data-internal-drawer-menu]");
-  if (existing) {
-    return existing;
-  }
-
-  /*
-   * Only use a top-level page heading as an anchor.
-   * Some pages (e.g. profile cards) contain nested <h1> inside content blocks; mounting
-   * the menu row there breaks layout and misplaced theme control.
-   * Avoid `:scope` here for broader browser compatibility.
-   */
-  let h1 = null;
-  for (const child of main.children) {
-    if (child.tagName === "H1") {
-      h1 = child;
-      break;
+  let row = main.querySelector("[data-internal-drawer-menu-row]");
+  if (!row) {
+    /*
+     * Anchor to the first main heading in this page context.
+     * We keep this resilient because some pages are transformed after initial render.
+     */
+    const h1 = main.querySelector("h1");
+    if (!h1) {
+      return null;
     }
+    row = document.createElement("div");
+    row.className = "internal-layout__page-title-row";
+    row.setAttribute("data-internal-drawer-menu-row", "1");
+    const parent = h1.parentElement;
+    if (parent) {
+      parent.insertBefore(row, h1);
+    } else {
+      h1.insertAdjacentElement("beforebegin", row);
+    }
+    row.appendChild(h1);
   }
-  if (!h1) {
-    return null;
+
+  let menuBtn = row.querySelector("[data-internal-drawer-menu]");
+  if (!menuBtn) {
+    menuBtn = document.createElement("button");
+    menuBtn.type = "button";
+    menuBtn.className = "internal-layout__page-menu-btn";
+    menuBtn.setAttribute("data-internal-drawer-menu", "1");
+    menuBtn.setAttribute("aria-label", "Open documentation menu");
+    menuBtn.setAttribute("aria-controls", "internal-sidebar-drawer");
+    menuBtn.setAttribute("aria-expanded", "false");
+    menuBtn.textContent = "Menu";
+
+    menuBtn.addEventListener("click", () => {
+      document.dispatchEvent(
+        new CustomEvent("internal-sidebar:toggle-drawer", {
+          detail: { source: "page-title" },
+        }),
+      );
+    });
+    row.insertBefore(menuBtn, row.firstChild);
   }
 
-  const row = document.createElement("div");
-  row.className = "internal-layout__page-title-row";
-  row.setAttribute("data-internal-drawer-menu-row", "1");
-
-  const menuBtn = document.createElement("button");
-  menuBtn.type = "button";
-  menuBtn.className = "internal-layout__page-menu-btn";
-  menuBtn.setAttribute("data-internal-drawer-menu", "1");
-  menuBtn.setAttribute("aria-label", "Open documentation menu");
-  menuBtn.setAttribute("aria-controls", "internal-sidebar-drawer");
-  menuBtn.setAttribute("aria-expanded", "false");
-  menuBtn.textContent = "Menu";
-
-  menuBtn.addEventListener("click", () => {
-    document.dispatchEvent(
-      new CustomEvent("internal-sidebar:toggle-drawer", {
-        detail: { source: "page-title" },
-      }),
-    );
-  });
-
-  h1.insertAdjacentElement("beforebegin", row);
-  row.appendChild(menuBtn);
-  row.appendChild(h1);
-  return menuBtn;
+  return row;
 }
 
 function syncInternalThemeTogglePlacement() {
@@ -1575,9 +1571,11 @@ function syncInternalThemeTogglePlacement() {
     return;
   }
   const btn = document.querySelector("[data-docs-theme-toggle]");
-  const row = document.querySelector("[data-internal-drawer-menu-row]");
-  const themeBar = document.querySelector(".top-nav .top-nav__theme-bar");
-  if (!btn || !row || !themeBar) {
+  if (!btn) {
+    return;
+  }
+  const row = mountInternalDrawerMenuButton();
+  if (!row) {
     return;
   }
   if (btn.parentElement !== row) {
@@ -2427,12 +2425,17 @@ function initAutoInPageToc() {
     aside.className = "docs-inpage-toc";
     aside.setAttribute("aria-labelledby", "inpage-toc-heading");
 
+    const head = document.createElement("div");
+    head.className = "docs-inpage-toc__head";
+
     const title = document.createElement("p");
     title.id = "inpage-toc-heading";
     title.className = "docs-inpage-toc__title";
     title.textContent = "On this page";
 
     const navEl = document.createElement("nav");
+    const navId = `docs-inpage-toc-nav-${Math.random().toString(36).slice(2, 8)}`;
+    navEl.id = navId;
     navEl.setAttribute("aria-labelledby", "inpage-toc-heading");
     const ul = document.createElement("ul");
 
@@ -2449,8 +2452,30 @@ function initAutoInPageToc() {
       ul.appendChild(li);
     }
 
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "docs-inpage-toc__toggle";
+    toggle.setAttribute("aria-controls", navId);
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Hide On this page");
+    toggle.textContent = "<";
+    let isCollapsed = false;
+    function applyCollapsedState(nextCollapsed) {
+      isCollapsed = !!nextCollapsed;
+      aside.classList.toggle("docs-inpage-toc--collapsed", isCollapsed);
+      inner.classList.toggle("docs-page-layout__inner--toc-collapsed", isCollapsed);
+      toggle.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
+      toggle.setAttribute("aria-label", isCollapsed ? "Show On this page" : "Hide On this page");
+      toggle.textContent = isCollapsed ? ">" : "<";
+    }
+    toggle.addEventListener("click", () => {
+      applyCollapsedState(!isCollapsed);
+    });
+
     navEl.appendChild(ul);
-    aside.appendChild(title);
+    head.appendChild(title);
+    head.appendChild(toggle);
+    aside.appendChild(head);
     aside.appendChild(navEl);
     inner.appendChild(aside);
   }
@@ -3857,6 +3882,8 @@ document.addEventListener("DOMContentLoaded", () => {
     desktopDocsPageActionsMq.addListener(syncDocsPageActionsForViewport);
   }
   initAutoInPageToc();
+  syncInternalThemeTogglePlacement();
+  window.setTimeout(syncInternalThemeTogglePlacement, 0);
   initInPageTocScrollSpy();
   initBackToTopButton();
   initDocsReadingProgressBar();

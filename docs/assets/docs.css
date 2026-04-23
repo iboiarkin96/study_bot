@@ -1684,6 +1684,11 @@ main.docs-page-layout [id] {
   align-items: start;
 }
 
+/* Desktop-only compact mode when "On this page" is collapsed by user. */
+.docs-page-layout__inner.docs-page-layout__inner--toc-collapsed {
+  grid-template-columns: 30px minmax(0, 1fr);
+}
+
 /* Auto TOC: pages with only h1/lead (e.g. openapi/index.html) have no sidebar — use full width */
 .docs-page-layout__inner--single {
   grid-template-columns: minmax(0, 1fr);
@@ -1720,6 +1725,65 @@ main.docs-page-layout [id] {
   border-bottom: 0;
 }
 
+.docs-inpage-toc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 4px 6px;
+  border: 1px solid var(--docs-premium-surface-border);
+  border-radius: 12px;
+  background: var(--docs-premium-surface-bg);
+  box-shadow: var(--docs-premium-surface-shadow);
+  transition:
+    border-color var(--motion-fast) var(--motion-ease-premium),
+    box-shadow var(--motion-fast) var(--motion-ease-premium);
+}
+
+.docs-inpage-toc__head .docs-inpage-toc__title {
+  margin: 0;
+}
+
+.docs-inpage-toc__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--docs-premium-chip-border);
+  border-radius: 8px;
+  background: var(--docs-premium-chip-bg);
+  color: color-mix(in srgb, var(--muted) 76%, var(--text));
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color var(--motion-fast) var(--motion-ease-premium),
+    border-color var(--motion-fast) var(--motion-ease-premium),
+    background var(--motion-fast) var(--motion-ease-premium),
+    transform var(--motion-fast) var(--motion-ease-premium),
+    box-shadow var(--motion-fast) var(--motion-ease-premium);
+}
+
+.docs-inpage-toc__toggle:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--docs-premium-chip-border) 45%, var(--accent));
+  background: color-mix(in srgb, var(--docs-premium-chip-bg) 84%, var(--accent) 16%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(11, 18, 32, 0.12);
+}
+
+.docs-inpage-toc__toggle:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--docs-premium-focus-glow-strong),
+    0 0 0 5px var(--docs-premium-focus-glow-soft);
+}
+
 .docs-inpage-toc__title::before {
   content: none;
 }
@@ -1729,6 +1793,20 @@ main.docs-page-layout [id] {
   max-height: min(75vh, 36rem);
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+.docs-inpage-toc.docs-inpage-toc--collapsed nav {
+  display: none;
+}
+
+.docs-inpage-toc.docs-inpage-toc--collapsed .docs-inpage-toc__head {
+  margin-bottom: 0;
+  justify-content: center;
+  padding: 4px;
+}
+
+.docs-inpage-toc.docs-inpage-toc--collapsed .docs-inpage-toc__title {
+  display: none;
 }
 
 .docs-inpage-toc nav ul {
@@ -1748,27 +1826,32 @@ main.docs-page-layout [id] {
 
 .docs-inpage-toc nav a {
   display: block;
-  padding: 4px 8px;
+  padding: 5px 9px;
   margin: 1px 0;
   border-left: 2px solid transparent;
-  border-radius: 0;
-  color: var(--text);
+  border-radius: 8px;
+  color: color-mix(in srgb, var(--text) 90%, var(--muted));
   text-decoration: none;
   transition:
-    color 0.16s ease,
-    border-left-color 0.16s ease;
+    color var(--motion-fast) var(--motion-ease-premium),
+    border-left-color var(--motion-fast) var(--motion-ease-premium),
+    background var(--motion-fast) var(--motion-ease-premium),
+    transform var(--motion-fast) var(--motion-ease-premium);
 }
 
 .docs-inpage-toc nav a:hover {
   color: var(--accent);
   border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--docs-premium-item-hover-bg) 72%, transparent);
+  transform: translateX(1px);
 }
 
 .docs-inpage-toc nav a.docs-inpage-toc__link--active {
   font-weight: 650;
   color: var(--accent);
   border-left-color: var(--accent);
-  box-shadow: none;
+  background: color-mix(in srgb, var(--docs-premium-item-active-bg) 80%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 
 /* Global docs search (docs-nav.js + docs/assets/search-index.json). */
