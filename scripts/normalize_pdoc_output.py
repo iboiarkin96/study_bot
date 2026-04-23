@@ -1,4 +1,4 @@
-"""Post-process pdoc HTML under docs/api/.
+"""Post-process pdoc HTML under docs/pdoc/.
 
 Strip unstable memory addresses from HTML and ``search.js`` (function reprs) so
 ``make api-docs`` output is diff-stable across machines and runs. Also ensure
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCS_API = ROOT / "docs" / "api"
+DOCS_API = ROOT / "docs" / "pdoc"
 DOCS_ASSETS = ROOT / "docs" / "assets"
 FAVICON_NAME = "favicon.svg"
 
@@ -25,7 +25,7 @@ _AT_ADDR = re.compile(r" at 0x[0-9a-f]{8,16}")
 
 def main() -> int:
     if not DOCS_API.is_dir():
-        print("docs/api missing; skip pdoc normalization", file=sys.stderr)
+        print("docs/pdoc missing; skip pdoc normalization", file=sys.stderr)
         return 0
     changed = 0
     for path in list(DOCS_API.rglob("*.html")) + [DOCS_API / "search.js"]:
@@ -40,7 +40,7 @@ def main() -> int:
             changed += 1
 
     if changed:
-        print(f"Normalized unstable pdoc reprs in {changed} file(s) under docs/api/")
+        print(f"Normalized unstable pdoc reprs in {changed} file(s) under docs/pdoc/")
     return 0
 
 

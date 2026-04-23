@@ -109,7 +109,7 @@ help:
 	@echo "  make docs-feedback-check  Smoke-check page-level feedback wiring for key docs pages"
 	@echo "  make uml-check            Verify docs/uml/rendered/*.svg match docs/uml/**/*.puml (no writes)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
-	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)"
+	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/pdoc/; included in docs-fix)"
 	@echo ""
 	@echo "  # Changelog — optional LLM draft (OPENROUTER_API_KEY or OPENAI_API_KEY in .env; see env/example)"
 	@echo "  make changelog-draft      Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)"
@@ -630,16 +630,16 @@ uml-check:
 	@$(PYTHON) scripts/regenerate_docs.py --check
 	@printf "$(COLOR_GREEN)== UML-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
-# Generate Python API reference from docstrings (pdoc). Output under docs/api/ (also invoked from docs-fix).
+# Generate Python API reference from docstrings (pdoc). Output under docs/pdoc/ (also invoked from docs-fix).
 api-docs:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
 	@printf "$(COLOR_CYAN)== API-DOCS: START ==$(COLOR_RESET)\n"
-	@rm -rf docs/api
-	@PYTHONHASHSEED=0 $(PYTHON) -m pdoc app -o docs/api
+	@rm -rf docs/pdoc
+	@PYTHONHASHSEED=0 $(PYTHON) -m pdoc app -o docs/pdoc
 	@$(PYTHON) scripts/normalize_pdoc_output.py
-	@printf "$(ICON_OK) %s\n" "Open docs/api/index.html in a browser (Python package: app); linked from docs/index.html for GitHub Pages"
+	@printf "$(ICON_OK) %s\n" "Open docs/pdoc/index.html in a browser (Python package: app); linked from docs/index.html for GitHub Pages"
 	@printf "$(COLOR_GREEN)== API-DOCS: SUCCESS ==$(COLOR_RESET)\n"
 
 # LLM-assisted Keep a Changelog draft (scripts/changelog_draft.py). Writes local file; edit CHANGELOG.md yourself.

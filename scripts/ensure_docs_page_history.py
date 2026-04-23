@@ -1,6 +1,6 @@
 """Insert a standard ``Page history`` section before ``docs-inpage-toc-mount`` when missing.
 
-Skips ``docs/api/**``, ``docs/assets/**``, and redirect stubs. Skips pages that already have
+Skips ``docs/pdoc/**``, ``docs/assets/**``, and redirect stubs. Skips pages that already have
 ``<section id="page-history">`` or legacy ``Document history`` / ``5-document-history`` (migrate those separately).
 
 Run: ``python scripts/ensure_docs_page_history.py``
@@ -146,7 +146,7 @@ def main() -> int:
     n = 0
     for path in sorted(DOCS.rglob("*.html")):
         rel = path.relative_to(DOCS).as_posix()
-        if rel.startswith("api/") or rel.startswith("assets/"):
+        if rel.startswith("pdoc/") or rel.startswith("assets/"):
             continue
         try:
             if process_file(path):

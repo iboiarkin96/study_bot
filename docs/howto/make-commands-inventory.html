@@ -4,7 +4,7 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Make commands — Internal docs — Study App</title>
+  <title>Make commands inventory — How-to guides — Study App</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <link rel="stylesheet" href="../assets/internal-layout.css">
@@ -23,7 +23,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Make commands</h1>
+        <h1>Make commands inventory</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
         <p class="lead">
@@ -89,7 +89,7 @@
             <tbody>
               <tr>
                 <td><code>make api-docs</code></td>
-                <td>Regenerate Python API HTML only (pdoc → docs/api/; included in docs-fix)</td>
+                <td>Regenerate Python API HTML only (pdoc → docs/pdoc/; included in docs-fix)</td>
               </tr>
               <tr>
                 <td><code>make changelog-draft</code></td>
@@ -116,12 +116,28 @@
                 <td>Build image study-app-api:local (requires Docker)</td>
               </tr>
               <tr>
+                <td><code>make docs-a11y-check</code></td>
+                <td>Baseline accessibility checks (headings, landmarks, contrast, keyboard)</td>
+              </tr>
+              <tr>
                 <td><code>make docs-check</code></td>
                 <td>Verify docs are already in sync (fails on drift)</td>
               </tr>
               <tr>
+                <td><code>make docs-design-check</code></td>
+                <td>Baseline docs design consistency checks (page skeleton, cards, mounts)</td>
+              </tr>
+              <tr>
+                <td><code>make docs-feedback-check</code></td>
+                <td>Smoke-check page-level feedback wiring for key docs pages</td>
+              </tr>
+              <tr>
                 <td><code>make docs-fix</code></td>
-                <td>Auto-update docs (UML + markers + md→html + format + pdoc API + search index)</td>
+                <td>Auto-update docs (UML + markers + md→html + HTML repair + format + maintainers + portal data JS + pdoc API + search index)</td>
+              </tr>
+              <tr>
+                <td><code>make docs-html-check</code></td>
+                <td>Validate HTML consistency (fails if docs HTML needs repair)</td>
               </tr>
               <tr>
                 <td><code>make env-check</code></td>
@@ -216,7 +232,7 @@
                 <td>Install git pre-commit hooks</td>
               </tr>
               <tr>
-                <td><code>make release DEPLOY_CMD='…'</code></td>
+                <td><code>make release DEPLOY_CMD=&#x27;…&#x27;</code></td>
                 <td>Run release-check then deploy command</td>
               </tr>
               <tr>
@@ -283,10 +299,10 @@
         <section id="related" class="card">
           <h2>Related docs</h2>
           <ul>
-            <li><a href="./developers.html">Developers Docs</a></li>
+            <li><a href="../developer/README.html">Developers Docs</a></li>
             <li><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></li>
             <li><a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a></li>
-            <li><a href="./README.html">Internal docs index</a></li>
+            <li><a href="../internal/README.html">Internal docs index</a></li>
           </ul>
         </section>
 
@@ -320,7 +336,17 @@
 
                   <td>Added Page history section (repository baseline).</td>
 
-                  <td><a href="portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+
+                </tr>
+
+                <tr>
+
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+
+                  <td>Moved from <code>docs/developer/make-commands.html</code> to how-to guides; renamed page.</td>
+
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
 
                 </tr>
 

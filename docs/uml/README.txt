@@ -27,7 +27,7 @@ Global export cap (include/style.puml)
     ``python3 scripts/regenerate_docs.py --force``.
 
 HTML (how SVGs are shown)
-  - Pages such as ``docs/internal/system-design.html`` reference ``../uml/rendered/<name>.svg``.
+  - Pages such as ``docs/internal/analysis/system-design.html`` reference ``../../uml/rendered/<name>.svg``.
   - PlantUML SVGs are shown at **intrinsic** width (they must not be forced to ``width: 100%``
     of the text column, or narrow exports stretch and look like a bigger font). The rules live
     under ``.sys-diagram__canvas img`` / ``img.diagram`` in ``docs/assets/docs.css``.

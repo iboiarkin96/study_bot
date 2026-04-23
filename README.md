@@ -1,6 +1,6 @@
 # <abbr title="Extract–Transform–Retrieve">ETR</abbr> Study App API
 
-FastAPI service for the Study App domain. Longer reads: [System design](docs/internal/system-design.html), [Developers](docs/internal/developers.html), [Architecture & quality assessments](docs/audit/README.html).
+FastAPI service for the Study App domain. Longer reads: [System design](docs/internal/analysis/system-design.html), [Developers](docs/developer/README.html), [Architecture & quality assessments](docs/audit/README.html).
 
 ## Contents
 
@@ -12,7 +12,7 @@ FastAPI service for the Study App domain. Longer reads: [System design](docs/int
 | [Observability (local)](#observability-local) | Prometheus, Grafana, metrics, optional Elasticsearch/Kibana |
 | [Container image (optional)](#container-image-optional) | Docker image, `docker run` |
 | [Repository layout](#repository-layout) | Top-level tree |
-| [HTTP endpoints](#http-endpoints) | OpenAPI reference (`docs/api`) |
+| [HTTP endpoints](#http-endpoints) | OpenAPI (`docs/openapi/`: baseline JSON + static Swagger UI), Python API (`docs/pdoc/`) |
 | [License](#license) | MIT |
 
 ---
@@ -138,8 +138,6 @@ study_app/
 │   └── versions/  # Migration scripts
 ├── docs/  # HTML docs & UML sources
 │   ├── adr/
-│   ├── api/
-│   │   └── app/
 │   ├── assets/
 │   ├── audit/
 │   │   ├── api/
@@ -148,10 +146,14 @@ study_app/
 │   ├── developer/  # Developer guides and onboarding
 │   ├── howto/
 │   ├── internal/
+│   │   ├── analisys/
+│   │   ├── analysis/
 │   │   ├── api/
 │   │   ├── front/
 │   │   └── portal/
 │   ├── openapi/
+│   ├── pdoc/
+│   │   └── app/
 │   ├── qa/
 │   ├── rfc/
 │   ├── runbooks/  # Operational troubleshooting guides
@@ -173,7 +175,7 @@ study_app/
 
 ## HTTP endpoints
 
-The HTTP API (endpoints, schemas, examples) is documented with OpenAPI. Browse: [docs/api/index.html](docs/api/index.html)
+The HTTP API (endpoints, schemas, examples) is documented with OpenAPI. In `docs/openapi/`, the committed contract is [`openapi-baseline.json`](docs/openapi/openapi-baseline.json) and the static browse-only Swagger UI is [`index.html`](docs/openapi/index.html). Python modules (pdoc): [`docs/pdoc/index.html`](docs/pdoc/index.html).
 
 ---
 

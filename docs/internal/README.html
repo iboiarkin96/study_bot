@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+
+<head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -43,12 +45,13 @@
             </li>
             <li>
               <strong>Want to know how the system is designed?</strong>
-              See the <a href="./system-design.html">System Design</a> page for the big picture, diagrams, and project
+              See the <a href="./analysis/system-design.html">System Design</a> page for the big picture, diagrams, and project
               goals.
             </li>
             <li>
               <strong>Learning methodology (ideas only, not the API):</strong>
-              <a href="./methodology.html">Methodology</a> — <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span>
+              <a href="./analysis/methodology.html">Methodology</a> — <span class="docs-tooltip docs-tooltip--etr"
+                tabindex="0">ETR</span>
               methodology explanation.
 
             </li>
@@ -58,7 +61,7 @@
             </li>
             <li>
               <strong>Looking for developer info and how to work on the code?</strong>
-              Find guides, setup steps, and technical notes in the <a href="./developers.html">Developers Docs</a>.
+              Find guides, setup steps, and technical notes in the <a href="../developer/README.html">Developers Docs</a>.
             </li>
             <li>
               <strong>Need a single documentation writing and review standard?</strong>
@@ -68,7 +71,7 @@
             <li>
               <strong>Need final frontend requirements for docs navigation and theme UX?</strong>
               Read <a href="./front/docs-frontend-menu-and-theme-controls.html">#1 Docs frontend navigation and theme
-              controls</a>.
+                controls</a>.
             </li>
             <li>
               <strong>Need docs keyboard shortcuts for quick actions and command palette?</strong>
@@ -76,7 +79,8 @@
             </li>
             <li>
               <strong>Need a full visual and interaction specification for docs frontend components?</strong>
-              Read <a href="./front/docs-frontend-ui-kit.html">Docs frontend UI kit (premium surfaces and interactions)</a>.
+              Read <a href="./front/docs-frontend-ui-kit.html">Docs frontend UI kit (premium surfaces and
+                interactions)</a>.
             </li>
             <li>
               <strong>Need architecture decisions and deep technical implementation specs?</strong>
@@ -87,11 +91,12 @@
             <li>
               <strong>Need onboarding from zero to first endpoint and docs?</strong>
               Start with <a href="../howto/onboarding-from-zero-to-endpoint-docs.html">Onboarding guide (setup →
-              endpoint → docs)</a>.
+                endpoint → docs)</a>.
             </li>
             <li>
               <strong>Interested in the API itself?</strong>
-              See the <a href="./api/README.html">HTTP API (internal)</a> for endpoints and examples. For <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> notes,
+              See the <a href="./api/README.html">HTTP API (internal)</a> for endpoints and examples. For <span
+                class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> notes,
               start
               at the <a href="./api/conspectus/index.html">Conspectus hub</a> (field mapping and sample JSON).
             </li>
@@ -103,7 +108,7 @@
             <li>
               <strong>Need the official API reference?</strong>
               Check the <a href="../openapi/openapi-baseline.json"><code>OpenAPI baseline</code></a> or
-              <a href="../openapi/openapi-explorer.html">OpenAPI Explorer</a>.
+              <a href="../openapi/index.html">OpenAPI / Swagger UI</a>.
               If the app is running, visit <code>/docs</code> for live docs.
             </li>
             <li>
@@ -154,7 +159,7 @@
             </li>
             <li>
               System architecture (C4 diagrams, containers, observability stack):
-              <a href="./system-design.html#architectural-decomposition">System design §3</a>
+              <a href="./analysis/system-design.html#architectural-decomposition">System design §3</a>
             </li>
           </ul>
         </section>
@@ -164,7 +169,7 @@
           <p>
             External developers must use the <strong>OpenAPI document</strong> as the contract: committed snapshot at
             <code>docs/openapi/openapi-baseline.json</code>, explorer at
-            <a href="../openapi/openapi-explorer.html">OpenAPI (test)</a>, live Swagger when the app runs at
+            <a href="../openapi/index.html">OpenAPI / Swagger UI</a>, live Swagger when the app runs at
             <code>/docs</code>.
             Release-to-release changes are summarized in the repository root <code>CHANGELOG.md</code>
             (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).
@@ -181,7 +186,7 @@
             Health, readiness, and metrics expectations follow
             <a href="../adr/0009-health-readiness-and-observability.html">ADR 0009</a>. Non-functional detail (including
             <code>/metrics</code> and Prometheus) is summarized under
-            <a href="./system-design.html#dev-nfr">System design — Non-Functional Requirements</a> (NFR-5). Structured
+            <a href="./analysis/system-design.html#dev-nfr">System design — Non-Functional Requirements</a> (NFR-5). Structured
             logging follows
             <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>. Operational recovery
             steps belong in <a href="../runbooks/README.html">Runbooks</a> when they are procedural.
@@ -208,31 +213,27 @@
                 <tr>
                   <td><time datetime="2026-04-17">2026-04-17</time></td>
                   <td>Overview IA (layering/observability, merged cards, sidebar “Overview”); added
-                    <a href="./methodology.html"><code>methodology.html</code></a> for human <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> workflow (idea-discovery
+                    <a href="./analysis/methodology.html"><code>analysis/methodology.html</code></a> for human <span
+                      class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> workflow (idea-discovery
                     only), sidebar link, System design §2 pointer.
                   </td>
                   <td>—</td>
                 </tr>
                 <tr>
                   <td><time datetime="2026-04-16">2026-04-16</time></td>
-                  <td>Merged former <code>service-overview.html</code> into this page; one overview for project context
-                    and service scope.</td>
-                    <td>—</td>
-                  </tr>
-                  <tr>
-                    <td><time datetime="2026-04-14">2026-04-14</time></td>
-                    <td>Initial internal service overview page; ADR 0025/0026 establish <code>docs/internal/</code> norms.
-                    </td>
-                    <td>—</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+                  <td>One overview for project context and service scope.</td>
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
     </div>
+  </div>
 
-  </body></html>
+</body>
+
+</html>

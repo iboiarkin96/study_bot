@@ -71,8 +71,8 @@
         <li>How-to guides: <code>docs/howto/</code></li>
         <li>Internal service pages: <code>docs/internal/</code></li>
         <li>Runbooks: <code>docs/runbooks/</code></li>
-        <li>OpenAPI explorer: <code>docs/openapi/openapi-explorer.html</code></li>
-        <li>Python API reference: <code>docs/api/index.html</code> (includes client search bundle under <code>docs/api/</code>)</li>
+        <li>OpenAPI / Swagger UI (static): <code>docs/openapi/index.html</code></li>
+        <li>Python API reference (pdoc): <code>docs/pdoc/index.html</code> (includes client search bundle under <code>docs/pdoc/</code>)</li>
         <li>Makefile targets: <code>make docs-fix</code> (regenerates artifacts incl. <code>scripts/build_docs_search_index.py</code>),
           <code>make docs-check</code> (drift gate + <code>docs-html-check</code>, <code>docs-design-check</code>,
           <code>docs-feedback-check</code>), <code>make docs-a11y-check</code>; <code>make verify</code> runs
@@ -541,7 +541,7 @@
                             <td>11</td>
                             <td>Interactive “try it”</td>
                             <td>
-                              Swagger UI at <code>/docs</code> and static <code>docs/openapi/openapi-explorer.html</code> against the
+                              Swagger UI at <code>/docs</code> and static <code>docs/openapi/index.html</code> against the
                               committed
                               snapshot; users must supply their own keys and understand environment risk. Rate limits and auth are
                               documented in OpenAPI and prose.
@@ -566,7 +566,7 @@
                               <code>docs-fix</code> runs <code>scripts/build_docs_search_index.py</code>, which scans
                               <code>docs/**/*.html</code> into <code>docs/assets/search-index.json</code>. <code>docs-nav.js</code>
                               loads that index for global search (see <code>docs/assets/docs.css</code> “Global docs search”); pdoc
-                              output under <code>docs/api/</code> also ships <code>search.js</code>. RFC 0001 / ADR 0027 document
+                              output under <code>docs/pdoc/</code> also ships <code>search.js</code>. RFC 0001 / ADR 0027 document
                               ranking and telemetry goals — not Algolia-class typo tolerance or hosted analytics out of the box.
                             </td>
                             <td class="audit-table-justification">Full static HTML index + nav integration; tuning/metrics still maturing.</td>
@@ -804,7 +804,7 @@
                           <tbody>
                             <tr>
                               <td>P0</td>
-                              <td>Hand-written docs vs generated <code>docs/api/</code> (pdoc) — two different UX layers.</td>
+                              <td>Hand-written docs vs generated <code>docs/pdoc/</code> (pdoc) — two different UX layers.</td>
                               <td class="audit-gap-status audit-gap-status--todo">TODO</td>
                               <td>—</td>
                               <td>—</td>
