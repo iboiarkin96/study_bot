@@ -2468,8 +2468,22 @@ function initAutoInPageToc() {
       toggle.setAttribute("aria-label", isCollapsed ? "Show On this page" : "Hide On this page");
       toggle.textContent = isCollapsed ? ">" : "<";
     }
-    toggle.addEventListener("click", () => {
+    /**
+     * Collapse/expand action for in-page TOC.
+     * UX rule: the whole "On this page" header is clickable (not only chevron).
+     */
+    function toggleCollapsedState() {
       applyCollapsedState(!isCollapsed);
+    }
+    toggle.addEventListener("click", () => {
+      toggleCollapsedState();
+    });
+    head.addEventListener("click", (event) => {
+      const target = event.target;
+      if (target && target.closest && target.closest(".docs-inpage-toc__toggle")) {
+        return;
+      }
+      toggleCollapsedState();
     });
 
     navEl.appendChild(ul);

@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Documentation HTML pages now use a shared favicon (`docs/assets/favicon.svg`), including `docs/openapi/openapi-explorer.html`, with generation/backfill scripts keeping favicon links consistent across regenerated docs output.
 
+- **Backlog UX overhaul:** `docs/backlog/README.html`, `docs/backlog/backlog.js`, and `docs/backlog/backlog.css` now provide a simplified backlog workflow with normalized tags/priorities/statuses, reordered top sections, synchronized filtering across grouped and full task views, per-group counters, "show more" paging in group lists, empty-filter state messaging, and recalibrated estimate ranges in each task card.
+
 ### Removed
 
 - Sample multi-file deployment manifests, the env-to-manifest render script, and the matching Make targets. Documentation and ADR 0015 now describe the Docker image only; see `docs/developer/0009-docker-image-and-container.html`.

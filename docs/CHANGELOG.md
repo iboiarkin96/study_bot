@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - **Internal API operation pages:** all files under [`docs/internal/api/**/operations/`](internal/api/) now keep exactly one `<h1>` per page, with the endpoint heading (`METHOD /api/...`) placed at the top of `<main>` before shared top navigation mounts. This aligns operation docs with the documentation baseline checks and the QA page heading order.
 
+- **Backlog docs page:** [`docs/backlog/README.html`](backlog/README.html), [`docs/backlog/backlog.js`](backlog/backlog.js), and [`docs/backlog/backlog.css`](backlog/backlog.css) were reworked for easier operations: quick-views-first layout, grouped + full task sections, unified task filtering in both sections, per-group count badges, top-10 preview with "Show more/Show less", empty state text for unmatched filters, and recalibrated estimate ranges for one senior developer with LLM support.
+
 ## 2026-04-22
 
 ### Added

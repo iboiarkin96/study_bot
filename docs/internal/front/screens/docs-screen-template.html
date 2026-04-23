@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Screen spec template</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Screen spec template</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section class="card" id="overview">
+          <h2>Overview</h2>
+          <p>
+            Use this template to document one critical frontend screen. Duplicate this file, rename it to
+            <code>docs-screen-*.html</code>, and replace all placeholder content.
+          </p>
+          <ul>
+            <li><strong>Screen:</strong> [screen name]</li>
+            <li><strong>Primary URL/path:</strong> [URL or file path]</li>
+            <li><strong>Primary owner:</strong> [team/person]</li>
+            <li><strong>Last verified behavior date:</strong> [YYYY-MM-DD]</li>
+          </ul>
+        </section>
+
+        <section class="card" id="layout-map">
+          <h2>Layout map</h2>
+          <ol>
+            <li>[Region 1: what it contains and why]</li>
+            <li>[Region 2: what it contains and why]</li>
+            <li>[Region 3: what it contains and why]</li>
+          </ol>
+        </section>
+
+        <section class="card" id="data-contract">
+          <h2>Data contract</h2>
+          <ul>
+            <li><code>[data-attr or prop]</code> — [meaning, allowed values, constraints]</li>
+            <li><code>[data-attr or prop]</code> — [meaning, allowed values, constraints]</li>
+          </ul>
+        </section>
+
+        <section class="card" id="interaction-logic">
+          <h2>Interaction logic</h2>
+          <h3>Controls and behavior</h3>
+          <ul>
+            <li>[Control]: [what it changes, side effects, edge cases]</li>
+            <li>[Control]: [what it changes, side effects, edge cases]</li>
+          </ul>
+          <h3>State sync rules</h3>
+          <ul>
+            <li>[If A changes, B updates how?]</li>
+            <li>[How "custom" or non-preset states are represented]</li>
+          </ul>
+        </section>
+
+        <section class="card" id="sorting-ordering">
+          <h2>Sorting and ordering rules</h2>
+          <ul>
+            <li>[Primary order criterion]</li>
+            <li>[Secondary criterion]</li>
+            <li>[Final tie-break for deterministic output]</li>
+          </ul>
+        </section>
+
+        <section class="card" id="view-modes">
+          <h2>View modes and responsiveness</h2>
+          <ul>
+            <li><strong>Desktop:</strong> [expected behavior]</li>
+            <li><strong>Tablet:</strong> [expected behavior]</li>
+            <li><strong>Mobile:</strong> [expected behavior]</li>
+          </ul>
+        </section>
+
+        <section class="card" id="validation-guardrails">
+          <h2>Validation and guardrails</h2>
+          <ul>
+            <li>[Validation rule, where implemented, and visual feedback]</li>
+            <li>[Error/fallback behavior]</li>
+          </ul>
+        </section>
+
+        <section class="card" id="change-map">
+          <h2>Where to change what</h2>
+          <ul>
+            <li><code>[path/file-1]</code> — [markup/content]</li>
+            <li><code>[path/file-2]</code> — [logic/runtime behavior]</li>
+            <li><code>[path/file-3]</code> — [styling/responsive rules]</li>
+          </ul>
+        </section>
+
+        <section class="card" id="acceptance-checklist">
+          <h2>Acceptance checklist</h2>
+          <ol>
+            <li>[Core interaction works in default state]</li>
+            <li>[Filter/sort/state sync works]</li>
+            <li>[No regressions in responsive breakpoints]</li>
+            <li>[Keyboard and basic accessibility checks pass]</li>
+            <li>[Linked documentation updated]</li>
+          </ol>
+        </section>
+
+        <section class="card" id="related-pages">
+          <h2>Related internal docs</h2>
+          <ul>
+            <li><a href="../docs-frontend-architecture-map.html">Docs frontend architecture map and feature inventory</a></li>
+            <li><a href="../docs-frontend-navigation-search-and-discovery.html">Docs frontend navigation, search, and discovery</a></li>
+            <li><a href="../documentation-style-guide.html">Documentation style guide and audit standard</a></li>
+          </ul>
+        </section>
+
+        <section class="card" id="page-history">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Created reusable screen-spec template for documenting high-value docs frontend screens.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

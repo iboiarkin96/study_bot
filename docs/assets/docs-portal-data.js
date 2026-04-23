@@ -148,6 +148,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "UI/UX Assessment (repeat) — Study App docs experience — formed 2026-04-23"
       },
       {
+        "path": "audit/docs/2026-04-24-ui-ux-assessment.html",
+        "title": "UI/UX Assessment (premium benchmark) — Study App product and docs experience — formed 2026-04-23"
+      },
+      {
         "path": "audit/docs/README.html",
         "title": "Documentation experience assessments — index"
       },
@@ -350,6 +354,14 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/front/documentation-style-guide.html",
         "title": "Documentation style guide and audit standard"
+      },
+      {
+        "path": "internal/front/screens/docs-screen-backlog-cockpit.html",
+        "title": "Screen spec: Backlog cockpit"
+      },
+      {
+        "path": "internal/front/screens/docs-screen-template.html",
+        "title": "Screen spec template"
       },
       {
         "path": "internal/portal/index.html",

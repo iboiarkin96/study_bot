@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Screen spec: Backlog cockpit</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Screen spec: Backlog cockpit</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section class="card" id="overview">
+          <h2>Overview</h2>
+          <p>
+            This page is the implementation reference for the backlog cockpit screen:
+            <a href="../../../backlog/README.html"><code>docs/backlog/README.html</code></a>.
+            Use it as the canonical source when changing filters, priority logic, sorting, and view modes.
+          </p>
+        </section>
+
+        <section class="card" id="screen-layout">
+          <h2>Screen layout map</h2>
+          <ol>
+            <li><strong>Hero / control bar:</strong> headline, search, quick presets, detailed filters, view switch, and KPI cards.</li>
+            <li><strong>Intelligence panel:</strong> attention, bottlenecks, and reprioritization hints (desktop-only).</li>
+            <li><strong>Grouped orientation blocks:</strong> block-level grouped lists for quick scan.</li>
+            <li><strong>Main task stream:</strong> PM-style task cards rendered from source HTML sections.</li>
+            <li><strong>Operational helpers:</strong> new-task template and page history.</li>
+          </ol>
+        </section>
+
+        <section class="card" id="data-contract">
+          <h2>Data contract and anti-duplication rules</h2>
+          <ul>
+            <li><code>data-group</code> (domain): <code>frontend</code>, <code>backend</code>, <code>devops</code>, <code>docs</code>.</li>
+            <li><code>data-tags</code> (task type): <code>bug</code>, <code>feature</code>, <code>research</code>, <code>tech-debt</code>.</li>
+            <li><code>data-risk</code> (risk profile): <code>high</code>, <code>medium</code>, <code>low</code>.</li>
+            <li><code>data-confidence</code> (estimation confidence): <code>high</code>, <code>medium</code>, <code>low</code>.</li>
+            <li><code>data-priority</code>: <code>P0</code>, <code>P1</code>, <code>P2</code>, <code>P3</code>.</li>
+            <li><code>data-status</code>: <code>todo</code>, <code>in-progress</code>, <code>done</code>, <code>blocked</code>, <code>rejected</code>.</li>
+            <li>Status visual pill is rendered from <code>data-status</code>; markup can stay as <code>&lt;span class="status-pill"&gt;&lt;/span&gt;</code> without manual text/class duplication.</li>
+            <li><code>data-created-at</code> (optional): ISO date used for task age calculation when explicit age is not set.</li>
+            <li><code>data-age-days</code> (optional): explicit age override in days.</li>
+            <li><code>data-blocked-days</code> (optional): integer for blocked aging, used by SLA breach risk KPI.</li>
+            <li><code>data-done-days-ago</code> (optional): integer for throughput window, used by Flow health KPI.</li>
+            <li><code>data-blocked-at</code> (optional): ISO date fallback for blocked aging if <code>data-blocked-days</code> is missing.</li>
+            <li><code>data-done-at</code> (optional): ISO date fallback for done recency if <code>data-done-days-ago</code> is missing.</li>
+            <li><code>data-actual-hours</code> (optional): factual effort for completed tasks, used in flow meta as average actual effort.</li>
+            <li><code>data-eta-days</code> (optional): explicit ETA range string in days (for example <code>1-1.5</code>); has highest priority for card ETA line.</li>
+            <li><code>data-eta-min-days</code> / <code>data-eta-max-days</code> (optional): numeric ETA override in days.</li>
+            <li>Never duplicate domain meaning in tags (for example, do not use <code>backend</code> in <code>data-tags</code>).</li>
+          </ul>
+        </section>
+
+        <section class="card" id="filters-and-presets">
+          <h2>Filters and presets</h2>
+          <h3>Detailed filters</h3>
+          <ul>
+            <li><strong>Group</strong> is single-select.</li>
+            <li><strong>Priority</strong>, <strong>Task type</strong>, <strong>Risk</strong>, <strong>Confidence</strong>, and <strong>Status</strong> are multi-select (<code>All</code> resets each dimension).</li>
+            <li>Filter expression is an AND across active dimensions.</li>
+          </ul>
+
+          <h3>Quick filters</h3>
+          <ul>
+            <li><code>All</code> — no quick preset restrictions.</li>
+            <li><code>My focus</code> — open statuses + <code>P0/P1</code>.</li>
+            <li><code>Open</code> — <code>todo</code>, <code>in-progress</code>, <code>blocked</code>.</li>
+            <li><code>Blocked</code> — <code>blocked</code> status only.</li>
+            <li><code>High risk</code> — <code>P0</code> + task type <code>bug</code> or <code>tech-debt</code> (preset, not status).</li>
+          </ul>
+
+          <h3>Sync behavior</h3>
+          <ul>
+            <li>Clicking quick presets updates detailed filters.</li>
+            <li>Changing detailed filters recalculates quick preset state; non-matching combinations become internal <code>custom</code> state.</li>
+          </ul>
+          <h3>Implementation map (filters)</h3>
+          <ul>
+            <li><strong>Main filter predicate:</strong> <code>matches(item)</code> in <code>docs/backlog/backlog.js</code>.</li>
+            <li><strong>Quick preset rule evaluation:</strong> <code>matchesQuickPreset(item, status, priority)</code>.</li>
+            <li><strong>Quick → detailed sync:</strong> <code>applyDetailedFromQuickPreset(preset)</code>.</li>
+            <li><strong>Detailed → quick sync:</strong> <code>syncQuickPresetFromDetailed()</code>.</li>
+            <li><strong>Detailed filter state attributes:</strong> <code>data-filter-group</code>, <code>data-filter-priority</code>, <code>data-filter-task-type</code>, <code>data-filter-risk</code>, <code>data-filter-confidence</code>, <code>data-filter-status</code> in <code>docs/backlog/README.html</code>.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="sorting-and-views">
+          <h2>Sorting and view behavior</h2>
+          <h3>Stable sorting policy</h3>
+          <ul>
+            <li>Open tasks first; closed tasks after.</li>
+            <li>Within open tasks: open <code>P0</code> first, then <code>bug</code>, then <code>P1</code>, <code>P2</code>, <code>P3</code>.</li>
+            <li>Final tie-break by numeric item id (<code>item-XX</code>) to keep order deterministic.</li>
+          </ul>
+          <h3>Implementation map (sorting)</h3>
+          <ul>
+            <li><strong>Sort orchestrator:</strong> <code>sortItemsInPlace()</code> in <code>docs/backlog/backlog.js</code>.</li>
+            <li><strong>Open vs closed ordering:</strong> comparator block using <code>isOpenStatus(status)</code> and <code>openRank</code>.</li>
+            <li><strong>Open P0 → bug → P1/P2/P3 ordering:</strong> <code>priorityBucketRank(item, status, priority)</code> with <code>prioritySortRank</code>.</li>
+            <li><strong>Status tie-breaker:</strong> <code>statusSortRank</code> map in comparator.</li>
+            <li><strong>Final deterministic tie-break:</strong> <code>itemNumber(item)</code> parsing <code>id="item-XX"</code>.</li>
+          </ul>
+
+          <h3>View switch</h3>
+          <ul>
+            <li><code>Board</code>, <code>List</code>, <code>Timeline</code> are visual modes controlled by <code>data-backlog-view</code>.</li>
+            <li><code>Timeline</code> currently changes presentation only (vertical line + markers), without schedule logic.</li>
+          </ul>
+          <h3>Implementation map (view modes)</h3>
+          <ul>
+            <li><strong>State setter:</strong> <code>applyViewMode()</code> sets <code>data-backlog-view</code> on <code>body</code>.</li>
+            <li><strong>View controls:</strong> buttons with <code>data-view-mode</code> in <code>docs/backlog/README.html</code> are wired in <code>wireButtons()</code>.</li>
+            <li><strong>Visual behavior:</strong> CSS selectors <code>body[data-backlog-view="board|list|timeline"] ...</code> in <code>docs/backlog/backlog.css</code>.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="task-card-pm-ui">
+          <h2>Task card PM-style UI</h2>
+          <ul>
+            <li><strong>Header:</strong> task title + status pill; priority is moved to meta row and removed from heading title line.</li>
+            <li><strong>Meta row:</strong> <code>Priority</code>, <code>Owner</code>, <code>Age</code>.</li>
+            <li><strong>Badges:</strong> group/tags on one row, risk/confidence on separate row.</li>
+            <li><strong>ETA line:</strong> defaults to estimate for <strong>3 h/day</strong>; explicit ETA overrides are supported.</li>
+            <li><strong>Quick actions:</strong> only <code>Open details</code> and <code>Copy link</code>.</li>
+            <li><strong>Expanded view:</strong> single block <code>Full task description</code> (with auto-injected 4/5 sections when missing).</li>
+            <li><strong>TOC safeguard:</strong> expanded title uses <code>h4</code> so it does not appear in On this page.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="kpi-strip">
+          <h2>KPI strip metrics</h2>
+          <p>
+            KPI tiles are computed from the currently visible set (after all filters/search are applied), so numbers always
+            reflect the exact manager view on screen.
+          </p>
+          <h3>Core metrics</h3>
+          <ul>
+            <li><strong>Open</strong>, <strong>In progress</strong>, <strong>Blocked</strong> — count plus percentage of visible scope.</li>
+            <li><strong>Done %</strong> — done ratio of the current visible scope.</li>
+          </ul>
+          <h3>Risk and flow metrics</h3>
+          <ul>
+            <li><strong>SLA breach risk</strong> — blocked <code>P0/P1</code> tasks with <code>data-blocked-days &gt; 5</code>.</li>
+            <li><strong>ETA pressure</strong> — open tasks with narrow estimate window (max ETA <code>&lt;= 3</code> days, from estimate model).</li>
+            <li><strong>Flow health</strong> — throughput in <code>/wk</code> based on done tasks over a 14-day window.</li>
+          </ul>
+          <h3>Calculation formulas (current implementation)</h3>
+          <ul>
+            <li><strong>Scope base:</strong> all KPI values are calculated from <em>visible tasks</em> after current filters/search.</li>
+            <li><strong>Open % / In progress % / Blocked %:</strong> <code>count(status) / visible_count * 100</code>.</li>
+            <li><strong>Done %:</strong> <code>done_count / visible_count * 100</code>.</li>
+            <li><strong>SLA breach risk count:</strong> <code>status=blocked AND priority in (P0,P1) AND blocked_days &gt; 5</code>.</li>
+            <li><strong>ETA pressure count:</strong> open tasks with <code>eta_max_days &lt;= 3</code> (explicit override first, estimate-model fallback second).</li>
+            <li><strong>Flow health:</strong> <code>(done_in_14_days / 14) * 7</code>, rendered as <code>X/wk</code>.</li>
+          </ul>
+          <h3>Implementation map (KPI strip)</h3>
+          <ul>
+            <li><strong>Main KPI renderer:</strong> <code>renderCockpitStats()</code> in <code>docs/backlog/backlog.js</code>.</li>
+            <li><strong>SLA configuration:</strong> <code>SLA_BLOCKED_THRESHOLD_DAYS</code> constant.</li>
+            <li><strong>Flow window:</strong> <code>FLOW_HEALTH_PERIOD_DAYS</code> constant.</li>
+            <li><strong>ETA pressure threshold:</strong> <code>ETA_PRESSURE_MAX_DAYS</code> constant.</li>
+            <li><strong>Card-level KPI attributes:</strong> <code>data-blocked-days</code>, <code>data-blocked-at</code>, <code>data-done-days-ago</code>, <code>data-done-at</code>, <code>data-actual-hours</code>, <code>data-eta-days</code>, <code>data-eta-min-days</code>, <code>data-eta-max-days</code>.</li>
+          </ul>
+          <h3>Fallback behavior</h3>
+          <ul>
+            <li><code>data-blocked-days</code> falls back to <code>data-blocked-at</code> (days since date) when provided.</li>
+            <li><code>data-done-days-ago</code> falls back to <code>data-done-at</code> (days since date) when provided.</li>
+            <li>Card ETA line defaults to recalibrated estimate at <strong>3 h/day</strong>; explicit ETA fields override this default.</li>
+            <li><code>ETA pressure</code> uses <code>data-eta-max-days</code> when set; otherwise it falls back to computed estimate model.</li>
+            <li>If no done recency attributes are present, flow KPI uses current done snapshot as proxy and marks it in tile meta.</li>
+            <li>If both explicit and fallback fields are missing for SLA or flow recency, that card is excluded from the corresponding strict age calculation.</li>
+            <li>If <code>visible_count = 0</code>, percentage tiles show safe zero-based output from guarded denominator logic (no divide-by-zero errors).</li>
+            <li>KPI severity visuals: <code>healthy</code>, <code>watch</code>, <code>risk</code> with dedicated tile styling.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="intelligence-panel-notes">
+          <h2>Intelligence panel behavior</h2>
+          <ul>
+            <li>Rendered by <code>renderIntelligencePanel()</code> using current visible task set.</li>
+            <li>Includes: today attention, top 3 bottlenecks, and reprioritization hints.</li>
+            <li>Desktop-only visibility is controlled in <code>docs/backlog/backlog.css</code> (<code>#backlog-intelligence</code> hidden below desktop breakpoint).</li>
+          </ul>
+        </section>
+
+        <section class="card" id="validation">
+          <h2>Taxonomy validation</h2>
+          <ul>
+            <li>Runtime validates each card against allowed group/tag sets.</li>
+            <li>Invalid cards are highlighted with <code>backlog-item--invalid-taxonomy</code>.</li>
+            <li>Cockpit warning panel (<code>#backlog-validation-alert</code>) lists invalid items with direct anchors.</li>
+          </ul>
+          <h3>Implementation map (validation)</h3>
+          <ul>
+            <li><strong>Validator entry point:</strong> <code>validateTaxonomy()</code> in <code>docs/backlog/backlog.js</code>.</li>
+            <li><strong>Allowed taxonomy sets:</strong> <code>allowedGroups</code> and <code>allowedTags</code> constants.</li>
+            <li><strong>Alert mount:</strong> <code>ensureValidationMount()</code> creates <code>#backlog-validation-alert</code>.</li>
+            <li><strong>Error highlighting class:</strong> <code>backlog-item--invalid-taxonomy</code> styled in <code>docs/backlog/backlog.css</code>.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="change-map">
+          <h2>Where to change what</h2>
+          <ul>
+            <li><code>docs/backlog/README.html</code> — screen markup, filter controls, task cards, content labels.</li>
+            <li><code>docs/backlog/backlog.js</code> — filter state, quick preset logic, sorting, validation, grouping.</li>
+            <li><code>docs/backlog/backlog.css</code> — cockpit look and feel, responsive behavior, timeline/list/board visual states.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="related-pages">
+          <h2>Related internal docs</h2>
+          <ul>
+            <li><a href="../docs-frontend-architecture-map.html">Docs frontend architecture map and feature inventory</a></li>
+            <li><a href="../docs-frontend-navigation-search-and-discovery.html">Docs frontend navigation, search, and discovery</a></li>
+            <li><a href="../docs-frontend-ui-motion-and-adaptivity.html">Docs frontend UI, motion, and adaptivity</a></li>
+            <li><a href="../documentation-style-guide.html">Documentation style guide and audit standard</a></li>
+            <li><a href="../../../howto/how-to-change-docs-frontend-safely.html">How to change docs frontend safely</a></li>
+          </ul>
+        </section>
+
+        <section class="card" id="page-history">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Created and expanded backlog cockpit screen specification: moved implementation notes out of backlog content page, documented KPI formulas/fallbacks, and added architecture notes for filters, state/store, command palette, saved views, side panel, and accessibility/motion behavior.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>
