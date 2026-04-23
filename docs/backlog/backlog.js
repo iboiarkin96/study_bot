@@ -438,7 +438,11 @@
       if (group) {
         const groupBadge = document.createElement("span");
         groupBadge.className = "backlog-chip backlog-chip--group";
-        groupBadge.textContent = groupLabel[group] || group;
+        const groupText = groupLabel[group] || group;
+        groupBadge.textContent = groupText;
+        groupBadge.setAttribute("data-tooltip", "Delivery domain: where the work happens (frontend, backend, devops, docs).");
+        groupBadge.setAttribute("aria-label", `Block: ${groupText}`);
+        groupBadge.setAttribute("tabindex", "0");
         summary.appendChild(groupBadge);
       }
 
@@ -454,10 +458,16 @@
       const riskChip = document.createElement("span");
       riskChip.className = `backlog-chip backlog-chip--risk backlog-chip--risk-${risk}`;
       riskChip.textContent = `Risk: ${risk}`;
+      riskChip.setAttribute("data-tooltip", "Delivery risk: likelihood of delay/blockers impacting completion.");
+      riskChip.setAttribute("aria-label", `Risk level: ${risk}`);
+      riskChip.setAttribute("tabindex", "0");
       riskConfidenceRow.appendChild(riskChip);
       const confidenceChip = document.createElement("span");
       confidenceChip.className = "backlog-chip backlog-chip--confidence";
       confidenceChip.textContent = `Confidence: ${confidence}`;
+      confidenceChip.setAttribute("data-tooltip", "Estimate confidence: how reliable scope and ETA assumptions are.");
+      confidenceChip.setAttribute("aria-label", `Confidence level: ${confidence}`);
+      confidenceChip.setAttribute("tabindex", "0");
       riskConfidenceRow.appendChild(confidenceChip);
 
       if (summary.childElementCount) {
@@ -527,6 +537,22 @@
         <span class="backlog-task-meta__item"><strong>Owner:</strong> ${owner}</span>
         <span class="backlog-task-meta__item"><strong>Age:</strong> ${resolvedAge}d</span>
       `;
+      const metaItems = meta.querySelectorAll(".backlog-task-meta__item");
+      if (metaItems[0]) {
+        metaItems[0].setAttribute("data-tooltip", "Business urgency: priority of this task relative to others.");
+        metaItems[0].setAttribute("aria-label", `Priority: ${priority}`);
+        metaItems[0].setAttribute("tabindex", "0");
+      }
+      if (metaItems[1]) {
+        metaItems[1].setAttribute("data-tooltip", "Responsible person accountable for delivery and updates.");
+        metaItems[1].setAttribute("aria-label", `Owner: ${owner}`);
+        metaItems[1].setAttribute("tabindex", "0");
+      }
+      if (metaItems[2]) {
+        metaItems[2].setAttribute("data-tooltip", "Task age: days since the task was created.");
+        metaItems[2].setAttribute("aria-label", `Age: ${resolvedAge} days since creation`);
+        metaItems[2].setAttribute("tabindex", "0");
+      }
       heading.insertAdjacentElement("afterend", meta);
 
       const eta = document.createElement("div");
@@ -535,6 +561,12 @@
         <span><strong>ETA:</strong> ${etaLine}</span>
         <span class="backlog-task-eta__meta">Recalculated: ${etaUpdatedAt}</span>
       `;
+      const etaPrimary = eta.querySelector("span");
+      if (etaPrimary) {
+        etaPrimary.setAttribute("data-tooltip", "Estimated time window to complete the task (in days).");
+        etaPrimary.setAttribute("aria-label", `ETA: ${etaLine}`);
+        etaPrimary.setAttribute("tabindex", "0");
+      }
       const summaryRow = item.querySelector(".backlog-item-summary");
       if (summaryRow) {
         summaryRow.insertAdjacentElement("afterend", eta);
@@ -1267,6 +1299,7 @@
       summary.textContent = `Found ${visibleCount} tasks • ${chips.length} active filters`;
     }
     if (chipsMount) {
+      chipsMount.hidden = chips.length === 0;
       chipsMount.innerHTML = chips.map((chip) => `
         <button type="button" class="backlog-active-filter-chip" data-chip-dimension="${chip.dimension}" data-chip-value="${chip.value}" aria-label="Remove filter ${chip.label}">
           ${chip.label} <span aria-hidden="true">×</span>
@@ -1526,6 +1559,46 @@
     const detailedFilters = document.getElementById("backlog-detailed-filters");
     if (detailedFilters && window.matchMedia("(max-width: 780px)").matches) {
       detailedFilters.open = false;
+    }
+    const howtoToggle = document.getElementById("backlog-howto-toggle");
+    const howtoPopover = document.getElementById("backlog-howto-popover");
+    const howtoClose = document.getElementById("backlog-howto-close");
+    const setHowtoOpen = (isOpen) => {
+      if (!howtoPopover || !howtoToggle) {
+        return;
+      }
+      howtoPopover.hidden = !isOpen;
+      howtoToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    };
+    if (howtoToggle && howtoPopover) {
+      howtoToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isOpen = !howtoPopover.hidden;
+        setHowtoOpen(!isOpen);
+      });
+      if (howtoClose) {
+        howtoClose.addEventListener("click", () => {
+          setHowtoOpen(false);
+        });
+      }
+      document.addEventListener("click", (event) => {
+        const target = event.target instanceof Node ? event.target : null;
+        if (!target) {
+          return;
+        }
+        if (howtoPopover.hidden) {
+          return;
+        }
+        if (howtoPopover.contains(target) || howtoToggle.contains(target)) {
+          return;
+        }
+        setHowtoOpen(false);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setHowtoOpen(false);
+        }
+      });
     }
 
     document.querySelectorAll(".backlog-task-action-btn").forEach((button) => {

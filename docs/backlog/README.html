@@ -35,9 +35,13 @@
           <div class="backlog-cockpit__hero">
             <div>
               <p class="backlog-cockpit__eyebrow">Mini product dashboard</p>
-              <h2 id="cockpit-title">Execution cockpit for sprint focus, risk, and delivery confidence</h2>
-              <p class="backlog-cockpit__subtitle">Search the entire backlog, apply instant focus presets, and switch
-                between board/list/timeline to quickly spot blockers and weak points.</p>
+              <div class="backlog-cockpit__title-row">
+                <h2 id="cockpit-title">Backlog cockpit</h2>
+                <button type="button" class="backlog-cockpit__howto-btn" id="backlog-howto-toggle"
+                  aria-label="How to use backlog cockpit" aria-expanded="false">?</button>
+              </div>
+              <p class="backlog-cockpit__subtitle">Use quick presets first. Open advanced filters only when you need
+                deeper slicing.</p>
             </div>
             <a class="backlog-cockpit__new-task" href="#new-task-template">+ New task</a>
           </div>
@@ -46,7 +50,7 @@
             <label class="backlog-cockpit__search" for="backlog-global-search">
               <span>Global search</span>
               <input id="backlog-global-search" type="search"
-                placeholder="Search by title, scope, value, tags, status..." autocomplete="off">
+                placeholder="Search tasks by title or keywords..." autocomplete="off">
             </label>
 
             <div class="backlog-cockpit__control-group" aria-label="Quick filters">
@@ -56,7 +60,6 @@
                 <button type="button" class="backlog-cockpit__btn" data-quick-preset="my-focus">My focus</button>
                 <button type="button" class="backlog-cockpit__btn" data-quick-preset="open">Open</button>
                 <button type="button" class="backlog-cockpit__btn" data-quick-preset="blocked">Blocked</button>
-                <button type="button" class="backlog-cockpit__btn" data-quick-preset="high-risk">High risk</button>
               </div>
             </div>
 
@@ -73,7 +76,8 @@
               class="backlog-cockpit__control-group backlog-cockpit__control-group--wide backlog-cockpit__details"
               id="backlog-detailed-filters" aria-label="Detailed filters">
               <summary><strong>Detailed filters</strong></summary>
-              <div class="backlog-filter-row">
+              <p class="backlog-intro">Quick mode: start with these 3 filters.</p>
+              <div class="backlog-filter-row backlog-filter-row--primary">
                 <span class="backlog-filter-row__label">Block</span>
                 <button type="button" class="backlog-filter-btn is-active" data-filter-group="all">All</button>
                 <button type="button" class="backlog-filter-btn" data-filter-group="frontend">Frontend</button>
@@ -81,7 +85,7 @@
                 <button type="button" class="backlog-filter-btn" data-filter-group="devops">DevOps</button>
                 <button type="button" class="backlog-filter-btn" data-filter-group="docs">Docs</button>
               </div>
-              <div class="backlog-filter-row">
+              <div class="backlog-filter-row backlog-filter-row--primary">
                 <span class="backlog-filter-row__label">Priority</span>
                 <button type="button" class="backlog-filter-btn is-active" data-filter-priority="all">All</button>
                 <button type="button" class="backlog-filter-btn" data-filter-priority="P0">P0</button>
@@ -89,29 +93,7 @@
                 <button type="button" class="backlog-filter-btn" data-filter-priority="P2">P2</button>
                 <button type="button" class="backlog-filter-btn" data-filter-priority="P3">P3</button>
               </div>
-              <div class="backlog-filter-row">
-                <span class="backlog-filter-row__label">Task type</span>
-                <button type="button" class="backlog-filter-btn is-active" data-filter-task-type="all">All</button>
-                <button type="button" class="backlog-filter-btn" data-filter-task-type="bug">Bug</button>
-                <button type="button" class="backlog-filter-btn" data-filter-task-type="feature">Feature</button>
-                <button type="button" class="backlog-filter-btn" data-filter-task-type="research">Research</button>
-                <button type="button" class="backlog-filter-btn" data-filter-task-type="tech-debt">Tech debt</button>
-              </div>
-              <div class="backlog-filter-row">
-                <span class="backlog-filter-row__label">Risk</span>
-                <button type="button" class="backlog-filter-btn is-active" data-filter-risk="all">All</button>
-                <button type="button" class="backlog-filter-btn" data-filter-risk="high">High</button>
-                <button type="button" class="backlog-filter-btn" data-filter-risk="medium">Medium</button>
-                <button type="button" class="backlog-filter-btn" data-filter-risk="low">Low</button>
-              </div>
-              <div class="backlog-filter-row">
-                <span class="backlog-filter-row__label">Confidence</span>
-                <button type="button" class="backlog-filter-btn is-active" data-filter-confidence="all">All</button>
-                <button type="button" class="backlog-filter-btn" data-filter-confidence="high">High</button>
-                <button type="button" class="backlog-filter-btn" data-filter-confidence="medium">Medium</button>
-                <button type="button" class="backlog-filter-btn" data-filter-confidence="low">Low</button>
-              </div>
-              <div class="backlog-filter-row">
+              <div class="backlog-filter-row backlog-filter-row--primary">
                 <span class="backlog-filter-row__label">Status</span>
                 <button type="button" class="backlog-filter-btn is-active" data-filter-status="all">All</button>
                 <button type="button" class="backlog-filter-btn" data-filter-status="todo">To do</button>
@@ -120,25 +102,49 @@
                 <button type="button" class="backlog-filter-btn" data-filter-status="blocked">Blocked</button>
                 <button type="button" class="backlog-filter-btn" data-filter-status="rejected">Rejected</button>
               </div>
-              <div class="backlog-filter-row">
-                <span class="backlog-filter-row__label">Owner</span>
-                <span id="backlog-owner-filter-buttons">
-                  <button type="button" class="backlog-filter-btn is-active" data-filter-owner="all">All</button>
-                  <button type="button" class="backlog-filter-btn" data-filter-owner="ivan-boyarkin">Ivan
-                    Boyarkin</button>
-                  <button type="button" class="backlog-filter-btn" data-filter-owner="unassigned">Unassigned</button>
-                </span>
-              </div>
-              <div class="backlog-filter-row">
-                <span class="backlog-filter-row__label">ETA range</span>
-                <span id="backlog-eta-range-filter-buttons">
-                  <button type="button" class="backlog-filter-btn is-active" data-filter-eta-range="all">All</button>
-                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="le-1">&lt;= 1d</button>
-                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="1-3">1-3d</button>
-                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="3-5">3-5d</button>
-                  <button type="button" class="backlog-filter-btn" data-filter-eta-range="gt-5">&gt; 5d</button>
-                </span>
-              </div>
+              <details class="backlog-advanced-filters">
+                <summary>Advanced filters (optional)</summary>
+                <div class="backlog-filter-row">
+                  <span class="backlog-filter-row__label">Task type</span>
+                  <button type="button" class="backlog-filter-btn is-active" data-filter-task-type="all">All</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-task-type="bug">Bug</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-task-type="feature">Feature</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-task-type="research">Research</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-task-type="tech-debt">Tech debt</button>
+                </div>
+                <div class="backlog-filter-row">
+                  <span class="backlog-filter-row__label">Risk</span>
+                  <button type="button" class="backlog-filter-btn is-active" data-filter-risk="all">All</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-risk="high">High</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-risk="medium">Medium</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-risk="low">Low</button>
+                </div>
+                <div class="backlog-filter-row">
+                  <span class="backlog-filter-row__label">Confidence</span>
+                  <button type="button" class="backlog-filter-btn is-active" data-filter-confidence="all">All</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-confidence="high">High</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-confidence="medium">Medium</button>
+                  <button type="button" class="backlog-filter-btn" data-filter-confidence="low">Low</button>
+                </div>
+                <div class="backlog-filter-row">
+                  <span class="backlog-filter-row__label">Owner</span>
+                  <span id="backlog-owner-filter-buttons">
+                    <button type="button" class="backlog-filter-btn is-active" data-filter-owner="all">All</button>
+                    <button type="button" class="backlog-filter-btn" data-filter-owner="ivan-boyarkin">Ivan Boyarkin</button>
+                    <button type="button" class="backlog-filter-btn" data-filter-owner="unassigned">Unassigned</button>
+                  </span>
+                </div>
+                <div class="backlog-filter-row">
+                  <span class="backlog-filter-row__label">ETA range</span>
+                  <span id="backlog-eta-range-filter-buttons">
+                    <button type="button" class="backlog-filter-btn is-active" data-filter-eta-range="all">All</button>
+                    <button type="button" class="backlog-filter-btn" data-filter-eta-range="le-1">&lt;= 1d</button>
+                    <button type="button" class="backlog-filter-btn" data-filter-eta-range="1-3">1-3d</button>
+                    <button type="button" class="backlog-filter-btn" data-filter-eta-range="3-5">3-5d</button>
+                    <button type="button" class="backlog-filter-btn" data-filter-eta-range="gt-5">&gt; 5d</button>
+                  </span>
+                </div>
+              </details>
             </details>
             <div class="backlog-filter-insights" aria-live="polite">
               <div class="backlog-filter-insights__top">
@@ -149,8 +155,11 @@
             </div>
           </div>
 
-          <details class="backlog-model-dropdown backlog-cockpit__legend">
-            <summary>Filter guide and backlog model</summary>
+          <section class="backlog-model-dropdown backlog-cockpit__legend backlog-howto-popover" id="backlog-howto-popover" hidden>
+            <div class="backlog-howto-popover__head">
+              <strong>How to use: Filter guide and backlog model</strong>
+              <button type="button" class="backlog-howto-popover__close" id="backlog-howto-close" aria-label="Close how to use">×</button>
+            </div>
             <p class="backlog-intro">
               Use quick presets for fast managerial views. Use detailed filters for exact slicing by block, priority,
               and status.
@@ -267,7 +276,7 @@
                 </li>
               </ol>
             </div>
-          </details>
+          </section>
 
           <div class="backlog-cockpit__stats" id="backlog-cockpit-stats" aria-live="polite"></div>
         </section>

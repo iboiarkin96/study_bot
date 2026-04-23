@@ -212,6 +212,36 @@ section.card > h2 {
   background: var(--surface-neutral);
 }
 
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card) 94%, var(--bg) 6%);
+  color: var(--text);
+  padding: 5px 8px;
+  font-size: 0.74rem;
+  box-shadow: var(--elevation-2);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .backlog-chip--risk {
   border-color: color-mix(in srgb, #f59e0b 36%, var(--line));
 }
@@ -480,6 +510,13 @@ section.card .meta {
   align-items: center;
   gap: 8px;
   margin: 10px 0;
+}
+
+.backlog-filter-row--primary {
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--line) 84%, var(--accent) 16%);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-neutral) 94%, var(--card));
 }
 
 .backlog-filter-row__label {
@@ -854,6 +891,34 @@ section.card .meta {
   padding: 0;
 }
 
+.backlog-cockpit__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backlog-cockpit__title-row h2 {
+  margin: 0;
+}
+
+.backlog-cockpit__howto-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-neutral);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.backlog-cockpit__howto-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
 .backlog-cockpit__subtitle {
   margin: 0;
   color: var(--muted);
@@ -891,6 +956,41 @@ section.card .meta {
 
 .backlog-cockpit__legend {
   margin-top: 12px;
+}
+
+.backlog-howto-popover {
+  position: relative;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--accent) 22%);
+  background: var(--card);
+  box-shadow: var(--elevation-2);
+}
+
+.backlog-howto-popover__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.86rem;
+}
+
+.backlog-howto-popover__close {
+  border: 1px solid var(--line);
+  background: var(--surface-neutral);
+  color: var(--muted);
+  border-radius: 999px;
+  width: 22px;
+  height: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.backlog-howto-popover__close:hover {
+  border-color: var(--accent);
+  color: var(--text);
 }
 
 .backlog-cockpit__legend summary {
@@ -966,6 +1066,32 @@ section.card .meta {
 
 .backlog-cockpit__details[open] summary {
   margin-bottom: 8px;
+}
+
+.backlog-advanced-filters {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 8px;
+}
+
+.backlog-advanced-filters summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.backlog-advanced-filters summary::-webkit-details-marker {
+  display: none;
+}
+
+.backlog-advanced-filters summary::before {
+  content: "▸ ";
+}
+
+.backlog-advanced-filters[open] summary::before {
+  content: "▾ ";
 }
 
 .backlog-cockpit__button-row {
