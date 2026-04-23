@@ -109,7 +109,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `requirements.txt` to include dependencies required by the new LLM scripts.
 - Refactored `scripts/changelog_draft.py` to integrate LLM generation logic and improve draft creation.
 - `CHANGELOG.md`, `README.md`, and `CONTRIBUTING.md` updated for container workflows and discovery of new docs.
-- `docs/adr/README.html`, `docs/developer/README.html`, and `docs/internal/developers.html` link to ADR 0015 and the Docker image developer guide.
+- `docs/adr/README.html` and `docs/developer/README.html` link to ADR 0015 and the Docker image developer guide.
 - `env/example`, `requirements.txt`, and `.gitignore` adjusted for new tooling and generated paths.
 - `scripts/format_docs_html.py` and `scripts/sync_docs.py` updated alongside the documentation pipeline.
 - `docs/developer/0008-docs-pipeline.html` updated (versioning notes, pdoc output path `docs/api/`, optional CI).

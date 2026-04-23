@@ -17,7 +17,7 @@ def _iter_target_files() -> list[Path]:
     for html_path in sorted(DOCS_ROOT.glob("**/*.html")):
         rel = html_path.relative_to(DOCS_ROOT)
         # pdoc output is generator-owned; keep it untouched.
-        if rel.parts and rel.parts[0] == "api":
+        if rel.parts and rel.parts[0] in {"api", "pdoc"}:
             continue
         targets.append(html_path)
     return targets

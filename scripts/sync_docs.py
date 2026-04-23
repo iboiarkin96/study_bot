@@ -1,8 +1,7 @@
 """Auto-generate documentation sections from code sources.
 
 Reads the Makefile help target and FastAPI app routes, then patches
-marker-delimited sections in README.md, docs/internal/system-design.html,
-and docs/internal/developers.html.
+marker-delimited sections in README.md and docs/internal/analysis/system-design.html.
 
 Markers have the form:
     <!-- BEGIN:SECTION_NAME -->
@@ -189,7 +188,7 @@ def _render_endpoints_md(routes: list[tuple[str, str, str]]) -> str:
 
 
 def _render_endpoints_html(routes: list[tuple[str, str, str]]) -> str:
-    """Render route list as HTML snippet for ``internal/system-design.html`` markers.
+    """Render route list as HTML snippet for ``internal/analysis/system-design.html`` markers.
 
     Args:
         routes: Output of :func:`_get_fastapi_routes`.
@@ -440,8 +439,12 @@ def _should_include_handbook_doc(path: Path) -> bool:
 
 
 _HANDBOOK_DESCRIPTION_OVERRIDES: dict[str, str] = {
-    "internal/system-design.html": "System design: context, FR/NFR, architecture, API contracts, and diagrams.",
-    "internal/developers.html": "Developers Docs: engineering workflow, policies, quality gates, and developer guides index.",
+    "internal/analysis/system-design.html": (
+        "System design: context, FR/NFR, architecture, API contracts, and diagrams."
+    ),
+    "developer/README.html": (
+        "Developers Docs: engineering workflow, policies, quality gates, and developer guides index."
+    ),
     "developer/0001-requirements.html": "Developer interpretation of requirements and done criteria.",
     "developer/0002-schemas-and-contracts.html": (
         "Rules for request/response/error contracts and backward-compatible changes."
@@ -482,8 +485,7 @@ def _handbook_doc_entries() -> list[tuple[str, str, str, str]]:
     entries: list[tuple[str, str, str, str]] = []
 
     fixed_root = [
-        docs / "internal" / "system-design.html",
-        docs / "internal" / "developers.html",
+        docs / "internal" / "analysis" / "system-design.html",
     ]
     for path in fixed_root:
         if not path.exists():
@@ -755,8 +757,8 @@ def sync(check: bool = False) -> int:
         else:
             _info("README.md already up to date")
 
-    # --- docs/internal/system-design.html ---
-    html_path = ROOT / "docs" / "internal" / "system-design.html"
+    # --- docs/internal/analysis/system-design.html ---
+    html_path = ROOT / "docs" / "internal" / "analysis" / "system-design.html"
     if html_path.exists():
         html_sections: dict[str, str] = {}
         if routes:
@@ -767,34 +769,35 @@ def sync(check: bool = False) -> int:
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ docs/internal/system-design.html is out of sync (run make docs-fix)")
+                print(
+                    "✗ docs/internal/analysis/system-design.html is out of sync (run make docs-fix)"
+                )
             else:
                 html_path.write_text(updated)
-                _ok("docs/internal/system-design.html updated")
+                _ok("docs/internal/analysis/system-design.html updated")
         else:
-            _info("docs/internal/system-design.html already up to date")
+            _info("docs/internal/analysis/system-design.html already up to date")
 
-    # --- docs/internal/developers.html (Developers Docs: Makefile table sync) ---
-    eng_path = ROOT / "docs" / "internal" / "developers.html"
-    if eng_path.exists():
-        eng_sections: dict[str, str] = {}
+    # --- docs/howto/make-commands-inventory.html (Makefile inventory sync) ---
+    make_commands_path = ROOT / "docs" / "howto" / "make-commands-inventory.html"
+    if make_commands_path.exists():
+        make_commands_sections: dict[str, str] = {}
         if makefile_entries:
-            eng_sections["MAKEFILE_COMMANDS"] = _render_makefile_html(makefile_entries)
-        handbook_entries = _handbook_doc_entries()
-        if handbook_entries:
-            eng_sections["HANDBOOK_DOC_ROWS"] = _render_handbook_rows_html(handbook_entries)
+            make_commands_sections["MAKEFILE_COMMANDS"] = _render_makefile_html(makefile_entries)
 
-        original = eng_path.read_text()
-        updated = _replace_markers(original, eng_sections)
+        original = make_commands_path.read_text()
+        updated = _replace_markers(original, make_commands_sections)
         if updated != original:
             stale_files += 1
             if check:
-                print("✗ docs/internal/developers.html is out of sync (run make docs-fix)")
+                print(
+                    "✗ docs/howto/make-commands-inventory.html is out of sync (run make docs-fix)"
+                )
             else:
-                eng_path.write_text(updated)
-                _ok("docs/internal/developers.html updated")
+                make_commands_path.write_text(updated)
+                _ok("docs/howto/make-commands-inventory.html updated")
         else:
-            _info("docs/internal/developers.html already up to date")
+            _info("docs/howto/make-commands-inventory.html already up to date")
 
     # --- docs/internal/api/errors.html (error catalog sync) ---
     errors_path = ROOT / "docs" / "internal" / "api" / "errors.html"

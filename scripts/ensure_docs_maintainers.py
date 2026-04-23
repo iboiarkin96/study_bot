@@ -25,7 +25,7 @@ def iter_docs_pages(candidates: list[str] | None = None) -> list[Path]:
             scans all ``docs/**/*.html`` files.
 
     Returns:
-        Sorted list of files under ``docs/`` excluding ``docs/api`` and
+        Sorted list of files under ``docs/`` excluding ``docs/pdoc`` and
         ``docs/assets``.
     """
     if candidates:
@@ -40,7 +40,7 @@ def iter_docs_pages(candidates: list[str] | None = None) -> list[Path]:
         if DOCS_ROOT not in path.parents:
             continue
         rel = path.relative_to(DOCS_ROOT)
-        if rel.parts and rel.parts[0] in {"api", "assets"}:
+        if rel.parts and rel.parts[0] in {"pdoc", "assets"}:
             continue
         out.append(path)
     return out

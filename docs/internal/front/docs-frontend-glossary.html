@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend glossary</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend glossary</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This glossary defines frontend documentation terms used across the docs platform so contributors, analysts,
+            and reviewers share the same language when discussing behavior and changes.
+          </p>
+        </section>
+
+        <section id="terms" class="card">
+          <h2>Core terms</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Definition</th>
+                <th>Primary references</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Architecture map</td>
+                <td>The canonical inventory of frontend features, ownership boundaries, and implementation ledger entries.</td>
+                <td><a href="./docs-frontend-architecture-map.html">Architecture map</a></td>
+              </tr>
+              <tr>
+                <td>Feature ID (<code>DFEAT-xxx</code>)</td>
+                <td>Stable identifier for a frontend capability used in tasks, QA notes, changelog entries, and reviews.</td>
+                <td><a href="./docs-frontend-architecture-map.html#feature-id-governance">Feature ID governance</a></td>
+              </tr>
+              <tr>
+                <td>Internal sidebar</td>
+                <td>The left navigation tree for internal docs pages, including nested groups and active-page resolution.</td>
+                <td><a href="./docs-frontend-navigation-search-and-discovery.html#internal-sidebar-drawer">Internal sidebar and drawer</a></td>
+              </tr>
+              <tr>
+                <td>Drawer mode</td>
+                <td>Tablet/phone navigation model where sidebar content opens as a modal-style left panel.</td>
+                <td><a href="./docs-frontend-menu-and-theme-controls.html#navigation-contract">Navigation contract</a></td>
+              </tr>
+              <tr>
+                <td>Flashlight control</td>
+                <td>The theme toggle button that cycles automatic/light/dark modes and shows a lit state in dark mode.</td>
+                <td><a href="./docs-frontend-ui-motion-and-adaptivity.html#theme-system">Theme system and flashlight control</a></td>
+              </tr>
+              <tr>
+                <td>Quick actions (command palette)</td>
+                <td>Desktop-only action dialog opened by keyboard shortcuts for navigation, actions, and section jumps.</td>
+                <td><a href="./docs-frontend-navigation-search-and-discovery.html#command-palette">Command palette</a></td>
+              </tr>
+              <tr>
+                <td>Page actions toolbar</td>
+                <td>Desktop toolbar with high-frequency page-level actions (copy link, edit/report, reading mode, theme).</td>
+                <td><a href="./docs-frontend-architecture-map.html#feature-implementation-ledger">Feature ledger</a></td>
+              </tr>
+              <tr>
+                <td>In-page TOC</td>
+                <td>Automatically generated section navigation from headings (<code>h2/h3</code>) with active-section tracking.</td>
+                <td><a href="./docs-frontend-navigation-search-and-discovery.html#section-navigation">In-page navigation</a></td>
+              </tr>
+              <tr>
+                <td>Reading mode</td>
+                <td>A focused content mode that minimizes surrounding UI noise for long-form reading.</td>
+                <td><a href="./docs-frontend-ui-motion-and-adaptivity.html#rocket-and-reading-ux">Reading UX helpers</a></td>
+              </tr>
+              <tr>
+                <td>Continue reading prompt</td>
+                <td>A persisted prompt that restores a previous section anchor and scroll position for returning readers.</td>
+                <td><a href="./docs-frontend-navigation-search-and-discovery.html#continue-reading-details">Continue reading details</a></td>
+              </tr>
+              <tr>
+                <td>Rocket back-to-top</td>
+                <td>A floating control that appears near the page bottom and scrolls to top with launch animation.</td>
+                <td><a href="./docs-frontend-ui-motion-and-adaptivity.html#rocket-and-reading-ux">Rocket and reading UX</a></td>
+              </tr>
+              <tr>
+                <td>Premium surface</td>
+                <td>Shared visual styling model based on <code>--docs-premium-*</code> tokens (cards, chips, list items, focus).</td>
+                <td><a href="./docs-frontend-ui-kit.html">UI kit</a></td>
+              </tr>
+              <tr>
+                <td>Edited by widget</td>
+                <td>Page-level metadata control that displays maintainer avatars and an expandable editor list.</td>
+                <td><a href="./docs-frontend-feedback-and-editorial-workflow.html#edited-by-widget">Edited by workflow</a></td>
+              </tr>
+              <tr>
+                <td>Page feedback card</td>
+                <td>Embedded page form that creates prefilled GitHub feedback issues with context and category.</td>
+                <td><a href="./docs-frontend-feedback-and-editorial-workflow.html#page-feedback-card">Feedback form workflow</a></td>
+              </tr>
+              <tr>
+                <td>Telemetry contract</td>
+                <td>Agreed event channels and payload expectations for search and command palette interactions.</td>
+                <td><a href="./docs-frontend-feedback-and-editorial-workflow.html#telemetry-contract">Telemetry contract</a></td>
+              </tr>
+              <tr>
+                <td>Diagram lightbox</td>
+                <td>Full-screen diagram viewer with zoom, pan, keyboard controls, and focus-safe open/close behavior.</td>
+                <td><a href="./docs-frontend-diagrams-and-lightbox.html">Diagrams and lightbox</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="usage-guidelines" class="card">
+          <h2>Usage guidelines</h2>
+          <ul>
+            <li>Use glossary terms in issue titles, task descriptions, and PR notes to reduce ambiguity.</li>
+            <li>When introducing a new frontend concept, add it here in the same change set as feature documentation updates.</li>
+            <li>When a term changes meaning, update this page and cross-references in related docs pages.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Added frontend glossary with core docs UX and governance terms.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

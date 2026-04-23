@@ -197,7 +197,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "developer/README.html",
-        "title": "Moved — Developers Docs"
+        "title": "Developers Docs — Study App"
       },
       {
         "path": "howto/0004-how-to-add-post-contract.html",
@@ -208,8 +208,16 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "How-to guides — Study App"
       },
       {
+        "path": "howto/how-to-change-docs-frontend-safely.html",
+        "title": "How to change docs frontend safely (playbooks)"
+      },
+      {
         "path": "howto/internal-service-docs-layout.html",
         "title": "Internal service docs — layout and how to add pages"
+      },
+      {
+        "path": "howto/make-commands-inventory.html",
+        "title": "Make commands inventory — How-to guides — Study App"
       },
       {
         "path": "howto/onboarding-from-zero-to-endpoint-docs.html",
@@ -222,6 +230,14 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/README.html",
         "title": "Internal docs - Home page"
+      },
+      {
+        "path": "internal/analysis/methodology.html",
+        "title": "Methodology (ETR / Extract–Transform–Retrieve, idea discovery) — Study App"
+      },
+      {
+        "path": "internal/analysis/system-design.html",
+        "title": "ETR Study API — System design"
       },
       {
         "path": "internal/api/README.html",
@@ -292,12 +308,24 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Moved — User resource"
       },
       {
-        "path": "internal/developers.html",
-        "title": "Developers Docs — Study App"
+        "path": "internal/front/docs-frontend-architecture-map.html",
+        "title": "Docs frontend architecture map and feature inventory"
       },
       {
-        "path": "internal/errors.html",
-        "title": "Moved: Error catalog"
+        "path": "internal/front/docs-frontend-diagrams-and-lightbox.html",
+        "title": "Docs frontend diagrams and lightbox"
+      },
+      {
+        "path": "internal/front/docs-frontend-fast-entry-by-role.html",
+        "title": "Docs frontend quick entry by role"
+      },
+      {
+        "path": "internal/front/docs-frontend-feedback-and-editorial-workflow.html",
+        "title": "Docs frontend feedback and editorial workflow"
+      },
+      {
+        "path": "internal/front/docs-frontend-glossary.html",
+        "title": "Docs frontend glossary"
       },
       {
         "path": "internal/front/docs-frontend-hotkeys.html",
@@ -305,23 +333,23 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "internal/front/docs-frontend-menu-and-theme-controls.html",
-        "title": "#1 Docs frontend navigation and theme controls"
+        "title": "Docs frontend navigation and theme controls (normative contract)"
+      },
+      {
+        "path": "internal/front/docs-frontend-navigation-search-and-discovery.html",
+        "title": "Docs frontend navigation, search, and discovery"
       },
       {
         "path": "internal/front/docs-frontend-ui-kit.html",
-        "title": "Docs frontend UI kit (premium surfaces and interactions)"
+        "title": "Docs frontend UI kit (component style spec)"
+      },
+      {
+        "path": "internal/front/docs-frontend-ui-motion-and-adaptivity.html",
+        "title": "Docs frontend UI system, motion, and adaptivity"
       },
       {
         "path": "internal/front/documentation-style-guide.html",
         "title": "Documentation style guide and audit standard"
-      },
-      {
-        "path": "internal/make-commands.html",
-        "title": "Make commands — Internal docs — Study App"
-      },
-      {
-        "path": "internal/methodology.html",
-        "title": "Methodology (ETR / Extract–Transform–Retrieve, idea discovery) — Study App"
       },
       {
         "path": "internal/portal/index.html",
@@ -340,20 +368,12 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Kirill Neustroev — Employee portal — Study App"
       },
       {
-        "path": "internal/service-overview.html",
-        "title": "Moved — Internal service documentation"
-      },
-      {
-        "path": "internal/system-analysis.html",
-        "title": "Moved — System design"
-      },
-      {
-        "path": "internal/system-design.html",
-        "title": "ETR Study API — System design"
+        "path": "openapi/index.html",
+        "title": "ETR Study App API — Swagger UI (test)"
       },
       {
         "path": "openapi/openapi-explorer.html",
-        "title": "ETR Study App API — OpenAPI (test)"
+        "title": "Moved — OpenAPI / Swagger UI"
       },
       {
         "path": "qa/0001-documentation-pages-visual-checklist.html",

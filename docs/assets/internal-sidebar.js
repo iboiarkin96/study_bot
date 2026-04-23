@@ -38,8 +38,8 @@
       title: "Code",
       kind: "public",
       links: [
-        { label: "OpenAPI explorer", path: "openapi/openapi-explorer.html" },
-        { label: "Pdoc API docs", path: "api/index.html" },
+        { label: "OpenAPI / Swagger UI", path: "openapi/index.html" },
+        { label: "Python API (pdoc)", path: "pdoc/index.html" },
       ],
     },
   ];
@@ -455,14 +455,14 @@
     if (sectionPath === "backlog/README.html") {
       return currentPath.startsWith("backlog/");
     }
-    if (sectionPath === "openapi/openapi-explorer.html") {
-      return currentPath === "openapi/openapi-explorer.html" || currentPath === "openapi-explorer.html";
-    }
     if (sectionPath === "qa/README.html") {
       return currentPath.startsWith("qa/");
     }
-    if (sectionPath === "api/index.html") {
-      return currentPath.startsWith("api/");
+    if (sectionPath === "openapi/index.html") {
+      return currentPath.startsWith("openapi/");
+    }
+    if (sectionPath === "pdoc/index.html") {
+      return currentPath.startsWith("pdoc/");
     }
     return false;
   }
@@ -501,13 +501,15 @@
     // { label: "Documentation home", path: "index.html" },
     { label: "Welcome to internal docs!", path: "internal/README.html" },
     { label: "Employee portal", path: "internal/portal/index.html" },
-    { label: "Methodology", path: "internal/methodology.html" },
-    { label: "System design", path: "internal/system-design.html" },
-    { label: "Developers Docs", path: "internal/developers.html" },
+    { label: "Methodology", path: "internal/analysis/methodology.html" },
+    { label: "System design", path: "internal/analysis/system-design.html" },
+    { label: "Developers Docs", path: "developer/README.html" },
     { label: "How-to guides", path: "howto/README.html" },
+    { label: "How to change docs frontend safely", path: "howto/how-to-change-docs-frontend-safely.html" },
     { label: "ADR", path: "adr/README.html" },
     { label: "RFC", path: "rfc/README.html" },
-    { label: "OpenAPI explorer", path: "openapi/openapi-explorer.html" },
+    { label: "OpenAPI / Swagger UI", path: "openapi/index.html" },
+    { label: "Python API (pdoc)", path: "pdoc/index.html" },
     { label: "Runbooks", path: "runbooks/README.html" },
     { label: "QA checklists", path: "qa/README.html" },
     // { label: "Backlog", path: "backlog/README.html" },
@@ -558,11 +560,39 @@
       label: "Docs documentation",
       children: [
         {
-          label: "Documentation style guide",
+          label: " Style guide",
           path: "internal/front/documentation-style-guide.html",
         },
         {
-          label: "#1 Docs frontend navigation and theme controls",
+          label: "Docs frontend architecture map",
+          path: "internal/front/docs-frontend-architecture-map.html",
+        },
+        {
+          label: "Docs frontend quick entry by role",
+          path: "internal/front/docs-frontend-fast-entry-by-role.html",
+        },
+        {
+          label: "Docs frontend glossary",
+          path: "internal/front/docs-frontend-glossary.html",
+        },
+        {
+          label: "Docs frontend navigation, search, and discovery",
+          path: "internal/front/docs-frontend-navigation-search-and-discovery.html",
+        },
+        {
+          label: "Docs frontend UI, motion, and adaptivity",
+          path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html",
+        },
+        {
+          label: "Docs frontend diagrams and lightbox",
+          path: "internal/front/docs-frontend-diagrams-and-lightbox.html",
+        },
+        {
+          label: "Docs frontend feedback and editorial workflow",
+          path: "internal/front/docs-frontend-feedback-and-editorial-workflow.html",
+        },
+        {
+          label: "Docs frontend navigation and theme controls",
           path: "internal/front/docs-frontend-menu-and-theme-controls.html",
         },
         {

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,21 +23,23 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
+        <h1>GET /api/v1/conspectuses/due</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <p class="internal-doc-entity">Conspectus</p>
-        <h1 class="internal-doc-h1">
-          <span class="internal-http-tablet internal-http-tablet--stacked" aria-label="GET /api/v1/conspectuses/due">
-            <span class="badge badge--method-get">GET</span>
-            <code class="internal-http-tablet__path">/api/v1/conspectuses/due</code>
-          </span>
-        </h1>
-        <p class="lead">
-          <strong>Specification.</strong> Intended: list conspectuses for a user that are due on or before
-          <code>due_before</code> (defaults to UTC now), optionally filtered by <code>slot</code> (<code>A</code>–<code>D</code>).
-          Planned <code>operationId</code>: <code>listDueConspectuses</code>.
-        </p>
-        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>listDueConspectuses</code></p>
+        <section class="internal-doc-entity">Conspectus</section>
+        <section class="card">
+          <span class="badge badge--method-get">GET</span>
+          <code class="internal-http-tablet__path">/api/v1/conspectuses/due</code>
+        </section>
+        <section class="card">
+          <h2>Business context</h2>
+          <p>
+            Intended: list conspectuses for a user that are due on or before
+            <code>due_before</code> (defaults to UTC now), optionally filtered by <code>slot</code>
+            (<code>A</code>–<code>D</code>).
+            Planned <code>operationId</code>: <code>listDueConspectuses</code>.
+          </p>
+        </section>
 
         <section class="card">
           <h2>Query parameters and behavior</h2>
@@ -50,92 +52,94 @@
             Intended implementation: filter by <code>next_review_at &lt;= due_before</code>, optional equality on
             <code>slot</code>; order by <code>next_review_at</code> ascending, then <code>conspectus_uuid</code>.
           </p>
-          <p><strong>Success:</strong> <code>200 OK</code> — JSON array of <code>ConspectusResponse</code> (may be empty).
-            <strong>No idempotency</strong> (read-only).</p>
-          </section>
-
-          <section class="card">
-            <h2>Errors</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>HTTP</th>
-                  <th>When</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>404</code></td>
-                  <td><code>USER_404</code> — user not found for composite key.</td>
-                </tr>
-                <tr>
-                  <td><code>422</code></td>
-                  <td>Invalid query types (e.g. bad <code>slot</code> if validation fails).</td>
-                </tr>
-                <tr>
-                  <td><code>401</code> / <code>429</code></td>
-                  <td>Middleware.</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section class="card">
-            <h2>Single-file deep spec</h2>
-            <p>
-              <a href="../index.html#conspectus-op-listDueConspectuses">Conspectus hub — this operation</a>
-            </p>
-          </section>
-
-          <p class="small">
-            <a href="../index.html">← Conspectus resource hub</a>
+          <p><strong>Success:</strong> <code>200 OK</code> — JSON array of <code>ConspectusResponse</code> (may be
+            empty).
+            <strong>No idempotency</strong> (read-only).
           </p>
+        </section>
 
-          <section id="page-history" class="card">
+        <section class="card">
+          <h2>Errors</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>HTTP</th>
+                <th>When</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>404</code></td>
+                <td><code>USER_404</code> — user not found for composite key.</td>
+              </tr>
+              <tr>
+                <td><code>422</code></td>
+                <td>Invalid query types (e.g. bad <code>slot</code> if validation fails).</td>
+              </tr>
+              <tr>
+                <td><code>401</code> / <code>429</code></td>
+                <td>Middleware.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-            <h2>Page history</h2>
+        <section class="card">
+          <h2>Single-file deep spec</h2>
+          <p>
+            <a href="../index.html#conspectus-op-listDueConspectuses">Conspectus hub — this operation</a>
+          </p>
+        </section>
 
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <p class="small">
+          <a href="../index.html">← Conspectus resource hub</a>
+        </p>
 
-              <table class="docs-page-history">
+        <section id="page-history" class="card">
 
-                <thead>
+          <h2>Page history</h2>
 
-                  <tr>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
 
-                    <th scope="col">Date</th>
+            <table class="docs-page-history">
 
-                    <th scope="col">Change</th>
+              <thead>
 
-                    <th scope="col">Author</th>
+                <tr>
 
-                  </tr>
+                  <th scope="col">Date</th>
 
-                </thead>
+                  <th scope="col">Change</th>
 
-                <tbody>
+                  <th scope="col">Author</th>
 
-                  <tr>
+                </tr>
 
-                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+              </thead>
 
-                    <td>Added Page history section (repository baseline).</td>
+              <tbody>
 
-                    <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                <tr>
 
-                  </tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
 
-                </tbody>
+                  <td>Added Page history section (repository baseline).</td>
 
-              </table>
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
 
-            </div>
+                </tr>
 
-          </section>
+              </tbody>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
+            </table>
+
+          </div>
+
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
     </div>
+  </div>
 
-  </body></html>
+</body></html>

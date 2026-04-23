@@ -4,7 +4,7 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Docs frontend UI kit (premium surfaces and interactions)</title>
+  <title>Docs frontend UI kit (component style spec)</title>
   <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
   <link rel="stylesheet" href="../../assets/docs.css" />
   <link rel="stylesheet" href="../../assets/docs-theme.css">
@@ -21,20 +21,20 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend UI kit (premium surfaces and interactions)</h1>
+        <h1>Docs frontend UI kit (component style spec)</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
         <section id="overview" class="card">
           <h2>Overview</h2>
           <p>
-            This page defines the visual system for premium docs frontend surfaces: command palette, page actions, hotkey tip,
-            continue-reading card, and page feedback card. The goal is consistent quality in both light and dark themes.
+            This page is retained as a component style specification for premium docs frontend surfaces. It focuses on
+            visual standards only and avoids runtime behavior duplication.
           </p>
           <ul>
-            <li><strong>Scope:</strong> interactive docs chrome provided by <code>docs/assets/docs-nav.js</code> and styled in <code>docs/assets/docs.css</code>.</li>
-            <li><strong>Audience:</strong> maintainers of docs frontend UI and contributors updating docs experience components.</li>
-            <li><strong>Design intent:</strong> compact, modern, low-noise premium UI with strong keyboard and accessibility support.</li>
+            <li><strong>Scope:</strong> style system for toolbar, command palette, hotkey tip, continue-reading card, and page feedback card.</li>
+            <li><strong>Behavior docs:</strong> see <a href="./docs-frontend-ui-motion-and-adaptivity.html">UI system, motion, and adaptivity</a> and <a href="./docs-frontend-navigation-search-and-discovery.html">navigation/search/discovery</a>.</li>
+            <li><strong>Design intent:</strong> compact, modern, low-noise premium UI with strong accessibility support.</li>
           </ul>
         </section>
 
@@ -63,7 +63,7 @@
               <tr>
                 <td>Auto in-page TOC</td>
                 <td><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> near end of <code>&lt;main&gt;</code></td>
-                <td>Stable insertion point for “Page feedback” card and TOC layout.</td>
+                <td>Stable insertion point for “Page feedback” card and TOC layout. The rendered <strong>On this page</strong> aside is shown only on desktop (<code>min-width: 1025px</code>).</td>
               </tr>
             </tbody>
           </table>
@@ -102,7 +102,7 @@
               <tr>
                 <td>Continue reading card</td>
                 <td><code>.docs-continue-reading*</code></td>
-                <td><code>injectDocsContinueReading()</code></td>
+                <td><code>initDocsContinueReadingPrompt()</code></td>
               </tr>
               <tr>
                 <td>Page feedback card</td>
@@ -153,14 +153,13 @@
           </table>
         </section>
 
-        <section id="interaction-model" class="card">
-          <h2>Interaction model</h2>
+        <section id="interaction-styling-contract" class="card">
+          <h2>Interaction styling contract</h2>
           <ul>
-            <li><strong>Open/close:</strong> command palette supports hotkeys and launcher button; repeated trigger toggles panel.</li>
-            <li><strong>Keyboard navigation:</strong> arrow keys move active item, <kbd>Enter</kbd> executes, <kbd>Esc</kbd> closes panel.</li>
-            <li><strong>New tab behavior:</strong> <kbd>Cmd/Ctrl</kbd> + <kbd>Enter</kbd> opens active navigation target in new tab.</li>
-            <li><strong>Motion profile:</strong> short premium easing and reduced-motion fallback are mandatory.</li>
-            <li><strong>Viewport policy:</strong> quick actions + page actions are desktop/tablet only; mobile widths disable them.</li>
+            <li><strong>State consistency:</strong> hover/focus/active must stay visually coherent across all premium controls.</li>
+            <li><strong>Focus visibility:</strong> controls must expose visible <code>:focus-visible</code> in both light and dark themes.</li>
+            <li><strong>Motion policy:</strong> micro-interactions use short transitions; reduced-motion mode disables non-essential effects.</li>
+            <li><strong>Density policy:</strong> compact spacing should not reduce readability of labels, hints, and keycaps.</li>
           </ul>
         </section>
 
@@ -178,10 +177,10 @@
         <section id="implementation-map" class="card">
           <h2>Implementation map</h2>
           <ul>
-            <li><code>docs/assets/docs-nav.js</code> — lifecycle, rendering, keyboard handling, and runtime composition.</li>
-            <li><code>docs/assets/docs.css</code> — token definitions, theme overrides, component visuals, state styling.</li>
-            <li><code>docs/internal/front/docs-frontend-hotkeys.html</code> — end-user shortcut reference.</li>
-            <li><code>docs/internal/front/docs-frontend-menu-and-theme-controls.html</code> — broader docs frontend UX requirements.</li>
+            <li><code>docs/assets/docs.css</code> — token definitions, theme overrides, component visuals, and state styling.</li>
+            <li><code>docs/assets/docs-theme.css</code> — dark-theme token overrides and parity rules.</li>
+            <li><code>docs/assets/docs-site-nav.css</code> — top navigation and flashlight control styling.</li>
+            <li><code>docs/internal/front/docs-frontend-ui-motion-and-adaptivity.html</code> — runtime and UX behavior details.</li>
           </ul>
         </section>
 
@@ -189,7 +188,7 @@
           <h2>QA checklist</h2>
           <ol>
             <li>Verify all premium surfaces in both light and dark themes (toolbar, palette, tip, continue-reading, feedback).</li>
-            <li>Run keyboard-only pass: open, navigate, execute, close, and return focus correctly.</li>
+            <li>Run keyboard-only pass: focus rings are visible and readable on all premium controls.</li>
             <li>Validate focus-visible rings and glow contrast on interactive controls.</li>
             <li>Check reduced-motion mode to ensure animations are disabled or near-instant.</li>
             <li>Check responsive behavior at desktop, tablet, and phone breakpoints.</li>
@@ -201,9 +200,9 @@
           <h2>Change management rules</h2>
           <ul>
             <li>When adding a new premium docs component, define tokens first, then implement styles.</li>
-            <li>Avoid introducing one-off colors/shadows in component rules without token coverage.</li>
+            <li>Avoid introducing one-off colors, borders, or shadows in component rules without token coverage.</li>
             <li>Any visual update in one theme must be reviewed for parity in the other theme.</li>
-            <li>Update this page and hotkeys page whenever interaction model or shortcuts change.</li>
+            <li>Keep runtime behavior docs in dedicated pages to prevent duplication in this style specification.</li>
           </ul>
         </section>
 
@@ -221,7 +220,7 @@
               <tbody>
                 <tr>
                   <td><time datetime="2026-04-23">2026-04-23</time></td>
-                  <td>Initial UI kit spec for docs premium surfaces, tokens, interaction model, accessibility, and QA baseline.</td>
+                  <td>Refactored UI kit into style-only specification and removed duplicated runtime behavior narrative.</td>
                   <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                 </tr>
               </tbody>

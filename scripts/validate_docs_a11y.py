@@ -22,7 +22,7 @@ def _iter_docs_pages() -> list[Path]:
     pages: list[Path] = []
     for path in sorted(DOCS_ROOT.glob("**/*.html")):
         rel = path.relative_to(DOCS_ROOT)
-        if rel.parts and rel.parts[0] in {"api", "assets"}:
+        if rel.parts and rel.parts[0] in {"api", "assets", "pdoc"}:
             continue
         pages.append(path)
     return pages

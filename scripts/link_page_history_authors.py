@@ -77,7 +77,7 @@ def main() -> int:
     n = 0
     for path in sorted(DOCS.rglob("*.html")):
         rel = path.relative_to(DOCS).as_posix()
-        if rel.startswith("api/") or rel.startswith("assets/"):
+        if rel.startswith("api/") or rel.startswith("assets/") or rel.startswith("pdoc/"):
             continue
         try:
             if process_file(path):

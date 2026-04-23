@@ -48,7 +48,7 @@ function currentDocsRelPath() {
   const docsRootFirstSegments = new Set([
     "index.html",
     "adr",
-    "api",
+    "pdoc",
     "assets",
     "audit",
     "backlog",
@@ -77,7 +77,7 @@ function activeTarget(relPath) {
     return "adr/README.html";
   }
   if (relPath.startsWith("developer/")) {
-    return "internal/developers.html";
+    return "developer/README.html";
   }
   if (relPath.startsWith("backlog/")) {
     return "backlog/README.html";
@@ -94,8 +94,11 @@ function activeTarget(relPath) {
   if (relPath.startsWith("audit/")) {
     return "audit/README.html";
   }
-  if (relPath === "internal/system-design.html") {
-    return "internal/system-design.html";
+  if (relPath === "internal/analysis/system-design.html") {
+    return "internal/analysis/system-design.html";
+  }
+  if (relPath === "internal/analysis/methodology.html") {
+    return "internal/analysis/methodology.html";
   }
   if (relPath.startsWith("internal/")) {
     return "internal/README.html";
@@ -103,14 +106,11 @@ function activeTarget(relPath) {
   if (relPath.startsWith("howto/")) {
     return "howto/README.html";
   }
-  if (relPath.startsWith("api/")) {
-    return "api/index.html";
+  if (relPath.startsWith("pdoc/")) {
+    return "pdoc/index.html";
   }
-  if (relPath === "openapi-explorer.html" || relPath === "openapi/openapi-explorer.html") {
-    return "openapi/openapi-explorer.html";
-  }
-  if (relPath === "internal/developers.html") {
-    return "internal/developers.html";
+  if (relPath.startsWith("openapi/")) {
+    return "openapi/index.html";
   }
   return "index.html";
 }
@@ -702,8 +702,11 @@ function docsSearchResultKind(url) {
   if (!safeUrl) {
     return "Docs";
   }
-  if (safeUrl.startsWith("api/")) {
-    return "API";
+  if (safeUrl.startsWith("pdoc/")) {
+    return "Python API";
+  }
+  if (safeUrl.startsWith("openapi/")) {
+    return "OpenAPI";
   }
   if (safeUrl.startsWith("adr/")) {
     return "ADR";
@@ -882,7 +885,8 @@ function renderDocsSearchResults(list, results, fromDir, selectedIndex, listId, 
 
     const quickLinks = [
       { label: "Go to Internal README", href: buildSearchResultHref(fromDir, "internal/README.html") },
-      { label: "Go to API docs", href: buildSearchResultHref(fromDir, "api/index.html") },
+      { label: "Go to Python API (pdoc)", href: buildSearchResultHref(fromDir, "pdoc/index.html") },
+      { label: "Go to OpenAPI / Swagger UI", href: buildSearchResultHref(fromDir, "openapi/index.html") },
       { label: "Go to Runbooks", href: buildSearchResultHref(fromDir, "runbooks/README.html") },
     ];
     actions.appendChild(clearBtn);
@@ -1330,7 +1334,8 @@ function initCompactTopNav(nav) {
 function docsHubHrefForPrefix(prefix) {
   const hubs = {
     adr: "adr/README.html",
-    api: "api/index.html",
+    pdoc: "pdoc/index.html",
+    openapi: "openapi/index.html",
     audit: "audit/README.html",
     "audit/docs": "audit/docs/README.html",
     "audit/api": "audit/api/README.html",
@@ -1344,7 +1349,6 @@ function docsHubHrefForPrefix(prefix) {
     "internal/api/user": "internal/api/user/index.html",
     "internal/api/conspectus": "internal/api/conspectus/index.html",
     "internal/api/error-log": "internal/api/error-log/index.html",
-    openapi: "openapi/openapi-explorer.html",
     qa: "qa/README.html",
     rfc: "rfc/README.html",
     runbooks: "runbooks/README.html",
@@ -1356,7 +1360,8 @@ function docsHubHrefForPrefix(prefix) {
 function docsBreadcrumbLabelForPrefix(prefix) {
   const labels = {
     adr: "ADRs",
-    api: "API reference",
+    pdoc: "Python API (pdoc)",
+    openapi: "OpenAPI",
     audit: "Assessments",
     "audit/docs": "DX assessments",
     "audit/api": "API assessments",
@@ -1371,7 +1376,6 @@ function docsBreadcrumbLabelForPrefix(prefix) {
     "internal/api/conspectus": "Conspectus",
     "internal/api/error-log": "Error log",
     "internal/api/user/operations": "Operations",
-    openapi: "OpenAPI",
     qa: "QA checklists",
     rfc: "RFCs",
     runbooks: "Runbooks",
@@ -1514,54 +1518,50 @@ function mountInternalDrawerMenuButton() {
   if (!main) {
     return null;
   }
-
-  const existing = main.querySelector("[data-internal-drawer-menu]");
-  if (existing) {
-    return existing;
-  }
-
-  /*
-   * Only use a top-level page heading as an anchor.
-   * Some pages (e.g. profile cards) contain nested <h1> inside content blocks; mounting
-   * the menu row there breaks layout and misplaced theme control.
-   * Avoid `:scope` here for broader browser compatibility.
-   */
-  let h1 = null;
-  for (const child of main.children) {
-    if (child.tagName === "H1") {
-      h1 = child;
-      break;
+  let row = main.querySelector("[data-internal-drawer-menu-row]");
+  if (!row) {
+    /*
+     * Anchor to the first main heading in this page context.
+     * We keep this resilient because some pages are transformed after initial render.
+     */
+    const h1 = main.querySelector("h1");
+    if (!h1) {
+      return null;
     }
+    row = document.createElement("div");
+    row.className = "internal-layout__page-title-row";
+    row.setAttribute("data-internal-drawer-menu-row", "1");
+    const parent = h1.parentElement;
+    if (parent) {
+      parent.insertBefore(row, h1);
+    } else {
+      h1.insertAdjacentElement("beforebegin", row);
+    }
+    row.appendChild(h1);
   }
-  if (!h1) {
-    return null;
+
+  let menuBtn = row.querySelector("[data-internal-drawer-menu]");
+  if (!menuBtn) {
+    menuBtn = document.createElement("button");
+    menuBtn.type = "button";
+    menuBtn.className = "internal-layout__page-menu-btn";
+    menuBtn.setAttribute("data-internal-drawer-menu", "1");
+    menuBtn.setAttribute("aria-label", "Open documentation menu");
+    menuBtn.setAttribute("aria-controls", "internal-sidebar-drawer");
+    menuBtn.setAttribute("aria-expanded", "false");
+    menuBtn.textContent = "Menu";
+
+    menuBtn.addEventListener("click", () => {
+      document.dispatchEvent(
+        new CustomEvent("internal-sidebar:toggle-drawer", {
+          detail: { source: "page-title" },
+        }),
+      );
+    });
+    row.insertBefore(menuBtn, row.firstChild);
   }
 
-  const row = document.createElement("div");
-  row.className = "internal-layout__page-title-row";
-  row.setAttribute("data-internal-drawer-menu-row", "1");
-
-  const menuBtn = document.createElement("button");
-  menuBtn.type = "button";
-  menuBtn.className = "internal-layout__page-menu-btn";
-  menuBtn.setAttribute("data-internal-drawer-menu", "1");
-  menuBtn.setAttribute("aria-label", "Open documentation menu");
-  menuBtn.setAttribute("aria-controls", "internal-sidebar-drawer");
-  menuBtn.setAttribute("aria-expanded", "false");
-  menuBtn.textContent = "Menu";
-
-  menuBtn.addEventListener("click", () => {
-    document.dispatchEvent(
-      new CustomEvent("internal-sidebar:toggle-drawer", {
-        detail: { source: "page-title" },
-      }),
-    );
-  });
-
-  h1.insertAdjacentElement("beforebegin", row);
-  row.appendChild(menuBtn);
-  row.appendChild(h1);
-  return menuBtn;
+  return row;
 }
 
 function syncInternalThemeTogglePlacement() {
@@ -1571,9 +1571,11 @@ function syncInternalThemeTogglePlacement() {
     return;
   }
   const btn = document.querySelector("[data-docs-theme-toggle]");
-  const row = document.querySelector("[data-internal-drawer-menu-row]");
-  const themeBar = document.querySelector(".top-nav .top-nav__theme-bar");
-  if (!btn || !row || !themeBar) {
+  if (!btn) {
+    return;
+  }
+  const row = mountInternalDrawerMenuButton();
+  if (!row) {
     return;
   }
   if (btn.parentElement !== row) {
@@ -1690,8 +1692,8 @@ function renderTopNav() {
     { label: "⭐Backlog", target: "backlog/README.html" },
   ];
   const publicItems = [
-    { label: "OpenAPI explorer", target: "openapi/openapi-explorer.html" },
-    { label: "Pdoc API docs", target: "api/index.html" },
+    { label: "OpenAPI / Swagger UI", target: "openapi/index.html" },
+    { label: "Python API (pdoc)", target: "pdoc/index.html" },
   ];
 
   const isInternalLayoutChrome =
@@ -2359,6 +2361,7 @@ function injectDocsFeedbackCard() {
  * Wrap content after `#docs-top-nav` in a grid with a sticky “On this page” TOC built from `h2`/`h3` (not `p.lead`).
  * If mount is missing, create it as the last child of `<main>` automatically.
  * Very long outlines scroll inside the sidebar (see `.docs-inpage-toc nav` in docs.css).
+ * The aside is hidden on viewports `max-width: 1024px` in docs.css (desktop-only chrome).
  */
 function initAutoInPageToc() {
   const main = document.querySelector("main.container");
@@ -2422,12 +2425,17 @@ function initAutoInPageToc() {
     aside.className = "docs-inpage-toc";
     aside.setAttribute("aria-labelledby", "inpage-toc-heading");
 
+    const head = document.createElement("div");
+    head.className = "docs-inpage-toc__head";
+
     const title = document.createElement("p");
     title.id = "inpage-toc-heading";
     title.className = "docs-inpage-toc__title";
     title.textContent = "On this page";
 
     const navEl = document.createElement("nav");
+    const navId = `docs-inpage-toc-nav-${Math.random().toString(36).slice(2, 8)}`;
+    navEl.id = navId;
     navEl.setAttribute("aria-labelledby", "inpage-toc-heading");
     const ul = document.createElement("ul");
 
@@ -2444,8 +2452,30 @@ function initAutoInPageToc() {
       ul.appendChild(li);
     }
 
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "docs-inpage-toc__toggle";
+    toggle.setAttribute("aria-controls", navId);
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Hide On this page");
+    toggle.textContent = "<";
+    let isCollapsed = false;
+    function applyCollapsedState(nextCollapsed) {
+      isCollapsed = !!nextCollapsed;
+      aside.classList.toggle("docs-inpage-toc--collapsed", isCollapsed);
+      inner.classList.toggle("docs-page-layout__inner--toc-collapsed", isCollapsed);
+      toggle.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
+      toggle.setAttribute("aria-label", isCollapsed ? "Show On this page" : "Hide On this page");
+      toggle.textContent = isCollapsed ? ">" : "<";
+    }
+    toggle.addEventListener("click", () => {
+      applyCollapsedState(!isCollapsed);
+    });
+
     navEl.appendChild(ul);
-    aside.appendChild(title);
+    head.appendChild(title);
+    head.appendChild(toggle);
+    aside.appendChild(head);
     aside.appendChild(navEl);
     inner.appendChild(aside);
   }
@@ -2605,7 +2635,10 @@ function initBackToTopButton() {
   });
 
   btn.addEventListener("animationend", (event) => {
-    if (event.animationName !== "docs-rocket-launch") {
+    if (
+      event.animationName !== "docs-rocket-launch-right" &&
+      event.animationName !== "docs-rocket-launch-left"
+    ) {
       return;
     }
     isLaunching = false;
@@ -2778,8 +2811,8 @@ function buildDocsPageActions(fromDir, relPath) {
   const backlogHref = relHref(fromDir, "backlog/README.html");
   const runbooksHref = relHref(fromDir, "runbooks/README.html");
   const howtoHref = relHref(fromDir, "howto/README.html");
-  const apiHref = relHref(fromDir, "api/index.html");
-  const openapiHref = relHref(fromDir, "openapi/openapi-explorer.html");
+  const pdocHref = relHref(fromDir, "pdoc/index.html");
+  const openApiHref = relHref(fromDir, "openapi/index.html");
   return [
     {
       label: "Edit page",
@@ -2877,16 +2910,16 @@ function buildDocsPageActions(fromDir, relPath) {
       keywords: ["howto", "guide", "tutorial"],
     },
     {
-      label: "Go to API docs",
+      label: "Go to Python API (pdoc)",
       hint: "Generated API reference pages",
-      href: apiHref,
+      href: pdocHref,
       group: "Go to page",
       keywords: ["api", "reference", "pdoc"],
     },
     {
-      label: "Go to OpenAPI explorer",
-      hint: "Interactive OpenAPI view",
-      href: openapiHref,
+      label: "Go to OpenAPI / Swagger UI",
+      hint: "Static Swagger UI against openapi-baseline.json in docs/openapi/",
+      href: openApiHref,
       group: "Go to page",
       keywords: ["openapi", "swagger", "contract"],
     },
@@ -3849,6 +3882,8 @@ document.addEventListener("DOMContentLoaded", () => {
     desktopDocsPageActionsMq.addListener(syncDocsPageActionsForViewport);
   }
   initAutoInPageToc();
+  syncInternalThemeTogglePlacement();
+  window.setTimeout(syncInternalThemeTogglePlacement, 0);
   initInPageTocScrollSpy();
   initBackToTopButton();
   initDocsReadingProgressBar();

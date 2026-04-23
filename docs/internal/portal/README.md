@@ -48,7 +48,7 @@ Then run **`make docs-fix`** so that page appears under **Maintained pages** on 
 
 ### Bulk default editor (hand-written HTML)
 
-Most narrative pages under `docs/` already include **`data-maintainer-ids`** with a default person id, **`#docs-page-meta-mount`**, and the two portal scripts. That was applied with [`scripts/apply_default_page_editor_to_docs.py`](../../../scripts/apply_default_page_editor_to_docs.py) (skips `docs/api/` (pdoc), `docs/assets/`, and profile pages under `internal/portal/people/`). Re-run that script after changing the default id or when adding many new pages that follow the same pattern, then **`make docs-fix`**.
+Most narrative pages under `docs/` already include **`data-maintainer-ids`** with a default person id, **`#docs-page-meta-mount`**, and the two portal scripts. That was applied with [`scripts/apply_default_page_editor_to_docs.py`](../../../scripts/apply_default_page_editor_to_docs.py) (skips `docs/pdoc/` (pdoc), `docs/assets/`, and profile pages under `internal/portal/people/`). Re-run that script after changing the default id or when adding many new pages that follow the same pattern, then **`make docs-fix`**.
 
 ## Adding a new person
 

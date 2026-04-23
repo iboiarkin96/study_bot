@@ -1,6 +1,6 @@
 """Add default Page editors (data-maintainer-ids + mount + scripts) to hand-written docs HTML.
 
-Skips ``docs/api/**`` (pdoc regenerates) and ``docs/assets/**`` (fragments).
+Skips ``docs/pdoc/**`` (pdoc regenerates) and ``docs/assets/**`` (fragments).
 Skips ``docs/internal/portal/people/*/index.html`` (person profiles).
 
 Run from repo root: ``python scripts/apply_default_page_editor_to_docs.py``
@@ -118,7 +118,7 @@ def main() -> int:
     n_changed = 0
     for path in sorted(DOCS.rglob("*.html")):
         rel = path.relative_to(DOCS).as_posix()
-        if rel.startswith("assets/") or rel.startswith("api/"):
+        if rel.startswith("assets/") or rel.startswith("pdoc/"):
             continue
         if re.match(r"internal/portal/people/[^/]+/index\.html$", rel):
             continue

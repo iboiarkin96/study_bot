@@ -2,6 +2,7 @@
 
 This check enforces the shared page skeleton from
 ``docs/internal/front/documentation-style-guide.html`` for non-generated docs pages.
+Generated Python API HTML under ``docs/pdoc/`` is skipped (same as legacy ``docs/api/`` output).
 It is intentionally lightweight: fail only on clear structural regressions.
 """
 
@@ -35,7 +36,7 @@ def _iter_docs_pages(candidates: list[str] | None = None) -> list[Path]:
         if DOCS_ROOT not in path.parents:
             continue
         rel = path.relative_to(DOCS_ROOT)
-        if rel.parts and rel.parts[0] in {"api", "assets"}:
+        if rel.parts and rel.parts[0] in {"api", "assets", "pdoc"}:
             continue
         pages.append(path)
     return pages
