@@ -516,9 +516,9 @@
         : item.dataset.dependencies
           ? item.dataset.dependencies.split("|").map((entry) => entry.trim()).filter(Boolean)
           : ["Dependencies are not explicitly listed."];
-      const section4Html = section4.html || `<dt>4) Acceptance criteria</dt><dd>${acceptance}</dd>`;
-      const section5Html = section5.html || `<dt>5) Dependencies</dt><dd>${dependencies.join("; ")}</dd>`;
-      const fullDetailsHtml = `${details.innerHTML}${section4Html}${section5Html}`;
+      const section4AppendHtml = section4.html ? "" : `<dt>4) Acceptance criteria</dt><dd>${acceptance}</dd>`;
+      const section5AppendHtml = section5.html ? "" : `<dt>5) Dependencies</dt><dd>${dependencies.join("; ")}</dd>`;
+      const fullDetailsHtml = `${details.innerHTML}${section4AppendHtml}${section5AppendHtml}`;
 
       const meta = document.createElement("div");
       meta.className = "backlog-task-meta";
