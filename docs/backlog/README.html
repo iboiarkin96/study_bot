@@ -1512,6 +1512,169 @@
                         </dl>
 
                       </section>
+
+                      <section class="card backlog-item" id="item-30" data-group="docs" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Requirements: traceability, stakeholder map, requirement conflicts
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Build a single traceability matrix "business requirement -&gt; stakeholder -&gt; API/test/metric/docs" and a reusable template for resolving conflicting requirements.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>The project already captures requirement links, but they are scattered across documents. A unified traceability artifact will reduce ambiguity and make reviews faster and clearer.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>A new page in <code>docs/internal/analysis/</code> with the matrix; a conflict-resolution template (options, trade-off, owner, deadline); linked from developer docs.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~3 days</div><div class="time-cell"><strong>2 h/day</strong> ~5 days</div><div class="time-cell"><strong>1 h/day</strong> ~10 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-31" data-group="backend" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Read-model caching strategy and fallback policy
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Implement caching for hot read paths (read-through) with explicit invalidation policy and fallback scenarios.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>This will reduce latency and database load, improve predictability under load, and increase operational resilience.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Redis/read-cache layer, hit/miss metrics, TTL policy, documentation for hot/cold cache behavior, and a fallback runbook.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 days</div><div class="time-cell"><strong>2 h/day</strong> ~8 days</div><div class="time-cell"><strong>1 h/day</strong> ~15 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-32" data-group="backend" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Async REST pattern: 202 + job status + pagination/sorting
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Implement long-running REST operations via a job resource and polling, plus standardized list endpoints with pagination/sorting.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Closes current gaps in async REST and operational scalability without message brokers, and improves API contract maturity.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd><code>POST .../jobs</code> + <code>GET .../jobs/{id}</code>, status model, retry/cancel semantics, OpenAPI examples, and pagination/sorting tests.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~6 days</div><div class="time-cell"><strong>2 h/day</strong> ~9 days</div><div class="time-cell"><strong>1 h/day</strong> ~18 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-33" data-group="backend" data-tags="tech-debt" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          DB capacity + SQL performance playbook + index audit
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Formalize DB load calculations, table growth forecasting, and recurring SQL/index audits with EXPLAIN baselines.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Systematizes database performance work and enables evidence-based scaling decisions instead of reactive fixes.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Capacity worksheet, benchmark query set, before/after EXPLAIN evidence, index proposals, and a DB degradation runbook.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~6 days</div><div class="time-cell"><strong>2 h/day</strong> ~9 days</div><div class="time-cell"><strong>1 h/day</strong> ~18 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-34" data-group="backend" data-tags="tech-debt" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Concurrency scenarios: ACID/isolation guide + race tests
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Document and test concurrency scenarios (lost update, duplicate submit, stale write) and transaction isolation behavior.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Reduces hidden race-condition risk and increases confidence in service behavior under load and retries.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>ACID/isolation-level policy document, concurrency test suite, and runbook updates for conflicts and locks.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~4 days</div><div class="time-cell"><strong>2 h/day</strong> ~6 days</div><div class="time-cell"><strong>1 h/day</strong> ~12 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-35" data-group="devops" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Security hardening: PII classification, masking, retention
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Introduce a formal sensitive-data model (PII levels), log masking, and retention/deletion policy.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Improves information-security maturity and reduces leakage/over-retention risks.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Data classification matrix, log redaction rules, retention policy, security runbook, and checks in CI/review checklist.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~4 days</div><div class="time-cell"><strong>2 h/day</strong> ~6 days</div><div class="time-cell"><strong>1 h/day</strong> ~12 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-36" data-group="docs" data-tags="feature" data-priority="P2" data-status="todo" data-created-at="2026-04-23" data-risk="low" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Modeling pack: UML Activity + State Machine + BPMN + RACI
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Add missing modeling notations and an SDLC role matrix as a unified architecture documentation package.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Closes gaps in formal process/state modeling and strengthens requirement quality.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>New Activity/BPMN/State Machine diagrams, style-guide update, RACI role matrix, and a design-review gate.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 days</div><div class="time-cell"><strong>2 h/day</strong> ~8 days</div><div class="time-cell"><strong>1 h/day</strong> ~15 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-37" data-group="docs" data-tags="tech-debt" data-priority="P2" data-status="todo" data-created-at="2026-04-23" data-risk="low" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Estimation governance: plan/fact, forecasting, stakeholder SLA
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Introduce an estimation process with a plan-vs-actual journal and explicit stakeholder expectation-communication rules.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Provides measurable estimation accuracy, improves delivery predictability, and increases communication transparency.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Task/project estimation template, variance register, monthly accuracy report, and SLA for change communication.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~3 days</div><div class="time-cell"><strong>2 h/day</strong> ~5 days</div><div class="time-cell"><strong>1 h/day</strong> ~10 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-38" data-group="backend" data-tags="feature" data-priority="P2" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Feature flags and A/B experimentation baseline
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Establish a baseline platform for feature flags and A/B experiments with success metrics and guardrails.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Enables data-driven hypothesis validation and safe segmented rollouts.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Feature-flag registry, rollout strategy, experiment design template, effectiveness/risk metrics, and rollback runbook.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 days</div><div class="time-cell"><strong>2 h/day</strong> ~8 days</div><div class="time-cell"><strong>1 h/day</strong> ~15 days</div></div></dd>
+                        </dl>
+                      </section>
+
                       <section id="page-history" class="card">
                         <h2>Page history</h2>
                         <div class="docs-table-scroll" role="region" aria-label="Page history">

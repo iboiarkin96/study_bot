@@ -10,6 +10,9 @@ import html5lib
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "docs"
 DOCS_CSS = DOCS_ROOT / "assets" / "docs.css"
+FROZEN_DOCS_REL_PATHS = {
+    Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+}
 
 
 def _local_name(tag: str) -> str:
@@ -23,6 +26,8 @@ def _iter_docs_pages() -> list[Path]:
     for path in sorted(DOCS_ROOT.glob("**/*.html")):
         rel = path.relative_to(DOCS_ROOT)
         if rel.parts and rel.parts[0] in {"api", "assets", "pdoc"}:
+            continue
+        if rel in FROZEN_DOCS_REL_PATHS:
             continue
         pages.append(path)
     return pages

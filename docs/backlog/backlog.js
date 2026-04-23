@@ -185,7 +185,7 @@
   };
 
   const numberCards = () => {
-    items.forEach((item, index) => {
+    items.forEach((item) => {
       const heading = item.querySelector("h2");
       if (!heading) {
         return;
@@ -194,10 +194,18 @@
       if (existing) {
         existing.remove();
       }
-      const marker = document.createElement("span");
-      marker.className = "backlog-order";
-      marker.textContent = `${index + 1}.`;
-      heading.insertBefore(marker, heading.firstChild);
+      const existingStableId = heading.querySelector(".backlog-item-id");
+      if (existingStableId) {
+        existingStableId.remove();
+      }
+      const stableId = itemNumber(item);
+      const stableIdMarker = document.createElement("span");
+      stableIdMarker.className = "backlog-item-id";
+      stableIdMarker.textContent = `#${Number.isFinite(stableId) ? stableId : "?"}`;
+      stableIdMarker.setAttribute("data-tooltip", "Stable task id from HTML (item-N). Use this id in links.");
+      stableIdMarker.setAttribute("aria-label", `Stable task id: ${Number.isFinite(stableId) ? stableId : "unknown"}`);
+      stableIdMarker.setAttribute("tabindex", "0");
+      heading.insertBefore(stableIdMarker, heading.firstChild);
     });
   };
 

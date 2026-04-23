@@ -13,6 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "docs"
 DEFAULT_MAINTAINER_ID = "16fc8b78537109162984a2fdbef6e142"
+FROZEN_DOCS_REL_PATHS = {
+    Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+}
 BODY_TAG_RE = re.compile(r"(?is)<body\b([^>]*)>")
 MAINTAINERS_ATTR_RE = re.compile(r'data-maintainer-ids\s*=\s*"([^"]*)"')
 
@@ -41,6 +44,8 @@ def iter_docs_pages(candidates: list[str] | None = None) -> list[Path]:
             continue
         rel = path.relative_to(DOCS_ROOT)
         if rel.parts and rel.parts[0] in {"pdoc", "assets"}:
+            continue
+        if rel in FROZEN_DOCS_REL_PATHS:
             continue
         out.append(path)
     return out

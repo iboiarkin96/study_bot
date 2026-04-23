@@ -190,7 +190,7 @@ section.card > h2 {
 
 .backlog-heading-main {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
   min-width: 0;
   flex: 1 1 auto;
@@ -225,13 +225,16 @@ section.card > h2 {
   opacity: 0;
   pointer-events: none;
   z-index: 20;
-  white-space: nowrap;
+  white-space: normal;
+  width: max-content;
+  max-width: min(220px, calc(100vw - 24px));
   border: 1px solid var(--line);
   border-radius: 8px;
   background: color-mix(in srgb, var(--card) 94%, var(--bg) 6%);
   color: var(--text);
-  padding: 5px 8px;
-  font-size: 0.74rem;
+  padding: 4px 7px;
+  font-size: 0.7rem;
+  line-height: 1.25;
   box-shadow: var(--elevation-2);
   transition: opacity 0.14s ease, transform 0.14s ease;
 }
@@ -386,9 +389,22 @@ section.card > h2 {
 }
 
 .backlog-order {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
   color: var(--muted);
   font-weight: 700;
   margin-right: 4px;
+}
+
+.backlog-item-id {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .backlog-item .meta {

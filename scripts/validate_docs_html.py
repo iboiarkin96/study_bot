@@ -8,11 +8,20 @@ import html5lib
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "docs"
+FROZEN_DOCS_REL_PATHS = {
+    Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+}
 
 
 def _iter_html_files() -> list[Path]:
     """Return all HTML files under docs/."""
-    return sorted(DOCS_ROOT.glob("**/*.html"))
+    out: list[Path] = []
+    for path in sorted(DOCS_ROOT.glob("**/*.html")):
+        rel = path.relative_to(DOCS_ROOT)
+        if rel in FROZEN_DOCS_REL_PATHS:
+            continue
+        out.append(path)
+    return out
 
 
 def main() -> None:

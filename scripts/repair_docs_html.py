@@ -9,6 +9,9 @@ import html5lib
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "docs"
+FROZEN_DOCS_REL_PATHS = {
+    Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+}
 
 
 def _iter_target_files() -> list[Path]:
@@ -18,6 +21,8 @@ def _iter_target_files() -> list[Path]:
         rel = html_path.relative_to(DOCS_ROOT)
         # pdoc output is generator-owned; keep it untouched.
         if rel.parts and rel.parts[0] in {"api", "pdoc"}:
+            continue
+        if rel in FROZEN_DOCS_REL_PATHS:
             continue
         targets.append(html_path)
     return targets
