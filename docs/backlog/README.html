@@ -98,6 +98,20 @@
                 <button type="button" class="backlog-filter-btn" data-filter-task-type="tech-debt">Tech debt</button>
               </div>
               <div class="backlog-filter-row">
+                <span class="backlog-filter-row__label">Risk</span>
+                <button type="button" class="backlog-filter-btn is-active" data-filter-risk="all">All</button>
+                <button type="button" class="backlog-filter-btn" data-filter-risk="high">High</button>
+                <button type="button" class="backlog-filter-btn" data-filter-risk="medium">Medium</button>
+                <button type="button" class="backlog-filter-btn" data-filter-risk="low">Low</button>
+              </div>
+              <div class="backlog-filter-row">
+                <span class="backlog-filter-row__label">Confidence</span>
+                <button type="button" class="backlog-filter-btn is-active" data-filter-confidence="all">All</button>
+                <button type="button" class="backlog-filter-btn" data-filter-confidence="high">High</button>
+                <button type="button" class="backlog-filter-btn" data-filter-confidence="medium">Medium</button>
+                <button type="button" class="backlog-filter-btn" data-filter-confidence="low">Low</button>
+              </div>
+              <div class="backlog-filter-row">
                 <span class="backlog-filter-row__label">Status</span>
                 <button type="button" class="backlog-filter-btn is-active" data-filter-status="all">All</button>
                 <button type="button" class="backlog-filter-btn" data-filter-status="todo">To do</button>
@@ -156,6 +170,12 @@
               <li><code>P3</code> — low (later or optional improvements)</li>
             </ul>
 
+            <h3>Risk and confidence</h3>
+            <ul class="backlog-key-list">
+              <li><code>data-risk</code>: <code>high</code>, <code>medium</code>, <code>low</code> — delivery/coordination risk for the task.</li>
+              <li><code>data-confidence</code>: <code>high</code>, <code>medium</code>, <code>low</code> — confidence in estimate/scope accuracy.</li>
+            </ul>
+
             <h3>Status workflow</h3>
             <dl class="backlog-legend">
               <dt style="text-align: left; font-weight: bold; margin-bottom: .5em;">Work item states</dt>
@@ -195,6 +215,8 @@
                   <code>tech-debt</code>.
                 </li>
                 <li>Allowed priorities: <code>P0</code>, <code>P1</code>, <code>P2</code>, <code>P3</code>.</li>
+                <li>Allowed risk values in <code>data-risk</code>: <code>high</code>, <code>medium</code>, <code>low</code>.</li>
+                <li>Allowed confidence values in <code>data-confidence</code>: <code>high</code>, <code>medium</code>, <code>low</code>.</li>
                 <li>Allowed status values in <code>data-status</code>: <code>todo</code>, <code>in-progress</code>, <code>blocked</code>, <code>done</code>, <code>rejected</code>.</li>
                 <li>Status pill text and status modifier class are auto-synced from <code>data-status</code> in <code>backlog.js</code>; keep heading pill as <code>&lt;span class="status-pill"&gt;&lt;/span&gt;</code>.</li>
                 <li>Optional KPI fields for better cockpit analytics: <code>data-blocked-days="N"</code> or
@@ -202,8 +224,7 @@
                 </li>
                 <li>Optional flow fields: <code>data-done-days-ago="N"</code> or <code>data-done-at="YYYY-MM-DD"</code>,
                   plus <code>data-actual-hours="N"</code> for factual effort.</li>
-                <li>Optional ETA override: <code>data-eta-max-days="N"</code> if manual planning window is more accurate
-                  than auto-estimate.</li>
+                <li>ETA default is derived from the recalibrated estimate at <strong>3 h/day</strong>. Optional override fields (days, decimals allowed): <code>data-eta-days="A-B"</code> or numeric <code>data-eta-min-days="A"</code> + <code>data-eta-max-days="B"</code>.</li>
               </ol>
             </div>
           </details>
@@ -250,9 +271,8 @@
             <a href="../internal/front/screens/docs-screen-backlog-cockpit.html">internal frontend screen specs: backlog
               cockpit</a>.
           </p>
-          <pre><code>&lt;section class="card backlog-item" id="item-XX" data-group="backend" data-tags="feature" data-priority="P2" data-status="todo" data-blocked-days="0" data-done-days-ago="999" data-eta-max-days="5" data-actual-hours="0"&gt;
+          <pre><code>&lt;section class="card backlog-item" id="item-XX" data-group="backend" data-tags="feature" data-priority="P2" data-status="todo" data-risk="medium" data-confidence="medium" data-owner="Ivan Boyarkin" data-created-at="2026-04-23" data-blocked-days="0" data-done-days-ago="999" data-eta-days="1-1.5" data-actual-hours="0"&gt;
   &lt;h2&gt;
-    &lt;span class="priority-tag"&gt;P2&lt;/span&gt;
     Title
     &lt;span class="status-pill"&gt;&lt;/span&gt;
   &lt;/h2&gt;
@@ -267,11 +287,15 @@
     &lt;dd&gt;...&lt;/dd&gt;
   &lt;/dl&gt;
 &lt;/section&gt;</code></pre>
+          <p class="backlog-intro">
+            Optional overrides: use <code>data-age-days</code> to force age, and <code>data-eta-min-days</code>/<code>data-eta-max-days</code>
+            for numeric ETA bounds when you need stricter ETA control than <code>data-eta-days</code>.
+          </p>
         </section>
 
         <!-- 0 Meta -->
         <section class="card backlog-item" id="item-0" data-group="docs" data-tags="tech-debt" data-priority="P3"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-12" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Backlog page and <code>docs/backlog/</code> layout
@@ -310,7 +334,7 @@
           <!-- P0 -->
         </section>
         <section class="card backlog-item" id="item-1" data-group="devops" data-tags="tech-debt" data-priority="P0"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-10" data-risk="medium">
           <h2>
             <span class="priority-tag">P0</span>
             CI pipeline: quality gates, coverage threshold, docs-check
@@ -356,7 +380,7 @@
 
         </section>
         <section class="card backlog-item" id="item-2" data-group="devops" data-tags="feature" data-priority="P0"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-14" data-risk="medium">
           <h2>
             <span class="priority-tag">P0</span>
             SLOs / SLAs, error budget, and monitoring alerts
@@ -403,7 +427,7 @@
           <!-- P1 -->
         </section>
         <section class="card backlog-item" id="item-3" data-group="backend" data-tags="tech-debt" data-priority="P1"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-11" data-risk="medium">
           <h2>
             <span class="priority-tag">P1</span>
             DB uniqueness, race safety, and documented concurrency behavior
@@ -446,7 +470,7 @@
 
         </section>
         <section class="card backlog-item" id="item-4" data-group="devops" data-tags="tech-debt" data-priority="P1"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-15" data-risk="low">
           <h2>
             <span class="priority-tag">P1</span>
             Dependency security (<code>pip-audit</code>) and update policy
@@ -490,7 +514,7 @@
 
         </section>
         <section class="card backlog-item" id="item-5" data-group="backend" data-tags="feature" data-priority="P1"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-13" data-risk="high">
           <h2>
             <span class="priority-tag">P1</span>
             Integration tests against the database (CI)
@@ -526,7 +550,7 @@
           <!-- P2 -->
         </section>
         <section class="card backlog-item" id="item-6" data-group="backend" data-tags="tech-debt" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-18" data-risk="medium">
           <h2>
             <span class="priority-tag">P2</span>
             Test pyramid: unit tests + property-based tests (Hypothesis)
@@ -561,7 +585,7 @@
 
         </section>
         <section class="card backlog-item" id="item-7" data-group="backend" data-tags="feature" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-19" data-risk="medium">
           <h2>
             <span class="priority-tag">P2</span>
             E2E: HTTP scenarios against a running application
@@ -596,7 +620,7 @@
 
         </section>
         <section class="card backlog-item" id="item-8" data-group="backend" data-tags="research" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-16" data-risk="medium">
           <h2>
             <span class="priority-tag">P2</span>
             Mutation testing pilot for critical rules
@@ -633,7 +657,7 @@
           <!-- P3 -->
         </section>
         <section class="card backlog-item" id="item-9" data-group="devops" data-tags="feature" data-priority="P3"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-21" data-risk="medium">
           <h2>
             <span class="priority-tag">P3</span>
             Distributed rate limiting with Redis (multi-instance)
@@ -672,7 +696,7 @@
 
         </section>
         <section class="card backlog-item" id="item-24" data-group="backend" data-tags="feature" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-20" data-risk="medium">
           <h2>
             <span class="priority-tag">P2</span>
             Redis adoption: idempotency cache and short-lived platform data
@@ -715,7 +739,7 @@
 
         </section>
         <section class="card backlog-item" id="item-10" data-group="devops" data-tags="feature" data-priority="P3"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-17" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             PostgreSQL as primary database and migration path from SQLite
@@ -752,7 +776,7 @@
 
         </section>
         <section class="card backlog-item" id="item-11" data-group="devops" data-tags="research" data-priority="P3"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-22" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Load testing (k6 / Locust) and SLO validation
@@ -795,7 +819,7 @@
           <!-- P4 -->
         </section>
         <section class="card backlog-item" id="item-12" data-group="backend" data-tags="tech-debt" data-priority="P3"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-13" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Test data: seeds, fixtures, runbook
@@ -829,7 +853,7 @@
 
         </section>
         <section class="card backlog-item" id="item-13" data-group="backend" data-tags="feature" data-priority="P3"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-11" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Feature flags (safe rollout)
@@ -865,7 +889,7 @@
 
         </section>
         <section class="card backlog-item" id="item-14" data-group="backend" data-tags="tech-debt" data-priority="P3"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-10" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Architecture fitness: enforced layer boundaries
@@ -901,7 +925,7 @@
 
         </section>
         <section class="card backlog-item" id="item-15" data-group="docs" data-tags="feature" data-priority="P3"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-18" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Changelog and release-time verification
@@ -943,7 +967,7 @@
 
         </section>
         <section class="card backlog-item" id="item-16" data-group="backend" data-tags="tech-debt" data-priority="P3"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-12" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Repository cleanup and dead code removal
@@ -987,7 +1011,7 @@
 
         </section>
         <section class="card backlog-item" id="item-17" data-group="devops" data-tags="feature" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-23" data-risk="medium">
           <h2>
             <span class="priority-tag">P2</span>
             Distributed tracing (OpenTelemetry) and trace context
@@ -1024,7 +1048,7 @@
 
         </section>
         <section class="card backlog-item" id="item-18" data-group="devops" data-tags="feature" data-priority="P3"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-16" data-risk="low">
           <h2>
             <span class="priority-tag">P3</span>
             Structured logging (JSON) and request correlation IDs
@@ -1068,7 +1092,7 @@
 
         </section>
         <section class="card backlog-item" id="item-19" data-group="devops" data-tags="tech-debt" data-priority="P3"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-21" data-risk="medium">
           <h2>
             <span class="priority-tag">P3</span>
             CI: container image SBOM and vulnerability scan (published GHCR image)
@@ -1103,7 +1127,7 @@
 
         </section>
         <section class="card backlog-item" id="item-20" data-group="docs" data-tags="tech-debt" data-priority="P1"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-14" data-risk="low">
           <h2>
             <span class="priority-tag">P1</span>
             OpenAPI governance: lint, semantic baseline, and strict contract test
@@ -1146,7 +1170,7 @@
 
         </section>
         <section class="card backlog-item" id="item-21" data-group="devops" data-tags="feature" data-priority="P1"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-20" data-risk="medium">
           <h2>
             <span class="priority-tag">P1</span>
             Continuous delivery: publish container image to GHCR from <code>main</code> / tags
@@ -1187,7 +1211,7 @@
 
         </section>
         <section class="card backlog-item" id="item-22" data-group="docs" data-tags="tech-debt" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-19" data-risk="low">
           <h2>
             <span class="priority-tag">P2</span>
             Single source of truth for application / OpenAPI version metadata
@@ -1223,7 +1247,7 @@
 
         </section>
         <section class="card backlog-item" id="item-23" data-group="devops" data-tags="research" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-17" data-risk="medium">
           <h2>
             <span class="priority-tag">P2</span>
             CI: optional HTTP smoke or load-regression job (post-<code>main</code> or nightly)
@@ -1259,7 +1283,7 @@
 
         </section>
         <section class="card backlog-item" id="item-25" data-group="docs" data-tags="tech-debt" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-15" data-risk="low">
           <h2>
             <span class="priority-tag">P2</span>
             Document versioning: Document Version field and change policy
@@ -1300,7 +1324,7 @@
 
         </section>
         <section class="card backlog-item" id="item-26" data-group="devops" data-tags="tech-debt" data-priority="P0"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-22" data-risk="high">
           <h2>
             <span class="priority-tag">P0</span>
             QA foundation: dedicated tester space, test process, and full testing pyramid (frontend + backend)
@@ -1345,7 +1369,7 @@
 
         </section>
         <section class="card backlog-item" id="item-27" data-group="frontend" data-tags="bug" data-priority="P1"
-          data-status="done">
+          data-status="done" data-created-at="2026-04-23" data-risk="medium">
           <h2>
             <span class="priority-tag">P1</span>
             Mobile docs UX: fix top navigation rendering on iPhone 17 Pro Max and adaptive layout by screen size
@@ -1402,7 +1426,7 @@
 
         </section>
         <section class="card backlog-item" id="item-28" data-group="frontend" data-tags="feature" data-priority="P1"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-18" data-risk="medium">
           <h2>
             <span class="priority-tag">P1</span>
             Working Swagger for frontend validation only
@@ -1439,7 +1463,7 @@
 
         </section>
         <section class="card backlog-item" id="item-29" data-group="docs" data-tags="feature" data-priority="P2"
-          data-status="todo">
+          data-status="todo" data-created-at="2026-04-21" data-risk="medium">
           <h2>
             <span class="priority-tag">P2</span>
             PDoc: navigation and unified application theme
