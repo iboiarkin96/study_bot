@@ -344,6 +344,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Docs frontend navigation, search, and discovery"
       },
       {
+        "path": "internal/front/docs-frontend-tooltips.html",
+        "title": "Docs frontend: tooltips and inline hints"
+      },
+      {
         "path": "internal/front/docs-frontend-ui-kit.html",
         "title": "Docs frontend UI kit (component style spec)"
       },
@@ -362,6 +366,10 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/front/screens/docs-screen-template.html",
         "title": "Screen spec template"
+      },
+      {
+        "path": "internal/manager/sdlc-raci-matrix.html",
+        "title": "SDLC RACI matrix by change type — Study App"
       },
       {
         "path": "internal/portal/index.html",

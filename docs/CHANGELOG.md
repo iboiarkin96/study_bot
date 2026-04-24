@@ -4,6 +4,20 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-04-24
+
+### Added
+
+- **SDLC RACI matrix:** [`docs/internal/manager/sdlc-raci-matrix.html`](internal/manager/sdlc-raci-matrix.html) — hand-authored matrix with compact column hints via `data-tooltip` (no dotted glossary underline on triggers).
+- **Frontend docs — tooltips and inline hints:** [`docs/internal/front/docs-frontend-tooltips.html`](internal/front/docs-frontend-tooltips.html) — normative contract for **Pattern A** (`tabindex` + `data-tooltip` only, shared styles in [`docs/assets/docs.css`](assets/docs.css)) vs **Pattern B** (`.docs-tooltip` / `docs-tooltip--etr` for glossary terms), clipping notes for tables, and a contributor checklist. Linked from [`docs/internal/front/docs-frontend-ui-kit.html`](internal/front/docs-frontend-ui-kit.html), [`docs/internal/front/docs-frontend-glossary.html`](internal/front/docs-frontend-glossary.html), [`docs/assets/internal-sidebar.js`](assets/internal-sidebar.js), and [`docs/assets/docs-portal-data.js`](assets/docs-portal-data.js).
+
+### Changed
+
+- **`[data-tooltip]` styling:** consolidated in [`docs/assets/docs.css`](assets/docs.css) with downward overrides for scrollable tables and selected internal layouts so bubbles are not clipped; CSS comment references the tooltips guide. [`docs/backlog/backlog.css`](backlog/backlog.css) drops duplicated `[data-tooltip]` rules in favor of the shared sheet.
+- **Inline hints markup:** documentation assessments under [`docs/audit/`](audit/), [ADR 0011](adr/0011-slo-sla-error-budget.html), [RFC 0002](rfc/0002-docs-search-kpi-policy-and-slo.html), and [`docs/backlog/README.html`](backlog/README.html) table headers use `data-tooltip` for compact hints (ETR glossary spans keep `docs-tooltip docs-tooltip--etr` elsewhere).
+- **Page feedback card:** [`docs/assets/docs-nav.js`](assets/docs-nav.js) builds feedback label spans with `data-tooltip` only (no `docs-tooltip` class).
+- **Generated / navigation artifacts:** [`docs/assets/search-index.json`](assets/search-index.json) updated for new and renamed paths. Root [`README.md`](../README.md) repository tree lists `docs/internal/manager/`.
+
 ## 2026-04-23
 
 ### Changed

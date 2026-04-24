@@ -500,6 +500,10 @@
   const INTERNAL_SIDEBAR_NAV = [
     // { label: "Documentation home", path: "index.html" },
     { label: "Welcome to internal docs!", path: "internal/README.html" },
+    {
+      label: "For managers",
+      children: [{ label: "SDLC RACI matrix", path: "internal/manager/sdlc-raci-matrix.html" }],
+    },
     { label: "Employee portal", path: "internal/portal/index.html" },
     { label: "Methodology", path: "internal/analysis/methodology.html" },
     { label: "System design", path: "internal/analysis/system-design.html" },
@@ -574,6 +578,10 @@
         {
           label: "Docs frontend glossary",
           path: "internal/front/docs-frontend-glossary.html",
+        },
+        {
+          label: "Docs frontend tooltips and inline hints",
+          path: "internal/front/docs-frontend-tooltips.html",
         },
         {
           label: "Docs frontend navigation, search, and discovery",

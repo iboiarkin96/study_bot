@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend: tooltips and inline hints</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend: tooltips and inline hints</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            Hand-authored HTML under <code>docs/</code> uses two complementary patterns for short, optional explanations.
+            This page is the <strong>normative contract</strong> for which pattern to use so hints stay visually consistent,
+            keyboard-accessible, and not clipped by layout chrome.
+          </p>
+          <ul>
+            <li><strong>Default for UI labels, table headers, cockpit copy:</strong> <code>data-tooltip</code> only (no dotted underline).</li>
+            <li><strong>Optional glossary term in prose:</strong> <code>class="docs-tooltip"</code> with <code>data-tooltip</code> text, or <code>docs-tooltip--etr</code> for the shared ETR definition.</li>
+            <li><strong>Stylesheet source of truth:</strong> <code>docs/assets/docs.css</code> (not per-page ad-hoc tooltip CSS unless the page deliberately does not load shared assets).</li>
+          </ul>
+        </section>
+
+        <section id="data-tooltip" class="card">
+          <h2>Pattern A — <code>data-tooltip</code> (compact “backlog-style” hint)</h2>
+          <p><strong>Use when:</strong> explaining a control, column header, filter, or short label without turning the term into a glossary link.</p>
+          <h3>Markup</h3>
+          <ul>
+            <li>
+              <strong>Non-focusable host (e.g. <code>&lt;span&gt;</code>):</strong> add <code>tabindex="0"</code> so keyboard users can focus the term and see the hint.
+            </li>
+            <li><strong>Native controls (<code>&lt;button&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>):</strong> no extra <code>tabindex</code> required.</li>
+            <li>Put the explanation in <code>data-tooltip="…"</code>. Keep copy short; wrap is handled in CSS.</li>
+          </ul>
+          <pre style="margin: 0.6rem 0; padding: 10px 12px; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; font-size: 0.78rem;"><code>&lt;span tabindex="0" data-tooltip="What this column means in one or two sentences."&gt;Score&lt;/span&gt;</code></pre>
+          <h3>Visual contract</h3>
+          <ul>
+            <li>No dotted underline on the trigger (unlike <code>.docs-tooltip</code>).</li>
+            <li>Light surface bubble, small type (<code>0.7rem</code>), centered above the anchor by default.</li>
+            <li>Typography resets inside the bubble so text does not inherit <code>&lt;strong&gt;</code> uppercase or bold from cockpit labels.</li>
+          </ul>
+        </section>
+
+        <section id="docs-tooltip" class="card">
+          <h2>Pattern B — <code>class="docs-tooltip"</code> (glossary / “look up this term”)</h2>
+          <p><strong>Use when:</strong> the trigger is a deliberate glossary entry or you want the dotted underline to signal “more context on hover/focus”.</p>
+          <ul>
+            <li>Requires <code>data-tooltip="…"</code> on the element unless you use the <code>docs-tooltip--etr</code> modifier (ETR uses shared copy from CSS variables).</li>
+            <li>Dark tooltip surface — distinct from Pattern A — so readers can tell glossary from field hints.</li>
+          </ul>
+          <pre style="margin: 0.6rem 0; padding: 10px 12px; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; font-size: 0.78rem;"><code>&lt;span class="docs-tooltip" tabindex="0" data-tooltip="Your definition here."&gt;Term&lt;/span&gt;</code></pre>
+          <pre style="margin: 0.6rem 0; padding: 10px 12px; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; font-size: 0.78rem;"><code>&lt;span class="docs-tooltip docs-tooltip--etr" tabindex="0"&gt;ETR&lt;/span&gt;</code></pre>
+        </section>
+
+        <section id="clipping" class="card">
+          <h2>Clipping, tables, and sticky chrome</h2>
+          <p>
+            Global <code>table { overflow: hidden; }</code> (for rounded table frames) clips absolutely positioned bubbles that extend
+            <strong>above</strong> a cell. For <code>&lt;th&gt;</code> (and the same combined rules for horizontal scroll regions and a few other hotspots),
+            shared CSS opens hints <strong>below</strong> the trigger so they stay inside the paint region.
+          </p>
+          <ul>
+            <li>If a hint still disappears under a sticky strip (narrow internal layout title row), prefer Pattern A in that region or keep the trigger lower on the page — the downward rules also cover <code>.docs-feedback-card</code> labels.</li>
+            <li>Wide tables wrapped in <code>.docs-table-scroll</code> use the same downward behavior for both patterns.</li>
+          </ul>
+        </section>
+
+        <section id="javascript" class="card">
+          <h2>JavaScript-generated UI</h2>
+          <p>
+            Example: the “Page feedback” card in <code>docs/assets/docs-nav.js</code> builds label spans with <code>data-tooltip</code> only (no <code>docs-tooltip</code> class)
+            so it matches Pattern A automatically wherever the card is injected.
+          </p>
+          <p>
+            The backlog cockpit sets <code>data-tooltip</code> on rendered chips from <code>docs/backlog/backlog.js</code>; styles for <code>[data-tooltip]</code> live in
+            <code>docs.css</code> (backlog still loads that file first).
+          </p>
+        </section>
+
+        <section id="checklist" class="card">
+          <h2>Contributor checklist</h2>
+          <ol>
+            <li>Prefer <strong>Pattern A</strong> for filters, cockpit labels, assessment table headers, RFC KPI columns, and similar.</li>
+            <li>Use <strong>Pattern B</strong> for intentional glossary terms; use <code>docs-tooltip--etr</code> only for the standard ETR expansion.</li>
+            <li>Do not duplicate tooltip CSS on standalone pages — either load <code>docs.css</code> or copy the <code>[data-tooltip]</code> rules explicitly and keep them in sync.</li>
+            <li>After editing, spot-check hover and <kbd>Tab</kbd> + focus on the trigger in light and dark theme.</li>
+          </ol>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-24">2026-04-24</time></td>
+                  <td>Registered in internal sidebar and portal search; cross-links from UI kit and glossary; code examples use inline <code>&lt;pre&gt;</code> styling; <code>docs.css</code> comment points here.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-24">2026-04-24</time></td>
+                  <td>Initial page: normative contract for <code>data-tooltip</code> vs <code>docs-tooltip</code>, clipping notes, and contributor checklist.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

@@ -1696,6 +1696,8 @@ main.docs-page-layout [id] {
 
 /* DOM order is article then aside; order places the sticky TOC in the first column (left). */
 .docs-page-layout__article {
+  position: relative;
+  z-index: 2;
   min-width: 0;
   order: 2;
 }
@@ -1703,6 +1705,7 @@ main.docs-page-layout [id] {
 .docs-inpage-toc {
   order: 1;
   position: sticky;
+  z-index: 1;
   top: 1rem;
   padding: 6px 0 0;
   background: transparent;
@@ -4213,6 +4216,54 @@ body.docs-reading-mode main.container li {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Data-tooltip hints (backlog cockpit style): no dotted underline on host.   */
+/* Usage: <span data-tooltip="…" tabindex="0">label</span> or <button data-tooltip="…"> */
+/* Normative doc: docs/internal/front/docs-frontend-tooltips.html            */
+/* -------------------------------------------------------------------------- */
+
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 250;
+  white-space: normal;
+  width: min(11.5rem, calc(100vw - 24px));
+  box-sizing: border-box;
+  text-align: left;
+  overflow-wrap: break-word;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card) 94%, var(--bg) 6%);
+  color: var(--text);
+  padding: 5px 8px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 400;
+  font-style: normal;
+  font-variant: normal;
+  line-height: 1.35;
+  letter-spacing: normal;
+  text-transform: none;
+  text-decoration: none;
+  box-shadow: 0 16px 36px -24px color-mix(in srgb, var(--accent) 36%, transparent);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* -------------------------------------------------------------------------- */
 /* Glossary / definition tooltips (hover + keyboard focus; no extra JS)        */
 /* Usage: <span class="docs-tooltip" tabindex="0" data-tooltip="…">term</span> */
 /* -------------------------------------------------------------------------- */
@@ -4255,8 +4306,58 @@ body.docs-reading-mode main.container li {
     visibility var(--motion-fast) var(--motion-ease-premium);
 }
 
+/*
+ * Upward tooltips are clipped when a horizontal scroll container implies overflow-y: auto,
+ * and on internal pages the sticky title strip (z-index 5) can cover hints above cockpit controls.
+ * Open below the anchor in those contexts (.docs-tooltip and [data-tooltip]).
+ */
+.docs-table-scroll :is(.docs-tooltip, [data-tooltip])::after,
+.audit-score-table :is(.docs-tooltip, [data-tooltip])::after,
+.raci-table :is(.docs-tooltip, [data-tooltip])::after,
+.internal-layout .raci-cockpit :is(.docs-tooltip, [data-tooltip])::after {
+  top: calc(100% + 8px);
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.docs-table-scroll :is(.docs-tooltip, [data-tooltip]):hover::after,
+.docs-table-scroll :is(.docs-tooltip, [data-tooltip]):focus-visible::after,
+.audit-score-table :is(.docs-tooltip, [data-tooltip]):hover::after,
+.audit-score-table :is(.docs-tooltip, [data-tooltip]):focus-visible::after,
+.raci-table :is(.docs-tooltip, [data-tooltip]):hover::after,
+.raci-table :is(.docs-tooltip, [data-tooltip]):focus-visible::after,
+.internal-layout .raci-cockpit :is(.docs-tooltip, [data-tooltip]):hover::after,
+.internal-layout .raci-cockpit :is(.docs-tooltip, [data-tooltip]):focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/*
+ * Global `table { overflow: hidden }` clips upward ::after hints from <th>; open below the trigger.
+ * Page feedback labels sit under sticky chrome on some layouts — same downward treatment.
+ */
+main.container table th :is(.docs-tooltip, [data-tooltip])::after,
+.docs-feedback-card :is(.docs-tooltip, [data-tooltip])::after {
+  top: calc(100% + 8px);
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+main.container table th :is(.docs-tooltip, [data-tooltip]):hover::after,
+main.container table th :is(.docs-tooltip, [data-tooltip]):focus-visible::after,
+.docs-feedback-card :is(.docs-tooltip, [data-tooltip]):hover::after,
+.docs-feedback-card :is(.docs-tooltip, [data-tooltip]):focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .docs-tooltip::after {
+  .docs-tooltip::after,
+  [data-tooltip]::after {
     transition: none;
   }
 }

@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SDLC RACI matrix by change type — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>SDLC RACI matrix by change type</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section class="card" id="overview">
+          <h2>Overview</h2>
+          <p>
+            This page defines a practical RACI baseline for the Study App delivery workflow. It maps ownership by SDLC
+            stage and by change type, and is intended for planning, design review, and release alignment.
+          </p>
+          <p>
+            Scope: internal process governance for engineering and documentation work. Product contract details remain in
+            <a href="./system-design.html">System design</a>, <a href="../api/README.html">internal API docs</a>, and ADRs.
+          </p>
+        </section>
+
+        <section class="card" id="legend">
+          <h2>Legend and usage rules</h2>
+          <ul>
+            <li><strong>R (Responsible):</strong> performs the work.</li>
+            <li><strong>A (Accountable):</strong> final approver and owner of outcome (single owner per row).</li>
+            <li><strong>C (Consulted):</strong> provides input before decision.</li>
+            <li><strong>I (Informed):</strong> notified after decision or delivery.</li>
+          </ul>
+          <p>
+            Escalation path for ownership conflicts: <strong>Tech Lead</strong> (technical) and <strong>Product
+            Manager</strong> (scope/priorities). If unresolved, decision is logged in ADR or release notes.
+          </p>
+        </section>
+
+        <section class="card" id="roles">
+          <h2>Role catalog</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Role catalog">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Role</th>
+                  <th scope="col">Short responsibility scope</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Product Manager (PM)</td><td>Prioritization, scope alignment, stakeholder communication.</td></tr>
+                <tr><td>System Analyst (SA)</td><td>Requirements quality, process consistency, traceability.</td></tr>
+                <tr><td>Tech Lead (TL)</td><td>Architecture, technical feasibility, cross-team alignment.</td></tr>
+                <tr><td>Backend Engineer (BE)</td><td>Domain logic, API implementation, data integrity.</td></tr>
+                <tr><td>Frontend Engineer (FE)</td><td>Client integration, UX consistency, contract consumption.</td></tr>
+                <tr><td>QA Engineer (QA)</td><td>Test strategy, quality gates, regression control.</td></tr>
+                <tr><td>DevOps/SRE (SRE)</td><td>CI/CD, deployment safety, runtime reliability.</td></tr>
+                <tr><td>Security Engineer (SEC)</td><td>Security risks, controls, compliance checks.</td></tr>
+                <tr><td>Data/Analytics (DATA)</td><td>Telemetry quality, KPIs, usage analytics.</td></tr>
+                <tr><td>Support/Operations (SUP)</td><td>Runbooks, incident response, customer-facing ops context.</td></tr>
+                <tr><td>Documentation Owner (DOC)</td><td>Docs completeness, information architecture, release notes consistency.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="change-taxonomy">
+          <h2>Change taxonomy</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Change taxonomy">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Type</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Risk profile</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Docs-only</td><td>Documentation structure/content updates without runtime behavior changes.</td><td>Low</td></tr>
+                <tr><td>Config/Infrastructure</td><td>CI, runtime config, environment policies, deployment pipeline updates.</td><td>Medium</td></tr>
+                <tr><td>Backward-compatible feature</td><td>Additive API or behavior changes without breaking existing consumers.</td><td>Medium</td></tr>
+                <tr><td>Breaking API change</td><td>Contract change requiring migration or version bump for consumers.</td><td>High</td></tr>
+                <tr><td>Migration/Data shape change</td><td>Schema migration, data backfill, model evolution with operational impact.</td><td>High</td></tr>
+                <tr><td>Hotfix/Security patch</td><td>Urgent production fix for incident, vulnerability, or critical regression.</td><td>High</td></tr>
+                <tr><td>Observability/Compliance</td><td>Logging, metrics, alerting, and governance controls updates.</td><td>Medium</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="raci-role-filter">
+          <h2>Role filter</h2>
+          <div class="raci-cockpit">
+            <strong class="raci-cockpit__title">Responsibilities cockpit</strong>
+            <div class="raci-filter-controls">
+              <label class="raci-filter-label" for="raci-role-select">
+                <span data-tooltip="Highlight one role in both tables: R/A/C/I cells and the Selected role column." tabindex="0">Role</span>
+                <select id="raci-role-select" aria-label="Filter RACI tables by role">
+                  <option value="">All roles</option>
+                  <option value="PM">PM — Product Manager</option>
+                  <option value="SA">SA — System Analyst</option>
+                  <option value="TL">TL — Tech Lead</option>
+                  <option value="BE">BE — Backend Engineer</option>
+                  <option value="FE">FE — Frontend Engineer</option>
+                  <option value="QA">QA — QA Engineer</option>
+                  <option value="SRE">SRE — DevOps/SRE</option>
+                  <option value="SEC">SEC — Security Engineer</option>
+                  <option value="DATA">DATA — Data/Analytics</option>
+                  <option value="SUP">SUP — Support/Operations</option>
+                  <option value="DOC">DOC — Documentation Owner</option>
+                </select>
+              </label>
+              <div class="raci-filter-actions">
+                <button type="button" class="raci-filter-btn" id="raci-role-reset" data-tooltip="Clear the role filter (show all roles).">Reset</button>
+              </div>
+            </div>
+            <div class="raci-filter-pills" id="raci-filter-pills">
+              <span class="raci-filter-pill is-active" id="raci-pill-role"><span id="raci-pill-role-label">Role: All</span></span>
+              <span class="raci-filter-pill" id="raci-pill-sdlc" tabindex="0" data-tooltip="Filter applies to the “RACI by SDLC stage” table (lifecycle phases).">SDLC stage mapping</span>
+              <span class="raci-filter-pill" id="raci-pill-change" tabindex="0" data-tooltip="Filter applies to the “RACI by change type” table (delivery scenarios).">Change type mapping</span>
+            </div>
+            <p class="raci-filter-hint" id="raci-role-filter-hint">Choose a role to see your responsibility at each SDLC stage and change type.</p>
+          </div>
+        </section>
+
+        <section class="card" id="sdlc-raci">
+          <h2>RACI by SDLC stage</h2>
+          <div class="docs-table-scroll" role="region" aria-label="RACI by SDLC stage">
+            <table class="raci-table">
+              <thead>
+                <tr>
+                  <th scope="col">SDLC stage</th>
+                  <th scope="col"><span tabindex="0" data-tooltip="A/R/C/I: Accountable, Responsible, Consulted, Informed — see column headers in the change-type table.">RACI mapping</span></th>
+                  <th scope="col"><span tabindex="0" data-tooltip="Result for the role chosen above in this row (badge shows R/A/C/I).">Selected role</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Discovery and intake</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> PM<br>
+                    <strong>R:</strong> SA<br>
+                    <strong>C:</strong> TL, SEC, DATA, SUP<br>
+                    <strong>I:</strong> BE, FE, QA, SRE, DOC
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+                <tr>
+                  <th scope="row">Requirements and scope</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> PM<br>
+                    <strong>R:</strong> SA<br>
+                    <strong>C:</strong> TL, BE, FE, QA, SEC, DATA, DOC<br>
+                    <strong>I:</strong> SRE, SUP
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+                <tr>
+                  <th scope="row">Solution design and architecture</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> TL<br>
+                    <strong>R:</strong> BE, FE<br>
+                    <strong>C:</strong> SA, QA, SRE, SEC, DATA, DOC<br>
+                    <strong>I:</strong> PM, SUP
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+                <tr>
+                  <th scope="row">Implementation</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> TL<br>
+                    <strong>R:</strong> BE, FE<br>
+                    <strong>C:</strong> SA, QA, SRE, SEC, DOC<br>
+                    <strong>I:</strong> PM, DATA, SUP
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+                <tr>
+                  <th scope="row">Testing and quality gates</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> QA<br>
+                    <strong>R:</strong> BE, FE<br>
+                    <strong>C:</strong> SA, TL, SRE, SEC, DATA, DOC<br>
+                    <strong>I:</strong> PM, SUP
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+                <tr>
+                  <th scope="row">Release and rollout</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> SRE<br>
+                    <strong>R:</strong> BE, FE<br>
+                    <strong>C:</strong> TL, QA, SEC, SUP, DOC<br>
+                    <strong>I:</strong> PM, SA, DATA
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+                <tr>
+                  <th scope="row">Operate and incident response</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> SRE<br>
+                    <strong>R:</strong> BE, SUP<br>
+                    <strong>C:</strong> TL, FE, QA, SEC, DATA<br>
+                    <strong>I:</strong> PM, SA, DOC
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+                <tr>
+                  <th scope="row">Post-release review and docs updates</th>
+                  <td class="raci-sdlc-source">
+                    <strong>A:</strong> DOC<br>
+                    <strong>R:</strong> SA, DATA<br>
+                    <strong>C:</strong> PM, TL, BE, FE, QA, SRE, SEC, SUP<br>
+                    <strong>I:</strong> -
+                  </td>
+                  <td class="raci-role-result">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="change-raci">
+          <h2>RACI by change type</h2>
+          <div class="docs-table-scroll" role="region" aria-label="RACI by change type">
+            <table class="raci-table">
+              <thead>
+                <tr>
+                  <th scope="col">Change type</th>
+                  <th scope="col"><span tabindex="0" data-tooltip="Accountable: ultimately answerable; typically one primary owner per row.">A</span></th>
+                  <th scope="col"><span tabindex="0" data-tooltip="Responsible: does the work to produce the deliverable.">R</span></th>
+                  <th scope="col"><span tabindex="0" data-tooltip="Consulted: gives input (two-way).">C</span></th>
+                  <th scope="col"><span tabindex="0" data-tooltip="Informed: kept up to date (one-way).">I</span></th>
+                  <th scope="col"><span tabindex="0" data-tooltip="Result for the selected role in this change-type row.">Selected role</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Docs-only</th><td>DOC</td><td>DOC, SA</td><td>TL, PM</td><td>QA, SRE, SUP</td><td class="raci-role-result">-</td></tr>
+                <tr><th scope="row">Config/Infrastructure</th><td>SRE</td><td>SRE</td><td>TL, SEC, QA</td><td>PM, SA, SUP, DOC</td><td class="raci-role-result">-</td></tr>
+                <tr><th scope="row">Backward-compatible feature</th><td>TL</td><td>BE, FE</td><td>SA, QA, DATA, SEC</td><td>PM, SUP, DOC</td><td class="raci-role-result">-</td></tr>
+                <tr><th scope="row">Breaking API change</th><td>TL</td><td>BE</td><td>PM, SA, QA, SEC, DOC</td><td>FE, DATA, SUP</td><td class="raci-role-result">-</td></tr>
+                <tr><th scope="row">Migration/Data shape change</th><td>TL</td><td>BE, SRE</td><td>QA, SA, SEC, DATA</td><td>PM, SUP, DOC</td><td class="raci-role-result">-</td></tr>
+                <tr><th scope="row">Hotfix/Security patch</th><td>SRE</td><td>BE, SRE</td><td>TL, SEC, QA</td><td>PM, SA, SUP, DOC, DATA</td><td class="raci-role-result">-</td></tr>
+                <tr><th scope="row">Observability/Compliance</th><td>SEC</td><td>SRE, BE</td><td>TL, QA, DATA, SA</td><td>PM, SUP, DOC</td><td class="raci-role-result">-</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="decision-rules">
+          <h2>Decision rules</h2>
+          <ol>
+            <li>Each row must have exactly one accountable role (<strong>A</strong>).</li>
+            <li>When technical risk is high, <strong>SEC</strong> and <strong>SRE</strong> move from <strong>C</strong> to mandatory <strong>approval input</strong> before release.</li>
+            <li>Breaking changes require migration notes and release communication in docs and changelog before merge.</li>
+            <li>Hotfix flow allows post-factum documentation within one business day after stabilization.</li>
+            <li>Any unresolved ownership dispute is documented as a decision record with named owner and due date.</li>
+          </ol>
+        </section>
+
+        <section class="card" id="see-also">
+          <h2>See also</h2>
+          <ul>
+            <li><a href="../../backlog/README.html#item-36">Backlog item 36</a> (modeling pack).</li>
+            <li><a href="../portal/people/ivan-boyarkin/sa-growth.html">SA growth assessment</a>.</li>
+            <li><a href="./system-design.html">System design</a>.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-24">2026-04-24</time></td>
+                  <td>Created test page with detailed SDLC and change-type RACI baseline.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <script>
+          (function () {
+          var select = document.getElementById("raci-role-select");
+          var reset = document.getElementById("raci-role-reset");
+          var hint = document.getElementById("raci-role-filter-hint");
+          var rolePill = document.getElementById("raci-pill-role");
+          var sdlcPill = document.getElementById("raci-pill-sdlc");
+          var changePill = document.getElementById("raci-pill-change");
+          if (!select || !hint) return;
+
+          function splitRoles(value) {
+          if (!value) return [];
+          return value.split(",").map(function (item) { return item.trim(); }).filter(Boolean);
+          }
+
+          function parseSdlcRoleMap(cell) {
+          var map = {};
+          var text = (cell.textContent || "").split("\n");
+          text.forEach(function (line) {
+          var normalized = line.trim();
+          if (!normalized) return;
+          var match = normalized.match(/^([ARCI]):\s*(.*)$/);
+          if (!match) return;
+          var status = match[1];
+          var roles = splitRoles(match[2]);
+          roles.forEach(function (role) {
+          if (role !== "-") map[role] = status;
+          });
+          });
+          return map;
+          }
+
+          function parseChangeRoleMap(row) {
+          var map = {};
+          var cells = row.querySelectorAll("td");
+          if (cells.length < 5) return map;
+          [["A", 0], ["R", 1], ["C", 2], ["I", 3]].forEach(function (entry) {
+          var status = entry[0];
+          var idx = entry[1];
+          splitRoles(cells[idx].textContent).forEach(function (role) {
+          if (role !== "-") map[role] = status;
+          });
+          });
+          return map;
+          }
+
+          function setRoleStatus(cell, status, role) {
+          var fullLabel = { A: "Accountable", R: "Responsible", C: "Consulted", I: "Informed" };
+          if (!role) {
+          cell.classList.add("raci-role-result--empty");
+          cell.textContent = "-";
+          return;
+          }
+          if (!status) {
+          cell.classList.add("raci-role-result--empty");
+          cell.textContent = "-";
+          return;
+          }
+          cell.classList.remove("raci-role-result--empty");
+          cell.innerHTML =
+          '<span class="raci-role-badge" title="' + fullLabel[status] + '" aria-label="' + fullLabel[status] + '">' +
+          status +
+          '</span>';
+          }
+
+          var sdlcRows = Array.prototype.slice.call(document.querySelectorAll("#sdlc-raci tbody tr"));
+          var changeRows = Array.prototype.slice.call(document.querySelectorAll("#change-raci tbody tr"));
+
+          sdlcRows.forEach(function (row) {
+          var sourceCell = row.querySelector(".raci-sdlc-source");
+          if (!sourceCell) return;
+          row._roleMap = parseSdlcRoleMap(sourceCell);
+          });
+
+          changeRows.forEach(function (row) {
+          row._roleMap = parseChangeRoleMap(row);
+          });
+
+          function applyFilter() {
+          var role = select.value;
+          var roleLabel = role ? role : "All";
+          hint.textContent = role
+          ? "Showing responsibility for role: " + role + "."
+          : "Choose a role to see your responsibility at each SDLC stage and change type.";
+          var rolePillLabel = document.getElementById("raci-pill-role-label");
+          if (rolePillLabel) rolePillLabel.textContent = "Role: " + roleLabel;
+          if (rolePill) rolePill.classList.toggle("is-active", Boolean(role));
+          if (sdlcPill) sdlcPill.classList.toggle("is-active", Boolean(role));
+          if (changePill) changePill.classList.toggle("is-active", Boolean(role));
+
+          sdlcRows.forEach(function (row) {
+          var resultCell = row.querySelector(".raci-role-result");
+          if (!resultCell) return;
+          setRoleStatus(resultCell, row._roleMap ? row._roleMap[role] : "", role);
+          });
+
+          changeRows.forEach(function (row) {
+          var resultCell = row.querySelector(".raci-role-result");
+          if (!resultCell) return;
+          setRoleStatus(resultCell, row._roleMap ? row._roleMap[role] : "", role);
+          });
+          }
+
+          select.addEventListener("change", applyFilter);
+          if (reset) {
+          reset.addEventListener("click", function () {
+          select.value = "";
+          applyFilter();
+          });
+          }
+          applyFilter();
+          })();
+        </script>
+      </main>
+    </div>
+  </div>
+
+</body></html>

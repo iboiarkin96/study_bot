@@ -2244,6 +2244,14 @@ function injectDocsFeedbackCard() {
     return;
   }
 
+  function feedbackHintLabelSpan(text, tooltip) {
+    const span = document.createElement("span");
+    span.tabIndex = 0;
+    span.setAttribute("data-tooltip", tooltip);
+    span.textContent = text;
+    return span;
+  }
+
   const section = document.createElement("section");
   section.className = "card docs-feedback-card";
   section.setAttribute("aria-label", "Documentation feedback");
@@ -2261,12 +2269,22 @@ function injectDocsFeedbackCard() {
   const inputLabel = document.createElement("label");
   inputLabel.className = "docs-feedback-card__label";
   inputLabel.setAttribute("for", "docs-feedback-input");
-  inputLabel.textContent = "What should be improved?";
+  inputLabel.appendChild(
+    feedbackHintLabelSpan(
+      "What should be improved?",
+      "Describe the problem on this page (unclear step, wrong command, broken link). At least 10 characters; text is copied and included in the GitHub issue body.",
+    ),
+  );
 
   const typeLabel = document.createElement("label");
   typeLabel.className = "docs-feedback-card__label";
   typeLabel.setAttribute("for", "docs-feedback-type");
-  typeLabel.textContent = "Feedback type";
+  typeLabel.appendChild(
+    feedbackHintLabelSpan(
+      "Feedback type",
+      "Pick a category for triage; it is passed into the prefilled issue so maintainers can route faster.",
+    ),
+  );
 
   const typeSelect = document.createElement("select");
   typeSelect.id = "docs-feedback-type";

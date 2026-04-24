@@ -45,34 +45,34 @@
 
             <div class="backlog-cockpit__controls">
               <label class="backlog-cockpit__search" for="backlog-global-search">
-                <span>Global search</span>
+                <span data-tooltip="Search task titles and keywords; results update board, list, and timeline.">Global search</span>
                 <input id="backlog-global-search" type="search" placeholder="Search tasks by title or keywords..." autocomplete="off">
               </label>
 
               <div class="backlog-cockpit__control-group" aria-label="Quick filters">
-                <strong>Quick filters</strong>
+                <strong data-tooltip="Presets combine status and priority; they stay in sync with detailed filters.">Quick filters</strong>
                 <div class="backlog-cockpit__button-row">
-                  <button type="button" class="backlog-cockpit__btn is-active" data-quick-preset="all">All</button>
-                  <button type="button" class="backlog-cockpit__btn" data-quick-preset="my-focus">My focus</button>
-                  <button type="button" class="backlog-cockpit__btn" data-quick-preset="open">Open</button>
-                  <button type="button" class="backlog-cockpit__btn" data-quick-preset="blocked">Blocked</button>
+                  <button type="button" class="backlog-cockpit__btn is-active" data-quick-preset="all" data-tooltip="Show every task (no preset restrictions).">All</button>
+                  <button type="button" class="backlog-cockpit__btn" data-quick-preset="my-focus" data-tooltip="Open work with priority P0 or P1.">My focus</button>
+                  <button type="button" class="backlog-cockpit__btn" data-quick-preset="open" data-tooltip="Statuses: to do, in progress, or blocked.">Open</button>
+                  <button type="button" class="backlog-cockpit__btn" data-quick-preset="blocked" data-tooltip="Only tasks currently blocked.">Blocked</button>
                 </div>
               </div>
 
               <div class="backlog-cockpit__control-group" aria-label="View switch">
-                <strong>View</strong>
+                <strong data-tooltip="Board: columns by status. List: compact rows. Timeline: ETA-oriented.">View</strong>
                 <div class="backlog-cockpit__button-row">
-                  <button type="button" class="backlog-cockpit__btn is-active" data-view-mode="board">Board</button>
-                  <button type="button" class="backlog-cockpit__btn" data-view-mode="list">List</button>
-                  <button type="button" class="backlog-cockpit__btn" data-view-mode="timeline">Timeline</button>
+                  <button type="button" class="backlog-cockpit__btn is-active" data-view-mode="board" data-tooltip="Kanban-style columns by workflow status.">Board</button>
+                  <button type="button" class="backlog-cockpit__btn" data-view-mode="list" data-tooltip="Dense list of tasks.">List</button>
+                  <button type="button" class="backlog-cockpit__btn" data-view-mode="timeline" data-tooltip="Lay out work by estimated time window.">Timeline</button>
                 </div>
               </div>
 
               <details class="backlog-cockpit__control-group backlog-cockpit__control-group--wide backlog-cockpit__details" id="backlog-detailed-filters" aria-label="Detailed filters">
-                <summary><strong>Detailed filters</strong></summary>
+                <summary><strong data-tooltip="Slice by delivery domain, priority, status; advanced adds type, risk, confidence, owner, ETA.">Detailed filters</strong></summary>
                 <p class="backlog-intro">Quick mode: start with these 3 filters.</p>
                 <div class="backlog-filter-row backlog-filter-row--primary">
-                  <span class="backlog-filter-row__label">Block</span>
+                  <span class="backlog-filter-row__label" data-tooltip="Where work happens (normative: data-group): frontend, backend, devops, docs.">Block</span>
                   <button type="button" class="backlog-filter-btn is-active" data-filter-group="all">All</button>
                   <button type="button" class="backlog-filter-btn" data-filter-group="frontend">Frontend</button>
                   <button type="button" class="backlog-filter-btn" data-filter-group="backend">Backend</button>
@@ -80,7 +80,7 @@
                   <button type="button" class="backlog-filter-btn" data-filter-group="docs">Docs</button>
                 </div>
                 <div class="backlog-filter-row backlog-filter-row--primary">
-                  <span class="backlog-filter-row__label">Priority</span>
+                  <span class="backlog-filter-row__label" data-tooltip="Business urgency: P0 critical … P3 later (see task cards for definitions).">Priority</span>
                   <button type="button" class="backlog-filter-btn is-active" data-filter-priority="all">All</button>
                   <button type="button" class="backlog-filter-btn" data-filter-priority="P0">P0</button>
                   <button type="button" class="backlog-filter-btn" data-filter-priority="P1">P1</button>
@@ -88,7 +88,7 @@
                   <button type="button" class="backlog-filter-btn" data-filter-priority="P3">P3</button>
                 </div>
                 <div class="backlog-filter-row backlog-filter-row--primary">
-                  <span class="backlog-filter-row__label">Status</span>
+                  <span class="backlog-filter-row__label" data-tooltip="Workflow state on the board: to do, in progress, done, blocked, rejected.">Status</span>
                   <button type="button" class="backlog-filter-btn is-active" data-filter-status="all">All</button>
                   <button type="button" class="backlog-filter-btn" data-filter-status="todo">To do</button>
                   <button type="button" class="backlog-filter-btn" data-filter-status="in-progress">In progress</button>
@@ -99,7 +99,7 @@
                 <details class="backlog-advanced-filters">
                   <summary>Advanced filters (optional)</summary>
                   <div class="backlog-filter-row">
-                    <span class="backlog-filter-row__label">Task type</span>
+                    <span class="backlog-filter-row__label" data-tooltip="Kind of work (data-tags): bug, feature, research, tech-debt — not the delivery domain.">Task type</span>
                     <button type="button" class="backlog-filter-btn is-active" data-filter-task-type="all">All</button>
                     <button type="button" class="backlog-filter-btn" data-filter-task-type="bug">Bug</button>
                     <button type="button" class="backlog-filter-btn" data-filter-task-type="feature">Feature</button>
@@ -107,21 +107,21 @@
                     <button type="button" class="backlog-filter-btn" data-filter-task-type="tech-debt">Tech debt</button>
                   </div>
                   <div class="backlog-filter-row">
-                    <span class="backlog-filter-row__label">Risk</span>
+                    <span class="backlog-filter-row__label" data-tooltip="Delivery risk: likelihood of delay or blockers affecting completion.">Risk</span>
                     <button type="button" class="backlog-filter-btn is-active" data-filter-risk="all">All</button>
                     <button type="button" class="backlog-filter-btn" data-filter-risk="high">High</button>
                     <button type="button" class="backlog-filter-btn" data-filter-risk="medium">Medium</button>
                     <button type="button" class="backlog-filter-btn" data-filter-risk="low">Low</button>
                   </div>
                   <div class="backlog-filter-row">
-                    <span class="backlog-filter-row__label">Confidence</span>
+                    <span class="backlog-filter-row__label" data-tooltip="How reliable scope and ETA assumptions are for this task.">Confidence</span>
                     <button type="button" class="backlog-filter-btn is-active" data-filter-confidence="all">All</button>
                     <button type="button" class="backlog-filter-btn" data-filter-confidence="high">High</button>
                     <button type="button" class="backlog-filter-btn" data-filter-confidence="medium">Medium</button>
                     <button type="button" class="backlog-filter-btn" data-filter-confidence="low">Low</button>
                   </div>
                   <div class="backlog-filter-row">
-                    <span class="backlog-filter-row__label">Owner</span>
+                    <span class="backlog-filter-row__label" data-tooltip="Person accountable for updates and delivery on the card.">Owner</span>
                     <span id="backlog-owner-filter-buttons">
                       <button type="button" class="backlog-filter-btn is-active" data-filter-owner="all">All</button>
                       <button type="button" class="backlog-filter-btn" data-filter-owner="ivan-boyarkin">Ivan Boyarkin</button>
@@ -129,7 +129,7 @@
                     </span>
                   </div>
                   <div class="backlog-filter-row">
-                    <span class="backlog-filter-row__label">ETA range</span>
+                    <span class="backlog-filter-row__label" data-tooltip="Filter by estimated completion window in days (from card ETA fields).">ETA range</span>
                     <span id="backlog-eta-range-filter-buttons">
                       <button type="button" class="backlog-filter-btn is-active" data-filter-eta-range="all">All</button>
                       <button type="button" class="backlog-filter-btn" data-filter-eta-range="le-1">&lt;= 1d</button>
@@ -143,7 +143,7 @@
               <div class="backlog-filter-insights" aria-live="polite">
                 <div class="backlog-filter-insights__top">
                   <p class="backlog-filter-summary" id="backlog-filter-summary">Found 0 tasks • 0 active filters</p>
-                  <button type="button" class="backlog-filter-reset-btn" data-filter-reset="">Reset filters</button>
+                  <button type="button" class="backlog-filter-reset-btn" data-filter-reset="" data-tooltip="Clear all filters and return quick preset to All.">Reset filters</button>
                 </div>
                 <div class="backlog-active-filter-chips" id="backlog-active-filter-chips"></div>
               </div>
@@ -1512,6 +1512,169 @@
                         </dl>
 
                       </section>
+
+                      <section class="card backlog-item" id="item-30" data-group="docs" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Requirements: traceability, stakeholder map, requirement conflicts
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Build a single traceability matrix "business requirement -&gt; stakeholder -&gt; API/test/metric/docs" and a reusable template for resolving conflicting requirements.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>The project already captures requirement links, but they are scattered across documents. A unified traceability artifact will reduce ambiguity and make reviews faster and clearer.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>A new page in <code>docs/internal/analysis/</code> with the matrix; a conflict-resolution template (options, trade-off, owner, deadline); linked from developer docs.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~3 days</div><div class="time-cell"><strong>2 h/day</strong> ~5 days</div><div class="time-cell"><strong>1 h/day</strong> ~10 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-31" data-group="backend" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Read-model caching strategy and fallback policy
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Implement caching for hot read paths (read-through) with explicit invalidation policy and fallback scenarios.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>This will reduce latency and database load, improve predictability under load, and increase operational resilience.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Redis/read-cache layer, hit/miss metrics, TTL policy, documentation for hot/cold cache behavior, and a fallback runbook.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 days</div><div class="time-cell"><strong>2 h/day</strong> ~8 days</div><div class="time-cell"><strong>1 h/day</strong> ~15 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-32" data-group="backend" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Async REST pattern: 202 + job status + pagination/sorting
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Implement long-running REST operations via a job resource and polling, plus standardized list endpoints with pagination/sorting.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Closes current gaps in async REST and operational scalability without message brokers, and improves API contract maturity.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd><code>POST .../jobs</code> + <code>GET .../jobs/{id}</code>, status model, retry/cancel semantics, OpenAPI examples, and pagination/sorting tests.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~6 days</div><div class="time-cell"><strong>2 h/day</strong> ~9 days</div><div class="time-cell"><strong>1 h/day</strong> ~18 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-33" data-group="backend" data-tags="tech-debt" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          DB capacity + SQL performance playbook + index audit
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Formalize DB load calculations, table growth forecasting, and recurring SQL/index audits with EXPLAIN baselines.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Systematizes database performance work and enables evidence-based scaling decisions instead of reactive fixes.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Capacity worksheet, benchmark query set, before/after EXPLAIN evidence, index proposals, and a DB degradation runbook.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~6 days</div><div class="time-cell"><strong>2 h/day</strong> ~9 days</div><div class="time-cell"><strong>1 h/day</strong> ~18 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-34" data-group="backend" data-tags="tech-debt" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Concurrency scenarios: ACID/isolation guide + race tests
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Document and test concurrency scenarios (lost update, duplicate submit, stale write) and transaction isolation behavior.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Reduces hidden race-condition risk and increases confidence in service behavior under load and retries.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>ACID/isolation-level policy document, concurrency test suite, and runbook updates for conflicts and locks.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~4 days</div><div class="time-cell"><strong>2 h/day</strong> ~6 days</div><div class="time-cell"><strong>1 h/day</strong> ~12 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-35" data-group="devops" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Security hardening: PII classification, masking, retention
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Introduce a formal sensitive-data model (PII levels), log masking, and retention/deletion policy.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Improves information-security maturity and reduces leakage/over-retention risks.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Data classification matrix, log redaction rules, retention policy, security runbook, and checks in CI/review checklist.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~4 days</div><div class="time-cell"><strong>2 h/day</strong> ~6 days</div><div class="time-cell"><strong>1 h/day</strong> ~12 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-36" data-group="docs" data-tags="feature" data-priority="P2" data-status="todo" data-created-at="2026-04-23" data-risk="low" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Modeling pack: UML Activity + State Machine + BPMN + RACI
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Add missing modeling notations and an SDLC role matrix as a unified architecture documentation package.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Closes gaps in formal process/state modeling and strengthens requirement quality.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>New Activity/BPMN/State Machine diagrams, style-guide update, RACI role matrix, and a design-review gate.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 days</div><div class="time-cell"><strong>2 h/day</strong> ~8 days</div><div class="time-cell"><strong>1 h/day</strong> ~15 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-37" data-group="docs" data-tags="tech-debt" data-priority="P2" data-status="todo" data-created-at="2026-04-23" data-risk="low" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Estimation governance: plan/fact, forecasting, stakeholder SLA
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Introduce an estimation process with a plan-vs-actual journal and explicit stakeholder expectation-communication rules.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Provides measurable estimation accuracy, improves delivery predictability, and increases communication transparency.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Task/project estimation template, variance register, monthly accuracy report, and SLA for change communication.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~3 days</div><div class="time-cell"><strong>2 h/day</strong> ~5 days</div><div class="time-cell"><strong>1 h/day</strong> ~10 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-38" data-group="backend" data-tags="feature" data-priority="P2" data-status="todo" data-created-at="2026-04-23" data-risk="medium" data-owner="Ivan Boyarkin">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Feature flags and A/B experimentation baseline
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Establish a baseline platform for feature flags and A/B experiments with success metrics and guardrails.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>Enables data-driven hypothesis validation and safe segmented rollouts.</dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Feature-flag registry, rollout strategy, experiment design template, effectiveness/risk metrics, and rollback runbook.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 days</div><div class="time-cell"><strong>2 h/day</strong> ~8 days</div><div class="time-cell"><strong>1 h/day</strong> ~15 days</div></div></dd>
+                        </dl>
+                      </section>
+
                       <section id="page-history" class="card">
                         <h2>Page history</h2>
                         <div class="docs-table-scroll" role="region" aria-label="Page history">

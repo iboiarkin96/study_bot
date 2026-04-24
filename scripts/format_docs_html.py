@@ -8,6 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "docs"
+FROZEN_DOCS_REL_PATHS = {
+    Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+}
 
 STYLE_BLOCK_RE = re.compile(r"(?is)\s*<style>.*?</style>\s*")
 STYLESHEET_TAG_RE = re.compile(r'(?ims)^[ \t]*<link\s+rel="stylesheet"[^>]*>\s*')
@@ -254,6 +257,8 @@ def main() -> None:
             continue
         # pdoc output for `make api-docs`; keep generator-owned HTML untouched.
         if rel.parts and rel.parts[0] == "pdoc":
+            continue
+        if rel in FROZEN_DOCS_REL_PATHS:
             continue
         if format_html_file(html_path):
             updated_count += 1
