@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Documentation:** unified hand-authored inline hints on `data-tooltip` (shared `docs.css` rules), added SDLC RACI matrix under `docs/internal/manager/`, and a normative frontend guide for tooltips at `docs/internal/front/docs-frontend-tooltips.html`. Details: [`docs/CHANGELOG.md`](docs/CHANGELOG.md#2026-04-24).
+
 - **Documentation:** internal employee portal (`docs/internal/portal/`), generated portal data in `docs/assets/docs-portal-data.js`, page history sections and validation on hand-written HTML, and related scripts (`collect_docs_portal_data.py`, `ensure_docs_page_history.py`, and helpers). Details: [`docs/CHANGELOG.md`](docs/CHANGELOG.md#2026-04-21).
 
 - **Docs UI:** follow-up polish to shared styles and chrome (`docs/assets/docs.css`, `docs-theme.css`, `docs-nav.js`, `internal-sidebar.js`, `docs-internal-meta.js`) and portal profile pages; regenerated `docs-portal-data.js` and client-side `search-index.json` to match maintained pages and the new assessment.
