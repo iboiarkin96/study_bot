@@ -13,23 +13,44 @@ pr_body_file="PR_BODY.md"
 if [[ ! -s "$pr_body_file" ]]; then
   echo "PR sync: $pr_body_file is missing or empty."
   echo "Run commit first; check_pr_body.sh will create a template when needed."
-  exit 1
+  exit 0
 fi
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "PR sync: GitHub CLI (gh) is not installed."
-  echo "Install gh or bypass with: SKIP_PR_SYNC=1 git push"
-  exit 1
+  echo "Install gh (brew install gh) and run 'gh auth login'."
+  exit 0
 fi
 
 if ! gh auth status >/dev/null 2>&1; then
   echo "PR sync: gh is not authenticated."
   echo "Run: gh auth login"
-  exit 1
+  exit 0
 fi
 
 if [[ "${SKIP_PR_SYNC:-0}" == "1" ]]; then
   echo "PR sync: skipped (SKIP_PR_SYNC=1)."
+  exit 0
+fi
+
+detect_repo() {
+  local remote_url
+  remote_url="$(git remote get-url origin 2>/dev/null || true)"
+  if [[ -z "$remote_url" ]]; then
+    return 1
+  fi
+  # https://github.com/owner/repo(.git)
+  if [[ "$remote_url" =~ github\.com[:/]([^/]+)/([^/]+?)(\.git)?$ ]]; then
+    printf "%s/%s" "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+    return 0
+  fi
+  return 1
+}
+
+repo_slug="$(detect_repo || true)"
+if [[ -z "${repo_slug:-}" ]]; then
+  echo "PR sync: unable to resolve GitHub repo from origin remote."
+  echo "PR sync: run manually with --repo <owner/repo> if needed."
   exit 0
 fi
 
@@ -46,9 +67,16 @@ if git rev-parse --verify "origin/$default_base" >/dev/null 2>&1; then
   fi
 fi
 
-pr_number="$(gh pr view --head "$branch" --json number --jq '.number' 2>/dev/null || true)"
+pr_number="$(
+  gh pr list \
+    --repo "$repo_slug" \
+    --state open \
+    --head "$branch" \
+    --json number \
+    --jq '.[0].number' 2>/dev/null || true
+)"
 if [[ -n "$pr_number" ]]; then
-  gh pr edit "$pr_number" --body-file "$pr_body_file" >/dev/null
+  gh pr edit "$pr_number" --repo "$repo_slug" --body-file "$pr_body_file" >/dev/null
   echo "PR sync: updated PR #$pr_number body from $pr_body_file."
   exit 0
 fi
@@ -59,6 +87,7 @@ if [[ -z "$title" ]]; then
 fi
 
 gh pr create \
+  --repo "$repo_slug" \
   --base "$default_base" \
   --head "$branch" \
   --title "$title" \
@@ -69,8 +98,11 @@ gh pr create \
       echo "PR sync: push succeeded; run 'git push' once more to auto-create/update PR body."
       exit 0
     fi
-    echo "$err"
-    exit 1
+    echo "PR sync: gh could not create/update PR; leaving push unblocked."
+    if [[ -n "$err" ]]; then
+      echo "$err"
+    fi
+    exit 0
   }
 
-echo "PR sync: created PR for branch $branch with body from $pr_body_file."
+echo "PR sync: created PR for branch $branch in $repo_slug with body from $pr_body_file."

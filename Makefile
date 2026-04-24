@@ -29,7 +29,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-design-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build
+.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-design-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping pr-sync pr-open observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build
 
 # ──────────────────────────────────────────────
 # Help
@@ -114,6 +114,10 @@ help:
 	@echo "  # Changelog — optional LLM draft (OPENROUTER_API_KEY or OPENAI_API_KEY in .env; see env/example)"
 	@echo "  make changelog-draft      Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)"
 	@echo "  make llm-ping             Smoke-test LLM API (same env as changelog-draft)"
+	@echo ""
+	@echo "  # Pull Requests (GitHub CLI)"
+	@echo "  make pr-sync              Create or update PR body from PR_BODY.md for current branch"
+	@echo "  make pr-open              Open PR for current branch in browser"
 	@echo ""
 	@echo "  # Observability (Prometheus + Grafana)"
 	@echo "  make observability-up     Start Prometheus/Grafana stack with Docker Compose"
@@ -661,6 +665,17 @@ llm-ping:
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
 	fi
 	@$(PYTHON) scripts/llm_ping.py
+
+# Create/update pull request body from PR_BODY.md using GitHub CLI.
+pr-sync:
+	@printf "$(ICON_STEP) %s\n" "Syncing pull request body from PR_BODY.md…"
+	@bash scripts/sync_pr_body.sh
+	@printf "$(ICON_OK) %s\n" "PR sync command completed"
+
+# Open pull request for current branch in browser.
+pr-open:
+	@printf "$(ICON_STEP) %s\n" "Opening pull request in browser…"
+	@gh pr view --web || gh pr create --fill --web
 
 # Start local Prometheus + Grafana observability stack.
 observability-up:

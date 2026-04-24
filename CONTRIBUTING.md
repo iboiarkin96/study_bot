@@ -37,14 +37,17 @@
   - Keep a local root file `PR_BODY.md` (gitignored). Template source is `.github/PULL_REQUEST_TEMPLATE.md`.
   - On `pre-commit` (non-`main` / non-`master` branches), hook `scripts/check_pr_body.sh` requires `PR_BODY.md` to exist, be non-empty, and have exactly one selected change type (`delivery` / `docs-only` / `mixed`).
   - The same hook also blocks common template placeholders (`What changed and why?`, ``...``) so a raw template is not committed by mistake.
-  - On `pre-push`, hook `scripts/sync_pr_body.sh` updates or creates the branch PR body from `PR_BODY.md` using GitHub CLI (`gh`).
+  - On `pre-push`, hook `scripts/sync_pr_body.sh` attempts to update/create branch PR body from `PR_BODY.md` using GitHub CLI (`gh`) but does not block push on `gh` lookup issues.
   - First-time setup:
     - Install GitHub CLI (`gh`) and verify: `gh --version` (for macOS/Homebrew: `brew install gh`).
     - Authenticate: `gh auth login`.
     - Install hooks: `pre-commit install --hook-type pre-commit --hook-type pre-push`.
-  - If `gh` is missing, `pre-push` fails with `command not found: gh` / "GitHub CLI is not installed"; install and authenticate `gh`, then retry push.
+  - If `gh` is missing, `pre-push` prints guidance and skips sync; install and authenticate `gh`, then run `make pr-sync`.
   - First push on a brand-new branch may happen before GitHub can resolve the PR head ref; in that case push once more and the hook will create/update PR body on the next push.
-  - Temporary bypass for push sync only: `SKIP_PR_SYNC=1 git push`.
+  - Manual commands (recommended for deterministic workflow):
+    - `make pr-sync` — create/update PR description from `PR_BODY.md` without needing PR number.
+    - `make pr-open` — open current branch PR in browser (creates draft-style flow if absent via `gh pr create --fill --web`).
+  - Temporary bypass for auto-sync on push: `SKIP_PR_SYNC=1 git push`.
 
 ## Architecture decisions (ADRs)
 
