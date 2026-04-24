@@ -36,15 +36,20 @@ fi
 detect_repo() {
   local remote_url
   remote_url="$(git remote get-url origin 2>/dev/null || true)"
-  if [[ -z "$remote_url" ]]; then
-    return 1
+  if [[ -n "$remote_url" ]]; then
+    # Works for both:
+    # - https://github.com/owner/repo.git
+    # - git@github.com:owner/repo.git
+    local slug
+    slug="$(printf '%s' "$remote_url" | sed -E 's#^.*github\.com[:/]([^/]+/[^/.]+)(\.git)?$#\1#')"
+    if [[ -n "$slug" && "$slug" != "$remote_url" ]]; then
+      printf "%s" "$slug"
+      return 0
+    fi
   fi
-  # https://github.com/owner/repo(.git)
-  if [[ "$remote_url" =~ github\.com[:/]([^/]+)/([^/]+?)(\.git)?$ ]]; then
-    printf "%s/%s" "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
-    return 0
-  fi
-  return 1
+
+  # Fallback to gh repo context when remote parsing fails.
+  gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || true
 }
 
 repo_slug="$(detect_repo || true)"
