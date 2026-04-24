@@ -34,8 +34,24 @@ if [[ "${SKIP_PR_SYNC:-0}" == "1" ]]; then
 fi
 
 detect_repo() {
-  local remote_url
-  remote_url="$(git remote get-url origin 2>/dev/null || true)"
+  if [[ -n "${PR_REPO:-}" ]]; then
+    printf "%s" "$PR_REPO"
+    return 0
+  fi
+
+  local remote_url upstream_ref upstream_remote
+  upstream_ref="$(git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}" 2>/dev/null || true)"
+  upstream_remote="${upstream_ref%%/*}"
+
+  if [[ -n "$upstream_remote" && "$upstream_remote" != "$upstream_ref" ]]; then
+    remote_url="$(git remote get-url "$upstream_remote" 2>/dev/null || true)"
+  else
+    remote_url="$(git remote get-url origin 2>/dev/null || true)"
+    if [[ -z "$remote_url" ]]; then
+      remote_url="$(git remote get-url fork 2>/dev/null || true)"
+    fi
+  fi
+
   if [[ -n "$remote_url" ]]; then
     # Works for both:
     # - https://github.com/owner/repo.git

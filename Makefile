@@ -675,7 +675,7 @@ pr-sync:
 # Open pull request for current branch in browser.
 pr-open:
 	@printf "$(ICON_STEP) %s\n" "Opening pull request in browser…"
-	@gh pr view --web || gh pr create --fill --web
+	@bash scripts/pr_open.sh
 
 # Start local Prometheus + Grafana observability stack.
 observability-up:
