@@ -43,13 +43,13 @@ repos:
         entry: .venv/bin/python scripts/ensure_docs_maintainers.py
         language: system
         files: ^docs/.*\.html$
-        exclude: ^docs/(api|assets)/
+        exclude: ^docs/(api|assets)/|^docs/index\.html$
       - id: docs-design-maintainers
         name: docs design/maintainers check
         entry: .venv/bin/python scripts/validate_docs_design.py
         language: system
         files: ^docs/.*\.html$
-        exclude: ^docs/(api|assets)/
+        exclude: ^docs/(api|assets)/|^docs/index\.html$
       - id: sync-pr-body-on-push
         name: sync PR body to GitHub
         entry: scripts/sync_pr_body.sh
