@@ -138,6 +138,9 @@
   overflow: auto;
   padding: 4px 16px 20px 0;
   border-right: 1px solid var(--line, #dbe3ef);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--line) 80%, transparent) transparent;
+  scroll-padding-bottom: 20px;
 }
 
 @media (max-width: 900px) {
@@ -182,8 +185,12 @@
   background: var(--card, #ffffff);
   color: var(--text, #0f172a);
   border-right: 1px solid var(--line, #dbe3ef);
-  box-shadow: var(--nav-group-shadow, 0 18px 44px rgba(2, 6, 23, 0.28));
+  box-shadow:
+    var(--nav-group-shadow, 0 18px 44px rgba(2, 6, 23, 0.28)),
+    4px 0 32px rgba(2, 6, 23, 0.08);
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--line, #dbe3ef) 80%, transparent) transparent;
   padding: max(14px, env(safe-area-inset-top, 0px)) 14px max(14px, env(safe-area-inset-bottom, 0px));
   -webkit-font-smoothing: antialiased;
 }

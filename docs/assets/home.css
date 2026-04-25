@@ -129,15 +129,27 @@ main.container.docs-page-layout .docs-page-layout__article {
 }
 
 .home-hero__cta--primary {
-  background: var(--accent);
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    color-mix(in srgb, var(--accent) 82%, #6d28d9 18%) 100%
+  );
   color: #fff;
-  border: 1px solid var(--accent);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 32%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 88%, #6d28d9 12%);
+  box-shadow:
+    0 4px 16px color-mix(in srgb, var(--accent) 32%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.22) inset;
 }
 
 .home-hero__cta--primary:hover {
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 44%, transparent);
-  background: color-mix(in srgb, var(--accent) 88%, #fff);
+  box-shadow:
+    0 8px 28px color-mix(in srgb, var(--accent) 44%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.22) inset;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 92%, #fff 8%) 0%,
+    color-mix(in srgb, var(--accent) 75%, #6d28d9 25%) 100%
+  );
 }
 
 .home-hero__cta--secondary {
@@ -186,7 +198,7 @@ main.container.docs-page-layout .docs-page-layout__article {
 
 .home-section__eyebrow {
   margin: 0;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;

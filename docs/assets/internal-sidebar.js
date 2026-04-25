@@ -498,11 +498,11 @@
    * Paths are relative to the docs/ root (e.g. internal/README.html).
    */
   const INTERNAL_SIDEBAR_NAV = [
-    { label: "𖠿 Documentation home", path: "index.html" },
-    // {},
-    { label: "Welcome to internal docs!", path: "internal/README.html" },
-    { label: "Methodology", path: "internal/analysis/methodology.html" },
-    { label: "System design", path: "internal/analysis/system-design.html" },
+    { label: "⌂ Documentation home", path: "index.html" },
+    { label: "◉ Internal docs hub", path: "internal/README.html" },
+    { label: "🧭 Methodology", path: "internal/analysis/methodology.html" },
+    { label: "🏗 System design", path: "internal/analysis/system-design.html" },
+    { label: "🌐 OpenAPI / Swagger UI", path: "openapi/index.html" },
     {
       label: "Developers docs",
       children: [
@@ -649,7 +649,6 @@
         },
       ],
     },
-    { label: "OpenAPI / Swagger UI", path: "openapi/index.html" },
     {
       label: "Runbooks",
       children: [

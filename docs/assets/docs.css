@@ -1,6 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("docs-site-nav.css");
 @import url("internal-layout.css");
+@import url("docs-premium.css");
+@import url("docs-syntax-theme.css");
 
 /* Shared documentation styles */
 
@@ -134,6 +136,15 @@
   --audit-score-needs-border: #c82333;
   --audit-score-legend-border: #dee2e6;
   --audit-score-legend-bg: #f8f9fa;
+  /* Typography tokens */
+  --font-sans: Inter, Segoe UI, Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-xs: 0.75rem;
+  --line-height-base: 1.55;
+  --line-height-heading: 1.25;
+  /* Motion tokens */
   --motion-fast: 150ms;
   --motion-base: 220ms;
   --motion-ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
@@ -217,15 +228,16 @@
 
 html {
   font-size: 17px;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
-  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
   background: linear-gradient(180deg, var(--bg-gradient-top) 0%, var(--bg) 220px);
   color: var(--text);
-  line-height: 1.55;
+  line-height: var(--line-height-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "cv02", "cv11", "ss01";
@@ -482,6 +494,7 @@ h4,
 h5,
 h6 {
   line-height: 1.25;
+  scroll-margin-top: 1.5rem;
 }
 
 h1 {
@@ -525,16 +538,19 @@ h1 {
 }
 
 h2 {
-  margin: 28px 0 12px;
+  margin: 36px 0 14px;
   font-size: 1.35rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 8px;
+  letter-spacing: -0.015em;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  padding-bottom: 6px;
 }
 
 h3 {
-  margin: 22px 0 8px;
+  margin: 24px 0 8px;
   font-size: 1.05rem;
-  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: color-mix(in srgb, var(--text) 82%, var(--accent) 18%);
 }
 
 p,
@@ -558,6 +574,8 @@ a {
 
 a:hover {
   text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 a:focus-visible,
@@ -629,7 +647,7 @@ pre code {
   padding: 0;
   border-radius: 0;
   font-size: inherit;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-mono);
 }
 
 .lead {
@@ -1583,6 +1601,9 @@ td {
 th {
   background: var(--table-th-bg);
   font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  color: var(--muted);
 }
 
 /*
@@ -1767,21 +1788,21 @@ table.audit-gap-table th {
 }
 
 .audit-gap-table td.audit-gap-status--todo {
-  background: #e9ecef;
-  border-left: 3px solid #6c757d;
-  color: #343a40;
+  background: var(--badge-muted-bg);
+  border-left: 3px solid var(--badge-muted-border);
+  color: var(--badge-muted-text);
 }
 
 .audit-gap-table td.audit-gap-status--inprogress {
-  background: #fff3cd;
-  border-left: 3px solid #e0a800;
-  color: #664d03;
+  background: var(--badge-warning-bg);
+  border-left: 3px solid var(--badge-warning-border);
+  color: var(--badge-warning-text);
 }
 
 .audit-gap-table td.audit-gap-status--done {
-  background: #d1e7dd;
-  border-left: 3px solid #198754;
-  color: #0a3622;
+  background: var(--badge-success-bg);
+  border-left: 3px solid var(--badge-success-border);
+  color: var(--badge-success-text);
 }
 
 /* docs/openapi/index.html — OpenAPI (test), Swagger UI browse-only */

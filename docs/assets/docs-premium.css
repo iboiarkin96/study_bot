@@ -1,0 +1,319 @@
+/*
+ * docs-premium.css — Phase 4 polish layer.
+ * Additive only: new components and patterns not covered in docs.css.
+ * Import order: after docs.css, before docs-theme.css.
+ *
+ * Contents:
+ *   1. Callout blocks (info / warn / tip / danger)
+ *   2. Page-end "Next steps" pattern
+ *   3. Inline contextual hints
+ *   4. Reading width guard on article prose
+ *   5. Smooth focus-visible ring on sidebar tree items
+ *   6. Keyboard shortcut <kbd> tokens
+ *   7. "Back to top" affordance
+ *   8. Content status banner (deprecation / WIP)
+ *   9. Empty state block
+ *  10. Responsive prose line-length control
+ */
+
+/* ── 1. Callout blocks ──────────────────────────────────────────────────────
+   Usage: <aside class="callout callout--info"> or --tip / --warn / --danger
+   These match the unified token colors (badge system) rather than inventing
+   new raw colors, so dark mode works for free.                              */
+
+.callout {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 13px 15px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 95%, var(--bg));
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text);
+  /* Accent left stripe */
+  border-left: 4px solid var(--callout-stripe, var(--accent));
+}
+
+.callout::before {
+  content: var(--callout-icon, "ℹ");
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--callout-icon-color, var(--accent));
+}
+
+.callout--info {
+  --callout-stripe: var(--accent);
+  --callout-icon: "ℹ";
+  --callout-icon-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--card));
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+}
+
+.callout--tip {
+  --callout-stripe: var(--badge-success-border);
+  --callout-icon: "✓";
+  --callout-icon-color: var(--badge-success-text);
+  background: color-mix(in srgb, var(--badge-success-bg) 60%, var(--card));
+  border-color: color-mix(in srgb, var(--badge-success-border) 60%, var(--line));
+}
+
+.callout--warn {
+  --callout-stripe: var(--badge-warning-border);
+  --callout-icon: "⚠";
+  --callout-icon-color: var(--badge-warning-text);
+  background: color-mix(in srgb, var(--badge-warning-bg) 60%, var(--card));
+  border-color: color-mix(in srgb, var(--badge-warning-border) 60%, var(--line));
+}
+
+.callout--danger {
+  --callout-stripe: var(--badge-danger-border);
+  --callout-icon: "✕";
+  --callout-icon-color: var(--badge-danger-text);
+  background: color-mix(in srgb, var(--badge-danger-bg) 60%, var(--card));
+  border-color: color-mix(in srgb, var(--badge-danger-border) 60%, var(--line));
+}
+
+.callout > p:first-of-type {
+  margin-top: 0;
+}
+
+.callout > p:last-child {
+  margin-bottom: 0;
+}
+
+.callout__title {
+  display: block;
+  margin: 0 0 4px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  color: var(--callout-icon-color, var(--accent));
+}
+
+/* ── 2. Page-end "Next steps" pattern ───────────────────────────────────────
+   Usage: <nav class="docs-next-steps" aria-label="Next steps">
+            <a class="docs-next-steps__item" href="...">...</a>
+          </nav>                                                              */
+
+.docs-next-steps {
+  margin: 44px 0 0;
+  padding: 20px 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 4%, var(--card));
+}
+
+.docs-next-steps__heading {
+  margin: 0 0 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.docs-next-steps__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.docs-next-steps__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.93rem;
+  font-weight: 500;
+  transition:
+    border-color var(--motion-fast, 150ms) var(--motion-ease-premium, ease),
+    background var(--motion-fast, 150ms) var(--motion-ease-premium, ease),
+    transform var(--motion-fast, 150ms) var(--motion-ease-premium, ease);
+}
+
+.docs-next-steps__item::after {
+  content: "→";
+  margin-left: auto;
+  opacity: 0.5;
+  transition:
+    opacity var(--motion-fast, 150ms) ease,
+    transform var(--motion-fast, 150ms) var(--motion-ease-premium, ease);
+}
+
+.docs-next-steps__item:hover {
+  border-color: color-mix(in srgb, var(--accent) 24%, var(--line));
+  background: color-mix(in srgb, var(--accent) 7%, var(--card));
+  transform: translateX(2px);
+  text-decoration: none;
+}
+
+.docs-next-steps__item:hover::after {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+.docs-next-steps__item:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  outline-offset: 2px;
+  text-decoration: none;
+}
+
+/* ── 3. Inline contextual hints ─────────────────────────────────────────────
+   Usage: <span class="docs-hint">optional detail</span>
+   Or with icon: <span class="docs-hint docs-hint--icon">…</span>           */
+
+.docs-hint {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 7px;
+  background: color-mix(in srgb, var(--card) 92%, var(--bg));
+  vertical-align: middle;
+}
+
+/* ── 4. Keyboard shortcut <kbd> tokens ──────────────────────────────────────
+   Enhanced from browser default: matches docs visual language.              */
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5em;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.78em;
+  font-style: normal;
+  line-height: 1.5;
+  background: color-mix(in srgb, var(--table-th-bg) 95%, #fff);
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+/* ── 5. Content status banner ────────────────────────────────────────────────
+   Usage: <div class="docs-status-banner docs-status-banner--wip">…</div>   */
+
+.docs-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 11px 15px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 92%, var(--bg));
+  color: var(--muted);
+}
+
+.docs-status-banner--wip {
+  border-color: color-mix(in srgb, var(--badge-warning-border) 55%, var(--line));
+  background: color-mix(in srgb, var(--badge-warning-bg) 50%, var(--card));
+  color: var(--badge-warning-text);
+}
+
+.docs-status-banner--deprecated {
+  border-color: color-mix(in srgb, var(--badge-danger-border) 55%, var(--line));
+  background: color-mix(in srgb, var(--badge-danger-bg) 50%, var(--card));
+  color: var(--badge-danger-text);
+}
+
+.docs-status-banner--new {
+  border-color: color-mix(in srgb, var(--badge-success-border) 55%, var(--line));
+  background: color-mix(in srgb, var(--badge-success-bg) 50%, var(--card));
+  color: var(--badge-success-text);
+}
+
+.docs-status-banner__icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+/* ── 6. Empty state block ───────────────────────────────────────────────────
+   Usage: <div class="docs-empty-state"><p class="docs-empty-state__text">…</p></div> */
+
+.docs-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  margin: 16px 0;
+}
+
+.docs-empty-state__icon {
+  font-size: 2rem;
+  line-height: 1;
+  margin: 0 0 10px;
+  display: block;
+  opacity: 0.45;
+}
+
+.docs-empty-state__text {
+  margin: 0;
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+/* ── 7. Back-to-top affordance ──────────────────────────────────────────────
+   NOTE: The animated rocket button (.docs-back-to-top) is fully implemented
+   in docs.css (lines ~3421–3911) and docs-nav.js (initBackToTopButton).
+   No additional CSS is needed here.                                         */
+
+/* ── 8. Reading mode — enhanced prose width for article content ─────────────
+   When reading mode is active (body.docs-reading-mode), prose line length is
+   capped per element for optimal ~75-char reading comfort. This supplements
+   the container max-width already set in docs.css.                          */
+
+body.docs-reading-mode .docs-page-layout__article > p,
+body.docs-reading-mode .docs-page-layout__article > ul,
+body.docs-reading-mode .docs-page-layout__article > ol,
+body.docs-reading-mode .docs-page-layout__article > blockquote,
+body.docs-reading-mode main.container > .card > p,
+body.docs-reading-mode main.container > .card > ul,
+body.docs-reading-mode main.container > .card > ol {
+  max-width: 72ch;
+}
+
+/* ── 9. Divider component ───────────────────────────────────────────────────
+   Usage: <hr class="docs-divider"> or <hr class="docs-divider docs-divider--faint"> */
+
+.docs-divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 28px 0;
+}
+
+.docs-divider--faint {
+  border-top-color: color-mix(in srgb, var(--line) 50%, transparent);
+}
+
+/* ── 10. Reduced-motion: disable new premium animations ─────────────────────*/
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-next-steps__item,
+  .docs-next-steps__item::after {
+    transition: none;
+    transform: none;
+  }
+}
