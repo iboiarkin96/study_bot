@@ -1,0 +1,347 @@
+/* ── ETR Study API — Home page styles ────────────────────────────────────── */
+
+/* ── Page enter ── */
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero       { animation: home-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .home-alert      { animation: home-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both; }
+  .home-section    { animation: home-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .home-section:nth-of-type(1) { animation-delay:  80ms; }
+  .home-section:nth-of-type(2) { animation-delay: 130ms; }
+  .home-section:nth-of-type(3) { animation-delay: 175ms; }
+  .home-section:nth-of-type(4) { animation-delay: 215ms; }
+  .home-section:nth-of-type(5) { animation-delay: 250ms; }
+  .home-section:nth-of-type(6) { animation-delay: 280ms; }
+}
+
+@keyframes home-enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.home-hero {
+  padding: 52px 0 44px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 40px;
+}
+
+.home-hero__eyebrow {
+  margin: 0 0 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-hero__eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.home-hero__title {
+  margin: 0 0 18px;
+  font-size: clamp(2.6rem, 5vw + 0.5rem, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  /* Gradient text: accent tint toward the end */
+  background: linear-gradient(
+    140deg,
+    var(--text) 20%,
+    color-mix(in srgb, var(--accent) 68%, var(--text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.home-hero__tagline {
+  margin: 0 0 32px;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 58ch;
+}
+
+.home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.home-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.home-hero__cta:hover {
+  transform: translateY(-2px);
+}
+
+.home-hero__cta--primary {
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 32%, transparent);
+}
+
+.home-hero__cta--primary:hover {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 44%, transparent);
+  background: color-mix(in srgb, var(--accent) 88%, #fff);
+}
+
+.home-hero__cta--secondary {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.home-hero__cta--secondary:hover {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
+  color: var(--accent);
+}
+
+/* ── Alert / notice banner ─────────────────────────────────────────────────── */
+.home-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  margin: 0 0 36px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, #f59e0b 35%, var(--line));
+  background: color-mix(in srgb, #f59e0b 7%, var(--card));
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.home-alert__icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* ── Section ──────────────────────────────────────────────────────────────── */
+.home-section {
+  margin: 0 0 44px;
+}
+
+.home-section__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.home-section__eyebrow {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.home-section__rule {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+  border: none;
+  margin: 0;
+}
+
+/* ── Card grid ─────────────────────────────────────────────────────────────── */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* ── Doc card ──────────────────────────────────────────────────────────────── */
+.home-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 20px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  text-decoration: none !important;
+  color: var(--text);
+  overflow: hidden;
+  transition:
+    border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow   180ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform    180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Left accent stripe — slides in on hover */
+.home-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  opacity: 0;
+  transform: scaleY(0.6);
+  transition:
+    opacity 180ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  box-shadow:
+    0 8px 28px color-mix(in srgb, var(--accent) 10%, transparent),
+    0 2px 8px  rgba(15, 23, 42, 0.06);
+  transform: translateY(-3px);
+}
+
+.home-card:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.home-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Icon box */
+.home-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  background: var(--home-icon-bg, color-mix(in srgb, var(--accent) 13%, var(--bg)));
+  border: 1px solid var(--home-icon-border, color-mix(in srgb, var(--accent) 22%, var(--line)));
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-card:hover .home-card__icon {
+  transform: scale(1.08);
+}
+
+/* Icon color variants */
+.home-card--blue {
+  --home-icon-bg:     color-mix(in srgb, #3b82f6 13%, var(--bg));
+  --home-icon-border: color-mix(in srgb, #3b82f6 24%, var(--line));
+}
+.home-card--green {
+  --home-icon-bg:     color-mix(in srgb, #10b981 13%, var(--bg));
+  --home-icon-border: color-mix(in srgb, #10b981 24%, var(--line));
+}
+.home-card--purple {
+  --home-icon-bg:     color-mix(in srgb, #8b5cf6 13%, var(--bg));
+  --home-icon-border: color-mix(in srgb, #8b5cf6 24%, var(--line));
+}
+.home-card--amber {
+  --home-icon-bg:     color-mix(in srgb, #f59e0b 13%, var(--bg));
+  --home-icon-border: color-mix(in srgb, #f59e0b 24%, var(--line));
+}
+.home-card--teal {
+  --home-icon-bg:     color-mix(in srgb, #06b6d4 13%, var(--bg));
+  --home-icon-border: color-mix(in srgb, #06b6d4 24%, var(--line));
+}
+.home-card--rose {
+  --home-icon-bg:     color-mix(in srgb, #f43f5e 13%, var(--bg));
+  --home-icon-border: color-mix(in srgb, #f43f5e 24%, var(--line));
+}
+
+/* Card text */
+.home-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.home-card__title {
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.home-card__desc {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Arrow footer */
+.home-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.home-card__arrow {
+  font-size: 0.9rem;
+  color: var(--muted);
+  transition:
+    color   180ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  line-height: 1;
+}
+
+.home-card:hover .home-card__arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+/* ── Repo root: 2-col mini cards ──────────────────────────────────────────── */
+.home-card--mono .home-card__icon {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--muted);
+  background: var(--bg);
+  border-color: var(--line);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .home-grid { grid-template-columns: repeat(min(var(--cols, 3), 2), minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .home-hero { padding: 32px 0 28px; }
+  .home-hero__title { font-size: clamp(2rem, 8vw, 2.8rem); }
+  .home-section { margin-bottom: 32px; }
+}

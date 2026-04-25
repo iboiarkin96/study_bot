@@ -93,7 +93,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "adr/0022-embedded-swagger-ui-openapi-sandbox.html",
-        "title": "ADR 0022: Embedded Swagger — static validation (superseded)"
+        "title": "ADR 0022: Embedded Swagger UI — interactive API sandbox"
       },
       {
         "path": "adr/0023-structured-logging-and-local-elasticsearch.html",
@@ -158,6 +158,10 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "backlog/README.html",
         "title": "Backlog — quality and scale roadmap"
+      },
+      {
+        "path": "backlog/week-calendar-2026-04-25.html",
+        "title": "Work calendar — week 2026-04-25 / 2026-05-02"
       },
       {
         "path": "developer/0001-requirements.html",

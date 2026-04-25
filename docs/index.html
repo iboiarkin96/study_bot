@@ -1,18 +1,20 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+
+<head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ETR Study API - Home page</title>
+  <title>ETR Study API — Engineering Docs</title>
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="stylesheet" href="./assets/docs.css" />
   <link rel="stylesheet" href="./assets/docs-theme.css">
   <link rel="stylesheet" href="./assets/internal-layout.css">
+  <link rel="stylesheet" href="./assets/home.css">
   <script defer src="./assets/docs-nav.js"></script>
   <script defer src="./assets/docs-portal-data.js"></script>
   <script defer src="./assets/docs-internal-meta.js"></script>
-
   <script defer src="./assets/internal-sidebar.js"></script>
 </head>
 
@@ -24,175 +26,269 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>ETR Study API - Home page</h1>
-        <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section id="overview" class="card">
-          <h2>Overview</h2>
-          <p>
-            This site is the engineering documentation for the <strong><span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span>
-            Study API</strong>.
+        <div id="docs-top-nav"></div>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+
+        <!-- ── Hero ───────────────────────────────────────────────────────── -->
+        <div class="home-hero">
+          <p class="home-hero__eyebrow">Engineering Documentation</p>
+          <h1 class="home-hero__title">ETR Study API</h1>
+          <p class="home-hero__tagline">
+            Architecture, standards, ADRs, runbooks, and API reference for the
+            <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span>
+            Study service — versioned with the code, readable in the browser.
           </p>
-          <p>
-            Here you will find architecture notes, standards, onboarding guides, ADRs, runbooks, and auto-generated
-            Python
-            API docs (pdoc). If you host the repo on GitHub Pages with <code>docs/</code> as the root, this page is the
-            docs
-            home.
-          </p>
-          <p>
-            <strong>⚠️ Docs changelog:</strong> Documentation changes are listed in <code>docs/CHANGELOG.md</code>. That
-            file
-            is separate from the root <code>CHANGELOG.md</code>, which tracks product and API releases.
-          </p>
+          <div class="home-hero__actions">
+            <a class="home-hero__cta home-hero__cta--primary" href="./openapi/index.html">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 1 0 20M2 12h20" />
+              </svg>
+              OpenAPI Explorer
+            </a>
+            <a class="home-hero__cta home-hero__cta--secondary" href="./backlog/README.html">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+              View Backlog
+            </a>
+            <a class="home-hero__cta home-hero__cta--secondary" href="./pdoc/index.html">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="16 18 22 12 16 6" />
+                <polyline points="8 6 2 12 8 18" />
+              </svg>
+              Python API
+            </a>
+          </div>
+        </div>
+
+        <!-- ── Architecture & Design ──────────────────────────────────────── -->
+        <section class="home-section" aria-labelledby="sec-arch">
+          <div class="home-section__header">
+            <p class="home-section__eyebrow" id="sec-arch">Architecture &amp; Design</p>
+            <hr class="home-section__rule">
+          </div>
+          <div class="home-grid" style="--cols:3">
+
+            <a class="home-card home-card--blue" href="./internal/analysis/methodology.html">
+              <div class="home-card__icon" aria-hidden="true">🧭</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Methodology</p>
+                <p class="home-card__desc">What ETR is, why it matters, how it works, and how to work with it.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--blue" href="./internal/analysis/system-design.html">
+              <div class="home-card__icon" aria-hidden="true">🏗️</div>
+              <div class="home-card__body">
+                <p class="home-card__title">System Design</p>
+                <p class="home-card__desc">Authoritative architecture, domains, APIs, NFRs, and diagrams.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--blue" href="./internal/README.html">
+              <div class="home-card__icon" aria-hidden="true">📖</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Internal Service Docs</p>
+                <p class="home-card__desc">Business rules, behavior specs, and how operations map to HTTP.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+          </div>
         </section>
 
-        <section class="card">
-          <h2>Documentation index</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Topic</th>
-                <th>Link</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><a href="./internal/analysis/methodology.html">Methodology</a></td>
-                <td>
-                  What <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> is, why it matters, how it
-                  works, and how to work with it.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./internal/analysis/system-design.html">System design</a></td>
-                <td>
-                  Authoritative architecture, domains, APIs, non-functional requirements, and diagrams for the service.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./developer/README.html">Developers Docs</a></td>
-                <td>
-                  Main entry: workflow, quality gates, policies, and links to hands-on guides under
-                  <code>docs/developer/</code> (requirements, contracts, Make, local dev, Docker image, docs pipeline).
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>
-                </td>
-                <td>
-                  How to use <code>make</code> for setup, tests, deploy-related tasks, and day-to-day development. Tips
-                  for
-                  new contributors.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./internal/README.html">Internal service documentation</a></td>
-                <td>
-                  Engineering-focused behavior, business rules, and how operations map to HTTP — under
-                  <code>docs/internal/</code> (HTML). External clients use OpenAPI and the root changelog. Rules for who
-                  reads what are in
-                  <a href="./adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> and
-                  <a href="./adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>.
-                  <a href="./internal/README.html">Open internal service documentation</a>.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./howto/README.html">How-to guides</a></td>
-                <td>
-                  Task-focused steps (for example auth setup, adding an endpoint, or working with the internal doc
-                  tree).
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./adr/README.html">ADRs</a></td>
-                <td>
-                  Architecture Decision Records: why we chose a path, trade-offs, and context for big technical and
-                  process
-                  choices.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./rfc/README.html">RFCs</a></td>
-                <td>
-                  Detailed specs and runbooks (for example docs search: index, rank, telemetry, storage,
-                  troubleshooting,
-                  KPI/SLO).
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./audit/README.html">Architecture &amp; quality assessments</a></td>
-                <td>
-                  Audits against common practice: scored tables, gaps, mitigations. See
-                  <a href="./adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./runbooks/README.html">Runbooks</a></td>
-                <td>
-                  Steps for incidents and recovery: for on-call and anyone handling production issues.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./qa/README.html">QA checklists</a></td>
-                <td>
-                  Manual verification checklists for documentation pages, UI controls, and release-ready visual checks.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./backlog/README.html">Backlog</a></td>
-                <td>
-                  Prioritized features, bugs, and tech debt for planning and tracking work.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./pdoc/index.html">Python API reference (pdoc)</a></td>
-                <td>
-                  Generated from the Python code (pdoc): modules, functions, classes, docstrings, examples.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="./openapi/index.html">OpenAPI / Swagger UI</a></td>
-                <td>
-                  Swagger UI to explore and try the HTTP contract. For backend, frontend, and integrators.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- ── Development ────────────────────────────────────────────────── -->
+        <section class="home-section" aria-labelledby="sec-dev">
+          <div class="home-section__header">
+            <p class="home-section__eyebrow" id="sec-dev">Development</p>
+            <hr class="home-section__rule">
+          </div>
+          <div class="home-grid" style="--cols:3">
+
+            <a class="home-card home-card--green" href="./developer/README.html">
+              <div class="home-card__icon" aria-hidden="true">💻</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Developer Docs</p>
+                <p class="home-card__desc">Workflow, quality gates, policies, local dev, Docker, and the docs pipeline.
+                </p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--green" href="./developer/0010-make-commands-and-workflows.html">
+              <div class="home-card__icon" aria-hidden="true">⚙️</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Make Commands</p>
+                <p class="home-card__desc">How to use <code>make</code> for setup, tests, deploy, and day-to-day work.
+                </p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--green" href="./howto/README.html">
+              <div class="home-card__icon" aria-hidden="true">🔧</div>
+              <div class="home-card__body">
+                <p class="home-card__title">How-to Guides</p>
+                <p class="home-card__desc">Step-by-step tasks: auth setup, adding endpoints, working with the doc tree.
+                </p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+          </div>
         </section>
 
-        <section class="card">
-          <h2>Repository root documentation</h2>
-          <p>
-            These Markdown files live next to the app code (not under <code>docs/</code>). Open them in your clone or on
-            GitHub at the repo root.
-          </p>
-          <table>
-            <thead>
-              <tr>
-                <th>File</th>
-                <th>What it covers</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><a href="../README.md"><code>README.md</code></a></td>
-                <td>
-                  Overview, quick start, config, docs map, observability, Docker image (optional), repo tree,
-                  HTTP/OpenAPI
-                  links.
-                </td>
-              </tr>
-              <tr>
-                <td><a href="../CONTRIBUTING.md"><code>CONTRIBUTING.md</code></a></td>
-                <td>
-                  Quality gates, CI/CD and docs, dead-code checks, <code>docs-fix</code> / <code>docs-check</code>,
-                  container image notes, OpenAPI updates, and what we expect from contributors.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- ── Decisions & Specs ─────────────────────────────────────────── -->
+        <section class="home-section" aria-labelledby="sec-decisions">
+          <div class="home-section__header">
+            <p class="home-section__eyebrow" id="sec-decisions">Decisions &amp; Specs</p>
+            <hr class="home-section__rule">
+          </div>
+          <div class="home-grid" style="--cols:3">
+
+            <a class="home-card home-card--purple" href="./adr/README.html">
+              <div class="home-card__icon" aria-hidden="true">💡</div>
+              <div class="home-card__body">
+                <p class="home-card__title">ADRs</p>
+                <p class="home-card__desc">Architecture Decision Records — why we chose a path, trade-offs, context.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--purple" href="./rfc/README.html">
+              <div class="home-card__icon" aria-hidden="true">📐</div>
+              <div class="home-card__body">
+                <p class="home-card__title">RFCs</p>
+                <p class="home-card__desc">Detailed specs: search index, ranking, telemetry, storage, KPI/SLO.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--purple" href="./audit/README.html">
+              <div class="home-card__icon" aria-hidden="true">📊</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Quality Assessments</p>
+                <p class="home-card__desc">Audits against best practices: scored tables, gaps, mitigations.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+          </div>
         </section>
+
+        <!-- ── Quality & Operations ───────────────────────────────────────── -->
+        <section class="home-section" aria-labelledby="sec-ops">
+          <div class="home-section__header">
+            <p class="home-section__eyebrow" id="sec-ops">Quality &amp; Operations</p>
+            <hr class="home-section__rule">
+          </div>
+          <div class="home-grid" style="--cols:3">
+
+            <a class="home-card home-card--amber" href="./runbooks/README.html">
+              <div class="home-card__icon" aria-hidden="true">🚨</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Runbooks</p>
+                <p class="home-card__desc">Incident and recovery steps for on-call and production issues.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--amber" href="./qa/README.html">
+              <div class="home-card__icon" aria-hidden="true">✅</div>
+              <div class="home-card__body">
+                <p class="home-card__title">QA Checklists</p>
+                <p class="home-card__desc">Manual verification checklists for docs pages, UI controls, and releases.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--amber" href="./backlog/README.html">
+              <div class="home-card__icon" aria-hidden="true">📋</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Backlog</p>
+                <p class="home-card__desc">Prioritized features, bugs, and tech debt — board, list, and timeline views.
+                </p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+          </div>
+        </section>
+
+        <!-- ── API Reference ──────────────────────────────────────────────── -->
+        <section class="home-section" aria-labelledby="sec-api">
+          <div class="home-section__header">
+            <p class="home-section__eyebrow" id="sec-api">API Reference</p>
+            <hr class="home-section__rule">
+          </div>
+          <div class="home-grid" style="--cols:3">
+
+            <a class="home-card home-card--teal" href="./openapi/index.html">
+              <div class="home-card__icon" aria-hidden="true">🌐</div>
+              <div class="home-card__body">
+                <p class="home-card__title">OpenAPI / Swagger UI</p>
+                <p class="home-card__desc">Explore and try the HTTP contract. For backend, frontend, and integrators.
+                </p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--teal" href="./pdoc/index.html">
+              <div class="home-card__icon" aria-hidden="true">🐍</div>
+              <div class="home-card__body">
+                <p class="home-card__title">Python API Reference</p>
+                <p class="home-card__desc">Generated from source (pdoc): modules, classes, functions, docstrings.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+          </div>
+        </section>
+
+        <!-- ── Repository root docs ───────────────────────────────────────── -->
+        <section class="home-section" aria-labelledby="sec-repo">
+          <div class="home-section__header">
+            <p class="home-section__eyebrow" id="sec-repo">Repository Root</p>
+            <hr class="home-section__rule">
+          </div>
+          <p style="margin:0 0 14px;font-size:0.86rem;color:var(--muted);">
+            Markdown files that live next to the app code — open in your clone or on GitHub.
+          </p>
+          <div class="home-grid" style="--cols:3">
+
+            <a class="home-card home-card--mono" href="../README.md">
+              <div class="home-card__icon" aria-hidden="true">.md</div>
+              <div class="home-card__body">
+                <p class="home-card__title">README.md</p>
+                <p class="home-card__desc">Overview, quick start, config, docs map, Docker, HTTP/OpenAPI links.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+            <a class="home-card home-card--mono" href="../CONTRIBUTING.md">
+              <div class="home-card__icon" aria-hidden="true">.md</div>
+              <div class="home-card__body">
+                <p class="home-card__title">CONTRIBUTING.md</p>
+                <p class="home-card__desc">Quality gates, CI/CD, dead-code checks, docs-fix, and contributor
+                  expectations.</p>
+              </div>
+              <div class="home-card__footer"><span class="home-card__arrow">→</span></div>
+            </a>
+
+          </div>
+        </section>
+
+        <!-- ── Page history ───────────────────────────────────────────────── -->
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -206,6 +302,11 @@
               </thead>
               <tbody>
                 <tr>
+                  <td><time datetime="2026-04-25">2026-04-25</time></td>
+                  <td>Redesigned home page: hero, card grid, section grouping.</td>
+                  <td><a href="internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
                   <td><time datetime="2026-04-21">2026-04-21</time></td>
                   <td>Added Page history section (repository baseline).</td>
                   <td><a href="internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
@@ -215,9 +316,10 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
       </main>
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>
