@@ -142,8 +142,30 @@
   --font-size-base: 1rem;
   --font-size-sm: 0.875rem;
   --font-size-xs: 0.75rem;
+  --font-size-label: 0.82rem;   /* UI labels, badges, meta text           */
+  --font-size-2xs: 0.72rem;     /* Eyebrows, section caps, tiny badges     */
   --line-height-base: 1.55;
   --line-height-heading: 1.25;
+  /* Spacing scale — 8 px base rhythm (matches Stripe / Linear grid) */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  /* Border-radius scale */
+  --radius-sm:   6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-full: 999px;
+  /* Breakpoint reference (cannot use var() in @media — use these as doc tokens)
+     sm: 640px  |  md: 768px  |  lg: 1024px  |  xl: 1280px              */
+  --bp-sm:   640;
+  --bp-md:   768;
+  --bp-lg:  1024;
+  --bp-xl:  1280;
   /* Motion tokens */
   --motion-fast: 150ms;
   --motion-base: 220ms;
@@ -553,6 +575,30 @@ h3 {
   color: color-mix(in srgb, var(--text) 82%, var(--accent) 18%);
 }
 
+h4 {
+  margin: 20px 0 6px;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+
+h5 {
+  margin: 16px 0 4px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+h6 {
+  margin: 14px 0 4px;
+  font-size: var(--font-size-2xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 p,
 li {
   line-height: 1.55;
@@ -609,7 +655,7 @@ summary:focus-visible {
   font-weight: 700;
   text-decoration: none;
   box-shadow: 0 10px 22px rgba(2, 6, 23, 0.2);
-  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1), opacity 120ms ease;
+  transition: transform var(--motion-fast) var(--motion-ease-premium), opacity var(--motion-fast) ease;
 }
 
 .docs-skip-link:focus-visible {
@@ -665,18 +711,18 @@ pre code {
   overflow: hidden;
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px 18px;
-  margin: 12px 0;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) 18px;
+  margin: var(--space-3) 0;
   box-shadow:
     var(--card-shadow),
     0 1px 0 rgba(255, 255, 255, 0.6) inset;
   min-width: 0;
   max-width: 100%;
   transition:
-    border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    border-color var(--motion-base) var(--motion-ease-premium),
+    box-shadow   var(--motion-base) var(--motion-ease-premium),
+    transform    var(--motion-base) var(--motion-ease-premium);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -743,8 +789,8 @@ pre code {
   opacity: 0;
   transform: scaleY(0.7);
   transition:
-    opacity 180ms ease,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity   var(--motion-base) ease,
+    transform var(--motion-base) var(--motion-ease-premium);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -795,6 +841,237 @@ pre code {
   background: var(--badge-danger-bg);
   border-color: var(--badge-danger-border);
   color: var(--badge-danger-text);
+}
+
+/* ── Card variants ───────────────────────────────────────────────────────────
+   Extend the base .card with a modifier.
+   .card--flat     no shadow, just the border
+   .card--raised   stronger depth shadow
+   .card--sm       tighter padding for dense contexts
+   .card--inset    recessed appearance for secondary info                     */
+
+.card--flat {
+  box-shadow: none;
+}
+
+.card--raised {
+  box-shadow:
+    var(--card-shadow),
+    0 8px 28px color-mix(in srgb, var(--accent) 7%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+.card--sm {
+  padding: var(--space-3) var(--space-4);
+}
+
+.card--inset {
+  background: color-mix(in srgb, var(--bg) 55%, var(--card));
+  border-color: color-mix(in srgb, var(--line) 65%, transparent);
+  box-shadow: none;
+}
+
+/* ── Unified button system ───────────────────────────────────────────────────
+   Usage: <a class="btn btn--primary" href="…">Label</a>
+          <button class="btn btn--secondary">Label</button>
+          <button class="btn btn--ghost btn--sm">Label</button>
+   Variants: --primary  --secondary  --ghost
+   Sizes:    (default)  --sm         --lg                                      */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px var(--space-5);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition:
+    transform    var(--motion-fast) var(--motion-ease-premium),
+    box-shadow   var(--motion-fast) var(--motion-ease-premium),
+    border-color var(--motion-fast) ease,
+    background   var(--motion-fast) ease,
+    color        var(--motion-fast) ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  text-decoration: none !important;
+}
+
+.btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  outline-offset: 2px;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Sizes */
+.btn--sm {
+  padding: 6px var(--space-3);
+  font-size: var(--font-size-label);
+}
+
+.btn--lg {
+  padding: 12px var(--space-6);
+  font-size: 1rem;
+}
+
+/* Variants */
+.btn--primary {
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    color-mix(in srgb, var(--accent) 82%, #6d28d9 18%) 100%
+  );
+  color: #fff;
+  border-color: color-mix(in srgb, var(--accent) 88%, #6d28d9 12%);
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.2) inset;
+}
+
+.btn--primary:hover {
+  box-shadow:
+    0 8px 24px color-mix(in srgb, var(--accent) 40%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  color: #fff;
+}
+
+.btn--secondary {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--line);
+  box-shadow: var(--shadow-premium-sm);
+}
+
+.btn--secondary:hover {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
+  color: var(--accent);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent);
+  border-color: transparent;
+}
+
+.btn--ghost:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+    transform: none;
+  }
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
+}
+
+/* ── Generic collapsible: details / summary ─────────────────────────────────
+   Usage: <details class="docs-collapse">
+            <summary>Section title</summary>
+            <div class="docs-collapse__body">…content…</div>
+          </details>
+
+   Variants: .docs-collapse--flat  (no border, subtle bg)
+             .docs-collapse--inset (recessed)                                  */
+
+.docs-collapse {
+  margin: var(--space-3) 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  overflow: hidden;
+  transition:
+    border-color var(--motion-fast) ease,
+    box-shadow   var(--motion-fast) ease;
+}
+
+.docs-collapse > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text);
+  user-select: none;
+  transition: background var(--motion-fast) ease;
+}
+
+.docs-collapse > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron indicator */
+.docs-collapse > summary::before {
+  content: "";
+  display: inline-block;
+  width: 0.38em;
+  height: 0.38em;
+  border-right: 1.75px solid currentColor;
+  border-bottom: 1.75px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--motion-fast) var(--motion-ease-premium);
+  flex-shrink: 0;
+  opacity: 0.55;
+  margin-right: 2px;
+}
+
+.docs-collapse[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.docs-collapse[open] > summary {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .docs-collapse > summary:hover {
+    background: color-mix(in srgb, var(--accent) 5%, var(--card));
+  }
+}
+
+.docs-collapse__body {
+  padding: var(--space-4);
+}
+
+.docs-collapse__body > *:first-child { margin-top: 0; }
+.docs-collapse__body > *:last-child  { margin-bottom: 0; }
+
+/* Variants */
+.docs-collapse--flat {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--bg) 40%, var(--card));
+  border-color: color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.docs-collapse--inset {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--bg) 65%, var(--card));
+  border-color: color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-collapse > summary::before {
+    transition: none;
+  }
 }
 
 .adr-meta {
@@ -1261,6 +1538,16 @@ details.docs-theory-help[open] summary {
   font-size: 0.88rem;
   color: var(--muted);
   line-height: 1.45;
+}
+
+/* Intro strip: same head chrome as C4/sequence diagrams, without an image canvas. */
+figure.sys-diagram.sys-diagram--head-only {
+  margin: 0 0 20px;
+}
+
+figure.sys-diagram.sys-diagram--head-only .sys-diagram__head {
+  border-bottom: none;
+  padding-bottom: 16px;
 }
 
 .sys-diagram__canvas {
@@ -3052,9 +3339,9 @@ main.docs-page-layout [id] {
   text-align: left;
   cursor: pointer;
   transition:
-    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform    var(--motion-base) var(--motion-ease-premium),
     border-color var(--motion-fast) var(--motion-ease-premium),
-    box-shadow var(--motion-fast) var(--motion-ease-premium),
+    box-shadow   var(--motion-fast) var(--motion-ease-premium),
     background var(--motion-fast) var(--motion-ease-premium),
     filter var(--motion-fast) var(--motion-ease-premium);
 }
@@ -4196,61 +4483,8 @@ body.docs-reading-mode main.container li {
   text-decoration: underline;
 }
 
-/* Breadcrumb trail (docs-nav.js) — first child inside #docs-top-nav */
-.docs-breadcrumbs {
-  margin: 0 0 12px;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
-.docs-breadcrumbs__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 0.35rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.docs-breadcrumbs__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.docs-breadcrumbs__item+.docs-breadcrumbs__item::before {
-  content: "/";
-  color: var(--line);
-  font-weight: 500;
-  margin-right: 0.15rem;
-  user-select: none;
-}
-
-.docs-breadcrumbs a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.docs-breadcrumbs a:hover {
-  text-decoration: underline;
-}
-
-.docs-breadcrumbs__current {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.docs-breadcrumbs__text {
-  color: var(--muted);
-}
-
-@media (max-width: 760px) {
-  .docs-breadcrumbs {
-    margin-bottom: 8px;
-  }
-}
+/* Breadcrumb trail: full implementation is in docs-premium.css (Level 3 §13).
+   Removed duplicate block to prevent ::before / ::after separator conflict. */
 
 @media (max-width: 520px) {
   .docs-breadcrumbs__item:not(:first-child):not(:last-child) {

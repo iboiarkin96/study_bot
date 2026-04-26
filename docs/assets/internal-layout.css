@@ -27,6 +27,21 @@
   min-width: 0;
 }
 
+/* Subtle accent shift for standard internal page H1 titles. */
+.internal-h1--accent-tail {
+  /* Keep most of the title neutral; shift color only near the end. */
+  background: linear-gradient(
+    90deg,
+    var(--text) 0%,
+    var(--text) 74%,
+    color-mix(in srgb, var(--accent) 88%, var(--text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .internal-layout__page-title-row .top-nav__theme-btn--flashlight {
   flex: 0 0 auto;
   margin-left: auto;
@@ -764,14 +779,15 @@ h1.internal-doc-h1 {
 
 .portal-people__item {
   margin: 0;
-  padding: 12px;
+  padding: var(--space-3, 12px);
   min-height: 82px;
   border: 1px solid var(--line, #dbe3ef);
+  border-radius: var(--radius-lg, 14px);
   background: var(--card, #fff);
   transition:
-    border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    border-color var(--motion-fast) var(--motion-ease-premium),
+    box-shadow   var(--motion-fast) var(--motion-ease-premium),
+    transform    var(--motion-fast) var(--motion-ease-premium);
 }
 
 .portal-people__link {

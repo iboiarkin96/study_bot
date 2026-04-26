@@ -3479,6 +3479,52 @@ function installDocsQuickActionsUi() {
     lastFocusedElement = null;
     emitDocsPaletteTelemetry("palette_close", { source });
   }
+
+  function showPaletteHintToast() {
+    const DURATION_MS = 3200;
+    const existing = document.querySelector(".docs-palette-hint-toast");
+    if (existing) {
+      existing.remove();
+    }
+    const toast = document.createElement("section");
+    toast.className = "docs-inpage-toc-toast docs-palette-hint-toast";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    toast.innerHTML = `
+      <div class="docs-inpage-toc-toast__title">Command Palette</div>
+      <p class="docs-inpage-toc-toast__text">${docsPalettePrimaryHotkeyLabel()} • Enter execute • ↑/↓ navigate • Esc close</p>
+      <div class="docs-inpage-toc-toast__actions">
+        <button type="button" class="docs-inpage-toc-toast__btn docs-inpage-toc-toast__btn--ghost" data-palette-toast-dismiss>
+          Got it
+        </button>
+      </div>
+      <div class="docs-inpage-toc-toast__progress" aria-hidden="true"></div>
+    `;
+    document.body.appendChild(toast);
+    const dismissBtn = toast.querySelector("[data-palette-toast-dismiss]");
+    let isClosed = false;
+    let timerId = null;
+    const closeToast = () => {
+      if (isClosed) {
+        return;
+      }
+      isClosed = true;
+      if (timerId !== null) {
+        window.clearTimeout(timerId);
+      }
+      toast.classList.add("docs-inpage-toc-toast--closing");
+      window.setTimeout(() => {
+        toast.remove();
+      }, 180);
+    };
+    dismissBtn?.addEventListener("click", () => {
+      closeToast();
+    });
+    timerId = window.setTimeout(() => {
+      closeToast();
+    }, DURATION_MS);
+  }
+
   function openPanel() {
     lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     refreshActionSet();
@@ -3497,6 +3543,7 @@ function installDocsQuickActionsUi() {
       // Ignore storage failures for private mode.
     }
     emitDocsPaletteTelemetry("palette_open", { source: "hotkey_or_button" });
+    showPaletteHintToast();
   }
 
   docsQuickActionsRuntime = { panel, openPanel, closePanel };
@@ -3968,6 +4015,254 @@ function syncDocsPageActionsForViewport() {
   }
 }
 
+// ── Level 3: Interactive premium patterns ─────────────────────────────────────
+// Copy-to-clipboard on <pre>, § anchor links on h2/h3, breadcrumbs, sticky
+// top-bar with backdrop blur, and smooth section highlight on hash navigation.
+
+function level3WriteToClipboard(text, onSuccess, onError) {
+  if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+    navigator.clipboard.writeText(text).then(onSuccess, () =>
+      level3ClipboardFallback(text, onSuccess, onError),
+    );
+  } else {
+    level3ClipboardFallback(text, onSuccess, onError);
+  }
+}
+
+function level3ClipboardFallback(text, onSuccess, onError) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    if (ok) {
+      onSuccess();
+    } else {
+      onError && onError();
+    }
+  } catch {
+    onError && onError();
+  }
+}
+
+function level3SectionFlash(el) {
+  if (!el) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const target = el.closest(".card, section") || el;
+  target.classList.remove("docs-section-flash");
+  void target.offsetWidth; // force reflow to restart animation
+  target.classList.add("docs-section-flash");
+  target.addEventListener(
+    "animationend",
+    () => target.classList.remove("docs-section-flash"),
+    { once: true },
+  );
+}
+
+function initLevel3CopyButtons() {
+  document.querySelectorAll("pre").forEach((pre) => {
+    if (pre.querySelector(".docs-copy-btn")) return;
+    if (getComputedStyle(pre).position === "static") {
+      pre.style.position = "relative";
+    }
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "docs-copy-btn";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.textContent = "Copy";
+
+    btn.addEventListener("click", () => {
+      const code = pre.querySelector("code") || pre;
+      level3WriteToClipboard(
+        code.textContent,
+        () => {
+          btn.textContent = "✓ Copied";
+          btn.classList.add("is-copied");
+          clearTimeout(btn._l3t);
+          btn._l3t = setTimeout(() => {
+            btn.textContent = "Copy";
+            btn.classList.remove("is-copied");
+          }, 2000);
+        },
+        () => {},
+      );
+    });
+
+    pre.appendChild(btn);
+  });
+}
+
+function initLevel3AnchorLinks() {
+  document.querySelectorAll("h2[id], h3[id]").forEach((h) => {
+    if (h.querySelector(".docs-anchor")) return;
+
+    const anchor = document.createElement("a");
+    anchor.className = "docs-anchor";
+    anchor.href = "#" + h.id;
+    anchor.setAttribute("aria-label", "Copy link to this section");
+    anchor.title = "Copy link";
+    anchor.textContent = "§";
+
+    anchor.addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = window.location.href.split("#")[0] + "#" + h.id;
+      level3WriteToClipboard(url, () => {}, () => {});
+      if (history.pushState) {
+        history.pushState(null, "", "#" + h.id);
+      } else {
+        window.location.hash = h.id;
+      }
+      level3SectionFlash(h);
+    });
+
+    h.appendChild(anchor);
+  });
+}
+
+function initLevel3SectionHighlight() {
+  function onHashChange() {
+    const id = window.location.hash.slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (target) level3SectionFlash(target);
+  }
+  window.addEventListener("hashchange", onHashChange);
+  if (window.location.hash) {
+    window.setTimeout(onHashChange, 120);
+  }
+}
+
+function initLevel3Breadcrumbs() {
+  const main = document.querySelector("main.container");
+  if (!main || main.querySelector(".docs-breadcrumbs")) return;
+
+  const relPath = currentDocsRelPath();
+  if (!relPath || relPath === "index.html") return;
+
+  const segments = relPath.split("/").filter(Boolean);
+  if (segments.length === 0) return;
+
+  const fromDir = segments.length > 1 ? segments.slice(0, -1).join("/") : "";
+
+  const LABELS = {
+    adr: "ADR",
+    developer: "Developer",
+    howto: "How-to",
+    runbooks: "Runbooks",
+    qa: "QA",
+    rfc: "RFC",
+    internal: "Internal",
+    analysis: "Analysis",
+    api: "API",
+    front: "Frontend",
+    manager: "Manager",
+    portal: "Portal",
+    audit: "Audit",
+    openapi: "API Explorer",
+    pdoc: "Python Docs",
+    backlog: "Backlog",
+    "error-log": "Error Log",
+    user: "User",
+    conspectus: "Conspectus",
+    screens: "Screens",
+  };
+
+  function segLabel(seg) {
+    return LABELS[seg] || seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " ");
+  }
+
+  const crumbs = [];
+  crumbs.push({ label: "Docs", href: relHref(fromDir, "index.html") });
+
+  const lastName = segments[segments.length - 1];
+  const isReadme = lastName === "README.html";
+  const dirSegs = segments.slice(0, -1); // everything before the filename
+
+  dirSegs.forEach((seg, i) => {
+    const isCurrent = isReadme && i === dirSegs.length - 1;
+    const segPath = segments.slice(0, i + 1).join("/") + "/README.html";
+    crumbs.push({
+      label: segLabel(seg),
+      href: isCurrent ? null : relHref(fromDir, segPath),
+      current: isCurrent,
+    });
+  });
+
+  if (!isReadme) {
+    const h1 = main.querySelector("h1");
+    let label;
+    if (h1) {
+      label = h1.textContent.trim();
+    } else {
+      const base = lastName.replace(/\.html$/, "").replace(/^\d{4}-/, "").replace(/-/g, " ");
+      label = base.charAt(0).toUpperCase() + base.slice(1);
+    }
+    crumbs.push({ label, href: null, current: true });
+  }
+
+  if (crumbs.length <= 1) return;
+
+  const nav = document.createElement("nav");
+  nav.className = "docs-breadcrumbs";
+  nav.setAttribute("aria-label", "Breadcrumb");
+
+  const ol = document.createElement("ol");
+  ol.className = "docs-breadcrumbs__list";
+
+  crumbs.forEach((crumb) => {
+    const li = document.createElement("li");
+    li.className = "docs-breadcrumbs__item";
+
+    if (crumb.href) {
+      const a = document.createElement("a");
+      a.className = "docs-breadcrumbs__link";
+      a.href = crumb.href;
+      a.textContent = crumb.label;
+      li.appendChild(a);
+    } else {
+      const span = document.createElement("span");
+      span.className = "docs-breadcrumbs__current";
+      if (crumb.current) span.setAttribute("aria-current", "page");
+      span.textContent = crumb.label;
+      li.appendChild(span);
+    }
+
+    ol.appendChild(li);
+  });
+
+  nav.appendChild(ol);
+
+  const h1 = main.querySelector("h1");
+  if (h1) {
+    main.insertBefore(nav, h1);
+  } else {
+    main.insertBefore(nav, main.firstChild);
+  }
+}
+
+function initLevel3StickyTopBar() {
+  const wrapper = document.getElementById("docs-top-nav");
+  if (!wrapper) return;
+
+  const topNav = wrapper.querySelector(".top-nav");
+  if (!topNav || typeof IntersectionObserver === "undefined") return;
+
+  const sentinel = document.createElement("div");
+  sentinel.className = "docs-sticky-sentinel";
+  sentinel.setAttribute("aria-hidden", "true");
+  wrapper.parentNode.insertBefore(sentinel, wrapper);
+
+  new IntersectionObserver(
+    ([entry]) => topNav.classList.toggle("is-scrolled", !entry.isIntersecting),
+    { threshold: 0 },
+  ).observe(sentinel);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   document.body.classList.add("docs-density-ultra-compact");
   injectDocsPopupsRuntime();
@@ -4020,4 +4315,10 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch {
     // Non-critical helper; ignore failures.
   }
+  // Level 3 — interactive premium patterns
+  initLevel3CopyButtons();
+  initLevel3AnchorLinks();
+  initLevel3Breadcrumbs();
+  initLevel3StickyTopBar();
+  initLevel3SectionHighlight();
 });

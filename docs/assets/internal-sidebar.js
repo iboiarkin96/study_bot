@@ -498,7 +498,7 @@
    * Paths are relative to the docs/ root (e.g. internal/README.html).
    */
   const INTERNAL_SIDEBAR_NAV = [
-    { label: "⌂ Documentation home", path: "index.html" },
+    { label: "⌂ ETR Study API home", path: "index.html" },
     { label: "◉ Internal docs hub", path: "internal/README.html" },
     { label: "🧭 Methodology", path: "internal/analysis/methodology.html" },
     { label: "🏗 System design", path: "internal/analysis/system-design.html" },
