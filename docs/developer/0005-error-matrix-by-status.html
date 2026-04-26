@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +21,7 @@
     <h1>Error Matrix By Status</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section id="overview" class="card">
+    <section class="docs-page-hero" aria-labelledby="overview">
       <h2>Overview</h2>
       <p>
         How to mix shared <code>COMMON_*</code> errors with entity codes (e.g. <code>USER_*</code>), and how to review
@@ -31,7 +33,8 @@
       <h2>Rule of thumb</h2>
       <ul>
         <li>Use <code>COMMON_*</code> when the same error applies everywhere.</li>
-        <li>Use entity prefixes (<code>USER_*</code>, later <code>CONTRACT_*</code>, etc.) for domain-specific cases.</li>
+        <li>Use entity prefixes (<code>USER_*</code>, later <code>CONTRACT_*</code>, etc.) for domain-specific cases.
+        </li>
         <li>Never change the meaning of a published <code>code</code> + <code>key</code> pair.</li>
         <li>Mirror declared responses in OpenAPI examples and tests.</li>
       </ul>
@@ -42,7 +45,8 @@
       <ul>
         <li>
           <code>app/errors/common.py</code> and <code>app/errors/user.py</code> — one place for stable
-          <code>code</code>, <code>key</code>, and default <code>message</code> (plus validation maps). Import here; do not
+          <code>code</code>, <code>key</code>, and default <code>message</code> (plus validation maps). Import here; do
+          not
           copy strings.
         </li>
         <li><code>app/openapi/responses.py</code> - shared response blocks for routers.</li>
@@ -206,4 +210,6 @@
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
   </main>
 
-</body></html>
+</body>
+
+</html>

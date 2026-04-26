@@ -14,6 +14,8 @@
  *   8. Content status banner (deprecation / WIP)
  *   9. Empty state block
  *  10. Responsive prose line-length control
+ *  …
+ *  23. OpenAPI page — hero meta badges (openapi/index.html)
  */
 
 /* ── 1. Callout blocks ──────────────────────────────────────────────────────
@@ -956,4 +958,42 @@ pre:focus-within .docs-copy-btn,
     grid-template-columns: 1fr 1fr;
     gap: 18px 16px;
   }
+}
+
+/* ── 23. OpenAPI page — hero meta badges ────────────────────────────────────
+   Used on openapi/index.html hero to show OAS version, API version,
+   and endpoint count before the Scalar UI.                                   */
+
+.openapi-hero-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 16px;
+}
+
+.openapi-stat {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.openapi-stat--neutral {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.openapi-stat--muted {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--line);
 }
