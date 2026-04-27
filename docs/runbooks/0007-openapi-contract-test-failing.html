@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,9 +13,9 @@
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
-
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
+
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
@@ -27,9 +29,10 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Runbook: OpenAPI Contract-Test Failing</h1>
+        <h1 class="internal-h1--accent-tail">Runbook: OpenAPI Contract-Test Failing</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
+
         <section class="card">
           <h2>Trigger</h2>
           <ul>
@@ -38,8 +41,8 @@
             <li>CI reports OpenAPI snapshot drift vs baseline.</li>
           </ul>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Fast triage</h2>
           <ol>
             <li>Run <code>make contract-test</code> to see the diff summary.</li>
@@ -48,8 +51,8 @@
             <li>If intentional, validate compatibility and docs, then accept baseline update.</li>
           </ol>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Most common causes</h2>
           <ul>
             <li>Field type changed in request/response schema.</li>
@@ -59,8 +62,8 @@
             <li>OpenAPI examples or router response declarations diverged from implementation.</li>
           </ul>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Recovery paths</h2>
           <h3>Unintentional contract drift</h3>
           <ul>
@@ -68,7 +71,6 @@
             <li>Re-run <code>make openapi-check</code> and <code>make contract-test</code>.</li>
             <li>Run <code>make verify</code> before commit.</li>
           </ul>
-
           <h3>Intentional contract change</h3>
           <ul>
             <li>Confirm the change is safe for the current API major version.</li>
@@ -77,17 +79,16 @@
             <li>Re-run <code>make contract-test</code> and <code>make verify</code>.</li>
           </ul>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Final recovery sequence</h2>
-          <ol>
-            <li><code>make openapi-check</code></li>
-            <li><code>make contract-test</code></li>
-            <li><code>make verify</code></li>
-          </ol>
+          <pre><code>make openapi-check
+make contract-test
+make verify
+</code></pre>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Exit criteria</h2>
           <ul>
             <li><code>make contract-test</code> passes.</li>
@@ -95,14 +96,15 @@
             <li>If you updated the baseline, the commit message or PR explains why.</li>
           </ul>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Follow-up</h2>
           <ul>
             <li>If compatibility rules changed, update an ADR and developer docs.</li>
             <li>If this keeps happening, tighten checks in <code>scripts/openapi_governance.py</code>.</li>
           </ul>
         </section>
+
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -126,8 +128,14 @@
         </section>
 
         <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
       </main>
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>

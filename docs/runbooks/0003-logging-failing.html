@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +13,6 @@
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
-
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
@@ -28,9 +29,10 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Runbook: Logging Failing</h1>
+        <h1 class="internal-h1--accent-tail">Runbook: Logging Failing</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
+
         <section class="card">
           <h2>Trigger</h2>
           <ul>
@@ -39,6 +41,7 @@
             <li>Wrong log path or no write permission.</li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Fast triage</h2>
           <ol>
@@ -47,6 +50,7 @@
             <li>Start app and send test request: <code>make run</code>, then call <code>/health</code>.</li>
           </ol>
         </section>
+
         <section class="card">
           <h2>Most common causes</h2>
           <ul>
@@ -56,56 +60,66 @@
             <li>Logging code changed but startup in <code>app/main.py</code> does not match.</li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Recovery steps</h2>
           <ol>
             <li>Reset to known-good defaults in <code>.env</code>: <code>LOG_DIR=logs</code>,
               <code>LOG_FILE_NAME=app.log</code>, <code>LOG_LEVEL=INFO</code>.</li>
-              <li>Restart app: stop server and run <code>make run</code> again.</li>
-              <li>Verify request log line appears after calling <code>/health</code>.</li>
-              <li>If still failing, inspect <code>app/core/logging.py</code> path/handler setup.</li>
-            </ol>
-          </section>
-          <section class="card">
-            <h2>Exit criteria</h2>
-            <ul>
-              <li>New requests write lines to <code>logs/app.log</code>.</li>
-              <li>App startup is stable.</li>
-              <li><code>make test</code> still passes.</li>
-            </ul>
-          </section>
-          <section class="card">
-            <h2>Follow-up</h2>
-            <ul>
-              <li>If this changes observability policy, add or update an ADR.</li>
-              <li>If it is a new failure pattern, update this runbook.</li>
-            </ul>
-          </section>
-          <section id="page-history" class="card">
-            <h2>Page history</h2>
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
-              <table class="docs-page-history">
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Change</th>
-                    <th scope="col">Author</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                    <td>Added Page history section (repository baseline).</td>
-                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+            <li>Restart app: stop server and run <code>make run</code> again.</li>
+            <li>Verify request log line appears after calling <code>/health</code>.</li>
+            <li>If still failing, inspect <code>app/core/logging.py</code> path/handler setup.</li>
+          </ol>
+        </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
+        <section class="card">
+          <h2>Exit criteria</h2>
+          <ul>
+            <li>New requests write lines to <code>logs/app.log</code>.</li>
+            <li>App startup is stable.</li>
+            <li><code>make test</code> still passes.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Follow-up</h2>
+          <ul>
+            <li>If this changes observability policy, add or update an ADR.</li>
+            <li>If it is a new failure pattern, update this runbook.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
     </div>
+  </div>
 
-  </body></html>
+</body>
+
+</html>

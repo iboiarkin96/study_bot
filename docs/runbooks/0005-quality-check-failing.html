@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,9 +13,9 @@
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
-
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
+
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
@@ -27,9 +29,10 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Runbook: Quality Check Failing</h1>
+        <h1 class="internal-h1--accent-tail">Runbook: Quality Check Failing</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
+
         <section class="card">
           <h2>Trigger</h2>
           <ul>
@@ -37,14 +40,18 @@
             <li>CI quality gate fails on lint/type/test/docs sync stage.</li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Fast triage</h2>
           <ol>
             <li>Run full gate once: <code>make verify</code>.</li>
-            <li>Identify failing step: <code>lint-check</code>, <code>type-check</code>, <code>test</code>, <code>docs-fix</code>.</li>
+            <li>Identify failing step: <code>lint-check</code>, <code>type-check</code>, <code>test</code>,
+              <code>docs-fix</code>.
+            </li>
             <li>Run only the step that failed to get faster feedback.</li>
           </ol>
         </section>
+
         <section class="card">
           <h2>Most common causes</h2>
           <ul>
@@ -54,6 +61,7 @@
             <li>New module not wired into imports or package exports.</li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Recovery steps by stage</h2>
           <h3>Lint fails</h3>
@@ -77,13 +85,13 @@
             <li>Commit generated updates if valid.</li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Final recovery sequence</h2>
-          <ol>
-            <li><code>make verify</code></li>
-            <li><code>make release-check</code></li>
-          </ol>
+          <pre><code>make verify
+make release-check</code></pre>
         </section>
+
         <section class="card">
           <h2>Exit criteria</h2>
           <ul>
@@ -92,6 +100,7 @@
             <li>Your diff only includes changes you meant to ship.</li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Follow-up</h2>
           <ul>
@@ -99,6 +108,7 @@
             <li>If governance or architecture changed, add or update an ADR.</li>
           </ul>
         </section>
+
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -122,8 +132,14 @@
         </section>
 
         <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
       </main>
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>
