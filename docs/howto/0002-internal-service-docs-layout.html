@@ -21,13 +21,10 @@
     <h1 class="internal-h1--accent-tail">How to add a new resource to the internal service documentation</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <p class="lead">
-      This guide explains how to add a new resource to the internal service documentation.
-    </p>
 
     <section class="card">
       <h2>Directory tree</h2>
-      <pre style="white-space: pre; overflow-x: auto;"><code>docs/internal/
+      <pre style="white-space: pre; overflow-x: auto; font-size: 0.8em;"><code>docs/internal/
         ├── README.html                 # Entry: overview, service scope, ADRs, links (API hub, etc.)
         ├── STRUCTURE.md                # Stub → links to this page (howto)
         └── api/
@@ -97,7 +94,8 @@
         <li>
           <strong>Overview</strong> — on hub / landing pages, the first substantive block is usually
           <code>&lt;section id="overview" class="card"&gt;</code> with <code>&lt;h2&gt;Overview&lt;/h2&gt;</code>: who
-          the page is for, what to open next, and links to System design, Developers Docs, API hub, OpenAPI, etc. Omit or
+          the page is for, what to open next, and links to System design, Developers Docs, API hub, OpenAPI, etc. Omit
+          or
           replace with a different first <code>&lt;h2&gt;</code> when the document is not a map (e.g. System design uses
           numbered top-level sections).
         </li>
@@ -145,34 +143,6 @@
         </li>
         <li><strong>Page body</strong>: edit the HTML file; run <code>make docs-fix</code> if your workflow includes
           doc sync and format checks.</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Removed / obsolete</h2>
-      <ul>
-        <li><strong><code>docs/internal/user/</code></strong> — removed; the canonical User hub is
-          <a href="../internal/api/user/index.html"><code>api/user/index.html</code></a>.
-        </li>
-        <li><strong><code>details.internal-doc-map</code></strong> styles were removed from <code>docs.css</code> (old
-          collapsible map on README).</li>
-        <li><strong><code>internal-doc-demo.css</code> / <code>internal-doc-nav.js</code></strong> — removed; they only
-          served a deleted prototype page.</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Related</h2>
-      <ul>
-        <li><a href="#page-structure">Page structure (On this page, Overview, sections)</a> — on this page</li>
-        <li><a href="../internal/front/documentation-style-guide.html">Documentation style guide and audit standard</a>
-          — cross-doc rules and templates</li>
-        <li><a href="../internal/README.html">Internal service documentation — index</a></li>
-        <li><a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> — external vs internal API
-          documentation</li>
-        <li><a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> — internal
-          narrative as source of truth</li>
-        <li><a href="./README.html">How-to guides — index</a></li>
       </ul>
     </section>
 

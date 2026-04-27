@@ -18,112 +18,111 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>API load testing (step-by-step)</h1>
+    <h1 class="internal-h1--accent-tail">API load testing (step-by-step)</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section id="overview" class="card">
-      <h2>Overview</h2>
+
+    <section id="overview" class="docs-page-hero">
+      <h2 id="overview">Overview</h2>
       <p>How to run synthetic traffic against the API for metrics and SLO checks.</p>
     </section>
     <section class="card">
-      <p>Send fake traffic to watch latency, status mix, and limits in Grafana. Policy:
-      <a href="../adr/0012-testing-strategy-and-load-testing.html">ADR 0012</a>.
+
+      <h2>Why run load-style traffic</h2>
+      <ul>
+        <li>
+          Unit tests (<code>make test</code>) check contracts. A load run shows <strong>2xx / 4xx / 5xx</strong> mix,
+          latency, and errors in Grafana or Prometheus.
+        </li>
+        <li>
+          This does <strong>not</strong> replace pytest: the runner sends real HTTP; user-create flows <strong>write
+            to the DB</strong>.
+        </li>
+      </ul>
+    </section>
+    <section class="card">
+
+      <h2>Environment setup</h2>
+      <ol>
+        <li>Virtualenv: <code>make venv &amp;&amp; make install</code> (or equivalent).</li>
+        <li>
+          <code>.env</code> from <code>env/example</code> (<code>make env-init</code>), with valid
+          <code>APP_HOST</code> and
+          <code>APP_PORT</code>.
+        </li>
+        <li>Migrations: <code>make migrate</code>.</li>
+        <li>
+          For GET-by-id scenarios (optional <code>scenarios/user/get.py</code>), set
+          <code>ROTATE_SYSTEM_USER_IDS</code> to real <code>system_user_id</code> values and adjust
+          <code>SHARE_OF_GROUP</code> between <code>user/create.py</code> and <code>user/get.py</code> so they sum to
+          <code>1.0</code> per user group.
+        </li>
+      </ol>
+    </section>
+    <section class="card">
+
+      <h2>Simulating HTTP 500 (local / non-prod only)</h2>
+      <p>
+        Normal routes rarely return a steady 500. To emit 5xx from the <strong>same</strong> API process (so
+        <code>http_requests_total</code> counts them), set in <code>.env</code>:
       </p>
-      <section class="card">
+      <pre><code>LOADTEST_HTTP_500=true</code></pre>
+      <p>
+        After restarting the app, only the internal route <code>GET /__loadtest/http500</code> is available (hidden
+        from
+        OpenAPI). Do not enable this flag in production.
+      </p>
+    </section>
+    <section class="card">
 
-        <h2>Why run load-style traffic</h2>
-        <ul>
-          <li>
-            Unit tests (<code>make test</code>) check contracts. A load run shows <strong>2xx / 4xx / 5xx</strong> mix,
-            latency, and errors in Grafana or Prometheus.
-          </li>
-          <li>
-            This does <strong>not</strong> replace pytest: the runner sends real HTTP; user-create flows <strong>write
-              to the DB</strong>.
-          </li>
-        </ul>
-      </section>
-      <section class="card">
-
-        <h2>Environment setup</h2>
-        <ol>
-          <li>Virtualenv: <code>make venv &amp;&amp; make install</code> (or equivalent).</li>
-          <li>
-            <code>.env</code> from <code>env/example</code> (<code>make env-init</code>), with valid
-            <code>APP_HOST</code> and
-            <code>APP_PORT</code>.
-          </li>
-          <li>Migrations: <code>make migrate</code>.</li>
-          <li>
-            For GET-by-id scenarios (optional <code>scenarios/user/get.py</code>), set
-            <code>ROTATE_SYSTEM_USER_IDS</code> to real <code>system_user_id</code> values and adjust
-            <code>SHARE_OF_GROUP</code> between <code>user/create.py</code> and <code>user/get.py</code> so they sum to
-            <code>1.0</code> per user group.
-          </li>
-        </ol>
-      </section>
-      <section class="card">
-
-        <h2>Simulating HTTP 500 (local / non-prod only)</h2>
-        <p>
-          Normal routes rarely return a steady 500. To emit 5xx from the <strong>same</strong> API process (so
-          <code>http_requests_total</code> counts them), set in <code>.env</code>:
-        </p>
-        <pre><code>LOADTEST_HTTP_500=true</code></pre>
-        <p>
-          After restarting the app, only the internal route <code>GET /__loadtest/http500</code> is available (hidden
-          from
-          OpenAPI). Do not enable this flag in production.
-        </p>
-      </section>
-      <section class="card">
-
-        <h2>Starting the API</h2>
-        <p>From the repository root (adjust the path):</p>
-        <pre><code>cd /path/to/study_app
+      <h2>Starting the API</h2>
+      <p>From the repository root (adjust the path):</p>
+      <pre><code>cd /path/to/study_app
         source .venv/bin/activate
         make run</code></pre>
-        <p>
-          If you also want Grafana and Prometheus locally, run
-          <code>docker compose -f docker-compose.observability.yml up -d</code> in another terminal
-          while <code>make run</code> keeps the API in the first. Details:
-          <a href="./0007-local-development.html">Local development</a>.
-        </p>
-        <p>In a <strong>second</strong> terminal, run the traffic generator (see below).</p>
-      </section>
-      <section class="card">
+      <p>
+        If you also want Grafana and Prometheus locally, run
+        <code>docker compose -f docker-compose.observability.yml up -d</code> in another terminal
+        while <code>make run</code> keeps the API in the first. Details:
+        <a href="./0007-local-development.html">Local development</a>.
+      </p>
+      <p>In a <strong>second</strong> terminal, run the traffic generator (see below).</p>
+    </section>
+    <section class="card">
 
-        <h2>Generator configuration (Python)</h2>
-        <p>
-          Scenarios live under <code>tools/load_testing/scenarios/</code>. See
-          <code>tools/load_testing/README.html</code> for the full contract (with diagrams). Summary:
-        </p>
-        <ul>
-          <li><code>scenarios/weights.py</code> — <code>GROUP_WEIGHTS</code> (e.g. <code>user</code>,
-            <code>observability_5xx</code>).</li>
-          <li>Each scenario module exports <code>GROUP</code>, <code>SHARE_OF_GROUP</code>, <code>MIX</code> (sums to
-            1.0 within the file), and <code>SCENARIOS</code> (scenario key → callable building a request).</li>
-          <li>Validation failures for user create are typically <strong>422</strong> — see <code>user_payload.py</code>
-            and <code>user/create.py</code>.</li>
-          <li>HTTP 500 without touching the DB: small share via <code>scenarios/observability/http500.py</code> and
-            <code>LOADTEST_HTTP_500=true</code>.</li>
-        </ul>
-      </section>
-      <section class="card">
+      <h2>Generator configuration (Python)</h2>
+      <p>
+        Scenarios live under <code>tools/load_testing/scenarios/</code>. See
+        <code>tools/load_testing/README.html</code> for the full contract (with diagrams). Summary:
+      </p>
+      <ul>
+        <li><code>scenarios/weights.py</code> — <code>GROUP_WEIGHTS</code> (e.g. <code>user</code>,
+          <code>observability_5xx</code>).
+        </li>
+        <li>Each scenario module exports <code>GROUP</code>, <code>SHARE_OF_GROUP</code>, <code>MIX</code> (sums to
+          1.0 within the file), and <code>SCENARIOS</code> (scenario key → callable building a request).</li>
+        <li>Validation failures for user create are typically <strong>422</strong> — see <code>user_payload.py</code>
+          and <code>user/create.py</code>.</li>
+        <li>HTTP 500 without touching the DB: small share via <code>scenarios/observability/http500.py</code> and
+          <code>LOADTEST_HTTP_500=true</code>.
+        </li>
+      </ul>
+    </section>
+    <section class="card">
 
-        <h2>Commands</h2>
-        <p>Plan only (no network):</p>
-        <pre><code>python -m tools.load_testing.runner --dry-run</code></pre>
-        <p>Full run (default 100 requests; set <code>LOAD_TEST_BASE_URL</code> / <code>LOAD_TEST_API_KEY</code> if
-          needed):</p>
-        <pre><code>python -m tools.load_testing.runner --total-requests 200</code></pre>
-        <p>Optional delay between requests:</p>
-        <pre><code>python -m tools.load_testing.runner --total-requests 200 --delay-ms 50</code></pre>
-      </section>
-      <section class="card">
+      <h2>Commands</h2>
+      <p>Plan only (no network):</p>
+      <pre><code>python -m tools.load_testing.runner --dry-run</code></pre>
+      <p>Full run (default 100 requests; set <code>LOAD_TEST_BASE_URL</code> / <code>LOAD_TEST_API_KEY</code> if
+        needed):</p>
+      <pre><code>python -m tools.load_testing.runner --total-requests 200</code></pre>
+      <p>Optional delay between requests:</p>
+      <pre><code>python -m tools.load_testing.runner --total-requests 200 --delay-ms 50</code></pre>
+    </section>
+    <section class="card">
 
-        <h2>Layout</h2>
-        <pre><code>tools/load_testing/
+      <h2>Layout</h2>
+      <pre><code>tools/load_testing/
           runner.py
           README.html
           scenarios/
@@ -132,68 +131,72 @@
           user/get.py          # optional; set ROTATE_SYSTEM_USER_IDS
           observability/http500.py
           conspectus/README.txt</code></pre>
-      </section>
-      <section class="card">
-
-        <h2>Observability</h2>
-        <p>
-          Start the stack before or alongside the API
-          (<code>docker compose -f docker-compose.observability.yml up -d</code>).
-          After the traffic run, open Grafana (port from <code>.env</code>, default 3001) and the Study App
-          Observability
-          dashboard; in Prometheus, <code>/alerts</code> when SLO rules are configured.
-        </p>
-      </section>
-      <section class="card">
-
-        <h2>Common issues</h2>
-        <ul>
-          <li><strong>Connection refused</strong> — API not running or wrong <code>base_url</code>.</li>
-          <li>
-            <strong>Script errors on “#”</strong> — a comment was passed as an argument; run the command without a
-            trailing
-            <code># ...</code>.
-          </li>
-          <li><strong>Expected 200, got 404</strong> on user GET — fix <code>ROTATE_SYSTEM_USER_IDS</code> in
-            <code>user/get.py</code>.</li>
-          <li><strong>429 Too Many Requests</strong> — lower intensity (<code>--delay-ms</code>) or raise the dev rate
-            limit.</li>
-        </ul>
-      </section>
-      <section class="card">
-
-        <h2>See also</h2>
-        <ul>
-          <li><a href="../adr/0012-testing-strategy-and-load-testing.html">ADR 0012 — testing strategy</a></li>
-          <li><a href="../adr/0011-slo-sla-error-budget.html">ADR 0011 — SLOs and alerts</a></li>
-          <li><a href="./0007-local-development.html">Local development</a></li>
-          <li><a href="./README.html#developer-guides">Developer guides index</a></li>
-        </ul>
-      </section>
-      <section id="page-history" class="card">
-        <h2>Page history</h2>
-        <div class="docs-table-scroll" role="region" aria-label="Page history">
-          <table class="docs-page-history">
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Change</th>
-                <th scope="col">Author</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><time datetime="2026-04-21">2026-04-21</time></td>
-                <td>Added Page history section (repository baseline).</td>
-                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
     </section>
+    <section class="card">
+
+      <h2>Observability</h2>
+      <p>
+        Start the stack before or alongside the API
+        (<code>docker compose -f docker-compose.observability.yml up -d</code>).
+        After the traffic run, open Grafana (port from <code>.env</code>, default 3001) and the Study App
+        Observability
+        dashboard; in Prometheus, <code>/alerts</code> when SLO rules are configured.
+      </p>
+    </section>
+    <section class="card">
+
+      <h2>Common issues</h2>
+      <ul>
+        <li><strong>Connection refused</strong> — API not running or wrong <code>base_url</code>.</li>
+        <li>
+          <strong>Script errors on “#”</strong> — a comment was passed as an argument; run the command without a
+          trailing
+          <code># ...</code>.
+        </li>
+        <li><strong>Expected 200, got 404</strong> on user GET — fix <code>ROTATE_SYSTEM_USER_IDS</code> in
+          <code>user/get.py</code>.
+        </li>
+        <li><strong>429 Too Many Requests</strong> — lower intensity (<code>--delay-ms</code>) or raise the dev rate
+          limit.</li>
+      </ul>
+    </section>
+    <section class="card">
+
+      <h2>See also</h2>
+      <ul>
+        <li><a href="../adr/0012-testing-strategy-and-load-testing.html">ADR 0012 — testing strategy</a></li>
+        <li><a href="../adr/0011-slo-sla-error-budget.html">ADR 0011 — SLOs and alerts</a></li>
+        <li><a href="./0007-local-development.html">Local development</a></li>
+        <li><a href="./README.html#developer-guides">Developer guides index</a></li>
+      </ul>
+    </section>
+    <section id="page-history" class="card">
+      <h2>Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+              <td>Added Page history section (repository baseline).</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
 </body>

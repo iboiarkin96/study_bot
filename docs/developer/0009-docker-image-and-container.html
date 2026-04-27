@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,18 +18,14 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Docker image and container</h1>
+    <h1 class="internal-h1--accent-tail">Docker image and container</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <section id="overview" class="card">
       <h2>Overview</h2>
       <p>Build the API as an OCI image and run it with Docker for packaging checks and demos.</p>
     </section>
-    <p class="lead">
-      How we build the API image and run it locally. Production hardening is not covered here; see
-      <a href="../adr/0015-container-image.html">ADR 0015</a>. Automated build and push to GitHub Container Registry after CI is in
-      <a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a>.
-    </p>
+
     <section class="card">
 
       <h2 id="optional-and-daily-workflow">Optional tooling and daily development</h2>
@@ -42,7 +40,8 @@
       </p>
       <p>
         <strong>Real deployments</strong> usually expect a <strong>container image</strong>: something builds the image,
-        pushes it to a <strong>registry</strong> (Docker Hub, GitHub Container Registry, a cloud vendor registry, etc.), and
+        pushes it to a <strong>registry</strong> (Docker Hub, GitHub Container Registry, a cloud vendor registry, etc.),
+        and
         the target environment <strong>pulls</strong> that image and runs it with production configuration and secrets.
         The repo’s <code>Dockerfile</code> is the starting point for that image.
       </p>
@@ -53,11 +52,13 @@
       </p>
       <ol>
         <li>
-          <strong>Build and test in CI</strong> — pipeline runs lint, tests, and (often) builds the Docker image and tags it
+          <strong>Build and test in CI</strong> — pipeline runs lint, tests, and (often) builds the Docker image and
+          tags it
           (for example <code>:1.4.2</code> or <code>:&lt;git-sha&gt;</code>).
         </li>
         <li>
-          <strong>Push to a registry</strong> — <code>docker push</code> to a URL your servers can read (authentication required).
+          <strong>Push to a registry</strong> — <code>docker push</code> to a URL your servers can read (authentication
+          required).
           Nothing is “sent” automatically from <code>git push</code> unless you wire a workflow.
         </li>
         <li>
@@ -65,12 +66,14 @@
           image tag (for example on a VM with Docker, or a managed container service).
         </li>
         <li>
-          <strong>Configuration and data</strong> — production <code>APP_ENV</code>, secrets, database URL, and scaling are set
+          <strong>Configuration and data</strong> — production <code>APP_ENV</code>, secrets, database URL, and scaling
+          are set
           in that environment (not in the image). SQLite is fine for demos; multi-instance setups typically use a
           shared database (for example PostgreSQL).
         </li>
         <li>
-          <strong>Traffic</strong> — DNS points to a load balancer or reverse proxy; TLS terminates at the edge; requests reach
+          <strong>Traffic</strong> — DNS points to a load balancer or reverse proxy; TLS terminates at the edge;
+          requests reach
           your service on port 8000 (or behind a reverse proxy).
         </li>
       </ol>
@@ -90,7 +93,8 @@
         <em>container</em> (an isolated process on your machine). The API image installs dependencies from the
         same <code>requirements.txt</code> as <code>make install</code>, copies <code>app/</code> and
         <code>alembic/</code>, and starts the app via <code>scripts/container_entrypoint.sh</code>
-        (<code>alembic upgrade head</code>, then Uvicorn). On the host, <code>scripts/container_entrypoint.sh</code> runs the
+        (<code>alembic upgrade head</code>, then Uvicorn). On the host, <code>scripts/container_entrypoint.sh</code>
+        runs the
         same script (with your <code>.venv</code>); the image does not invoke <code>make</code> — there is no
         <code>.venv</code> inside the container.
       </p>
@@ -105,55 +109,53 @@
             -e API_MOCK_API_KEY=local-dev-key \
             -v study-app-data:/data \
             study-app-api:local</code></pre>
-            Then open <code>http://127.0.0.1:8000/live</code>. For <code>qa</code>/<code>prod</code> rules,
-            non-default API keys and stricter CORS apply (<code>app/core/config.py</code>). Pass secrets via <code>-e</code>
-            or your platform’s secret mechanism — not committed files.
-          </li>
-        </ul>
-      </section>
-      <section class="card">
+          Then open <code>http://127.0.0.1:8000/live</code>. For <code>qa</code>/<code>prod</code> rules,
+          non-default API keys and stricter CORS apply (<code>app/core/config.py</code>). Pass secrets via
+          <code>-e</code>
+          or your platform’s secret mechanism — not committed files.
+        </li>
+      </ul>
+    </section>
+    <section class="card">
 
-        <h2 id="sqlite-and-replicas">SQLite and replicas</h2>
-        <p>
-          This API uses SQLite. A single container with a mounted data directory is fine for demos. Do not assume multiple
-          replicas can share one SQLite file; for horizontal scaling you would move to a shared database
-          (for example PostgreSQL) — a future architectural change.
-        </p>
-      </section>
-      <section class="card">
+      <h2 id="sqlite-and-replicas">SQLite and replicas</h2>
+      <p>
+        This API uses SQLite. A single container with a mounted data directory is fine for demos. Do not assume multiple
+        replicas can share one SQLite file; for horizontal scaling you would move to a shared database
+        (for example PostgreSQL) — a future architectural change.
+      </p>
+    </section>
 
-        <h2>See also</h2>
-        <ul>
-          <li><a href="../adr/0015-container-image.html">ADR 0015 — Container image</a></li>
-          <li><a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021 — Continuous delivery (GitHub Actions → GHCR)</a></li>
-          <li><a href="./0007-local-development.html">Local development (venv, make run, observability)</a></li>
-          <li><a href="../adr/0009-health-readiness-and-observability.html">ADR 0009 — Health and readiness</a></li>
-          <li><a href="./README.html#developer-guides">Developer guides index</a></li>
-        </ul>
-      </section>
-      <section id="page-history" class="card">
-        <h2>Page history</h2>
-        <div class="docs-table-scroll" role="region" aria-label="Page history">
-          <table class="docs-page-history">
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Change</th>
-                <th scope="col">Author</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><time datetime="2026-04-21">2026-04-21</time></td>
-                <td>Added Page history section (repository baseline).</td>
-                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
 
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
+    <section id="page-history" class="card">
+      <h2>Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+              <td>Added Page history section (repository baseline).</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-  </body></html>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+  </main>
+
+</body>
+
+</html>
