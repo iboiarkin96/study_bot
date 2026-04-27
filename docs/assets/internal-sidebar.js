@@ -504,64 +504,6 @@
     { label: "🏗 System design", path: "internal/analysis/system-design.html" },
     { label: "🌐 OpenAPI / Swagger UI", path: "openapi/index.html" },
     {
-      label: "Developers docs",
-      children: [
-        { label: "Python API (pdoc)", path: "pdoc/index.html" },
-        { label: "Hub — developer index", path: "developer/README.html" },
-        {
-          label: "Core architecture and contracts",
-          children: [
-            { label: "Requirements guide", path: "developer/0001-requirements.html" },
-            { label: "Schemas and contracts", path: "developer/0002-schemas-and-contracts.html" },
-            { label: "Business logic guide", path: "developer/0003-business-logic.html" },
-            { label: "Error matrix by status", path: "developer/0005-error-matrix-by-status.html" },
-          ],
-        },
-        {
-          label: "Delivery workflow and operations",
-          children: [
-            { label: "Make commands and workflows", path: "developer/0010-make-commands-and-workflows.html" },
-            { label: "Local development", path: "developer/0007-local-development.html" },
-            { label: "Docker image and container", path: "developer/0009-docker-image-and-container.html" },
-            { label: "API load testing", path: "developer/0006-api-load-testing.html" },
-            { label: "Documentation pipeline", path: "developer/0008-docs-pipeline.html" },
-          ],
-        },
-        {
-          label: "How-to and onboarding",
-          children: [
-            { label: "How to add POST contract", path: "developer/0004-how-to-add-post-contract.html" },
-            { label: "Onboarding from zero to endpoint and docs", path: "howto/onboarding-from-zero-to-endpoint-docs.html" },
-            { label: "Make commands inventory", path: "howto/make-commands-inventory.html" },
-          ],
-        },
-      ],
-    },
-    {
-      label: "How-to guides",
-      children: [
-        { label: "Hub — how-to index", path: "howto/README.html" },
-        {
-          label: "Onboarding and implementation",
-          children: [
-            { label: "Onboarding from zero to endpoint and docs", path: "howto/onboarding-from-zero-to-endpoint-docs.html" },
-            { label: "How to add POST /api/v1/contract", path: "howto/0004-how-to-add-post-contract.html" },
-          ],
-        },
-        {
-          label: "Documentation operations",
-          children: [
-            { label: "Internal service docs layout and how to add pages", path: "howto/internal-service-docs-layout.html" },
-            { label: "How to change docs frontend safely", path: "howto/how-to-change-docs-frontend-safely.html" },
-          ],
-        },
-        {
-          label: "Workflow and commands",
-          children: [{ label: "Make commands inventory", path: "howto/make-commands-inventory.html" }],
-        },
-      ],
-    },
-    {
       label: "ADR",
       children: [
         { label: "Hub — ADR index", path: "adr/README.html" },
@@ -569,14 +511,13 @@
           label: "Process: how we record decisions",
           children: [
             { label: "ADR 0018 — lifecycle, ratification, badges", path: "adr/0018-adr-lifecycle-ratification-and-badges.html" },
-            { label: "Template", path: "adr/0000-template.html" },
+            { label: "ADR Template", path: "adr/0000-template.html" },
           ],
         },
         {
           label: "Documentation and diagrams",
           children: [
             { label: "ADR 0027 — client-side docs search", path: "adr/0027-client-side-docs-search-index-and-ranking.html" },
-            { label: "RFC 0001 — docs search implementation", path: "rfc/0001-docs-search-implementation.html" },
             { label: "ADR 0025 — external vs internal API documentation", path: "adr/0025-external-and-internal-api-documentation.html" },
             { label: "ADR 0026 — internal service documentation (source of truth)", path: "adr/0026-internal-service-documentation-as-source-of-truth.html" },
             { label: "ADR 0024 — architecture and quality assessment documents", path: "adr/0024-architecture-and-quality-assessment-documents.html" },
@@ -634,12 +575,14 @@
             { label: "ADR 0021 — continuous delivery (GitHub Actions and GHCR)", path: "adr/0021-continuous-delivery-github-actions-and-ghcr.html" },
           ],
         },
-      ],
+      ]
     },
+
     {
       label: "RFC",
       children: [
         { label: "Hub — RFC index", path: "rfc/README.html" },
+        { label: "RFC template", path: "rfc/0000-template.html" },
         {
           label: "Docs search program",
           children: [
@@ -649,6 +592,67 @@
         },
       ],
     },
+
+    {
+      label: "Developers docs",
+      children: [
+        { label: "Python API (pdoc)", path: "pdoc/index.html" },
+        { label: "Hub — developer index", path: "developer/README.html" },
+        {
+          label: "Core architecture and contracts",
+          children: [
+            { label: "Requirements guide", path: "developer/0001-requirements.html" },
+            { label: "Schemas and contracts", path: "developer/0002-schemas-and-contracts.html" },
+            { label: "Business logic guide", path: "developer/0003-business-logic.html" },
+            { label: "Error matrix by status", path: "developer/0005-error-matrix-by-status.html" },
+          ],
+        },
+        {
+          label: "Delivery workflow and operations",
+          children: [
+            { label: "Make commands and workflows", path: "developer/0010-make-commands-and-workflows.html" },
+            { label: "Local development", path: "developer/0007-local-development.html" },
+            { label: "Docker image and container", path: "developer/0009-docker-image-and-container.html" },
+            { label: "API load testing", path: "developer/0006-api-load-testing.html" },
+            { label: "Documentation pipeline", path: "developer/0008-docs-pipeline.html" },
+          ],
+        },
+        {
+          label: "How-to and onboarding",
+          children: [
+            { label: "How to add POST contract", path: "developer/0004-how-to-add-post-contract.html" },
+            { label: "Onboarding from zero to endpoint and docs", path: "howto/onboarding-from-zero-to-endpoint-docs.html" },
+            { label: "Make commands inventory", path: "howto/make-commands-inventory.html" },
+          ],
+        },
+      ],
+    },
+
+    {
+      label: "How-to guides",
+      children: [
+        { label: "Hub — how-to index", path: "howto/README.html" },
+        {
+          label: "Onboarding and implementation",
+          children: [
+            { label: "Onboarding from zero to endpoint and docs", path: "howto/onboarding-from-zero-to-endpoint-docs.html" },
+            { label: "How to add POST /api/v1/contract", path: "howto/0004-how-to-add-post-contract.html" },
+          ],
+        },
+        {
+          label: "Documentation operations",
+          children: [
+            { label: "Internal service docs layout and how to add pages", path: "howto/internal-service-docs-layout.html" },
+            { label: "How to change docs frontend safely", path: "howto/how-to-change-docs-frontend-safely.html" },
+          ],
+        },
+        {
+          label: "Workflow and commands",
+          children: [{ label: "Make commands inventory", path: "howto/make-commands-inventory.html" }],
+        },
+      ],
+    },
+
     {
       label: "Runbooks",
       children: [
@@ -685,6 +689,7 @@
         },
       ],
     },
+
     {
       label: "QA checklists",
       children: [
@@ -700,6 +705,7 @@
         },
       ],
     },
+
     {
       label: "Audit",
       children: [
@@ -713,6 +719,7 @@
         },
       ],
     },
+
     {
       label: "For managers",
       children: [
@@ -720,6 +727,7 @@
         { label: "Backlog", path: "backlog/README.html" },
       ],
     },
+
     {
       label: "API endpoints documentation",
       children: [
@@ -763,6 +771,7 @@
         },
       ],
     },
+
     {
       label: "Docs frontend documentation",
       children: [

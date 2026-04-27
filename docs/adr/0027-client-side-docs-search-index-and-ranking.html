@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +18,8 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="7">
-    <h1>ADR 0027: High-relevance client-side docs search (inverted index, IDF, and ranking boosts)</h1>
+    <h1 class="internal-h1--accent-tail">ADR 0027: High-relevance client-side docs search (inverted index, IDF, and
+      ranking boosts)</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
@@ -79,191 +82,189 @@
         + w_section * log(1 + tf_section(t, d))
         + w_content * log(1 + tf_content(t, d))
         )</code></pre>
-        <p>Weights are tuned for precision-first behavior:</p>
-        <pre><code>w_title = 8.0
+      <p>Weights are tuned for precision-first behavior:</p>
+      <pre><code>w_title = 8.0
           w_url = 4.0
           w_section = 2.0
           w_content = 1.4</code></pre>
-          <h3>IDF and length normalization</h3>
-          <pre><code>idf(t) = log(1 + (N + 1) / (df(t) + 0.5))
+      <h3>IDF and length normalization</h3>
+      <pre><code>idf(t) = log(1 + (N + 1) / (df(t) + 0.5))
 
             len_ratio(d) = content_len(d) / avg_content_len
             norm(d) = 1 / (1 + 0.08 * max(0, len_ratio(d) - 1))
 
             score_norm(d, T) = score_base(d, T) * norm(d)</code></pre>
-            <p>
-              This downweights very common tokens and prevents long pages from winning by volume alone.
-            </p>
-            <h3>Precision boosts</h3>
-            <p>Final score adds deterministic bonuses:</p>
-            <pre><code>score_final = score_norm
+      <p>
+        This downweights very common tokens and prevents long pages from winning by volume alone.
+      </p>
+      <h3>Precision boosts</h3>
+      <p>Final score adds deterministic bonuses:</p>
+      <pre><code>score_final = score_norm
               + B_all_tokens_in_title
               + B_all_tokens_in_url
               + B_exact_phrase_in_title
               + B_exact_phrase_in_url
               + B_title_prefix
               + B_exact_section</code></pre>
-              <p>
-                These bonuses enforce intuitive ranking for navigational queries and short phrase queries.
-              </p>
-              <h3>Complexity model</h3>
-              <p>
-                With an inverted index, query complexity becomes proportional to postings, not all documents:
-              </p>
-              <pre><code>Build: O(total_tokens)
+      <p>
+        These bonuses enforce intuitive ranking for navigational queries and short phrase queries.
+      </p>
+      <h3>Complexity model</h3>
+      <p>
+        With an inverted index, query complexity becomes proportional to postings, not all documents:
+      </p>
+      <pre><code>Build: O(total_tokens)
                 Query: O(sum_postings_for_query_terms + rerank_candidates)
                 Space: O(vocabulary + postings + doc_metadata)</code></pre>
-                <p>
-                  This is substantially faster than scanning every document on each query.
-                </p>
-              </section>
-              <section class="card">
-                <h2>Scope</h2>
-                <ul>
-                  <li>In scope: all HTML pages under <code>docs/</code>, including <code>docs/pdoc/</code> and <code>docs/openapi/</code>.</li>
-                  <li>Out of scope: neural/vector search, typo-edit-distance search, multilingual morphology.</li>
-                </ul>
-              </section>
-              <section class="card">
-                <h2>Alternatives considered</h2>
-                <ol>
-                  <li>Simple field-presence scoring
-                    <ul>
-                      <li>Pros: tiny implementation.</li>
-                      <li>Cons: weak ranking on larger corpora; limited precision control.</li>
-                    </ul>
-                  </li>
-                  <li>Hosted search providers
-                    <ul>
-                      <li>Pros: rich relevance and analytics.</li>
-                      <li>Cons: external dependency, operational overhead, crawler governance.</li>
-                    </ul>
-                  </li>
-                  <li>Client-side third-party full-text libraries
-                    <ul>
-                      <li>Pros: mature ranking options.</li>
-                      <li>Cons: larger runtime dependency surface than needed.</li>
-                    </ul>
-                  </li>
-                </ol>
-              </section>
-              <section class="card">
-                <h2>Consequences</h2>
-                <h3>Positive</h3>
-                <ul>
-                  <li>Higher relevance for exact and navigational queries.</li>
-                  <li>Predictable and debuggable ranking math.</li>
-                  <li>Fast query path via postings-based candidate generation.</li>
-                </ul>
-                <h3>Trade-offs</h3>
-                <ul>
-                  <li>Larger index compared to minimal list-based format.</li>
-                  <li>More ranking parameters to maintain.</li>
-                  <li>Still lexical: no semantic similarity understanding.</li>
-                </ul>
-              </section>
-              <section class="card">
-                <h2>Compatibility and migration</h2>
-                <ul>
-                  <li>Backward-compatibility impact: low (search implementation change only).</li>
-                  <li>Migration plan: generate new index version in existing docs pipeline.</li>
-                  <li>Rollback strategy: revert to previous scorer and simple index schema.</li>
-                </ul>
-              </section>
-              <section class="card">
-                <h2>Implementation mapping</h2>
-                <ul>
-                  <li>Index builder: <code>scripts/build_docs_search_index.py</code></li>
-                  <li>Runtime search and reranking: <code>docs/assets/docs-nav.js</code></li>
-                  <li>UI styling and snippets: <code>docs/assets/docs.css</code></li>
-                  <li>Artifact: <code>docs/assets/search-index.json</code> (schema version 2)</li>
-                  <li>Telemetry ingest API: <code>POST /internal/telemetry/docs-search</code></li>
-                  <li>Telemetry metrics API: <code>GET /internal/telemetry/docs-search/metrics</code></li>
-                  <li>Telemetry store module: <code>app/core/docs_search_telemetry.py</code></li>
-                  <li>Telemetry database file: same SQLite file configured by <code>SQLITE_DB_PATH</code></li>
-                </ul>
-              </section>
-              <section class="card">
-                <h2>Telemetry events and storage</h2>
-                <h3>Client events</h3>
-                <ul>
-                  <li><code>search_query</code>: one emitted query execution with query length, token count, result count,
-                    latency, and top-N impressions.</li>
-                    <li><code>search_result_click</code>: click-through on a result (mouse/keyboard), including rank and URL.</li>
-                    <li><code>search_success</code>: first successful click in a search session; includes time-to-success and
-                      time-to-click.</li>
-                      <li><code>search_query_error</code>: client-side index-load failure for observability and diagnostics.</li>
-                    </ul>
-                    <h3>Persistence model</h3>
-                    <ul>
-                      <li>All events are written append-only to <code>docs_search_events</code> in the current application SQLite DB.
-                      </li>
-                      <li>Telemetry data and business data share one DB file to simplify local setup.</li>
-                      <li>SQLite runs in WAL mode to reduce writer contention for frequent event inserts.</li>
-                    </ul>
-                  </section>
-                  <section class="card">
-                    <h2>Metric definitions (canonical formulas)</h2>
-                    <p>
-                      Let <code>Q</code> be all <code>search_query</code> events in a time window, and <code>S</code> be first
-                      <code>search_success</code> per session in the same window.
-                    </p>
-                    <h3>Zero-result rate</h3>
-                    <pre><code>zero_result_rate = count(q in Q where q.results_count = 0) / count(Q)</code></pre>
-                    <h3>Query CTR</h3>
-                    <pre><code>query_ctr = count(distinct query_id in Q with at least one search_result_click) / count(Q)</code></pre>
-                    <h3>Time-to-first-success</h3>
-                    <pre><code>TTFS = distribution of s.time_to_success_ms for s in S
+      <p>
+        This is substantially faster than scanning every document on each query.
+      </p>
+    </section>
+    <section class="card">
+      <h2>Scope</h2>
+      <ul>
+        <li>In scope: all HTML pages under <code>docs/</code>, including <code>docs/pdoc/</code> and
+          <code>docs/openapi/</code>.</li>
+        <li>Out of scope: neural/vector search, typo-edit-distance search, multilingual morphology.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Alternatives considered</h2>
+      <ol>
+        <li>Simple field-presence scoring
+          <ul>
+            <li>Pros: tiny implementation.</li>
+            <li>Cons: weak ranking on larger corpora; limited precision control.</li>
+          </ul>
+        </li>
+        <li>Hosted search providers
+          <ul>
+            <li>Pros: rich relevance and analytics.</li>
+            <li>Cons: external dependency, operational overhead, crawler governance.</li>
+          </ul>
+        </li>
+        <li>Client-side third-party full-text libraries
+          <ul>
+            <li>Pros: mature ranking options.</li>
+            <li>Cons: larger runtime dependency surface than needed.</li>
+          </ul>
+        </li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Higher relevance for exact and navigational queries.</li>
+        <li>Predictable and debuggable ranking math.</li>
+        <li>Fast query path via postings-based candidate generation.</li>
+      </ul>
+      <h3>Trade-offs</h3>
+      <ul>
+        <li>Larger index compared to minimal list-based format.</li>
+        <li>More ranking parameters to maintain.</li>
+        <li>Still lexical: no semantic similarity understanding.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Compatibility and migration</h2>
+      <ul>
+        <li>Backward-compatibility impact: low (search implementation change only).</li>
+        <li>Migration plan: generate new index version in existing docs pipeline.</li>
+        <li>Rollback strategy: revert to previous scorer and simple index schema.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Implementation mapping</h2>
+      <ul>
+        <li>Index builder: <code>scripts/build_docs_search_index.py</code></li>
+        <li>Runtime search and reranking: <code>docs/assets/docs-nav.js</code></li>
+        <li>UI styling and snippets: <code>docs/assets/docs.css</code></li>
+        <li>Artifact: <code>docs/assets/search-index.json</code> (schema version 2)</li>
+        <li>Telemetry ingest API: <code>POST /internal/telemetry/docs-search</code></li>
+        <li>Telemetry metrics API: <code>GET /internal/telemetry/docs-search/metrics</code></li>
+        <li>Telemetry store module: <code>app/core/docs_search_telemetry.py</code></li>
+        <li>Telemetry database file: same SQLite file configured by <code>SQLITE_DB_PATH</code></li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Telemetry events and storage</h2>
+      <h3>Client events</h3>
+      <ul>
+        <li><code>search_query</code>: one emitted query execution with query length, token count, result count,
+          latency, and top-N impressions.</li>
+        <li><code>search_result_click</code>: click-through on a result (mouse/keyboard), including rank and URL.</li>
+        <li><code>search_success</code>: first successful click in a search session; includes time-to-success and
+          time-to-click.</li>
+        <li><code>search_query_error</code>: client-side index-load failure for observability and diagnostics.</li>
+      </ul>
+      <h3>Persistence model</h3>
+      <ul>
+        <li>All events are written append-only to <code>docs_search_events</code> in the current application SQLite DB.
+        </li>
+        <li>Telemetry data and business data share one DB file to simplify local setup.</li>
+        <li>SQLite runs in WAL mode to reduce writer contention for frequent event inserts.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Metric definitions (canonical formulas)</h2>
+      <p>
+        Let <code>Q</code> be all <code>search_query</code> events in a time window, and <code>S</code> be first
+        <code>search_success</code> per session in the same window.
+      </p>
+      <h3>Zero-result rate</h3>
+      <pre><code>zero_result_rate = count(q in Q where q.results_count = 0) / count(Q)</code></pre>
+      <h3>Query CTR</h3>
+      <pre><code>query_ctr = count(distinct query_id in Q with at least one search_result_click) / count(Q)</code></pre>
+      <h3>Time-to-first-success</h3>
+      <pre><code>TTFS = distribution of s.time_to_success_ms for s in S
                       reported as p50 and p75</code></pre>
-                      <p>
-                        For this ADR, dashboard defaults are: <strong>p50</strong> and <strong>p75</strong> over the selected rolling
-                        window.
-                      </p>
-                    </section>
-                    <section class="card">
-                      <h2>Validation</h2>
-                      <ul>
-                        <li>Run <code>make docs-fix</code> and verify index generation step succeeds.</li>
-                        <li>Smoke-test queries across ADR/internal/developer/runbooks/api paths.</li>
-                        <li>Verify keyboard UX: up/down/enter/escape.</li>
-                        <li>Track payload size and first-query latency after docs growth.</li>
-                        <li>Send a search event and verify row creation in telemetry DB (<code>docs_search_events</code>).</li>
-                        <li>Call <code>GET /internal/telemetry/docs-search/metrics</code> and verify non-zero aggregates.</li>
-                      </ul>
-                    </section>
-                    <section class="card">
-                      <h2>References</h2>
-                      <ul>
-                        <li><a href="./0001-docs-as-code.html">ADR 0001</a></li>
-                        <li><a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a></li>
-                        <li><a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a></li>
-                        <li><a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a></li>
-                        <li><a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a></li>
-                      </ul>
-                    </section>
-                    <section id="page-history" class="card">
-                      <h2>Page history</h2>
-                      <div class="docs-table-scroll" role="region" aria-label="Page history">
-                        <table class="docs-page-history">
-                          <thead>
-                            <tr>
-                              <th scope="col">Date</th>
-                              <th scope="col">Change</th>
-                              <th scope="col">Author</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td><time datetime="2026-04-21">2026-04-21</time></td>
-                              <td>Added Page history section (repository baseline).</td>
-                              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
+      <p>
+        For this ADR, dashboard defaults are: <strong>p50</strong> and <strong>p75</strong> over the selected rolling
+        window.
+      </p>
+    </section>
+    <section class="card">
+      <h2>Validation</h2>
+      <ul>
+        <li>Run <code>make docs-fix</code> and verify index generation step succeeds.</li>
+        <li>Smoke-test queries across ADR/internal/developer/runbooks/api paths.</li>
+        <li>Verify keyboard UX: up/down/enter/escape.</li>
+        <li>Track payload size and first-query latency after docs growth.</li>
+        <li>Send a search event and verify row creation in telemetry DB (<code>docs_search_events</code>).</li>
+        <li>Call <code>GET /internal/telemetry/docs-search/metrics</code> and verify non-zero aggregates.</li>
+      </ul>
+    </section>
 
-                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                  </main>
+    <section id="page-history" class="card">
+      <h2>Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+              <td>Added Page history section (repository baseline).</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-                </body></html>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+  </main>
+
+</body>
+
+</html>

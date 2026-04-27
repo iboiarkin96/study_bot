@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,16 +15,18 @@
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
+
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="7">
-    <h1>ADR 0009: Health, Readiness, and Prometheus Observability</h1>
+    <h1 class="internal-h1--accent-tail">ADR 0009: Health, Readiness, and Prometheus Observability</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. There was no separate ratification process. Git history for this file on <code>main</code> is the record.
+        Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. There was no separate
+        ratification process. Git history for this file on <code>main</code> is the record.
       </p>
       <ul>
         <li>Discussion Issue: <em>not recorded (before ADR 0018)</em></li>
@@ -58,10 +62,12 @@
     <section class="card">
       <h2>Implementation</h2>
       <ul>
-        <li>Health/readiness endpoints in <code>app/main.py</code> and schemas in <code>app/schemas/system.py</code>.</li>
+        <li>Health/readiness endpoints in <code>app/main.py</code> and schemas in <code>app/schemas/system.py</code>.
+        </li>
         <li>Metrics collector and SQLAlchemy hooks in <code>app/core/metrics.py</code>.</li>
         <li>Config toggles and thresholds in <code>app/core/config.py</code> and <code>env/example</code>.</li>
-        <li>Operational commands in <code>Makefile</code> and observability stack in <code>docker-compose.observability.yml</code>.</li>
+        <li>Operational commands in <code>Makefile</code> and observability stack in
+          <code>docker-compose.observability.yml</code>.</li>
       </ul>
 
     </section>
@@ -70,7 +76,8 @@
       <ul>
         <li>Prometheus uses pull-based scraping from <code>/metrics</code>.</li>
         <li>Dockerized Prometheus + Grafana is the default local/staging bootstrap path.</li>
-        <li>Production deployment may run the same stack outside Docker (for example on a VM) with the same endpoint contract.</li>
+        <li>Production deployment may run the same stack outside Docker (for example on a VM) with the same endpoint
+          contract.</li>
       </ul>
 
     </section>
@@ -90,23 +97,7 @@
       </ul>
 
     </section>
-    <section class="card">
-      <h2>Related</h2>
-      <ul>
-        <li>
-          <a href="./0011-slo-sla-error-budget.html">ADR 0011: SLOs, SLAs, error budget, and monitoring alerts</a> — targets,
-          recording rules, and readiness probing.
-        </li>
-        <li>
-          <a href="./0023-structured-logging-and-local-elasticsearch.html">ADR 0023: Structured logs, request correlation, optional local Elasticsearch</a> —
-          complements metrics with searchable NDJSON and <code>X-Request-Id</code>; not a substitute for Prometheus.
-        </li>
-        <li>
-          <a href="../runbooks/0009-error-budget-exhaustion.html">Runbook: Error budget exhaustion</a> — response when SLO
-          budget is burned or alerts fire.
-        </li>
-      </ul>
-    </section>
+
     <section id="page-history" class="card">
       <h2>Page history</h2>
       <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -130,6 +121,12 @@
     </section>
 
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
-</body></html>
+</body>
+
+</html>

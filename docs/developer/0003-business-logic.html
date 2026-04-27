@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+
+<head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -19,7 +21,7 @@
     <h1>Business Logic Guide</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section class="docs-page-hero" aria-labelledby="overview">
+    <section class="docs-page-hero" id="overview" aria-labelledby="overview">
       <h2>Overview</h2>
       <p>How we split HTTP, services, repositories, and models.</p>
     </section>
@@ -94,136 +96,138 @@
               </td>
               <td>Must match OpenAPI (operations, declared responses, examples). Maps successful outcomes and
                 framework-level HTTP concerns to the right status codes.</td>
-              </tr>
-              <tr>
-                <th scope="row">Schemas &amp; 422 contract</th>
-                <td><code>app/schemas/</code>, <code>app/validation/</code>, handlers in <code>app/main.py</code></td>
-                <td><code>app/schemas/</code>: Pydantic models and field constraints. <code>app/validation/</code>:
-                  translates Pydantic/FastAPI validation failures into the canonical <code>422</code> payload shape for
-                  clients. Registration of exception handlers lives next to app setup in <code>app/main.py</code>.
-                </td>
-                <td>Error catalog and examples in OpenAPI; alignment between Pydantic error kinds and documented
-                  <code>code</code>/<code>key</code> values.
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">Application</th>
-                <td><code>app/services/</code></td>
-                <td>Use cases and business invariants (for example “duplicate composite key”) implemented with domain
-                  logic;
-                  raises <code>HTTPException</code> with business error payloads when rules fail.</td>
-                  <td>Business errors must match the governed contract. Layering policy:
-                    <a href="./README.html">Developers Docs</a>.
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">Persistence</th>
-                  <td><code>app/repositories/</code>, DB session in <code>app/core/</code></td>
-                  <td>Load and persist entities via SQLAlchemy; Alembic migrations for schema changes.</td>
-                  <td>Storage details stay out of the public HTTP model; DB constraints remain consistent with what the API
-                    promises.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            </tr>
+            <tr>
+              <th scope="row">Schemas &amp; 422 contract</th>
+              <td><code>app/schemas/</code>, <code>app/validation/</code>, handlers in <code>app/main.py</code></td>
+              <td><code>app/schemas/</code>: Pydantic models and field constraints. <code>app/validation/</code>:
+                translates Pydantic/FastAPI validation failures into the canonical <code>422</code> payload shape for
+                clients. Registration of exception handlers lives next to app setup in <code>app/main.py</code>.
+              </td>
+              <td>Error catalog and examples in OpenAPI; alignment between Pydantic error kinds and documented
+                <code>code</code>/<code>key</code> values.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Application</th>
+              <td><code>app/services/</code></td>
+              <td>Use cases and business invariants (for example “duplicate composite key”) implemented with domain
+                logic;
+                raises <code>HTTPException</code> with business error payloads when rules fail.</td>
+              <td>Business errors must match the governed contract. Layering policy:
+                <a href="./README.html">Developers Docs</a>.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Persistence</th>
+              <td><code>app/repositories/</code>, DB session in <code>app/core/</code></td>
+              <td>Load and persist entities via SQLAlchemy; Alembic migrations for schema changes.</td>
+              <td>Storage details stay out of the public HTTP model; DB constraints remain consistent with what the API
+                promises.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-            <h3>Where validation runs</h3>
-            <p><strong>Where checks happen</strong> (in order):</p>
-            <ol>
-              <li>
-                Field rules for JSON bodies are defined in <strong>Pydantic</strong> models under <code>app/schemas/</code>
-                (required fields, types, max length, and so on).
-              </li>
-              <li>
-                When a request arrives, <strong>FastAPI</strong> runs those checks <strong>before</strong> code in
-                <code>app/api/</code> runs. Handlers usually receive data that already passed this step.
-              </li>
-              <li>
-                If a check fails, <code>app/validation/</code> maps the failure to our standard <code>422</code> response
-                (<code>code</code>, <code>key</code>, <code>message</code>). It does <strong>not</strong> redefine the
-                rules—only
-                the error shape for clients. That wiring is registered in <code>app/main.py</code>.
-              </li>
-              <li>
-                Rules that need the database—such as “this user already exists”—are enforced in <code>app/services/</code> and
-                surface as business client errors, not as “invalid JSON field” / schema validation. See
-                <a href="../adr/0003-error-contract-governance.html">ADR 0003</a>.
-              </li>
-            </ol>
-          </section>
-          <section class="card">
+      <h3>Where validation runs</h3>
+      <p><strong>Where checks happen</strong> (in order):</p>
+      <ol>
+        <li>
+          Field rules for JSON bodies are defined in <strong>Pydantic</strong> models under <code>app/schemas/</code>
+          (required fields, types, max length, and so on).
+        </li>
+        <li>
+          When a request arrives, <strong>FastAPI</strong> runs those checks <strong>before</strong> code in
+          <code>app/api/</code> runs. Handlers usually receive data that already passed this step.
+        </li>
+        <li>
+          If a check fails, <code>app/validation/</code> maps the failure to our standard <code>422</code> response
+          (<code>code</code>, <code>key</code>, <code>message</code>). It does <strong>not</strong> redefine the
+          rules—only
+          the error shape for clients. That wiring is registered in <code>app/main.py</code>.
+        </li>
+        <li>
+          Rules that need the database—such as “this user already exists”—are enforced in <code>app/services/</code> and
+          surface as business client errors, not as “invalid JSON field” / schema validation. See
+          <a href="../adr/0003-error-contract-governance.html">ADR 0003</a>.
+        </li>
+      </ol>
+    </section>
+    <section class="card">
 
-            <h2>Responsibility boundaries</h2>
-            <p>Router:</p>
-            <ul>
-              <li>Parse and validate request.</li>
-              <li>Call service.</li>
-              <li>Shape response model.</li>
-              <li>Declare OpenAPI responses.</li>
-            </ul>
-            <p>Service:</p>
-            <ul>
-              <li>Enforce domain rules.</li>
-              <li>Orchestrate repositories.</li>
-              <li>Raise domain/business errors.</li>
-            </ul>
-            <p>Repository:</p>
-            <ul>
-              <li>Isolate query/write mechanics.</li>
-              <li>Keep persistence details local.</li>
-            </ul>
-          </section>
-          <section class="card">
-            <h2>Transactions and consistency</h2>
-            <ul>
-              <li>Write operations must be atomic.</li>
-              <li>Duplicate/conflict checks must be deterministic.</li>
-              <li>Any failure path must return stable error contract.</li>
-            </ul>
-          </section>
-          <section class="card">
-            <h2>Logging and observability</h2>
-            <ul>
-              <li>Request-level logging: middleware in <code>app/main.py</code>.</li>
-              <li>Business event logs: service layer.</li>
-              <li>Log format/config: <code>app/core/logging.py</code>.</li>
-            </ul>
-          </section>
-          <section class="card">
-            <h2>Typical change flow</h2>
-            <ol>
-              <li>Define or adjust schema.</li>
-              <li>Implement service rule.</li>
-              <li>Implement repository operation.</li>
-              <li>Wire router.</li>
-              <li>Add examples and error mappings.</li>
-              <li>Add tests.</li>
-              <li>Run make pipeline.</li>
-            </ol>
-          </section>
-          <section id="page-history" class="card">
-            <h2>Page history</h2>
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
-              <table class="docs-page-history">
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Change</th>
-                    <th scope="col">Author</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                    <td>Added Page history section (repository baseline).</td>
-                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+      <h2>Responsibility boundaries</h2>
+      <p>Router:</p>
+      <ul>
+        <li>Parse and validate request.</li>
+        <li>Call service.</li>
+        <li>Shape response model.</li>
+        <li>Declare OpenAPI responses.</li>
+      </ul>
+      <p>Service:</p>
+      <ul>
+        <li>Enforce domain rules.</li>
+        <li>Orchestrate repositories.</li>
+        <li>Raise domain/business errors.</li>
+      </ul>
+      <p>Repository:</p>
+      <ul>
+        <li>Isolate query/write mechanics.</li>
+        <li>Keep persistence details local.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Transactions and consistency</h2>
+      <ul>
+        <li>Write operations must be atomic.</li>
+        <li>Duplicate/conflict checks must be deterministic.</li>
+        <li>Any failure path must return stable error contract.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Logging and observability</h2>
+      <ul>
+        <li>Request-level logging: middleware in <code>app/main.py</code>.</li>
+        <li>Business event logs: service layer.</li>
+        <li>Log format/config: <code>app/core/logging.py</code>.</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Typical change flow</h2>
+      <ol>
+        <li>Define or adjust schema.</li>
+        <li>Implement service rule.</li>
+        <li>Implement repository operation.</li>
+        <li>Wire router.</li>
+        <li>Add examples and error mappings.</li>
+        <li>Add tests.</li>
+        <li>Run make pipeline.</li>
+      </ol>
+    </section>
+    <section id="page-history" class="card">
+      <h2>Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+              <td>Added Page history section (repository baseline).</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
+    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+  </main>
 
-      </body></html>
+</body>
+
+</html>

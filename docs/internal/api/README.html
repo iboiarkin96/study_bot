@@ -1,13 +1,14 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>HTTP API — internal documentation hub — Study App</title>
   <link rel="stylesheet" href="../../assets/docs.css" />
   <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
   <script defer src="../../assets/docs-nav.js"></script>
   <script defer src="../../assets/docs-portal-data.js"></script>
   <script defer src="../../assets/docs-internal-meta.js"></script>
@@ -26,24 +27,29 @@
         <h1>HTTP API (internal)</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <p class="lead">
-          Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page (business
+        <section class="docs-page-hero" id="overview">
+          <h2>Overview</h2>
+          Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page
+          (business
           context, data contract, links to methods), and each <code>operationId</code> has its own page so readers are
           not overloaded with a single endless scroll.
-        </p>
+        </section>
 
         <section class="card">
           <h2>Resources</h2>
           <ul>
             <li>
               <a href="./user/index.html">User</a> — identity under <code>/api/v1/user</code>; the
-              <a href="./user/index.html">resource hub</a> is the single entry point (business context, contract summary,
+              <a href="./user/index.html">resource hub</a> is the single entry point (business context, contract
+              summary,
               technical depth); per-method pages link back to anchors on that page.
             </li>
             <li>
-              <a href="./conspectus/index.html">Conspectus</a> — <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> study note under <code>/api/v1/conspectuses</code>
+              <a href="./conspectus/index.html">Conspectus</a> — <span class="docs-tooltip docs-tooltip--etr"
+                tabindex="0">ETR</span> study note under <code>/api/v1/conspectuses</code>
               (plus related <code>/schedule/summary</code> and <code>/errors</code>); the
-              <a href="./conspectus/index.html">resource hub</a> explains the entity, field mapping, API surface, and links
+              <a href="./conspectus/index.html">resource hub</a> explains the entity, field mapping, API surface, and
+              links
               to <strong>per-method pages</strong> under <code>conspectus/operations/</code> (same pattern as User).
             </li>
           </ul>
@@ -106,4 +112,6 @@
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>

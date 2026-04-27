@@ -1,19 +1,18 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RFC Index</title>
+  <title>RFC Index — ETR Study API</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
-  <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
-
   <script defer src="../assets/internal-sidebar.js"></script>
-  <script defer src="../assets/docs-syntax.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
@@ -25,58 +24,91 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>RFC Index</h1>
+        <h1 class="internal-h1--accent-tail">RFC Index</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <p class="lead">
-          RFCs spell out <strong>how</strong> we build and run things: implementation detail and operational steps. ADRs
-          record <strong>what</strong> we decided and <strong>why</strong>. Each numbered RFC sets
-          <code>data-rfc-weight</code> on <code>&lt;main&gt;</code> (−1…7) so <strong>Current status</strong> and the
-          <strong>Status log</strong> use the same lifecycle as ADRs
-          (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
-        </p>
-        <section id="available-rfcs" class="card">
-          <h2>Available RFCs</h2>
-          <p class="small">
-            The same structure is mirrored in the internal sidebar under <strong>RFC</strong> for quick switching between
-            index and implementation documents.
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            RFCs spell out <strong>how</strong> we build and run things: implementation detail, design rationale,
+            and operational steps. <a href="../adr/README.html">ADRs</a> record <strong>what</strong> we decided
+            and <strong>why</strong>. An RFC usually follows an ADR and provides the specification the ADR
+            intentionally omits. New RFCs start from the <a href="./0000-template.html">RFC template</a> and
+            follow the same lifecycle as ADRs
+            (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
           </p>
-          <h3>Structured navigation map</h3>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#docs-search">Docs Search</a>
+            <a class="docs-page-hero__chip" href="#full-index">Full index</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Docs Search</div>
+
+        <section id="docs-search" class="card">
+          <h2>Docs Search program</h2>
+          <p>
+            Client-side full-text search across all documentation pages. The program covers the index build pipeline,
+            query-time ranking, telemetry, and SLO targets. The architecture decision is in
+            <a href="../adr/0027-client-side-docs-search-index-and-ranking.html">ADR 0027</a>.
+          </p>
           <ul>
-            <li><a href="./README.html">Hub — RFC index</a></li>
             <li>
-              <strong>Docs search program</strong>
-              <ul>
-                <li><a href="./0001-docs-search-implementation.html">RFC 0001 — docs search implementation</a></li>
-                <li><a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002 — docs search KPI policy and SLO</a></li>
-              </ul>
+              <a href="./0001-docs-search-implementation.html">RFC 0001</a> — implementation detail:
+              index schema, normalization model, ranking formula (IDF + field weights + precision boosts),
+              telemetry transport, storage, and local validation playbook.
+            </li>
+            <li>
+              <a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a> — KPI policy and SLO:
+              zero-result rate, query CTR, and time-to-first-success targets, warning / breach limits, and
+              on-call response playbook.
             </li>
           </ul>
-          <table>
-            <thead>
-              <tr>
-                <th>Document</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><a href="./0001-docs-search-implementation.html">RFC 0001</a></td>
-                <td>Docs search: index format, ranking, telemetry, storage, and how to validate locally.</td>
-              </tr>
-              <tr>
-                <td><a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a></td>
-                <td>Docs search KPIs: targets, warning/breach limits, and what to do when metrics slip.</td>
-              </tr>
-            </tbody>
-          </table>
         </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Full index</div>
+
+        <section id="full-index" class="card">
+          <h2>All RFCs</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Full RFC index">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">RFC</th>
+                  <th scope="col">Summary</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a href="./0000-template.html">Template</a></td>
+                  <td>Copy-paste shell for a new RFC: all required sections with guidance notes.</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><a href="./0001-docs-search-implementation.html">RFC 0001</a></td>
+                  <td>Docs search: index format, ranking formula, telemetry transport, storage, and local
+                    validation playbook.</td>
+                  <td>Accepted</td>
+                </tr>
+                <tr>
+                  <td><a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a></td>
+                  <td>Docs search KPIs: zero-result rate, query CTR, time-to-first-success targets, and
+                    on-call response steps.</td>
+                  <td>Accepted</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <nav class="docs-next-steps" aria-label="Next steps">
-          <p class="docs-next-steps__heading">Explore more</p>
+          <p class="docs-next-steps__heading">See also</p>
           <ul class="docs-next-steps__list">
             <li><a class="docs-next-steps__item" href="../adr/README.html">Architecture Decision Records</a></li>
+            <li><a class="docs-next-steps__item" href="../runbooks/README.html">Runbooks</a></li>
             <li><a class="docs-next-steps__item" href="../developer/README.html">Developer docs</a></li>
-            <li><a class="docs-next-steps__item" href="../howto/README.html">How-to guides</a></li>
           </ul>
         </nav>
 
@@ -93,6 +125,11 @@
               </thead>
               <tbody>
                 <tr>
+                  <td><time datetime="2026-04-27">2026-04-27</time></td>
+                  <td>Restructured: hero + section dividers by program, aligned with ADR index design.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
                   <td><time datetime="2026-04-21">2026-04-21</time></td>
                   <td>Added Page history section (repository baseline).</td>
                   <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
@@ -103,8 +140,14 @@
         </section>
 
         <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
       </main>
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>

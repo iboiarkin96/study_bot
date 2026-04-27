@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,9 +15,10 @@
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
+
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="7">
-    <h1>ADR 0018: ADR lifecycle, status model, and ratification</h1>
+    <h1 class="internal-h1--accent-tail">ADR 0018: ADR lifecycle, status model, and ratification</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
@@ -34,7 +37,8 @@
     <section class="card">
       <h2>Context</h2>
       <p>
-        <strong>Why this matters:</strong> Readers must see whether an ADR is still a draft, accepted, or done. One small
+        <strong>Why this matters:</strong> Readers must see whether an ADR is still a draft, accepted, or done. One
+        small
         machine-readable field on each page keeps the site accurate without a separate “ADR status” spreadsheet.
       </p>
       <p>
@@ -69,7 +73,8 @@
           template and title prefix are enough.
         </li>
         <li>
-          <strong>ADR page (lifecycle on the site).</strong> Set <code>data-adr-weight</code> on <code>&lt;main&gt;</code>
+          <strong>ADR page (lifecycle on the site).</strong> Set <code>data-adr-weight</code> on
+          <code>&lt;main&gt;</code>
           so the docs UI shows progress. That is only the <em>published</em> milestone; it does not replace Issue and PR
           history.
         </li>
@@ -79,7 +84,8 @@
         </li>
       </ol>
       <p class="small">
-        Roadmap rows in <a href="../backlog/README.html">docs/backlog/</a> use their own status pills. Branch names follow
+        Roadmap rows in <a href="../backlog/README.html">docs/backlog/</a> use their own status pills. Branch names
+        follow
         <a href="./0017-branch-naming-and-repository-workflow.html">ADR 0017</a>. Those are unrelated to
         <code>data-adr-weight</code>.
       </p>
@@ -89,8 +95,10 @@
       <ol>
         <li>
           <strong>Status model (normative here).</strong> Fixed milestones: Decision — Proposed (0), Accepted (1),
-          Superseded (2); Documentation — Draft (3), Ready (4); Implementation — Not started (5), In progress (6), Done (7).
-          Bad <code>data-adr-weight</code> values are clamped in script. This ADR introduced the model; older ADRs may not
+          Superseded (2); Documentation — Draft (3), Ready (4); Implementation — Not started (5), In progress (6), Done
+          (7).
+          Bad <code>data-adr-weight</code> values are clamped in script. This ADR introduced the model; older ADRs may
+          not
           use it until someone updates them.
         </li>
         <li>
@@ -119,20 +127,12 @@
       </ul>
       <h3>Trade-offs</h3>
       <ul>
-        <li>Authors must update <code>data-adr-weight</code> on <code>&lt;main&gt;</code> when the milestone changes.</li>
+        <li>Authors must update <code>data-adr-weight</code> on <code>&lt;main&gt;</code> when the milestone changes.
+        </li>
         <li>Legacy ADRs may lack weights or ratification blocks until edited.</li>
       </ul>
     </section>
-    <section class="card">
-      <h2>References</h2>
-      <ul>
-        <li><a href="./0000-template.html">ADR template (<code>0000-template.html</code>)</a></li>
-        <li><a href="./0001-docs-as-code.html">ADR 0001: Docs as Code</a></li>
-        <li><a href="./0013-changelog-and-release-notes.html">ADR 0013: Changelog and release notes</a></li>
-        <li><a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a></li>
-        <li>Issue template: <code>.github/ISSUE_TEMPLATE/adr_discussion.md</code></li>
-      </ul>
-    </section>
+
     <section id="page-history" class="card">
       <h2>Page history</h2>
       <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -156,6 +156,12 @@
     </section>
 
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
-</body></html>
+</body>
+
+</html>

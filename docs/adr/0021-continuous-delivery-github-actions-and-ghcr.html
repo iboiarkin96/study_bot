@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,14 +18,16 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="7">
-    <h1>ADR 0021: Continuous delivery — GitHub Actions and GitHub Container Registry</h1>
+    <h1 class="internal-h1--accent-tail">ADR 0021: Continuous delivery — GitHub Actions and GitHub Container Registry
+    </h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        Adopted under <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link the discussion Issue and merge PR when they exist. If not, use git history as the record.
+        Adopted under <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link the discussion
+        Issue and merge PR when they exist. If not, use git history as the record.
       </p>
       <ul>
         <li>Discussion Issue: <em>none linked for this merge</em></li>
@@ -36,8 +40,9 @@
       <h2 id="context-heading">Context</h2>
       <p>
         This ADR explains <strong>why</strong> we automate publishing a container image from Git, <strong>what
-        problem</strong>
-        that solves for newcomers and operators, and <strong>how far</strong> automation goes in this repository (registry
+          problem</strong>
+        that solves for newcomers and operators, and <strong>how far</strong> automation goes in this repository
+        (registry
         delivery, not full production rollout).
       </p>
 
@@ -45,7 +50,8 @@
       <p>
         Before this decision, the service could be built and tested locally and in <strong>CI</strong> (continuous
         integration), but there was no single, repeatable path that said: “every accepted change on the integration
-        branch produces the <strong>same</strong> container image artifact in a <strong>registry</strong> that others can
+        branch produces the <strong>same</strong> container image artifact in a <strong>registry</strong> that others
+        can
         pull.” That gap matters because:
       </p>
       <ul>
@@ -62,7 +68,7 @@
           <strong>Onboarding</strong> — New contributors read “we have a <code>Dockerfile</code>”
           (<a href="./0015-container-image.html">ADR 0015</a>) but may not know how that image gets
           to a place where a VM or a PaaS can consume it. This ADR documents the <strong>first automated
-          hop</strong>: build → push to <strong>GHCR</strong>.
+            hop</strong>: build → push to <strong>GHCR</strong>.
         </li>
       </ul>
 
@@ -76,11 +82,13 @@
         <strong>Continuous delivery (CD)</strong> usually means: “After CI passes, <strong>deliver</strong> a deployable
         artifact.” In practice that often means building a <strong>Docker image</strong> and pushing it to a
         <strong>container registry</strong> so any environment authorized to pull can run that exact image. Some teams
-        also automate the <strong>next</strong> step (deploy to staging/production) in the same pipeline; this repository
+        also automate the <strong>next</strong> step (deploy to staging/production) in the same pipeline; this
+        repository
         stops at <strong>registry delivery</strong> unless you add external steps yourself.
       </p>
       <p>
-        <strong>Why stop at the registry?</strong> Hosting (VM, managed service, or your deployment platform) needs secrets,
+        <strong>Why stop at the registry?</strong> Hosting (VM, managed service, or your deployment platform) needs
+        secrets,
         database URLs, networking, and policies that are specific to <em>your</em> infrastructure. Those belong in the
         deployment platform or runbooks, not hard-coded in a generic open-source workflow. This ADR still delivers a
         concrete, automatable outcome: a published image per successful pipeline.
@@ -97,12 +105,14 @@
           (with <code>packages: write</code> on the publish job) — no extra secrets for the push path.
         </li>
         <li>
-          Image names align with the repository (for example <code>ghcr.io/&lt;owner&gt;/&lt;repo&gt;</code>, lowercased),
+          Image names align with the repository (for example <code>ghcr.io/&lt;owner&gt;/&lt;repo&gt;</code>,
+          lowercased),
           which is easy to document and discover under the repo’s <strong>Packages</strong> view.
         </li>
         <li>
           Teams that later prefer AWS ECR, Google Artifact Registry, or Docker Hub can mirror the same
-          <code>Dockerfile</code> build; the decision here is the <strong>default</strong> path, not an exclusive lock-in.
+          <code>Dockerfile</code> build; the decision here is the <strong>default</strong> path, not an exclusive
+          lock-in.
         </li>
       </ul>
 
@@ -142,16 +152,20 @@
         </li>
         <li>
           <strong>Authentication</strong> — <code>docker/login-action</code> to <code>ghcr.io</code> with
-          <code>secrets.GITHUB_TOKEN</code>; job permission <code>packages: write</code>. No custom repository secrets are
+          <code>secrets.GITHUB_TOKEN</code>; job permission <code>packages: write</code>. No custom repository secrets
+          are
           required for the push path.
         </li>
         <li>
-          <strong>Build cache</strong> — use GitHub Actions cache backends for layer cache (<code>type=gha</code>) to keep
+          <strong>Build cache</strong> — use GitHub Actions cache backends for layer cache (<code>type=gha</code>) to
+          keep
           builds reasonably fast.
         </li>
         <li>
-          <strong>Runtime configuration</strong> — environment variables for the database, <code>APP_ENV</code>, API keys,
-          and similar settings are <strong>not</strong> injected by this workflow; they are the responsibility of whoever
+          <strong>Runtime configuration</strong> — environment variables for the database, <code>APP_ENV</code>, API
+          keys,
+          and similar settings are <strong>not</strong> injected by this workflow; they are the responsibility of
+          whoever
           runs the container (host, PaaS, or another runtime), consistent with
           <a href="./0010-env-profiles-and-config-governance.html">ADR 0010</a>.
         </li>
@@ -162,9 +176,10 @@
       <h2>Scope</h2>
       <ul>
         <li>
-          <strong>In scope:</strong> GitHub Actions workflow changes, GHCR as the default registry, tagging policy tied to
+          <strong>In scope:</strong> GitHub Actions workflow changes, GHCR as the default registry, tagging policy tied
+          to
           branches and <code>v*</code> release tags (<a href="./0017-branch-naming-and-repository-workflow.html">ADR
-          0017</a>),
+            0017</a>),
           documentation and ADR index updates.
         </li>
         <li>
@@ -182,21 +197,24 @@
           <span class="code-ctx">Manual <code>docker build</code> and <code>docker push</code> only</span>
           <ul>
             <li><strong>Pros:</strong> no CI minutes; full manual control.</li>
-            <li><strong>Cons:</strong> easy to forget; inconsistent tags; no guarantee the image matches a commit that passed CI. Rejected as the default for the integration branch.</li>
+            <li><strong>Cons:</strong> easy to forget; inconsistent tags; no guarantee the image matches a commit that
+              passed CI. Rejected as the default for the integration branch.</li>
           </ul>
         </li>
         <li>
           <span class="code-ctx">A separate workflow file for CD only</span>
           <ul>
             <li><strong>Pros:</strong> clearer separation of “CI” vs “CD” in the GitHub Actions UI.</li>
-            <li><strong>Cons:</strong> duplicated trigger conditions; a single workflow with <code>needs</code> keeps ordering obvious. We keep CD in <code>ci.yml</code> for simplicity.</li>
+            <li><strong>Cons:</strong> duplicated trigger conditions; a single workflow with <code>needs</code> keeps
+              ordering obvious. We keep CD in <code>ci.yml</code> for simplicity.</li>
           </ul>
         </li>
         <li>
           <span class="code-ctx">Deploy to a host (SSH or remote API) in the same job</span>
           <ul>
             <li><strong>Pros:</strong> end-to-end automation from push to running service.</li>
-            <li><strong>Cons:</strong> requires secrets and target infrastructure; not generic. Deferred until a concrete environment exists.</li>
+            <li><strong>Cons:</strong> requires secrets and target infrastructure; not generic. Deferred until a
+              concrete environment exists.</li>
           </ul>
         </li>
       </ol>
@@ -206,14 +224,19 @@
       <h2>Consequences</h2>
       <h3>Positive</h3>
       <ul>
-        <li>Every successful merge to the integration branch (and version tags) yields a pullable image that matches the Dockerfile from <a href="./0015-container-image.html">ADR 0015</a>.</li>
-        <li>New contributors get one path: CI green → image on GHCR → pull and run anywhere Docker can reach the registry.</li>
-        <li>The standard GitHub-hosted publish path does not require an extra personal access token for the push step.</li>
+        <li>Every successful merge to the integration branch (and version tags) yields a pullable image that matches the
+          Dockerfile from <a href="./0015-container-image.html">ADR 0015</a>.</li>
+        <li>New contributors get one path: CI green → image on GHCR → pull and run anywhere Docker can reach the
+          registry.</li>
+        <li>The standard GitHub-hosted publish path does not require an extra personal access token for the push step.
+        </li>
       </ul>
       <h3>Trade-offs</h3>
       <ul>
-        <li>GitHub Actions minutes accrue (public repos have generous limits; private repos need billing awareness).</li>
-        <li>Package visibility and pull authentication for <em>consumers</em> of the image remain an operator concern (configure package visibility or tokens as needed).</li>
+        <li>GitHub Actions minutes accrue (public repos have generous limits; private repos need billing awareness).
+        </li>
+        <li>Package visibility and pull authentication for <em>consumers</em> of the image remain an operator concern
+          (configure package visibility or tokens as needed).</li>
         <li>Running the container in production still requires a real database and secrets outside the workflow.</li>
       </ul>
 
@@ -221,38 +244,25 @@
     <section class="card">
       <h2>Compatibility and migration</h2>
       <ul>
-        <li>Backward-compatibility impact: <strong>none</strong> for API contracts; automation and docs are additive only.</li>
+        <li>Backward-compatibility impact: <strong>none</strong> for API contracts; automation and docs are additive
+          only.</li>
         <li>Migration plan: not required for API consumers.</li>
-        <li>Rollback: remove or disable the <code>publish-image</code> job; local development workflow is unchanged.</li>
+        <li>Rollback: remove or disable the <code>publish-image</code> job; local development workflow is unchanged.
+        </li>
       </ul>
 
     </section>
     <section class="card">
       <h2>Validation</h2>
       <ul>
-        <li>Technical: on push to <code>main</code>, the workflow completes <code>publish-image</code>; the image appears under the repository’s Packages and is pullable with correct authentication.</li>
-        <li>Documentation: this ADR, the <a href="../adr/README.html">ADR index</a>, and contributor notes link to the workflow as needed.</li>
+        <li>Technical: on push to <code>main</code>, the workflow completes <code>publish-image</code>; the image
+          appears under the repository’s Packages and is pullable with correct authentication.</li>
+        <li>Documentation: this ADR, the <a href="../adr/README.html">ADR index</a>, and contributor notes link to the
+          workflow as needed.</li>
       </ul>
 
     </section>
-    <section class="card">
-      <h2>References</h2>
-      <ul>
-        <li>
-          Related ADRs:
-          <a href="./0015-container-image.html">0015</a> (container image),
-          <a href="./0013-changelog-and-release-notes.html">0013</a> (changelog gates),
-          <a href="./0017-branch-naming-and-repository-workflow.html">0017</a> (branches and <code>v*</code> tags),
-          <a href="./0010-env-profiles-and-config-governance.html">0010</a> (runtime configuration),
-          <a href="./0008-make-command-taxonomy-and-workflow-entrypoints.html">0008</a> (Make entrypoints and CI alignment).
-        </li>
-        <li>Workflow: <code>.github/workflows/ci.yml</code> (job <code>publish-image</code>).</li>
-        <li>
-          Developer guide:
-          <a href="../developer/0009-docker-image-and-container.html">Docker image and container</a> (local build; links to registry automation).
-        </li>
-      </ul>
-    </section>
+
     <section id="page-history" class="card">
       <h2>Page history</h2>
       <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -276,6 +286,12 @@
     </section>
 
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
-</body></html>
+</body>
+
+</html>
