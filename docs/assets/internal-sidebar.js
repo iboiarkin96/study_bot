@@ -765,8 +765,8 @@
           expand: "after-api-hub",
           children: [
             { label: "Hub — business, contract & technical spec", path: "internal/api/user/index.html" },
-            { label: "POST /user", path: "internal/api/user/operations/post-api-v1-user.html" },
             { label: "GET /user/", path: "internal/api/user/operations/get-api-v1-user-system_uuid-system_user_id.html" },
+            { label: "POST /user", path: "internal/api/user/operations/post-api-v1-user.html" },
             { label: "PUT /user/", path: "internal/api/user/operations/put-api-v1-user-system_uuid-system_user_id.html" },
             { label: "PATCH /user/", path: "internal/api/user/operations/patch-api-v1-user-system_uuid-system_user_id.html" },
           ],
@@ -777,21 +777,21 @@
           children: [
             {
               labelHtml:
-                'Hub — entity, <span class="docs-tooltip docs-tooltip--etr">ETR</span> mapping &amp; methods',
+                'Hub — business, contract & technical spec',
               path: "internal/api/conspectus/index.html",
             },
-            { label: "POST /conspectuses", path: "internal/api/conspectus/operations/post-api-v1-conspectuses.html" },
-            { label: "PATCH /conspectuses/{id}", path: "internal/api/conspectus/operations/patch-api-v1-conspectuses-conspectus_uuid.html" },
-            { label: "POST …/actions/review", path: "internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html" },
             { label: "GET /conspectuses/due/", path: "internal/api/conspectus/operations/get-api-v1-conspectuses-due.html" },
             { label: "GET /schedule/summary/", path: "internal/api/conspectus/operations/get-api-v1-schedule-summary.html" },
+            { label: "POST …/actions/review", path: "internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html" },
+            { label: "POST /conspectuses", path: "internal/api/conspectus/operations/post-api-v1-conspectuses.html" },
+            { label: "PATCH /conspectuses/{id}", path: "internal/api/conspectus/operations/patch-api-v1-conspectuses-conspectus_uuid.html" },
           ],
         },
         {
           label: "Error log",
           expand: "after-api-hub",
           children: [
-            { label: "Hub — FR-4 & methods", path: "internal/api/error-log/index.html" },
+            { label: "Hub — business, contract & technical spec", path: "internal/api/error-log/index.html" },
             { label: "GET /errors/", path: "internal/api/error-log/operations/get-api-v1-errors.html" },
             { label: "POST /errors", path: "internal/api/error-log/operations/post-api-v1-errors.html" },
           ],
@@ -803,56 +803,46 @@
       label: "Docs frontend documentation",
       children: [
         {
-          label: " Style guide",
-          path: "internal/front/documentation-style-guide.html",
+          label: "Foundations",
+          children: [
+            { label: "Style guide",                    path: "internal/front/documentation-style-guide.html" },
+            { label: "Maintenance process",            path: "internal/front/documentation-process.html" },
+            { label: "Frontend glossary",              path: "internal/front/docs-frontend-glossary.html" },
+            { label: "Quick entry by role",            path: "internal/front/docs-frontend-fast-entry-by-role.html" },
+          ],
         },
         {
-          label: "Docs frontend architecture map",
-          path: "internal/front/docs-frontend-architecture-map.html",
+          label: "Architecture",
+          children: [
+            { label: "Architecture map",               path: "internal/front/docs-frontend-architecture-map.html" },
+          ],
         },
         {
-          label: "Docs frontend quick entry by role",
-          path: "internal/front/docs-frontend-fast-entry-by-role.html",
+          label: "Screens",
+          children: [
+            { label: "Screen spec template",           path: "internal/front/screens/docs-screen-template.html" },
+            { label: "Engineering hub home",           path: "internal/front/screens/docs-screen-home-landing.html" },
+            { label: "Backlog cockpit",                path: "internal/front/screens/docs-screen-backlog-cockpit.html" },
+          ],
         },
         {
-          label: "Docs frontend glossary",
-          path: "internal/front/docs-frontend-glossary.html",
+          label: "Components",
+          children: [
+            { label: "UI kit",                         path: "internal/front/docs-frontend-ui-kit.html" },
+            { label: "Tooltips and inline hints",      path: "internal/front/docs-frontend-tooltips.html" },
+            { label: "Popup and overlay system",       path: "internal/front/docs-frontend-popups-and-overlays.html" },
+            { label: "Diagrams and lightbox",          path: "internal/front/docs-frontend-diagrams-and-lightbox.html" },
+            { label: "Hotkeys",                        path: "internal/front/docs-frontend-hotkeys.html" },
+          ],
         },
         {
-          label: "Docs frontend tooltips and inline hints",
-          path: "internal/front/docs-frontend-tooltips.html",
-        },
-        {
-          label: "Docs frontend navigation, search, and discovery",
-          path: "internal/front/docs-frontend-navigation-search-and-discovery.html",
-        },
-        {
-          label: "Docs frontend UI, motion, and adaptivity",
-          path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html",
-        },
-        {
-          label: "Docs frontend diagrams and lightbox",
-          path: "internal/front/docs-frontend-diagrams-and-lightbox.html",
-        },
-        {
-          label: "Docs frontend feedback and editorial workflow",
-          path: "internal/front/docs-frontend-feedback-and-editorial-workflow.html",
-        },
-        {
-          label: "Docs frontend navigation and theme controls",
-          path: "internal/front/docs-frontend-menu-and-theme-controls.html",
-        },
-        {
-          label: "Docs frontend hotkeys",
-          path: "internal/front/docs-frontend-hotkeys.html",
-        },
-        {
-          label: "Docs frontend UI kit",
-          path: "internal/front/docs-frontend-ui-kit.html",
-        },
-        {
-          label: "Docs frontend popup and overlay system",
-          path: "internal/front/docs-frontend-popups-and-overlays.html",
+          label: "Cross-cutting systems",
+          children: [
+            { label: "Navigation and theme contract",  path: "internal/front/docs-frontend-menu-and-theme-controls.html" },
+            { label: "Navigation, search, discovery",  path: "internal/front/docs-frontend-navigation-search-and-discovery.html" },
+            { label: "UI, motion, adaptivity",         path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html" },
+            { label: "Feedback and editorial workflow", path: "internal/front/docs-frontend-feedback-and-editorial-workflow.html" },
+          ],
         },
       ],
     },

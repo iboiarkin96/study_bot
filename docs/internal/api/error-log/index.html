@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+
+<head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -26,18 +28,57 @@
         <h1 class="internal-h1--accent-tail">Error log</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="card" id="spec-status">
-          <h2>Specification status</h2>
-          <p class="lead" style="margin:0;">
-            <strong>Specification only.</strong> The <code>/api/v1/errors</code> API is <strong>not implemented</strong> yet.
-            This hub describes the intended FR-4 behavior; OpenAPI and code will follow a finalized spec.
+        <section id="overview" class="docs-page-hero" aria-labelledby="overview-heading">
+          <h2 id="overview-heading">Overview</h2>
+          <p>
+            <strong>Single entry point</strong> for the Error log API (FR-4): product intent, ownership checks,
+            request/response shorthand, and operation links for <code>POST</code>/<code>GET</code>
+            <code>/api/v1/errors</code>.
           </p>
         </section>
-        <p class="lead">
-          <strong>Learning mistake log</strong> (FR-4): store and list short messages, optionally linked to a
-          <a href="../conspectus/index.html">conspectus</a> the user owns. Optional <code>conspectus_uuid</code> should be
-          validated against that user's notes when both exist.
-        </p>
+
+        <section id="business-context" class="card">
+          <h2>Business context</h2>
+          <p>
+            Error log captures short learning mistakes per user and optionally links each entry to a
+            <a href="../conspectus/index.html">conspectus</a>. This supports reflection workflows and later analysis
+            of recurring gaps.
+          </p>
+          <p>
+            <strong>Specification only:</strong> behavior is documented first; application code and OpenAPI for this
+            resource are planned and will be generated after implementation.
+          </p>
+        </section>
+
+        <section id="data-contract-summary" class="card">
+          <h2>Data contract (summary)</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Field / group</th>
+                <th>Role</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>system_user_id</code>, <code>system_uuid</code></td>
+                <td>Owner identity</td>
+                <td>Required on both write and list operations.</td>
+              </tr>
+              <tr>
+                <td><code>message</code></td>
+                <td>Error note payload</td>
+                <td>Short learner-facing description of a mistake.</td>
+              </tr>
+              <tr>
+                <td><code>conspectus_uuid</code> (optional)</td>
+                <td>Cross-resource reference</td>
+                <td>If present, must belong to the same user.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
         <section id="operations" class="card">
           <h2>Operations</h2>
@@ -76,7 +117,14 @@
           </div>
         </section>
 
-        <p class="small"><a href="../conspectus/index.html">← Conspectus resource hub</a></p>
+        <section id="technical-overview" class="card">
+          <h2>Technical overview</h2>
+          <p>
+            Planned implementation follows the same internal API layering pattern:
+            middleware in <code>app/main.py</code> (auth/rate limit/observability), resource router, service
+            validation, and repository persistence. Write operations require idempotency; list operation is read-only.
+          </p>
+        </section>
 
         <section id="page-history" class="card">
           <h2>Page history</h2>
@@ -109,4 +157,6 @@
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>

@@ -716,6 +716,21 @@ summary:focus-visible {
   font-size: 0.92em;
 }
 
+/* Headings use background-clip: text + color: transparent (gradient effect),
+   which would make any inline <code> inside them invisible by inheritance.
+   Force a solid text color and text-fill on code inside headings so the
+   token reads on top of its grey pill background. */
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+  background: var(--inline-code-bg);
+  font-size: 0.86em;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 6px;
+  vertical-align: 0.04em;
+}
+
 pre {
   margin: 12px 0;
   padding: 14px 16px;
@@ -3761,7 +3776,7 @@ body.docs-reading-mode main.container li {
 /* Back to top — shown when viewport is near the document bottom (see docs-nav.js). */
 .docs-back-to-top {
   position: fixed;
-  left: max(1.25rem, env(safe-area-inset-left, 0px));
+  right: max(1.25rem, env(safe-area-inset-right, 0px));
   bottom: calc(max(1.25rem, env(safe-area-inset-bottom, 0px)) + var(--docs-footer-visible-h, 0px));
   z-index: 40;
   margin: 0;
@@ -3804,7 +3819,7 @@ body.docs-reading-mode main.container li {
   opacity: 1;
   visibility: visible;
   pointer-events: none;
-  animation-duration: 1.52s;
+  animation-duration: 2s;
   /* Linear segments + distance-weighted keyframe times keep velocity steady; easing between
      each keyframe pair (default ease) causes visible micro-stutters during scroll. */
   animation-timing-function: linear;
@@ -4048,6 +4063,31 @@ body.docs-reading-mode main.container li {
   animation: docs-rocket-smoke-right 1.25s ease-out infinite 0.24s;
 }
 
+.docs-back-to-top__speed-line {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  width: 14px;
+  height: 2px;
+  border-radius: 999px;
+  opacity: 0;
+  transform: translate(-50%, 0) scaleX(0.5);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+.docs-back-to-top__speed-line--a {
+  margin-left: -13px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 250, 230, 0.92) 100%);
+  filter: blur(0.4px);
+}
+
+.docs-back-to-top__speed-line--b {
+  margin-left: 13px;
+  background: linear-gradient(90deg, rgba(255, 250, 230, 0.92) 0%, rgba(255, 255, 255, 0) 100%);
+  filter: blur(0.4px);
+}
+
 .docs-back-to-top:hover .docs-back-to-top__rocket,
 .docs-back-to-top:focus-visible .docs-back-to-top__rocket {
   animation-duration: 1s;
@@ -4058,14 +4098,14 @@ body.docs-reading-mode main.container li {
 }
 
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__rocket-wrap {
-  animation: docs-rocket-grow-near-top 1.52s linear forwards;
+  animation: docs-rocket-grow-near-top 2s linear forwards;
 }
 
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__flame {
   opacity: 1;
   animation:
     docs-rocket-flame 0.4s ease-in-out infinite,
-    docs-rocket-flame-grow-near-top 1.52s linear forwards;
+    docs-rocket-flame-grow-near-top 2s linear forwards;
 }
 
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__trail {
@@ -4076,7 +4116,15 @@ body.docs-reading-mode main.container li {
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__smoke--left,
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__smoke--mid,
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__smoke--right {
-  animation-duration: 0.9s;
+  animation-duration: 0.7s;
+}
+
+.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__speed-line--a {
+  animation: docs-rocket-speed-line-a 0.32s linear infinite;
+}
+
+.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__speed-line--b {
+  animation: docs-rocket-speed-line-b 0.36s linear infinite 0.08s;
 }
 
 @keyframes docs-rocket-hover {
@@ -4089,57 +4137,243 @@ body.docs-reading-mode main.container li {
   }
 }
 
+/* Realistic rocket trajectory — three phases.
+   The button anchors at the right edge (right: 1.25rem), so the rocket can only move
+   leftward (negative X) without clipping off-screen. Loop center shifted to cx = -10vw
+   with Rx = 10vw, so the circle X range is [-20vw, 0vw] — rightmost point sits exactly
+   at the button's anchor, never crossing the viewport edge. All Phase 1/3 X values are
+   ≤ 0 too. Y range -104vh to 0 — top exit at fade-zero is intentional.
+   Phase 1 (0–25%) — serpentine ascent, |X| ≤ 7vw, ~1 cycle.
+   Phase 2 (25–65%) — vertical loop. 16 sub-keyframes at θ steps of π/8 (22.5°) on
+     x = cx + Rx·cos θ,  y = -(cy + Ry·sin θ),  cx=-10vw, cy=27vh, Rx=10vw, Ry=14vh.
+     Rotation tracks tangent: rot = -θ° (CCW, right variant) or +θ° (CW, left variant).
+   Phase 3 (65–100%) — serpentine exit, fade 1 → 0 over the last 12.5%. */
 @keyframes docs-rocket-launch-right {
+  /* Phase 1 — serpentine ascent to loop entry on the right side of the circle (x = 0) */
   0% {
     transform: translate(0, 0) scale(1) rotate(0deg);
     opacity: 1;
   }
-  /* Stops spaced by vertical distance so linear timing = near-constant upward speed (no easing “hops”). */
-  17.07% {
-    transform: translate(0, -14vh) scale(1.03) rotate(0deg);
+  6.25% {
+    transform: translate(-5vw, -7vh) scale(1.02) rotate(-7deg);
     opacity: 1;
   }
-  46.34% {
-    transform: translate(0, -38vh) scale(1.09) rotate(0deg);
+  12.5% {
+    transform: translate(-7vw, -14vh) scale(1.04) rotate(-3deg);
     opacity: 1;
   }
-  75.61% {
-    transform: translate(0, -62vh) scale(1.15) rotate(0deg);
-    opacity: 0.95;
+  18.75% {
+    transform: translate(-3vw, -21vh) scale(1.06) rotate(4deg);
+    opacity: 1;
   }
-  92.68% {
-    transform: translate(0, -76vh) scale(1.2) rotate(0deg);
-    opacity: 0.4;
+  /* Phase 2 — circular loop, CCW on screen, 16 segments at every 22.5° */
+  25% {
+    transform: translate(0vw, -27vh) scale(1.07) rotate(0deg);
+    opacity: 1;
+  }
+  27.5% {
+    transform: translate(-1vw, -32vh) scale(1.08) rotate(-22.5deg);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-3vw, -37vh) scale(1.08) rotate(-45deg);
+    opacity: 1;
+  }
+  32.5% {
+    transform: translate(-6vw, -40vh) scale(1.09) rotate(-67.5deg);
+    opacity: 1;
+  }
+  35% {
+    transform: translate(-10vw, -41vh) scale(1.1) rotate(-90deg);
+    opacity: 1;
+  }
+  37.5% {
+    transform: translate(-14vw, -40vh) scale(1.1) rotate(-112.5deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(-17vw, -37vh) scale(1.11) rotate(-135deg);
+    opacity: 1;
+  }
+  42.5% {
+    transform: translate(-19vw, -32vh) scale(1.12) rotate(-157.5deg);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(-20vw, -27vh) scale(1.13) rotate(-180deg);
+    opacity: 1;
+  }
+  47.5% {
+    transform: translate(-19vw, -22vh) scale(1.13) rotate(-202.5deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-17vw, -17vh) scale(1.14) rotate(-225deg);
+    opacity: 1;
+  }
+  52.5% {
+    transform: translate(-14vw, -14vh) scale(1.15) rotate(-247.5deg);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(-10vw, -13vh) scale(1.16) rotate(-270deg);
+    opacity: 1;
+  }
+  57.5% {
+    transform: translate(-6vw, -14vh) scale(1.16) rotate(-292.5deg);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(-3vw, -17vh) scale(1.17) rotate(-315deg);
+    opacity: 1;
+  }
+  62.5% {
+    transform: translate(-1vw, -22vh) scale(1.18) rotate(-337.5deg);
+    opacity: 1;
+  }
+  /* Phase 3 — serpentine exit, fade-out (all X ≤ 0) */
+  65% {
+    transform: translate(0vw, -27vh) scale(1.18) rotate(-360deg);
+    opacity: 1;
+  }
+  71.5% {
+    transform: translate(-4vw, -38vh) scale(1.2) rotate(-365deg);
+    opacity: 1;
+  }
+  78% {
+    transform: translate(-7vw, -52vh) scale(1.21) rotate(-368deg);
+    opacity: 1;
+  }
+  84.5% {
+    transform: translate(-4vw, -67vh) scale(1.23) rotate(-358deg);
+    opacity: 1;
+  }
+  91% {
+    transform: translate(-1vw, -82vh) scale(1.24) rotate(-355deg);
+    opacity: 0.7;
+  }
+  96.5% {
+    transform: translate(-3vw, -94vh) scale(1.26) rotate(-358deg);
+    opacity: 0.3;
   }
   100% {
-    transform: translate(0, -82vh) scale(1.24) rotate(0deg);
+    transform: translate(-6vw, -104vh) scale(1.27) rotate(-360deg);
     opacity: 0;
   }
 }
 
+/* Mirrored variant — same circle (cx=-10vw), CW direction. Loop entry on the LEFT side
+   at x = -20vw (cx − Rx). Rotation = +θ° (CW tangent). All X values stay in [-20vw, 0]. */
 @keyframes docs-rocket-launch-left {
+  /* Phase 1 — serpentine ascent to loop entry on the left side of the circle (x=-20vw) */
   0% {
     transform: translate(0, 0) scale(1) rotate(0deg);
     opacity: 1;
   }
-  17.07% {
-    transform: translate(0, -14vh) scale(1.03) rotate(0deg);
+  6.25% {
+    transform: translate(-3vw, -7vh) scale(1.02) rotate(-5deg);
     opacity: 1;
   }
-  46.34% {
-    transform: translate(0, -38vh) scale(1.09) rotate(0deg);
+  12.5% {
+    transform: translate(-10vw, -14vh) scale(1.04) rotate(-7deg);
     opacity: 1;
   }
-  75.61% {
-    transform: translate(0, -62vh) scale(1.15) rotate(0deg);
-    opacity: 0.95;
+  18.75% {
+    transform: translate(-16vw, -21vh) scale(1.06) rotate(-5deg);
+    opacity: 1;
   }
-  92.68% {
-    transform: translate(0, -76vh) scale(1.2) rotate(0deg);
-    opacity: 0.4;
+  /* Phase 2 — circular loop, CW on screen, 16 segments at every 22.5° */
+  25% {
+    transform: translate(-20vw, -27vh) scale(1.07) rotate(0deg);
+    opacity: 1;
+  }
+  27.5% {
+    transform: translate(-19vw, -32vh) scale(1.08) rotate(22.5deg);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-17vw, -37vh) scale(1.08) rotate(45deg);
+    opacity: 1;
+  }
+  32.5% {
+    transform: translate(-14vw, -40vh) scale(1.09) rotate(67.5deg);
+    opacity: 1;
+  }
+  35% {
+    transform: translate(-10vw, -41vh) scale(1.1) rotate(90deg);
+    opacity: 1;
+  }
+  37.5% {
+    transform: translate(-6vw, -40vh) scale(1.1) rotate(112.5deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(-3vw, -37vh) scale(1.11) rotate(135deg);
+    opacity: 1;
+  }
+  42.5% {
+    transform: translate(-1vw, -32vh) scale(1.12) rotate(157.5deg);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(0vw, -27vh) scale(1.13) rotate(180deg);
+    opacity: 1;
+  }
+  47.5% {
+    transform: translate(-1vw, -22vh) scale(1.13) rotate(202.5deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-3vw, -17vh) scale(1.14) rotate(225deg);
+    opacity: 1;
+  }
+  52.5% {
+    transform: translate(-6vw, -14vh) scale(1.15) rotate(247.5deg);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(-10vw, -13vh) scale(1.16) rotate(270deg);
+    opacity: 1;
+  }
+  57.5% {
+    transform: translate(-14vw, -14vh) scale(1.16) rotate(292.5deg);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(-17vw, -17vh) scale(1.17) rotate(315deg);
+    opacity: 1;
+  }
+  62.5% {
+    transform: translate(-19vw, -22vh) scale(1.18) rotate(337.5deg);
+    opacity: 1;
+  }
+  /* Phase 3 — serpentine exit, fade-out (all X ≤ 0) */
+  65% {
+    transform: translate(-20vw, -27vh) scale(1.18) rotate(360deg);
+    opacity: 1;
+  }
+  71.5% {
+    transform: translate(-16vw, -38vh) scale(1.2) rotate(363deg);
+    opacity: 1;
+  }
+  78% {
+    transform: translate(-10vw, -52vh) scale(1.21) rotate(356deg);
+    opacity: 1;
+  }
+  84.5% {
+    transform: translate(-6vw, -67vh) scale(1.23) rotate(354deg);
+    opacity: 1;
+  }
+  91% {
+    transform: translate(-3vw, -82vh) scale(1.24) rotate(358deg);
+    opacity: 0.7;
+  }
+  96.5% {
+    transform: translate(-5vw, -94vh) scale(1.26) rotate(362deg);
+    opacity: 0.3;
   }
   100% {
-    transform: translate(0, -82vh) scale(1.24) rotate(0deg);
+    transform: translate(-8vw, -104vh) scale(1.27) rotate(360deg);
     opacity: 0;
   }
 }
@@ -4148,11 +4382,17 @@ body.docs-reading-mode main.container li {
   0% {
     transform: scale(1);
   }
-  46.34% {
-    transform: scale(1.08);
+  12% {
+    transform: scale(1.02);
   }
-  75.61% {
-    transform: scale(1.18);
+  30% {
+    transform: scale(1.06);
+  }
+  55% {
+    transform: scale(1.12);
+  }
+  80% {
+    transform: scale(1.2);
   }
   100% {
     transform: scale(1.28);
@@ -4185,14 +4425,20 @@ body.docs-reading-mode main.container li {
   0% {
     transform: translateX(-50%) scale(0.95, 0.9);
   }
-  46.34% {
-    transform: translateX(-50%) scale(1.12, 1.18);
+  12% {
+    transform: translateX(-50%) scale(1.02, 1.04);
   }
-  75.61% {
-    transform: translateX(-50%) scale(1.28, 1.42);
+  30% {
+    transform: translateX(-50%) scale(1.12, 1.2);
+  }
+  55% {
+    transform: translateX(-50%) scale(1.22, 1.36);
+  }
+  80% {
+    transform: translateX(-50%) scale(1.32, 1.5);
   }
   100% {
-    transform: translateX(-50%) scale(1.36, 1.54);
+    transform: translateX(-50%) scale(1.4, 1.6);
   }
 }
 
@@ -4250,6 +4496,38 @@ body.docs-reading-mode main.container li {
   }
 }
 
+/* Speed lines: short streaks behind the rocket that flicker repeatedly during launch
+   to amplify perceived velocity (cinematic motion-line trick). */
+@keyframes docs-rocket-speed-line-a {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -2px) scaleX(0.4);
+  }
+  35% {
+    opacity: 0.78;
+    transform: translate(-50%, 5px) scaleX(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 16px) scaleX(0.5);
+  }
+}
+
+@keyframes docs-rocket-speed-line-b {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -2px) scaleX(0.4);
+  }
+  40% {
+    opacity: 0.7;
+    transform: translate(-50%, 6px) scaleX(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 18px) scaleX(0.5);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .docs-back-to-top,
   .docs-back-to-top:hover {
@@ -4259,7 +4537,8 @@ body.docs-reading-mode main.container li {
   .docs-back-to-top__rocket,
   .docs-back-to-top__smoke,
   .docs-back-to-top__flame,
-  .docs-back-to-top__trail {
+  .docs-back-to-top__trail,
+  .docs-back-to-top__speed-line {
     animation: none;
   }
 
@@ -4669,7 +4948,7 @@ body.docs-reading-mode main.container li {
 
 .docs-report-bug-fab {
   position: fixed;
-  right: max(1.25rem, env(safe-area-inset-right, 0px));
+  left: max(1.25rem, env(safe-area-inset-left, 0px));
   bottom: calc(max(1.25rem, env(safe-area-inset-bottom, 0px)) + var(--docs-footer-visible-h, 0px));
   z-index: 900;
   appearance: none;

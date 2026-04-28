@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentation maintenance process</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Documentation maintenance process</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page describes <strong>how we keep documentation alive</strong> in this repository. It is the lifecycle
+            companion of the <a href="./documentation-style-guide.html">documentation style guide</a> (which covers
+            <em>how words look</em>): this page covers <em>how docs are produced, updated, audited, and retired over time</em>.
+          </p>
+          <p>
+            The process is modelled on patterns used by widely-respected engineering documentation programs — Stripe,
+            Linear, Vercel, GitHub, Atlassian, and Storybook — adapted to the constraints of a small team shipping a
+            static <code>docs/</code> tree alongside the application code.
+          </p>
+          <ul>
+            <li><strong>Goal:</strong> every screen, ADR, runbook, and API page is the single source of truth for its topic, and stays correct as the code evolves.</li>
+            <li><strong>Scope:</strong> all hand-authored HTML pages under <code>docs/</code>, plus the screen-spec corpus under <code>docs/internal/front/screens/</code>.</li>
+            <li><strong>Out of scope:</strong> auto-generated reference (OpenAPI explorer, pdoc) — those are generated artifacts and updated by the build, not by the docs process.</li>
+          </ul>
+        </section>
+
+        <section id="principles" class="card">
+          <h2>Operating principles</h2>
+          <ol>
+            <li><strong>Single source of truth.</strong> One topic = one canonical page. Other pages link to it; they never re-state it. If two pages contradict, fix the canonical page and update the others to point at it.</li>
+            <li><strong>Co-located with code.</strong> Documentation lives in the same repository, on the same branch, and changes in the same PR as the code it describes. There is no separate "docs site" or wiki.</li>
+            <li><strong>Living, not archived.</strong> A page is either current or replaced. There are no "deprecated but kept around" pages — outdated content is removed in the same change that replaces it (with redirect stubs only when external links exist).</li>
+            <li><strong>Screen specs over screenshots.</strong> Visual reality is captured by anatomy diagrams (annotated SVG) checked into git, not pixel-perfect screenshots. A diagram aligns to architecture; a screenshot rots on every style tweak.</li>
+            <li><strong>Glossary first.</strong> No new domain term goes into a page without a definition added to the <a href="./docs-frontend-glossary.html">frontend glossary</a> in the same PR. Term consistency is the foundation of every other doc.</li>
+            <li><strong>Plain language.</strong> Documentation is read by engineers whose first language is rarely English. Short sentences. Common words. One idea per sentence. The <a href="./documentation-style-guide.html#plain-language">style guide</a> is normative.</li>
+            <li><strong>Page history is required.</strong> Every non-redirect page ends with a <em>Page history</em> table. Every meaningful edit appends a row. This is the ledger that lets a future reader see when something was last verified.</li>
+            <li><strong>Definition of done includes docs.</strong> A code change that touches user-visible behavior is not done until the corresponding docs are updated in the same PR.</li>
+          </ol>
+        </section>
+
+        <section id="industry-references" class="card">
+          <h2>Industry references (what we modelled this on)</h2>
+          <p>
+            Each principle below comes from a documentation program known for high quality. None of them is copied
+            verbatim — but every pattern we use traces back to one of these.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Pattern</th>
+                <th>Where it comes from</th>
+                <th>Our adaptation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Anatomy diagrams as the canonical visual reference</td>
+                <td>Atlassian Design System, GitHub Primer, Material Design</td>
+                <td>Annotated SVG embedded inline in screen specs (<code>docs/internal/front/screens/</code>); numbered callouts referenced throughout the spec.</td>
+              </tr>
+              <tr>
+                <td>Component anatomy with named parts (header / body / footer / icon / etc.)</td>
+                <td>Stripe Elements docs, Adobe Spectrum, Carbon Design System</td>
+                <td>Layout map section in every screen spec lists each region with its CSS hook and purpose.</td>
+              </tr>
+              <tr>
+                <td>One topic per page; cards within a page for sub-topics</td>
+                <td>Stripe API reference structure, Vercel docs</td>
+                <td><code>&lt;section class="card"&gt;</code> per topic, enforced by the <a href="./documentation-style-guide.html#required-page-skeleton">style guide skeleton</a>.</td>
+              </tr>
+              <tr>
+                <td>Page history / changelog at the bottom of every page</td>
+                <td>Wikipedia "View history", MDN "Page history", Notion "Page updates"</td>
+                <td>Required <code>#page-history</code> table; one row per meaningful change, signed by author.</td>
+              </tr>
+              <tr>
+                <td>Stable identifiers for capabilities</td>
+                <td>Linear's <code>FEAT-</code> issue prefixes, GitHub's <code>actions/checkout@v4</code> versioning</td>
+                <td><a href="./docs-frontend-architecture-map.html#feature-id-governance"><code>DFEAT-xxx</code> feature IDs</a> referenced from every change.</td>
+              </tr>
+              <tr>
+                <td>Maintainer ownership recorded in metadata</td>
+                <td>Kubernetes <code>OWNERS</code> files, Sentry <code>CODEOWNERS</code></td>
+                <td><code>data-maintainer-ids</code> attribute on <code>&lt;body&gt;</code>; consumed by the "Edited by" widget.</td>
+              </tr>
+              <tr>
+                <td>Plain-language editorial guidelines</td>
+                <td>Mailchimp Voice &amp; Tone, GOV.UK Service Manual, Stripe writing principles</td>
+                <td><a href="./documentation-style-guide.html#plain-language">Style guide — Plain language</a> section.</td>
+              </tr>
+              <tr>
+                <td>Glossary as a contract</td>
+                <td>Stripe API glossary, IBM Carbon "Concepts"</td>
+                <td><a href="./docs-frontend-glossary.html">Frontend glossary</a>; new terms are added in the same PR that introduces them.</td>
+              </tr>
+              <tr>
+                <td>Definition of "done" includes docs</td>
+                <td>Atlassian DoD, Spotify "Engineering Excellence", GitLab Handbook</td>
+                <td><a href="#definition-of-done">DoD checklist below</a>; included in PR template.</td>
+              </tr>
+              <tr>
+                <td>Living docs alongside source code</td>
+                <td>Storybook stories, Astro docs, Vercel <code>docs.vercel.com</code></td>
+                <td>Static <code>docs/</code> folder shipped with code; no separate CMS.</td>
+              </tr>
+              <tr>
+                <td>Co-locating runtime contract with reference (data attributes named in spec)</td>
+                <td>Web Components docs, Salesforce Lightning docs</td>
+                <td>Every screen spec has a <em>Data contract</em> section listing every <code>data-*</code> attribute used by markup hooks.</td>
+              </tr>
+              <tr>
+                <td>"Where to change what" implementation map</td>
+                <td>Linear engineering blog architecture posts, Notion's eng playbook</td>
+                <td>Every screen spec ends with a <em>Where to change what</em> card mapping behavior to file paths.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="information-architecture" class="card">
+          <h2>Information architecture</h2>
+          <p>
+            The frontend documentation tree is organized into five buckets, mirroring the structure used by Stripe
+            Elements, Atlassian Design System, GitHub Primer, and Material Design. Every page belongs to exactly one
+            bucket; pages that span buckets are split.
+          </p>
+          <ol>
+            <li><strong>Foundations</strong> — meta-rules for documentation itself: style guide, maintenance process (this page), glossary, role-based onboarding paths.</li>
+            <li><strong>Architecture</strong> — system-level inventory: feature ledger, runtime ownership, contracts.</li>
+            <li><strong>Screens</strong> — one page per real user-facing screen, with screenshots, anatomy diagram, and full behavior. Lives under <code>docs/internal/front/screens/</code>.</li>
+            <li><strong>Components</strong> — reusable UI primitives (UI kit, tooltips, popups/overlays, diagrams/lightbox, hotkeys).</li>
+            <li><strong>Cross-cutting systems</strong> — concerns that span the surface: navigation contracts, search/discovery, UI motion and adaptivity, feedback/editorial workflow.</li>
+          </ol>
+          <p class="small">
+            The left navigation in the docs site (<code>docs/assets/internal-sidebar.js</code> →
+            <code>INTERNAL_SIDEBAR_NAV</code>) renders these five buckets as nested groups. When you add a page, place
+            it in the right bucket and update the sidebar tree in the same PR.
+          </p>
+        </section>
+
+        <section id="document-types" class="card">
+          <h2>Document types and their templates</h2>
+          <p>
+            Each document type has a fixed shape so readers know where to look. Use the linked template when creating a
+            new page; do not invent a new structure.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Purpose</th>
+                <th>Template / location</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Screen spec</td>
+                <td>Canonical specification for one critical user-facing screen: layout, behavior, hooks, edge cases.</td>
+                <td><a href="./screens/docs-screen-template.html">docs-screen-template.html</a> in <code>docs/internal/front/screens/</code></td>
+              </tr>
+              <tr>
+                <td>ADR (Architecture Decision Record)</td>
+                <td>Records one architectural decision: context, options considered, choice, consequences.</td>
+                <td><code>docs/adr/0000-template.html</code></td>
+              </tr>
+              <tr>
+                <td>How-to</td>
+                <td>Step-by-step procedure for a specific task ("how to change docs frontend safely").</td>
+                <td><code>docs/howto/</code></td>
+              </tr>
+              <tr>
+                <td>Runbook</td>
+                <td>Operational procedure for an incident or recurring task ("tests failing", "release rollback").</td>
+                <td><code>docs/runbooks/</code></td>
+              </tr>
+              <tr>
+                <td>Internal service doc</td>
+                <td>Authoritative behavior spec for a backend service: business rules, request/response, errors.</td>
+                <td><code>docs/internal/api/</code> (often co-generated with the OpenAPI source)</td>
+              </tr>
+              <tr>
+                <td>Frontend reference</td>
+                <td>Cross-cutting reference for a frontend system (navigation, tooltips, motion policy).</td>
+                <td><code>docs/internal/front/</code></td>
+              </tr>
+              <tr>
+                <td>Glossary</td>
+                <td>Single-table-per-section page defining all terminology used elsewhere.</td>
+                <td><a href="./docs-frontend-glossary.html">docs-frontend-glossary.html</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="lifecycle" class="card">
+          <h2>Lifecycle of a documentation change</h2>
+          <ol>
+            <li>
+              <strong>Trigger.</strong> A change happens in code (new screen, new feature, behavior tweak), or audit
+              flags drift between docs and reality, or the team decides to start documenting an area that wasn't
+              covered.
+            </li>
+            <li>
+              <strong>Identify the canonical page.</strong> Use the <a href="./docs-frontend-architecture-map.html">architecture map</a>
+              to find the existing page; if no canonical page exists, create one from the appropriate template.
+            </li>
+            <li>
+              <strong>Plan the doc edit alongside the code.</strong> Add the doc edits to the same branch / PR as the
+              code change. If the doc is large enough to be its own PR, link it from the code PR description.
+            </li>
+            <li>
+              <strong>Update the page.</strong> Edit only what changed. Preserve the page skeleton (Overview → topic
+              cards → Page history). Use plain language; reference the <a href="./documentation-style-guide.html">style
+              guide</a> when in doubt.
+            </li>
+            <li>
+              <strong>Update the glossary if any new term appears.</strong> Add a row with a plain-language definition
+              and an implementation note in the same PR. Cross-link from the page.
+            </li>
+            <li>
+              <strong>Update the architecture map if scope changed.</strong> If the change adds or removes a feature,
+              update the block model and feature-implementation ledger.
+            </li>
+            <li>
+              <strong>Append a Page history row.</strong> One sentence summarizing what changed; today's date in
+              <code>YYYY-MM-DD</code>; a link to the maintainer's portal page.
+            </li>
+            <li>
+              <strong>Self-audit.</strong> Run through the <a href="#definition-of-done">DoD checklist</a> before
+              requesting review.
+            </li>
+            <li>
+              <strong>Review.</strong> A second pair of eyes verifies that the doc matches reality and is readable to
+              someone who didn't write the code.
+            </li>
+            <li>
+              <strong>Merge with code.</strong> Docs and code land together. Never merge a behavior change without the
+              accompanying doc edit.
+            </li>
+          </ol>
+        </section>
+
+        <section id="screen-spec-policy" class="card">
+          <h2>Screen-spec policy</h2>
+          <p>
+            Screen specs are the highest-leverage documentation artifact: they describe a real user-facing surface in
+            full. They cost the most to write and pay back the most when changes are needed.
+          </p>
+          <h3>Which screens get a spec</h3>
+          <ul>
+            <li><strong>Required:</strong> any screen that is a user entry point (home, backlog cockpit, OpenAPI explorer landing).</li>
+            <li><strong>Required:</strong> any screen with non-trivial interaction logic, multiple states, or animations beyond a fade.</li>
+            <li><strong>Optional:</strong> simple content pages whose behavior is covered by the global skeleton.</li>
+          </ul>
+          <h3>Required sections in every screen spec</h3>
+          <ol>
+            <li><strong>Overview</strong> — primary URL, owner, audience, last verified date.</li>
+            <li><strong>Anatomy diagram</strong> — annotated SVG with numbered callouts.</li>
+            <li><strong>Layout map</strong> — text walk-through of every region.</li>
+            <li>One <strong>section per major behavior</strong> (e.g. "Boot intro overlay", "Hero region", "Card sections").</li>
+            <li><strong>Data contract</strong> — every <code>data-*</code> hook and class state used by the runtime.</li>
+            <li><strong>Interaction logic</strong> — page lifecycle, event contract, timing budget.</li>
+            <li><strong>Responsive behavior</strong> — breakpoints and what changes at each.</li>
+            <li><strong>Accessibility and motion policy</strong> — reduced motion, ARIA, focus, contrast, theme.</li>
+            <li><strong>Where to change what</strong> — file-by-file mapping of behavior to source.</li>
+            <li><strong>Acceptance checklist</strong> — items a reviewer can tick off post-change.</li>
+            <li><strong>Known edges and design decisions</strong> — non-obvious choices and historical fixes that explain why the code looks the way it does.</li>
+            <li><strong>Related internal docs</strong> — links to glossary, architecture map, sister specs.</li>
+            <li><strong>Page history</strong> — the change log table.</li>
+          </ol>
+          <h3>Required visual gallery (screenshots)</h3>
+          <ul>
+            <li>Every screen spec opens with a <strong>Visual gallery</strong> card containing real screenshots of the screen.</li>
+            <li><strong>Minimum coverage:</strong>
+              <ul>
+                <li>Desktop default state, light theme</li>
+                <li>Desktop default state, dark theme</li>
+                <li>Tablet breakpoint (≤1024 px)</li>
+                <li>Mobile breakpoint (≤640 px)</li>
+                <li>Each transient state (intro overlay, modal, loading, empty, error)</li>
+              </ul>
+            </li>
+            <li>Files live in <code>./assets/</code> next to the spec; filenames follow <code>&lt;screen-id&gt;-&lt;variant&gt;.png</code> (kebab-case).</li>
+            <li>Update the gallery in the same PR that changes the screen — outdated screenshots are worse than no screenshots.</li>
+            <li>Capture via the project's screenshot script (Playwright + WebKit) so the output is reproducible. Manual screenshots are accepted only when the script can't reach the state (e.g. interactive demo).</li>
+            <li>Each <code>&lt;figure&gt;</code> gets a one-line <code>&lt;figcaption&gt;</code> describing the variant ("Desktop · light · default", "Intro · phase 2 · mid").</li>
+            <li>Wrap each image in a link to the full-size PNG so reviewers can zoom.</li>
+          </ul>
+          <h3>Anatomy diagram standards</h3>
+          <ul>
+            <li><strong>Format:</strong> inline SVG embedded in the page; never external <code>&lt;img&gt;</code>.</li>
+            <li><strong>Numbered callouts:</strong> small accent-colored circles with monospace numbers; legend below the figure repeats every number.</li>
+            <li><strong>Two phases when applicable:</strong> if the screen has a transient state (intro, modal, loading), the diagram shows both states stacked vertically with phase labels.</li>
+            <li><strong>Accessibility:</strong> SVG must have <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code> children, plus a <code>&lt;figcaption&gt;</code> below.</li>
+            <li><strong>Aspect-ratio:</strong> use <code>viewBox</code>, not fixed dimensions; figure scales with viewport.</li>
+            <li><strong>Maintain by hand.</strong> SVG is text — edit it the same way you edit any other code. Don't paste binary screenshots.</li>
+          </ul>
+        </section>
+
+        <section id="visual-evidence" class="card">
+          <h2>Visual evidence policy</h2>
+          <p>
+            Every screen spec carries <strong>both</strong> a real-screenshot gallery <em>and</em> an annotated anatomy
+            diagram. Each answers a different question:
+          </p>
+          <ul>
+            <li><strong>Screenshots</strong> answer <em>"what does this look like right now?"</em> — fidelity, recency, dark/light parity, breakpoint reflow.</li>
+            <li><strong>Anatomy diagrams</strong> answer <em>"what are the named regions?"</em> — structure, callouts, vocabulary that the rest of the spec references.</li>
+          </ul>
+          <h3>Screenshot rules</h3>
+          <ul>
+            <li>Captured with the project's reproducible script (<code>scripts/capture_screen_specs.py</code>), not ad-hoc.</li>
+            <li>Stored in <code>./assets/</code> next to the spec, in PNG.</li>
+            <li>Filename format: <code>&lt;screen-id&gt;-&lt;variant&gt;.png</code>, kebab-case. Variants: <code>desktop-light</code>, <code>desktop-dark</code>, <code>tablet</code>, <code>mobile</code>, <code>intro-phase-N</code>, etc.</li>
+            <li>Refreshed in the same PR that changes the screen.</li>
+            <li>Each image wrapped in a link to itself so reviewers can open full-size.</li>
+            <li>Each image gets descriptive <code>alt</code> text and a one-line <code>&lt;figcaption&gt;</code>.</li>
+          </ul>
+          <h3>Anatomy diagram rules</h3>
+          <ul>
+            <li>Inline SVG, hand-authored, never an external <code>&lt;img&gt;</code>.</li>
+            <li>Numbered callouts repeated in a legend below the figure.</li>
+            <li>For multi-phase screens (intro overlay + page surface), stack two panels in one SVG.</li>
+            <li>SVG must have <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code> children plus a <code>&lt;figcaption&gt;</code>.</li>
+            <li>Use <code>viewBox</code>, not fixed dimensions; figure scales with the viewport.</li>
+            <li>Edit the SVG in place — it is text in git, not a binary artifact.</li>
+          </ul>
+          <h3>Why both, not one or the other</h3>
+          <ul>
+            <li>Screenshots rot on style tweaks but are the only reliable evidence of <em>current</em> visual reality. The rule is: keep them current via the script.</li>
+            <li>Anatomy diagrams describe structure, are diff-readable in code review, screen-reader-friendly, and survive cosmetic changes.</li>
+            <li>Together they cover the full "show + name" loop that international design systems use.</li>
+          </ul>
+          <h3>Live previews as supplementary aid</h3>
+          <ul>
+            <li>Link directly to the page (<code>../../../index.html</code>) — the reader can open the actual screen.</li>
+            <li>Do not embed cross-origin iframes or third-party preview services.</li>
+          </ul>
+        </section>
+
+        <section id="page-history-rules" class="card">
+          <h2>Page history rules</h2>
+          <ul>
+            <li><strong>Required on every non-redirect page.</strong> Mount it as the last <code>&lt;section class="card"&gt;</code> before the in-page TOC.</li>
+            <li><strong>One row per meaningful change.</strong> Trivial whitespace, link rewrites, or auto-formatting do not require a row.</li>
+            <li><strong>Reverse chronological order.</strong> Newest row at the top of <code>&lt;tbody&gt;</code>.</li>
+            <li><strong>Date format:</strong> ISO <code>YYYY-MM-DD</code> in <code>&lt;time datetime&gt;</code> and rendered as the same string.</li>
+            <li><strong>Author link:</strong> point to the maintainer's portal page (<code>../../portal/people/&lt;name&gt;/index.html</code>).</li>
+            <li><strong>Change description:</strong> one sentence, present-tense imperative summary of what the change accomplishes for the reader. Do not say "fixed typo" — describe the substance ("clarified that decrypt only runs on motion-allowed visits").</li>
+          </ul>
+        </section>
+
+        <section id="audit" class="card">
+          <h2>Audit cadence</h2>
+          <p>
+            Documentation drifts. The audit cadence below catches drift before it becomes wrong-by-default.
+          </p>
+          <ul>
+            <li><strong>Per-PR audit:</strong> every PR that touches user-visible behavior is reviewed for matching doc updates. Reviewer responsibility — failing to update docs is grounds for "request changes".</li>
+            <li><strong>Quarterly screen-spec re-verify:</strong> the listed owner re-runs the acceptance checklist of each owned screen spec. If anything diverges, an update PR follows. Update the "Last verified behavior date" in the Overview.</li>
+            <li><strong>Glossary scan on every release:</strong> grep new code for unfamiliar terms; if any has no glossary entry, add one or fix the naming.</li>
+            <li><strong>Annual architecture-map cleanup:</strong> retire features that no longer exist; reassign ownership; renumber feature IDs only with a clear migration note.</li>
+          </ul>
+        </section>
+
+        <section id="definition-of-done" class="card">
+          <h2>Definition of done (for any change)</h2>
+          <p>A code change is not "done" until all of the following are true. Use this as a self-check before review.</p>
+          <ol>
+            <li>The behavior change is implemented and tested in code.</li>
+            <li>The relevant screen spec or reference page is updated in the same PR.</li>
+            <li>If new terminology was introduced, it is defined in the <a href="./docs-frontend-glossary.html">frontend glossary</a> in the same PR.</li>
+            <li>The architecture map is updated if the change adds, removes, or reassigns a feature.</li>
+            <li>A page-history row is appended to every page that was edited, with today's date and a meaningful description.</li>
+            <li>For screen specs: the anatomy diagram still matches reality, and the acceptance checklist is reviewed.</li>
+            <li>For new pages: the required skeleton (Overview → topic cards → Page history → in-page TOC mount) is present.</li>
+            <li>No links are broken; <code>data-*</code> attribute names match between markup and runtime code.</li>
+            <li>Plain-language self-check: short sentences, common words, no unexplained jargon.</li>
+            <li>The change description in the PR mentions both the code change and the doc change.</li>
+          </ol>
+        </section>
+
+        <section id="anti-patterns" class="card">
+          <h2>Anti-patterns to avoid</h2>
+          <ul>
+            <li><strong>"Docs PR follows."</strong> Code merges with the promise that docs will land later. The follow-up almost never ships. Always bundle.</li>
+            <li><strong>Two pages, same topic.</strong> Splitting a topic across two pages because each one is "almost about it" creates contradictions. Merge or pick one canonical home.</li>
+            <li><strong>Stale screenshots.</strong> A PNG of a screen that no longer looks like that. Either remove it or replace with a current SVG anatomy.</li>
+            <li><strong>Empty page-history.</strong> A page with no history table is invisible to future maintainers and gets quietly deleted. Always add the table, even on the first commit.</li>
+            <li><strong>Jargon without a glossary entry.</strong> A page introduces "the conspectus orchestrator" with no definition; future readers either guess or ask. Define it.</li>
+            <li><strong>Long noun stacks.</strong> "The configuration value resolution preference cascade order rule" — break it down into a sentence with a verb.</li>
+            <li><strong>Marketing copy in engineering docs.</strong> "Effortlessly seamless modern API" is for landing pages. Engineering docs say what it does, not how exciting it is.</li>
+            <li><strong>"TBD" and "WIP" sections in shipped docs.</strong> If a section isn't ready, omit it. Placeholder text encodes ambiguity.</li>
+            <li><strong>Inconsistent terminology.</strong> Same thing called three different names across three pages. Pick one and unify in a single PR.</li>
+            <li><strong>Hand-edited generated content.</strong> If the page is generated from OpenAPI / pdoc, never hand-edit the output — fix the source.</li>
+          </ul>
+        </section>
+
+        <section id="onboarding" class="card">
+          <h2>Onboarding: first time editing docs</h2>
+          <ol>
+            <li>Read the <a href="./documentation-style-guide.html">style guide</a> end-to-end (~10 min).</li>
+            <li>Skim this process page (~5 min).</li>
+            <li>Skim the <a href="./docs-frontend-glossary.html">frontend glossary</a> to learn the canonical terms (~5 min).</li>
+            <li>Open the <a href="./screens/docs-screen-home-landing.html">home screen spec</a> as a reference for what a complete screen spec looks like.</li>
+            <li>For your first edit, start with a small change to an existing page; copy the structure of nearby cards.</li>
+            <li>Always use the templates (<a href="./screens/docs-screen-template.html">screen template</a>, ADR template, etc.) — do not start from a blank file.</li>
+          </ol>
+        </section>
+
+        <section id="related-pages" class="card">
+          <h2>Related pages</h2>
+          <ul>
+            <li><a href="./documentation-style-guide.html">Documentation style guide and audit standard</a> — the rules for how words look.</li>
+            <li><a href="./docs-frontend-glossary.html">Docs frontend glossary</a> — canonical term definitions.</li>
+            <li><a href="./docs-frontend-architecture-map.html">Docs frontend architecture map and feature inventory</a> — the index of what exists and where.</li>
+            <li><a href="./screens/docs-screen-template.html">Screen spec template</a> — start here when documenting a new screen.</li>
+            <li><a href="./screens/docs-screen-home-landing.html">Screen spec: Engineering hub home</a> — exemplar screen spec.</li>
+            <li><a href="./screens/docs-screen-backlog-cockpit.html">Screen spec: Backlog cockpit</a> — second exemplar.</li>
+            <li><a href="../../adr/0001-docs-as-code.html">ADR 0001: Adopt Docs as Code</a> — the policy decision behind the co-located docs model.</li>
+            <li><a href="../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026: Internal service documentation as source of truth</a> — single-source-of-truth principle.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Created documentation maintenance process page: operating principles, industry references (Stripe / Linear / Vercel / GitHub / Storybook / Atlassian), document type catalog, change lifecycle, screen-spec policy, visual evidence policy, page-history rules, audit cadence, Definition of Done, anti-patterns, and onboarding steps.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+
+</body></html>

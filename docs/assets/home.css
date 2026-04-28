@@ -109,6 +109,50 @@ body.home-intro-lock {
   opacity: 0.5;
 }
 
+/* ── Radar pulse rings (behind wordmark) ─────────────────────────────────── */
+.home-intro__radars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.home-intro__radar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(125, 211, 252, 0.55);
+  box-shadow:
+    0 0 32px rgba(34, 211, 238, 0.42),
+    0 0 0 1px rgba(125, 211, 252, 0.08) inset;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  animation: hud-radar-pulse 3.6s cubic-bezier(0.18, 0.71, 0.31, 1) infinite;
+  will-change: transform, opacity;
+}
+
+.home-intro__radar--1 { animation-delay: 0s; }
+.home-intro__radar--2 { animation-delay: 1.2s; }
+.home-intro__radar--3 { animation-delay: 2.4s; }
+
+@keyframes hud-radar-pulse {
+  0%   { transform: translate(-50%, -50%) scale(0.5);  opacity: 0; border-width: 2px; }
+  8%   { opacity: 0.85; }
+  60%  { opacity: 0.35; }
+  100% { transform: translate(-50%, -50%) scale(7.2);  opacity: 0; border-width: 0.5px; }
+}
+
+.home-intro.is-locked .home-intro__radar {
+  animation-duration: 1.6s;
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 0 40px rgba(255, 255, 255, 0.55),
+    0 0 80px rgba(34, 211, 238, 0.7);
+}
+
 /* ── HUD stage: tactical corner brackets + crosshair ticks ───────────────── */
 .home-intro__stage {
   position: absolute;
@@ -134,7 +178,27 @@ body.home-intro-lock {
   border: 1.5px solid rgba(125, 211, 252, 0.78);
   filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.55));
   animation: hud-bracket-pulse 2.4s ease-in-out infinite;
+  transition: border-color 280ms ease, filter 280ms ease;
 }
+
+.home-intro.is-locked .home-intro__bracket {
+  border-color: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 0 14px rgba(125, 211, 252, 0.95))
+          drop-shadow(0 0 28px rgba(34, 211, 238, 0.55));
+  animation: hud-bracket-snap 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes hud-bracket-snap {
+  0%   { transform: scale(1);    }
+  20%  { transform: scale(1.22); }
+  60%  { transform: scale(0.96); }
+  100% { transform: scale(1);    }
+}
+
+.home-intro__bracket--tl { transform-origin: top left;     }
+.home-intro__bracket--tr { transform-origin: top right;    }
+.home-intro__bracket--bl { transform-origin: bottom left;  }
+.home-intro__bracket--br { transform-origin: bottom right; }
 
 .home-intro__bracket--tl { top: 0;    left: 0;    border-right: none;  border-bottom: none; }
 .home-intro__bracket--tr { top: 0;    right: 0;   border-left: none;   border-bottom: none; }
@@ -324,6 +388,20 @@ body.home-intro-lock {
   background: #22d3ee;
   box-shadow: 0 0 12px rgba(34, 211, 238, 0.7);
   animation: intro-status-pulse 1.4s ease-in-out infinite;
+  transition: background 280ms ease, box-shadow 280ms ease;
+}
+
+.home-intro.is-locked .home-intro__status-dot {
+  background: #ffffff;
+  box-shadow:
+    0 0 16px rgba(255, 255, 255, 0.95),
+    0 0 28px rgba(34, 211, 238, 0.7);
+  animation: none;
+}
+
+.home-intro.is-locked .home-intro__status {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(125, 211, 252, 0.45);
 }
 
 @keyframes intro-status-pulse {

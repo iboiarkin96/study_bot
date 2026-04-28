@@ -36,14 +36,15 @@
 
   function startGlyphRain(intro) {
     const canvas = intro.querySelector("[data-home-intro-rain]");
-    if (!canvas) return () => {};
+    if (!canvas) return { stop: () => {}, burst: () => {} };
     const ctx = canvas.getContext("2d");
-    if (!ctx) return () => {};
+    if (!ctx) return { stop: () => {}, burst: () => {} };
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let width = 0;
     let height = 0;
     let columns = [];
+    let burst = 0; // 0..1, decays each frame; bumped on wordmark char lock
     const FONT_SIZE = 16;
     const COLUMN_W = FONT_SIZE * 1.1;
 
@@ -66,40 +67,53 @@
     let stopped = false;
     function draw() {
       if (stopped) return;
-      ctx.fillStyle = "rgba(4, 8, 18, 0.18)";
+      // Background fade — slightly stronger during burst so heads pop more
+      const fadeAlpha = 0.18 - burst * 0.06;
+      ctx.fillStyle = `rgba(4, 8, 18, ${fadeAlpha.toFixed(3)})`;
       ctx.fillRect(0, 0, width, height);
       ctx.font = `${FONT_SIZE}px ui-monospace, monospace`;
       ctx.textBaseline = "top";
 
+      const headAlpha = Math.min(1, 0.92 + burst * 0.3);
+      const trailAlpha = Math.min(1, 0.55 + burst * 0.45);
+      const headColor = `rgba(${Math.round(220 + burst * 35)}, 245, 255, ${headAlpha.toFixed(3)})`;
+      const trailColor = `rgba(125, 211, 252, ${trailAlpha.toFixed(3)})`;
+
       for (let i = 0; i < columns.length; i++) {
         const col = columns[i];
-        if (!col.active) continue;
+        // During a burst, briefly wake some inactive columns
+        const isActive = col.active || (burst > 0.45 && Math.random() < burst * 0.25);
+        if (!isActive) continue;
         const x = i * COLUMN_W;
         const ch = GLYPH_POOL[Math.floor(Math.random() * GLYPH_POOL.length)];
-        // Head: bright cyan/white
-        ctx.fillStyle = "rgba(220, 245, 255, 0.92)";
+        ctx.fillStyle = headColor;
         ctx.fillText(ch, x, col.y);
-        // Trailing: fade gradient
-        ctx.fillStyle = "rgba(125, 211, 252, 0.55)";
+        ctx.fillStyle = trailColor;
         const ch2 = GLYPH_POOL[Math.floor(Math.random() * GLYPH_POOL.length)];
         ctx.fillText(ch2, x, col.y - FONT_SIZE * 1.2);
-        col.y += col.speed;
+        col.y += col.speed * (1 + burst * 0.8);
         if (col.y > height + 40) {
           col.y = -Math.random() * 200;
           col.speed = 1.5 + Math.random() * 3;
           col.active = Math.random() < 0.65;
         }
       }
+      // Decay burst exponentially (~250ms half-life at 60fps)
+      burst *= 0.92;
+      if (burst < 0.005) burst = 0;
       window.requestAnimationFrame(draw);
     }
 
     resize();
     window.addEventListener("resize", resize);
     window.requestAnimationFrame(draw);
-    return () => { stopped = true; window.removeEventListener("resize", resize); };
+    return {
+      stop: () => { stopped = true; window.removeEventListener("resize", resize); },
+      burst: (amount) => { burst = Math.min(1, burst + (amount || 0.6)); },
+    };
   }
 
-  function startWordmarkScramble(intro, finalText, onLocked) {
+  function startWordmarkScramble(intro, finalText, onLocked, rain) {
     const row = intro.querySelector("[data-home-intro-glyphs]");
     const wordmark = intro.querySelector("[data-home-intro-wordmark]");
     const progressFill = intro.querySelector("[data-home-intro-progress]");
@@ -168,6 +182,7 @@
           span.dataset.locked = "1";
           lockedCount++;
           updateProgress();
+          if (rain && typeof rain.burst === "function") rain.burst(0.55);
           window.setTimeout(() => span.classList.remove("ig-char--locked"), 420);
           return;
         }
@@ -179,6 +194,8 @@
 
       if (allLocked) {
         wordmark.classList.add("is-locked");
+        intro.classList.add("is-locked");
+        if (rain && typeof rain.burst === "function") rain.burst(1);
         onLocked();
       } else {
         window.requestAnimationFrame(frame);
@@ -191,7 +208,7 @@
     const status = intro.querySelector("[data-home-intro-status]");
     const setStatus = (text) => { if (status) status.textContent = text; };
 
-    const stopRain = startGlyphRain(intro);
+    const rain = startGlyphRain(intro);
 
     window.setTimeout(() => setStatus("decoding wordmark"), 600);
     window.setTimeout(() => setStatus("locking glyphs"), 1100);
@@ -199,9 +216,9 @@
     startWordmarkScramble(intro, WORDMARK_TEXT, () => {
       setStatus("ready");
       window.setTimeout(() => {
-        if (typeof onDone === "function") onDone(stopRain);
+        if (typeof onDone === "function") onDone(rain.stop);
       }, 320);
-    });
+    }, rain);
   }
 
   function runShutterExit(intro) {

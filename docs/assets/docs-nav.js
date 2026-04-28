@@ -2886,6 +2886,8 @@ function initBackToTopButton() {
       </svg>
       <span class="docs-back-to-top__trail"></span>
       <span class="docs-back-to-top__flame"></span>
+      <span class="docs-back-to-top__speed-line docs-back-to-top__speed-line--a"></span>
+      <span class="docs-back-to-top__speed-line docs-back-to-top__speed-line--b"></span>
       <span class="docs-back-to-top__smoke docs-back-to-top__smoke--left"></span>
       <span class="docs-back-to-top__smoke docs-back-to-top__smoke--mid"></span>
       <span class="docs-back-to-top__smoke docs-back-to-top__smoke--right"></span>
@@ -2932,7 +2934,7 @@ function initBackToTopButton() {
         btn.classList.remove("docs-back-to-top--launching");
         btn.classList.remove("docs-back-to-top--launch-left", "docs-back-to-top--launch-right");
         updateVisibility();
-      }, 1640);
+      }, 2140);
     }
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   });
