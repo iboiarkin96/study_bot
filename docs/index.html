@@ -16,6 +16,18 @@
 </head>
 
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="home-scroll-progress" aria-hidden="true">
+    <span class="home-scroll-progress__bar" data-home-scroll-progress></span>
+  </div>
+  <div class="home-intro" data-home-intro aria-hidden="true">
+    <div class="home-intro__backdrop"></div>
+    <div class="home-intro__content">
+      <p class="home-intro__eyebrow">Engineering Knowledge Hub</p>
+      <p class="home-intro__title">ETR Study API</p>
+      <p class="home-intro__subtitle">Architecture. Contracts. Delivery playbooks.</p>
+      <button type="button" class="home-intro__skip" data-home-intro-skip>Skip intro</button>
+    </div>
+  </div>
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <p class="internal-layout__sidebar-title">Internal docs</p>
@@ -25,16 +37,25 @@
       <main class="container">
         <div id="docs-top-nav"></div>
         <!-- ── Hero ───────────────────────────────────────────────────────── -->
-        <div class="home-hero">
+        <div class="home-hero" data-home-parallax-host>
+          <div class="home-hero__bg" aria-hidden="true">
+            <span class="home-hero__orb home-hero__orb--one" data-home-parallax-layer="0.28"></span>
+            <span class="home-hero__orb home-hero__orb--two" data-home-parallax-layer="0.18"></span>
+            <span class="home-hero__orb home-hero__orb--three" data-home-parallax-layer="0.12"></span>
+            <span class="home-hero__grid"></span>
+          </div>
           <p class="home-hero__eyebrow">Engineering Documentation</p>
-          <h1 class="home-hero__title">ETR Study API</h1>
+          <h1 class="home-hero__title">
+            <span class="home-hero__title-line home-hero__title-line--one">ETR</span>
+            <span class="home-hero__title-line home-hero__title-line--two">Study API</span>
+          </h1>
           <p class="home-hero__tagline">
             Architecture, standards, ADRs, runbooks, and API reference for the
             <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span>
             Study service — versioned with the code, readable in the browser.
           </p>
           <div class="home-hero__actions">
-            <a class="home-hero__cta home-hero__cta--primary" href="./openapi/index.html">
+            <a class="home-hero__cta home-hero__cta--primary" href="./openapi/index.html" data-home-magnetic>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M12 2a14.5 14.5 0 0 1 0 20M2 12h20"></path>
@@ -62,7 +83,7 @@
         </div>
 
         <!-- ── Architecture & Design ──────────────────────────────────────── -->
-        <section class="home-section" aria-labelledby="sec-arch">
+        <section class="home-section" aria-labelledby="sec-arch" data-home-reveal>
           <div class="home-section__header">
             <p class="home-section__eyebrow" id="sec-arch">Architecture &amp; Design</p>
             <hr class="home-section__rule">
@@ -100,7 +121,7 @@
         </section>
 
         <!-- ── API Reference ──────────────────────────────────────────────── -->
-        <section class="home-section" aria-labelledby="sec-api">
+        <section class="home-section" aria-labelledby="sec-api" data-home-reveal>
           <div class="home-section__header">
             <p class="home-section__eyebrow" id="sec-api">API Reference</p>
             <hr class="home-section__rule">
@@ -130,7 +151,7 @@
         </section>
 
         <!-- ── Repository root docs ───────────────────────────────────────── -->
-        <section class="home-section" aria-labelledby="sec-repo">
+        <section class="home-section" aria-labelledby="sec-repo" data-home-reveal>
           <div class="home-section__header">
             <p class="home-section__eyebrow" id="sec-repo">Repository Root</p>
             <hr class="home-section__rule">
@@ -203,4 +224,5 @@
       </div>
     </div>
 
-  </body></html>
+  <script defer src="./assets/home-landing.js"></script>
+</body></html>
