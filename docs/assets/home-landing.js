@@ -6,6 +6,19 @@
   const INTRO_DURATION_MS = 3000;
   const WORDMARK_TEXT = "ETR // API";
 
+  // Track intro state on the module so modules registered AFTER dispatch can
+  // still see it (e.g. reduced-motion path dispatches synchronously inside init).
+  let introIsDone = false;
+  function markIntroDone() {
+    if (introIsDone) return;
+    introIsDone = true;
+    window.dispatchEvent(new CustomEvent("home:intro-done"));
+  }
+  function whenIntroDone(fn) {
+    if (introIsDone) { fn(); return; }
+    window.addEventListener("home:intro-done", () => fn(), { once: true });
+  }
+
   function markFirstVisitClass() {
     if (canAnimate) {
       document.body.classList.add("home-first-visit");
@@ -214,7 +227,7 @@
 
     // Fire decrypt at shutter start so the H1 is already mid-scramble
     // by the time the iris fully clears.
-    window.dispatchEvent(new CustomEvent("home:intro-done"));
+    markIntroDone();
 
     window.setTimeout(() => {
       overlay.remove();
@@ -227,7 +240,7 @@
     const skip = document.querySelector("[data-home-intro-skip]");
     if (!intro || !canAnimate) {
       if (intro) intro.remove();
-      window.dispatchEvent(new CustomEvent("home:intro-done"));
+      markIntroDone();
       return;
     }
 
@@ -315,7 +328,7 @@
         window.setTimeout(() => decryptElement(el, finalText, { duration: 580, stagger: 32 }), idx * 140);
       });
     }
-    window.addEventListener("home:intro-done", run, { once: true });
+    whenIntroDone(run);
   }
 
   /* ── Variable-font weight on scroll ────────────────────────────────────── */
@@ -396,6 +409,8 @@
     let charIdx = 0;
     let activeSpan = null;
     let started = false;
+    let introDone = false;
+    let visible = false;
 
     function nextSegment() {
       if (segIdx >= segments.length) return;
@@ -427,24 +442,34 @@
       window.setTimeout(typeChar, base + jitter);
     }
 
-    function start() {
+    function maybeStart() {
       if (started) return;
+      if (!introDone || !visible) return;
       started = true;
-      window.setTimeout(nextSegment, 250);
+      // Brief pause after intro closes so the user catches the page settling
+      // before the terminal starts typing.
+      window.setTimeout(nextSegment, 420);
     }
+
+    whenIntroDone(() => {
+      introDone = true;
+      maybeStart();
+    });
 
     if ("IntersectionObserver" in window) {
       const obs = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            start();
+            visible = true;
             obs.disconnect();
+            maybeStart();
           }
         });
       }, { threshold: 0.35 });
       obs.observe(target);
     } else {
-      start();
+      visible = true;
+      maybeStart();
     }
   }
 
