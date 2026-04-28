@@ -3,8 +3,8 @@
 (function () {
   const mediaReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   const canAnimate = !mediaReduced.matches;
-  const INTRO_DURATION_MS = 2400;
-  const INTRO_REVEAL_MS = 880;
+  const INTRO_DURATION_MS = 3000;
+  const WORDMARK_TEXT = "ETR // API";
 
   function markFirstVisitClass() {
     if (canAnimate) {
@@ -12,43 +12,183 @@
     }
   }
 
-  /* ── Mask-reveal intro ─────────────────────────────────────────────────── */
+  /* ── Boot-sequence intro ────────────────────────────────────────────────
+     Three concurrent effects:
+       1. Glyph rain canvas (matrix-style background)
+       2. Boot log streaming top-left
+       3. Wordmark scramble-resolve in center, with lock-flash + scan beam
+  */
 
-  function runMaskReveal(intro, onDone) {
-    const mask = intro.querySelector("[data-home-intro-mask]");
-    const status = intro.querySelector("[data-home-intro-status]");
-    if (!mask) {
-      window.setTimeout(onDone, 60);
+  const GLYPH_POOL = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎ0123456789ABCDEFGHIJKLMNOP{}<>+=*#%@&?!/_-";
+
+  function startGlyphRain(intro) {
+    const canvas = intro.querySelector("[data-home-intro-rain]");
+    if (!canvas) return () => {};
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return () => {};
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let width = 0;
+    let height = 0;
+    let columns = [];
+    const FONT_SIZE = 16;
+    const COLUMN_W = FONT_SIZE * 1.1;
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const colCount = Math.ceil(width / COLUMN_W);
+      columns = new Array(colCount).fill(0).map(() => ({
+        y: -Math.random() * height,
+        speed: 1.5 + Math.random() * 3,
+        active: Math.random() < 0.55,
+      }));
+    }
+
+    let stopped = false;
+    function draw() {
+      if (stopped) return;
+      ctx.fillStyle = "rgba(4, 8, 18, 0.18)";
+      ctx.fillRect(0, 0, width, height);
+      ctx.font = `${FONT_SIZE}px ui-monospace, monospace`;
+      ctx.textBaseline = "top";
+
+      for (let i = 0; i < columns.length; i++) {
+        const col = columns[i];
+        if (!col.active) continue;
+        const x = i * COLUMN_W;
+        const ch = GLYPH_POOL[Math.floor(Math.random() * GLYPH_POOL.length)];
+        // Head: bright cyan/white
+        ctx.fillStyle = "rgba(220, 245, 255, 0.92)";
+        ctx.fillText(ch, x, col.y);
+        // Trailing: fade gradient
+        ctx.fillStyle = "rgba(125, 211, 252, 0.55)";
+        const ch2 = GLYPH_POOL[Math.floor(Math.random() * GLYPH_POOL.length)];
+        ctx.fillText(ch2, x, col.y - FONT_SIZE * 1.2);
+        col.y += col.speed;
+        if (col.y > height + 40) {
+          col.y = -Math.random() * 200;
+          col.speed = 1.5 + Math.random() * 3;
+          col.active = Math.random() < 0.65;
+        }
+      }
+      window.requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+    window.requestAnimationFrame(draw);
+    return () => { stopped = true; window.removeEventListener("resize", resize); };
+  }
+
+  function startWordmarkScramble(intro, finalText, onLocked) {
+    const row = intro.querySelector("[data-home-intro-glyphs]");
+    const wordmark = intro.querySelector("[data-home-intro-wordmark]");
+    const progressFill = intro.querySelector("[data-home-intro-progress]");
+    const progressPct = intro.querySelector("[data-home-intro-progress-pct]");
+    if (!row || !wordmark) {
+      onLocked();
       return;
     }
-    const start = performance.now();
-    const total = INTRO_REVEAL_MS;
-    const phrases = [
-      "booting study runtime",
-      "loading openapi · 3.1",
-      "ready",
-    ];
-    let phraseIdx = 0;
-
-    function tick(now) {
-      const t = Math.min(1, (now - start) / total);
-      const eased = 1 - Math.pow(1 - t, 3);
-      mask.setAttribute("width", String(360 * eased));
-      const expectedPhrase = Math.min(
-        phrases.length - 1,
-        Math.floor(t * phrases.length),
-      );
-      if (status && expectedPhrase !== phraseIdx) {
-        phraseIdx = expectedPhrase;
-        status.textContent = phrases[phraseIdx];
-      }
-      if (t < 1) {
-        window.requestAnimationFrame(tick);
+    row.textContent = "";
+    const chars = Array.from(finalText);
+    const spans = chars.map((ch) => {
+      const span = document.createElement("span");
+      if (ch === " ") {
+        span.className = "ig-char ig-space";
+        span.textContent = "\u00a0";
+        span.dataset.fixed = "1";
+      } else if (ch === "/") {
+        span.className = "ig-char ig-slash";
+        span.textContent = "/";
+        span.dataset.fixed = "1";
       } else {
-        onDone();
+        span.className = "ig-char ig-char--scrambling";
+        span.textContent = GLYPH_POOL[Math.floor(Math.random() * GLYPH_POOL.length)];
+      }
+      row.appendChild(span);
+      return span;
+    });
+
+    const SCRAMBLE_DURATION = 720;
+    const STAGGER = 90;
+    const INITIAL_DELAY = 600;
+    const start = performance.now();
+    const scrambleSpans = spans.filter((s) => s.dataset.fixed !== "1");
+    const totalScrambleSpans = scrambleSpans.length;
+    let lockedCount = 0;
+    let lastPct = -1;
+
+    function updateProgress() {
+      const pct = Math.round((lockedCount / Math.max(1, totalScrambleSpans)) * 100);
+      if (pct === lastPct) return;
+      lastPct = pct;
+      if (progressFill) progressFill.style.width = pct + "%";
+      if (progressPct) progressPct.textContent = String(pct);
+    }
+    updateProgress();
+
+    let lastTick = 0;
+    function frame(now) {
+      const t = now - start - INITIAL_DELAY;
+      let allLocked = true;
+      // Roll random glyphs every ~50ms
+      const shouldRoll = now - lastTick > 50;
+      if (shouldRoll) lastTick = now;
+
+      spans.forEach((span, i) => {
+        if (span.dataset.fixed === "1") return;
+        if (span.dataset.locked === "1") return;
+        const localStart = i * STAGGER;
+        const localEnd = localStart + SCRAMBLE_DURATION;
+        // Always keep the row width stable: every unlocked char keeps rolling
+        // random glyphs from t=0, locks at its own (start+duration) point.
+        if (t >= localEnd) {
+          span.textContent = chars[i];
+          span.classList.remove("ig-char--scrambling");
+          span.classList.add("ig-char--locked");
+          span.dataset.locked = "1";
+          lockedCount++;
+          updateProgress();
+          window.setTimeout(() => span.classList.remove("ig-char--locked"), 420);
+          return;
+        }
+        if (shouldRoll) {
+          span.textContent = GLYPH_POOL[Math.floor(Math.random() * GLYPH_POOL.length)];
+        }
+        allLocked = false;
+      });
+
+      if (allLocked) {
+        wordmark.classList.add("is-locked");
+        onLocked();
+      } else {
+        window.requestAnimationFrame(frame);
       }
     }
-    window.requestAnimationFrame(tick);
+    window.requestAnimationFrame(frame);
+  }
+
+  function runBootSequence(intro, onDone) {
+    const status = intro.querySelector("[data-home-intro-status]");
+    const setStatus = (text) => { if (status) status.textContent = text; };
+
+    const stopRain = startGlyphRain(intro);
+
+    window.setTimeout(() => setStatus("decoding wordmark"), 600);
+    window.setTimeout(() => setStatus("locking glyphs"), 1100);
+
+    startWordmarkScramble(intro, WORDMARK_TEXT, () => {
+      setStatus("ready");
+      window.setTimeout(() => {
+        if (typeof onDone === "function") onDone(stopRain);
+      }, 320);
+    });
   }
 
   function runShutterExit(intro) {
@@ -96,15 +236,23 @@
     intro.setAttribute("aria-hidden", "false");
 
     let closed = false;
+    let stopRain = null;
     function closeIntro() {
       if (closed) return;
       closed = true;
+      if (typeof stopRain === "function") stopRain();
       runShutterExit(intro);
     }
 
-    runMaskReveal(intro, () => {
-      window.setTimeout(closeIntro, INTRO_DURATION_MS - INTRO_REVEAL_MS);
+    const closeAt = performance.now() + INTRO_DURATION_MS;
+    runBootSequence(intro, (rainStopper) => {
+      stopRain = rainStopper;
+      const remaining = Math.max(0, closeAt - performance.now());
+      window.setTimeout(closeIntro, remaining);
     });
+
+    // Hard upper bound — close even if scramble doesn't lock for some reason
+    window.setTimeout(closeIntro, INTRO_DURATION_MS + 600);
 
     if (skip) skip.addEventListener("click", closeIntro);
     document.addEventListener("keydown", (event) => {

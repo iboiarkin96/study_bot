@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+
+<head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -31,14 +33,17 @@
           <span class="badge badge--method-put">PUT</span>
           <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
         </div>
-        <p class="lead">
-          Full replacement of mutable user fields for an existing row. Normative narrative per
-          <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; OpenAPI
-          <code>operationId</code>: <code>updateUserBySystemUserId</code>.
-        </p>
-        <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>updateUserBySystemUserId</code></p>
 
-        <section class="card">
+        <section class="docs-page-hero" aria-labelledby="request-path-and-behavior">
+          <h2 id="request-path-and-behavior">Overview</h2>
+          <p>
+            Full replacement of mutable user fields for an existing row. Normative narrative per
+            <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; OpenAPI
+            <code>operationId</code>: <code>updateUserBySystemUserId</code>.
+          </p>
+        </section>
+
+        <section class="docs-page-hero">
           <h2>Request path and behavior</h2>
           <p>
             Protected route; middleware per ADR 0005. Handler replaces the mutable projection (full body semantics for
@@ -126,17 +131,6 @@
           </p>
         </section>
 
-        <section class="card">
-          <h2>Single-file deep spec</h2>
-          <p>
-            <a href="../index.html#user-op-updateUserBySystemUserId">Unified internal spec — this operation</a>.
-          </p>
-        </section>
-
-        <p class="small">
-          <a href="../index.html">← User resource hub</a>
-        </p>
-
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -168,4 +162,6 @@
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>

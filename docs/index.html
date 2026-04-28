@@ -21,25 +21,28 @@
   </div>
   <div class="home-intro" data-home-intro aria-hidden="true">
     <div class="home-intro__backdrop"></div>
+    <canvas class="home-intro__rain" data-home-intro-rain aria-hidden="true"></canvas>
     <div class="home-intro__scanlines" aria-hidden="true"></div>
+    <div class="home-intro__vignette" aria-hidden="true"></div>
     <div class="home-intro__content">
-      <svg class="home-intro__mark" viewBox="0 0 360 96" aria-hidden="true" focusable="false">
-        <defs>
-          <linearGradient id="home-intro-mark-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#ffffff"></stop>
-            <stop offset="55%" stop-color="#bcd4ff"></stop>
-            <stop offset="100%" stop-color="#22d3ee"></stop>
-          </linearGradient>
-          <clipPath id="home-intro-mark-clip">
-            <rect x="0" y="0" width="0" height="96" data-home-intro-mask></rect>
-          </clipPath>
-        </defs>
-        <g clip-path="url(#home-intro-mark-clip)" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-weight="700">
-          <text x="0" y="68" fill="url(#home-intro-mark-grad)" font-size="72" letter-spacing="-2">ETR</text>
-          <text x="148" y="68" fill="rgba(255,255,255,0.55)" font-size="72" letter-spacing="-2">//</text>
-          <text x="216" y="68" fill="url(#home-intro-mark-grad)" font-size="72" letter-spacing="-2">API</text>
-        </g>
-      </svg>
+      <div class="home-intro__stage" aria-hidden="true">
+        <span class="home-intro__bracket home-intro__bracket--tl"></span>
+        <span class="home-intro__bracket home-intro__bracket--tr"></span>
+        <span class="home-intro__bracket home-intro__bracket--bl"></span>
+        <span class="home-intro__bracket home-intro__bracket--br"></span>
+        <span class="home-intro__crosshair home-intro__crosshair--top" aria-hidden="true"></span>
+        <span class="home-intro__crosshair home-intro__crosshair--bot" aria-hidden="true"></span>
+      </div>
+      <div class="home-intro__wordmark" data-home-intro-wordmark aria-label="ETR // API">
+        <span class="home-intro__wordmark-row" data-home-intro-glyphs></span>
+        <span class="home-intro__wordmark-beam" aria-hidden="true"></span>
+      </div>
+      <div class="home-intro__bar" aria-hidden="true">
+        <span class="home-intro__bar-fill" data-home-intro-progress></span>
+        <span class="home-intro__bar-label">
+          <span data-home-intro-progress-pct>0</span>%
+        </span>
+      </div>
       <p class="home-intro__status">
         <span class="home-intro__status-dot" aria-hidden="true"></span>
         <span data-home-intro-status>booting study runtime</span>

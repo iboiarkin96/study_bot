@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,11 +33,14 @@
           <span class="badge badge--method-patch">PATCH</span>
           <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
         </div>
-        <p class="lead">
-          Partial update (e.g. JSON Merge Patch): only present fields change. Per ADR 0026; OpenAPI
-          <code>operationId</code>: <code>patchUserBySystemUserId</code>.
-        </p>
-        <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>patchUserBySystemUserId</code></p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Partial update (e.g. JSON Merge Patch): only present fields change. Per ADR 0026; OpenAPI
+            <code>operationId</code>: <code>patchUserBySystemUserId</code>.
+          </p>
+        </section>
 
         <section class="card">
           <h2>Request path and behavior</h2>
@@ -71,8 +76,10 @@
               <tr>
                 <td><code>400</code></td>
                 <td><code>USER_102</code> / <code>USER_PATCH_BODY_EMPTY</code></td>
-                <td>No fields left after unset stripping — <code>patch_user_empty_body</code> at <strong>warning</strong>
-                  in <code>UserService.patch</code>.</td>
+                <td>No fields left after unset stripping — <code>patch_user_empty_body</code> at
+                  <strong>warning</strong>
+                  in <code>UserService.patch</code>.
+                </td>
               </tr>
               <tr>
                 <td><code>404</code></td>
@@ -125,17 +132,6 @@
           </p>
         </section>
 
-        <section class="card">
-          <h2>Single-file deep spec</h2>
-          <p>
-            <a href="../index.html#user-op-patchUserBySystemUserId">Unified internal spec — this operation</a>.
-          </p>
-        </section>
-
-        <p class="small">
-          <a href="../index.html">← User resource hub</a>
-        </p>
-
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -167,4 +163,6 @@
     </div>
   </div>
 
-</body></html>
+</body>
+
+</html>
