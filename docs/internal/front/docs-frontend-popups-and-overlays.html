@@ -21,7 +21,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend: popup and overlay system</h1>
+        <h1>Docs frontend: popup and overlay system <span class="docs-page-type docs-page-type--component">Component</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
         <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
@@ -146,6 +146,33 @@
           </ul>
         </section>
 
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Reuse the unified surface tokens (<code>--docs-premium-surface-*</code>) when building a new floating surface.</td>
+                <td>Re-invent the surface visuals for "just this one toast" — drift between popups is the most-flagged audit issue.</td>
+              </tr>
+              <tr>
+                <td>Add <code>role="dialog"</code> + <code>aria-modal="true"</code> + a focus trap for any modal overlay.</td>
+                <td>Ship a modal that does not return focus to the launcher on close — keyboard and screen-reader users get stranded.</td>
+              </tr>
+              <tr>
+                <td>Auto-dismiss informational toasts after 3–5 s and animate respectfully under <code>prefers-reduced-motion: reduce</code>.</td>
+                <td>Auto-dismiss error toasts — users miss them and lose data. Errors stay until acknowledged.</td>
+              </tr>
+              <tr>
+                <td>Hide desktop-only promos at tablet/phone widths via the documented breakpoint policy.</td>
+                <td>Stack three popups on a 360 px screen — the screen becomes unusable.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -158,6 +185,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (surface tokens, focus traps, error-toast policy).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-25">2026-04-25</time></td>
                   <td>Continue reading prompt restyled to Sticky TOC visual language, with 3s lifetime and centralized runtime in <code>docs-popups.js</code>.</td>

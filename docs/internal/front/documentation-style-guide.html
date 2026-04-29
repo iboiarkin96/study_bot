@@ -22,7 +22,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1 class="internal-h1--accent-tail">Documentation style guide and audit standard</h1>
+        <h1 class="internal-h1--accent-tail">Documentation style guide and audit standard <span class="docs-page-type docs-page-type--foundation">Foundation</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
         <section id="overview" class="card">
@@ -193,6 +193,78 @@
             </table>
           </section>
 
+          <section id="page-type-taxonomy" class="card">
+            <h2>Frontend documentation page-type taxonomy</h2>
+            <p>
+              Pages under <code>docs/internal/front/</code> belong to one of six page types. Place a single
+              <code>&lt;span class="docs-page-type docs-page-type--&lt;variant&gt;"&gt;Label&lt;/span&gt;</code>
+              immediately after the page <code>&lt;h1&gt;</code> so the page type is visible to readers and to
+              automated link-graph tooling. Each type has a different size budget and a different set of mandatory
+              sections — choose the type before you start writing, not after.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Badge</th>
+                  <th>Purpose</th>
+                  <th>Size budget</th>
+                  <th>Required sections</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Foundation</td>
+                  <td><span class="docs-page-type docs-page-type--foundation">Foundation</span></td>
+                  <td>Cross-cutting principles, vocabulary, process — applies to every other page.</td>
+                  <td>200–500 lines</td>
+                  <td>Overview, the foundational content itself, governance, page history</td>
+                </tr>
+                <tr>
+                  <td>Architecture</td>
+                  <td><span class="docs-page-type docs-page-type--architecture">Architecture</span></td>
+                  <td>System map: blocks, ownership, feature ledger, runtime contracts.</td>
+                  <td>300–600 lines</td>
+                  <td>Block model, ownership map, feature inventory, page history</td>
+                </tr>
+                <tr>
+                  <td>Screen</td>
+                  <td><span class="docs-page-type docs-page-type--screen">Screen</span></td>
+                  <td>Full-page recipe — anatomy, gallery, behavior, data contract for one rendered URL.</td>
+                  <td>250–900 lines</td>
+                  <td>At a glance, gallery, anatomy, layout map, data contract, behavior, accessibility, do/don't, where to change what, page history</td>
+                </tr>
+                <tr>
+                  <td>Component</td>
+                  <td><span class="docs-page-type docs-page-type--component">Component</span></td>
+                  <td>Reusable UI surface — anatomy, states, props, accessibility, do/don't.</td>
+                  <td>150–350 lines</td>
+                  <td>Inventory or anatomy, states, public surface, accessibility, do/don't, page history</td>
+                </tr>
+                <tr>
+                  <td>Reference</td>
+                  <td><span class="docs-page-type docs-page-type--reference">Reference</span></td>
+                  <td>Lookup tables — JS modules, CSS architecture, tokens, hotkeys, telemetry events.</td>
+                  <td>100–400 lines</td>
+                  <td>One-line introduction, normalized table, page history</td>
+                </tr>
+                <tr>
+                  <td>Contract</td>
+                  <td><span class="docs-page-type docs-page-type--contract">Contract</span></td>
+                  <td>Stable normative requirements only — implementation lives elsewhere.</td>
+                  <td>80–200 lines</td>
+                  <td>Overview (with links to implementation pages), the requirements as bullet lists, acceptance checklist, page history</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="small">
+              <strong>Why this matters:</strong> a 140-line page reads as "incomplete" only if its type is unknown.
+              A <em>Contract</em> page at 140 lines is correctly sized; a <em>Screen</em> page at 140 lines is missing
+              required sections. The badge resolves that ambiguity at first glance and lets reviewers apply the right
+              acceptance bar.
+            </p>
+          </section>
+
           <section id="templates-by-type" class="card">
             <h2>Minimal templates by type</h2>
             <h3>ADR template baseline</h3>
@@ -225,6 +297,62 @@
               <li>Post-recovery validation</li>
               <li>Escalation and owner handoff</li>
             </ol>
+
+            <h3>Screen spec template baseline (frontend pages)</h3>
+            <p class="small">
+              Authoritative copy of this skeleton lives at
+              <a href="./screens/docs-screen-template.html"><code>screens/docs-screen-template.html</code></a>.
+              Reviewers reject screen specs that omit any of the <strong>required</strong> sections.
+            </p>
+            <ol>
+              <li>Title block with <code>&lt;span class="docs-page-type docs-page-type--screen"&gt;</code> badge</li>
+              <li>At a glance (status, owner, audience, primary URL, tracked feature IDs, last verified)</li>
+              <li>Visual gallery (desktop light + dark, tablet, mobile, every transient state) — <strong>required</strong></li>
+              <li>Anatomy diagram (numbered SVG) and legend — <strong>required</strong></li>
+              <li>Layout map (reading-order region walk-through) — <strong>required</strong></li>
+              <li>Behavior matrix (events, states, side effects)</li>
+              <li>Timing budget (per-phase milliseconds)</li>
+              <li>Data contract (every <code>data-*</code> attribute)</li>
+              <li>Responsive behavior (per breakpoint)</li>
+              <li>Browser &amp; device support matrix — <strong>required</strong></li>
+              <li>Accessibility and motion (global policies + per-component table) — <strong>required</strong></li>
+              <li>Do's and Don'ts table — <strong>required</strong></li>
+              <li>Where to change what (file-by-file map + tuning knobs)</li>
+              <li>Acceptance checklist</li>
+              <li>Known edges and design decisions</li>
+              <li>Related internal docs</li>
+              <li>Page history</li>
+            </ol>
+
+            <h3>Component spec template baseline (frontend reusable surfaces)</h3>
+            <ol>
+              <li>Title with <code>&lt;span class="docs-page-type docs-page-type--component"&gt;</code> badge</li>
+              <li>Component inventory or single-component anatomy</li>
+              <li>States table (default, hover, focus, active, disabled, loading, error)</li>
+              <li>Public surface (CSS hooks, <code>data-*</code> contract, JS events) — <strong>required</strong></li>
+              <li>Accessibility notes (roles, keyboard, screen-reader, reduced-motion) — <strong>required</strong></li>
+              <li>Do's and Don'ts table — <strong>required</strong></li>
+              <li>Implementation map (which files, which tokens)</li>
+              <li>Page history</li>
+            </ol>
+
+            <h3>Reference page template baseline</h3>
+            <ol>
+              <li>Title with <code>&lt;span class="docs-page-type docs-page-type--reference"&gt;</code> badge</li>
+              <li>One-line introduction stating the lookup question this page answers</li>
+              <li>The normalized table (no per-row prose; everything in columns)</li>
+              <li>Notes section for footnotes and conventions</li>
+              <li>Page history</li>
+            </ol>
+
+            <h3>Contract page template baseline</h3>
+            <ol>
+              <li>Title with <code>&lt;span class="docs-page-type docs-page-type--contract"&gt;</code> badge</li>
+              <li>Overview with explicit links to the implementation page(s)</li>
+              <li>Requirements as bullet lists, grouped by area</li>
+              <li>Acceptance checklist (concrete observable behaviors)</li>
+              <li>Page history</li>
+            </ol>
           </section>
 
           <section id="naming-conventions" class="card">
@@ -256,6 +384,11 @@
                   </tr>
                 </thead>
                 <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added page-type taxonomy section and 5 baseline templates (screen / component / reference / contract / etc.); added Foundation badge to H1.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                   <tr>
                     <td><time datetime="2026-04-27">2026-04-27</time></td>
                     <td>Aligned table typography with prose scale and fixed sticky "On this page" clickability on internal docs layout.</td>

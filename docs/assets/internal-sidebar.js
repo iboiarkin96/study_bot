@@ -513,10 +513,14 @@
       children: [
         { label: "Hub — ADR index", path: "adr/README.html" },
         {
+          label: "Shared (cross-cutting)", children: [
+            { label: "ADR template", path: "adr/0000-template.html" },
+          ]
+        },
+        {
           label: "Process: how we record decisions",
           children: [
             { label: "ADR 0018 — lifecycle, ratification, badges", path: "adr/0018-adr-lifecycle-ratification-and-badges.html" },
-            { label: "ADR Template", path: "adr/0000-template.html" },
           ],
         },
         {
@@ -587,7 +591,11 @@
       label: "RFCs",
       children: [
         { label: "Hub — RFC index", path: "rfc/README.html" },
-        { label: "RFC template", path: "rfc/0000-template.html" },
+        {
+          label: "Shared (cross-cutting)", children: [
+            { label: "RFC template", path: "rfc/0000-template.html" },
+          ]
+        },
         {
           label: "Docs search program",
           children: [
@@ -628,7 +636,11 @@
       label: "Runbooks",
       children: [
         { label: "Hub — runbooks index", path: "runbooks/README.html" },
-        { label: "Runbook template", path: "runbooks/0000-template.html" },
+        {
+          label: "Shared (cross-cutting)", children: [
+            { label: "Runbook template", path: "runbooks/0000-template.html" },
+          ]
+        },
         {
           label: "CI and local quality failures",
           children: [
@@ -667,6 +679,11 @@
       label: "Audit",
       children: [
         { label: "Hub — assessments index", path: "audit/README.html" },
+        {
+          label: "Shared (cross-cutting)", children: [
+            { label: "Assessment template", path: "audit/AUDIT_TEMPLATE.html" },
+          ]
+        },
         { label: "Assessment template", path: "audit/AUDIT_TEMPLATE.html" },
         {
           label: "DX",
@@ -727,7 +744,7 @@
         {
           label: "How-to and onboarding",
           children: [
-            { label: "How to add POST contract", path: "developer/0004-how-to-add-post-contract.html" },
+            { label: "How to add POST contract", path: "howto/0004-how-to-add-post-contract.html" },
             { label: "Onboarding from zero to endpoint and docs", path: "howto/0001-onboarding-from-zero-to-endpoint-docs.html" },
             { label: "Make commands inventory", path: "howto/0003-make-commands-inventory.html" },
           ],
@@ -759,7 +776,23 @@
       label: "API endpoints documentation",
       children: [
         { label: "Hub — internal HTTP API", path: "internal/api/README.html" },
-        { label: "Error matrix", path: "internal/api/errors.html" },
+
+        {
+          label: "Shared (cross-cutting)",
+          children: [
+            { label: "Specification template", path: "internal/api/_shared/spec-template.html" },
+            { label: "Idempotency", path: "internal/api/_shared/idempotency.html" },
+            { label: "Error envelope", path: "internal/api/_shared/error-envelope.html" },
+            { label: "Error catalog", path: "internal/api/_shared/error-catalog.html" },
+            { label: "Authentication & authorization", path: "internal/api/_shared/auth.html" },
+            { label: "Pagination", path: "internal/api/_shared/pagination.html" },
+            { label: "Versioning", path: "internal/api/_shared/versioning.html" },
+            { label: "Observability conventions", path: "internal/api/_shared/observability-conventions.html" },
+            { label: "Field conventions", path: "internal/api/_shared/field-conventions.html" },
+            { label: "OpenAPI authoring guide", path: "internal/api/_shared/openapi-authoring-guide.html" },
+            { label: "Error matrix (auto-generated)", path: "internal/api/errors.html" },
+          ],
+        },
         {
           label: "User",
           expand: "after-api-hub",
@@ -805,42 +838,49 @@
         {
           label: "Foundations",
           children: [
-            { label: "Style guide",                    path: "internal/front/documentation-style-guide.html" },
-            { label: "Maintenance process",            path: "internal/front/documentation-process.html" },
-            { label: "Frontend glossary",              path: "internal/front/docs-frontend-glossary.html" },
-            { label: "Quick entry by role",            path: "internal/front/docs-frontend-fast-entry-by-role.html" },
+            { label: "Style guide", path: "internal/front/documentation-style-guide.html" },
+            { label: "Maintenance process", path: "internal/front/documentation-process.html" },
+            { label: "Frontend glossary", path: "internal/front/docs-frontend-glossary.html" },
+            { label: "Quick entry by role", path: "internal/front/docs-frontend-fast-entry-by-role.html" },
           ],
         },
         {
           label: "Architecture",
           children: [
-            { label: "Architecture map",               path: "internal/front/docs-frontend-architecture-map.html" },
+            { label: "Architecture map", path: "internal/front/docs-frontend-architecture-map.html" },
           ],
         },
         {
           label: "Screens",
           children: [
-            { label: "Screen spec template",           path: "internal/front/screens/docs-screen-template.html" },
-            { label: "Engineering hub home",           path: "internal/front/screens/docs-screen-home-landing.html" },
-            { label: "Backlog cockpit",                path: "internal/front/screens/docs-screen-backlog-cockpit.html" },
+            { label: "Screen spec template", path: "internal/front/screens/docs-screen-template.html" },
+            { label: "Engineering hub home", path: "internal/front/screens/docs-screen-home-landing.html" },
+            { label: "Backlog cockpit", path: "internal/front/screens/docs-screen-backlog-cockpit.html" },
           ],
         },
         {
           label: "Components",
           children: [
-            { label: "UI kit",                         path: "internal/front/docs-frontend-ui-kit.html" },
-            { label: "Tooltips and inline hints",      path: "internal/front/docs-frontend-tooltips.html" },
-            { label: "Popup and overlay system",       path: "internal/front/docs-frontend-popups-and-overlays.html" },
-            { label: "Diagrams and lightbox",          path: "internal/front/docs-frontend-diagrams-and-lightbox.html" },
-            { label: "Hotkeys",                        path: "internal/front/docs-frontend-hotkeys.html" },
+            { label: "UI kit", path: "internal/front/docs-frontend-ui-kit.html" },
+            { label: "Tooltips and inline hints", path: "internal/front/docs-frontend-tooltips.html" },
+            { label: "Popup and overlay system", path: "internal/front/docs-frontend-popups-and-overlays.html" },
+            { label: "Diagrams and lightbox", path: "internal/front/docs-frontend-diagrams-and-lightbox.html" },
+            { label: "Hotkeys", path: "internal/front/docs-frontend-hotkeys.html" },
+          ],
+        },
+        {
+          label: "Reference",
+          children: [
+            { label: "JavaScript modules", path: "internal/front/docs-frontend-js-modules-reference.html" },
+            { label: "CSS architecture", path: "internal/front/docs-frontend-css-architecture.html" },
           ],
         },
         {
           label: "Cross-cutting systems",
           children: [
-            { label: "Navigation and theme contract",  path: "internal/front/docs-frontend-menu-and-theme-controls.html" },
-            { label: "Navigation, search, discovery",  path: "internal/front/docs-frontend-navigation-search-and-discovery.html" },
-            { label: "UI, motion, adaptivity",         path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html" },
+            { label: "Navigation and theme contract", path: "internal/front/docs-frontend-menu-and-theme-controls.html" },
+            { label: "Navigation, search, discovery", path: "internal/front/docs-frontend-navigation-search-and-discovery.html" },
+            { label: "UI, motion, adaptivity", path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html" },
             { label: "Feedback and editorial workflow", path: "internal/front/docs-frontend-feedback-and-editorial-workflow.html" },
           ],
         },

@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend CSS architecture — reference</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend CSS architecture <span class="docs-page-type docs-page-type--reference">Reference</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            Lookup table for every stylesheet under <code>docs/assets/*.css</code>: file responsibility, what loads it,
+            its <code>@import</code> children, the main class families it ships, and the dark-mode override pattern it
+            uses. Use this page when you need to answer <em>"which file owns this style rule?"</em> or <em>"is it safe
+            to add a new token to <code>docs.css</code>, or does it belong in a sub-layer?"</em>.
+          </p>
+          <p class="small">
+            Sister pages: <a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a>,
+            <a href="./docs-frontend-architecture-map.html">architecture map</a>,
+            <a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> (token rationale).
+          </p>
+        </section>
+
+        <section id="import-chain" class="card">
+          <h2><code>@import</code> chain</h2>
+          <p>
+            Every page loads two CSS files via direct <code>&lt;link&gt;</code> tags: <code>docs.css</code> and
+            <code>docs-theme.css</code>. Everything else is pulled in transitively through <code>@import</code>
+            declarations at the top of <code>docs.css</code>. The landing page additionally loads <code>home.css</code>.
+          </p>
+          <pre><code>docs.css                       (entry point, loaded by every page)
+            ├── @import → Google Fonts (Inter)
+            ├── @import → docs-site-nav.css
+            ├── @import → internal-layout.css
+            ├── @import → docs-premium.css
+            └── @import → docs-syntax-theme.css
+
+            docs-theme.css                 (loaded separately via &lt;link&gt;, dark palette)
+            home.css                       (only on docs/index.html)</code></pre>
+            <p class="small">
+              <strong>Cascade order:</strong> Google Fonts → site-nav → internal-layout → premium → syntax-theme →
+              (rest of <code>docs.css</code>) → <code>docs-theme.css</code>. Later rules override earlier ones, so the
+              theme overrides everything; the syntax-theme overrides premium; premium overrides internal-layout; and
+              internal-layout overrides site-nav. <em>Reordering imports breaks specificity expectations</em> — leave
+              the order alone unless you are intentionally renegotiating the cascade.
+            </p>
+          </section>
+
+          <section id="summary" class="card">
+            <h2>At-a-glance summary</h2>
+            <div class="docs-table-scroll" role="region" aria-label="CSS files summary">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">File</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Role (one line)</th>
+                    <th scope="col">Loaded how</th>
+                    <th scope="col">Dark-mode pattern</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>docs.css</code></td>
+                    <td>141 KB</td>
+                    <td>Main stylesheet — tokens, typography, all global components</td>
+                    <td>direct, every page</td>
+                    <td>Inline <code>@media (prefers-color-scheme: dark)</code> + <code>:root[data-theme="dark"]</code> overrides</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs-theme.css</code></td>
+                    <td>19 KB</td>
+                    <td>Dark-palette variable overrides (paired with <code>docs.css</code>)</td>
+                    <td>direct, every page</td>
+                    <td>Whole file is the dark override</td>
+                  </tr>
+                  <tr>
+                    <td><code>internal-layout.css</code></td>
+                    <td>26 KB</td>
+                    <td>Shell, sidebar, drawer, sticky chrome for <code>docs/internal/**</code></td>
+                    <td><code>@import</code> via <code>docs.css</code></td>
+                    <td>Inherits from <code>docs-theme.css</code> via cascading custom properties — no own dark block</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs-premium.css</code></td>
+                    <td>32 KB</td>
+                    <td>Premium component layer — callouts, next-steps, kbd, banners, copy/anchor/breadcrumbs, page-type badges</td>
+                    <td><code>@import</code> via <code>docs.css</code></td>
+                    <td>Delegates to badge color tokens; minor own overrides</td>
+                  </tr>
+                  <tr>
+                    <td><code>docs-site-nav.css</code></td>
+                    <td>8 KB</td>
+                    <td>Top horizontal navigation bar — wordmark, links, theme toggle, search widget</td>
+                    <td><code>@import</code> via <code>docs.css</code></td>
+                    <td>Inherits from <code>docs-theme.css</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>docs-syntax-theme.css</code></td>
+                    <td>4.5 KB</td>
+                    <td>Syntax-highlighter token palette (<code>.st-*</code> classes, language badge)</td>
+                    <td><code>@import</code> via <code>docs.css</code></td>
+                    <td>Both <code>@media</code> and <code>html[data-theme="dark"]</code> (duplicated for safety)</td>
+                  </tr>
+                  <tr>
+                    <td><code>home.css</code></td>
+                    <td>47 KB</td>
+                    <td>Landing-page overrides — chrome suppression, intro animation, scroll progress, card grid</td>
+                    <td>direct, <code>docs/index.html</code> only</td>
+                    <td>Inherits from <code>docs-theme.css</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="docs-css" class="card">
+            <h2><code>docs.css</code> — entry point</h2>
+            <dl class="docs-module-meta">
+              <dt>Loaded by</dt><dd>Every <code>docs/**/*.html</code> page via direct <code>&lt;link&gt;</code> tag.</dd>
+              <dt>Imports</dt>
+              <dd>
+                <code>docs-site-nav.css</code>, <code>internal-layout.css</code>, <code>docs-premium.css</code>, <code>docs-syntax-theme.css</code>, plus Google Fonts (Inter variable axis).
+              </dd>
+              <dt>Top-level class families</dt>
+              <dd>
+                <code>.adr-*</code>, <code>.api-endpoint-*</code>, <code>.badge-*</code>, <code>.btn-*</code>,
+                <code>.card-*</code>, <code>.docs-*</code>, <code>.audit-*</code>, <code>.status-*</code>.
+              </dd>
+              <dt>Custom properties at <code>:root</code></dt>
+              <dd>
+                <strong>Surfaces:</strong> <code>--bg</code>, <code>--card</code>, <code>--text</code>, <code>--muted</code>, <code>--accent</code>, <code>--line</code>, <code>--pre-bg</code>, <code>--table-bg</code>.<br>
+                <strong>Spacing:</strong> <code>--space-1..--space-10</code> (4–40px).<br>
+                <strong>Radius:</strong> <code>--radius-sm</code>, <code>--radius-md</code>, <code>--radius-lg</code>, <code>--radius-full</code>.<br>
+                <strong>Type:</strong> <code>--font-size-2xs</code>, <code>--font-size-label</code>.<br>
+                <strong>Motion:</strong> <code>--motion-fast</code>, <code>--motion-base</code>, <code>--motion-ease-premium</code>.<br>
+                <strong>Domain palettes:</strong> <code>--badge-*</code>, <code>--nav-*</code>, <code>--internal-*</code>, <code>--adr-*</code>, <code>--audit-*</code>, <code>--status-*</code>.
+              </dd>
+              <dt>Total selectors</dt><dd>~2 100</dd>
+              <dt>Dark mode</dt><dd>Inline <code>@media (prefers-color-scheme: dark)</code> blocks + explicit <code>:root[data-theme="dark"] .selector</code> overrides for ~40 components.</dd>
+            </dl>
+          </section>
+
+          <section id="docs-theme-css" class="card">
+            <h2><code>docs-theme.css</code> — dark-palette overrides</h2>
+            <dl class="docs-module-meta">
+              <dt>Loaded by</dt><dd>Every <code>docs/**/*.html</code> page via direct <code>&lt;link&gt;</code> tag (separately from <code>docs.css</code> so it sits at the very end of the cascade).</dd>
+              <dt>Pattern</dt>
+              <dd>One large <code>@media (prefers-color-scheme: dark)</code> block at <code>:root</code> redefines every visible variable from <code>docs.css</code>. Legacy <code>:root[data-theme="dark"]</code> rules at the top are kept for the explicit-toggle path used by the theme switcher.</dd>
+              <dt>What it overrides</dt><dd>~100 custom properties: surfaces, badges, navigation, internal layout, ADR/audit/status palettes.</dd>
+              <dt>Sample dark token values</dt>
+              <dd><code>--bg: #0d1117</code>, <code>--card: #161b22</code>, <code>--accent: #58a6ff</code>.</dd>
+            </dl>
+          </section>
+
+          <section id="docs-premium-css" class="card">
+            <h2><code>docs-premium.css</code> — premium component layer</h2>
+            <dl class="docs-module-meta">
+              <dt>Loaded by</dt><dd><code>@import</code> in <code>docs.css</code>.</dd>
+              <dt>Components shipped</dt>
+              <dd>
+                <code>.callout</code> (info/tip/warn/danger), <code>.docs-next-steps</code>, <code>.docs-hint</code>,
+                <code>.docs-status-banner</code> (wip/deprecated/new), <code>.docs-empty-state</code>,
+                <code>.docs-divider</code>, <code>.docs-copy-btn</code>, <code>.docs-anchor</code>,
+                <code>.docs-breadcrumbs</code>, <code>.docs-sticky-sentinel</code>, <code>.docs-section-flash</code>,
+                <code>.docs-page-hero</code>, <code>.docs-section-divider</code>, <code>.docs-decisions-grid</code>,
+                <code>.card--diagram</code>, OpenAPI helpers, scalar collapse helpers,
+                <code>.docs-page-type</code> badges (this file), <code>.docs-module-meta</code> reference dl.
+              </dd>
+              <dt>Custom properties</dt>
+              <dd>
+                <code>--docs-premium-surface-border</code>, <code>--docs-premium-surface-bg</code>,
+                <code>--docs-premium-surface-shadow</code>, <code>--docs-premium-chip-bg</code>,
+                <code>--docs-premium-chip-border</code>, <code>--docs-premium-item-*</code>,
+                <code>--docs-premium-focus-glow-*</code>. Defined in both light and dark blocks inside this file.
+              </dd>
+              <dt>Total selectors</dt><dd>~190</dd>
+            </dl>
+          </section>
+
+          <section id="docs-site-nav-css" class="card">
+            <h2><code>docs-site-nav.css</code> — top navigation bar</h2>
+            <dl class="docs-module-meta">
+              <dt>Loaded by</dt><dd><code>@import</code> in <code>docs.css</code>.</dd>
+              <dt>Components shipped</dt>
+              <dd><code>.top-nav-bar</code>, <code>.top-nav-wordmark</code>, <code>.top-nav-links</code>, <code>.top-nav-actions</code>, <code>.top-nav-theme-btn</code>, <code>.top-nav-divider</code>, <code>.docs-search</code> (embedded widget).</dd>
+              <dt>Custom properties</dt><dd><code>--nav-bg</code>, <code>--nav-shadow</code>, <code>--nav-border</code>, <code>--nav-text</code>; consumes <code>--motion-fast</code>.</dd>
+              <dt>Sticky behavior</dt><dd>Top bar uses <code>position: sticky; top: 0</code>; backdrop-blur engages when the page scrolls past the sentinel managed by <code>docs-nav.js</code>.</dd>
+            </dl>
+          </section>
+
+          <section id="docs-syntax-theme-css" class="card">
+            <h2><code>docs-syntax-theme.css</code> — syntax token palette</h2>
+            <dl class="docs-module-meta">
+              <dt>Loaded by</dt><dd><code>@import</code> in <code>docs.css</code>.</dd>
+              <dt>Status</dt>
+              <dd>Ships unconditionally even though the runtime that generates the <code>.st-*</code> token classes — <code>docs-syntax.js</code> — is not currently loaded anywhere. See the <a href="./docs-frontend-js-modules-reference.html#docs-syntax">phantom note in the JS reference</a>. Removing this file is contingent on the same wire-up decision.</dd>
+              <dt>Components shipped</dt>
+              <dd><code>.st-kw</code> (keyword), <code>.st-str</code> (string), <code>.st-cmt</code> (comment), <code>.st-num</code>, <code>.st-key</code> (object key), <code>.st-bi</code> (builtin), <code>.st-var</code>, <code>.st-flag</code> (CLI), <code>.st-dec</code> (decorator), <code>.st-op</code> (operator). Plus a <code>pre[data-lang]::before</code> language badge.</dd>
+              <dt>Dark mode</dt><dd>Defines tokens twice: under <code>@media (prefers-color-scheme: dark)</code> and under <code>html[data-theme="dark"]</code>. Belt-and-braces because syntax colors vary independently of the main palette.</dd>
+            </dl>
+          </section>
+
+          <section id="home-css" class="card">
+            <h2><code>home.css</code> — landing page</h2>
+            <dl class="docs-module-meta">
+              <dt>Loaded by</dt><dd>Direct <code>&lt;link&gt;</code> tag in <code>docs/index.html</code> only. Not <code>@import</code>-ed, to keep the landing-page bundle isolated from internal pages.</dd>
+              <dt>What it suppresses</dt><dd>Default top-nav chrome, sidebar, internal layout grid — the home page draws its own scaffolding.</dd>
+              <dt>Components shipped</dt>
+              <dd>
+                <code>.home-intro-*</code> (boot overlay), <code>.home-scroll-progress-*</code>, <code>.home-card-*</code> (8 color variants),
+                <code>.home-hero-*</code>, <code>.home-grid-*</code>, <code>.home-chip-*</code>, <code>.home-alert-*</code>.
+              </dd>
+              <dt>Custom properties</dt><dd>Reuses <code>--bg</code>, <code>--accent</code>, <code>--line</code>, <code>--text</code> from <code>docs.css</code>; adds <code>--home-*</code> for animation timing.</dd>
+              <dt>Surface contract</dt>
+              <dd>Visual anatomy is documented in the <a href="./screens/docs-screen-home-landing.html">home landing screen spec</a>.</dd>
+            </dl>
+          </section>
+
+          <section id="internal-layout-deep-dive" class="card">
+            <h2><code>internal-layout.css</code> — deep dive</h2>
+            <p>
+              <code>internal-layout.css</code> owns the chrome that wraps every page under <code>docs/internal/**</code>:
+              sidebar, drawer, sticky page title, collapsed-sidebar mode, and portal grids. It is the most
+              layout-sensitive file in the portal — small changes here ripple through every internal page.
+            </p>
+
+            <h3>Shell container model</h3>
+            <div class="docs-table-scroll" role="region" aria-label="Shell container model">
+              <table>
+                <thead>
+                  <tr><th scope="col">Class</th><th scope="col">Responsibility</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>.internal-layout</code></td><td>Root wrapper, <code>min-height: 100vh</code>.</td></tr>
+                  <tr><td><code>.internal-layout__shell</code></td><td>2-column grid: sidebar | main. Accepts <code>.is-sidebar-collapsed</code> and <code>.is-drawer-mode</code> modifier classes.</td></tr>
+                  <tr><td><code>.internal-layout__sidebar</code></td><td>Sticky left rail, scrollable, 300px desktop / 288px tablet / collapses to 56px.</td></tr>
+                  <tr><td><code>.internal-layout__main</code></td><td>Right-side content area; <code>min-width: 0</code> so flex children do not blow out the grid.</td></tr>
+                  <tr><td><code>.internal-layout__page-title-row</code></td><td>H1 + menu button + theme toggle. Sticky on ≤1024 px.</td></tr>
+                  <tr><td><code>.internal-layout__drawer</code></td><td>Fixed overlay (<code>z-index: 1000</code>); hidden by default; controlled by <code>internal-sidebar.js</code>.</td></tr>
+                  <tr><td><code>.internal-layout__drawer-panel</code></td><td>Slide-in panel; <code>100dvh</code> tall; respects safe-area-insets.</td></tr>
+                  <tr><td><code>.internal-layout__drawer-backdrop</code></td><td>Semi-transparent dismiss layer.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Breakpoints</h3>
+            <div class="docs-table-scroll" role="region" aria-label="Breakpoints">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Breakpoint</th>
+                    <th scope="col">Width</th>
+                    <th scope="col">What changes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Desktop</td><td>≥1025 px</td><td>300 px sidebar + 1fr main; page title row not sticky; collapse toggle visible.</td></tr>
+                  <tr><td>Tablet</td><td>901–1024 px</td><td>288 px sidebar + 1fr main; page title row sticky (<code>top: max(10px, env(safe-area-inset-top))</code>); TOC offset +58 px; drawer mode active.</td></tr>
+                  <tr><td>Mobile</td><td>≤900 px</td><td>1-column shell, sidebar hidden, drawer is the only menu surface.</td></tr>
+                  <tr><td>Drawer threshold</td><td>≤1024 px</td><td>Triggers <code>.is-drawer-mode</code> class on the shell.</td></tr>
+                  <tr><td>Small mobile</td><td>≤620 px</td><td>Portal people grid collapses to 1 column.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Sticky chrome and z-index stack</h3>
+            <div class="docs-table-scroll" role="region" aria-label="Sticky chrome">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Element</th>
+                    <th scope="col">Position</th>
+                    <th scope="col"><code>top</code></th>
+                    <th scope="col"><code>z-index</code></th>
+                    <th scope="col">Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>.internal-layout__sidebar</code></td><td>sticky</td><td>0</td><td>2</td><td>Left nav stays visible while main scrolls.</td></tr>
+                  <tr><td><code>.internal-layout__page-title-row</code></td><td>sticky (≤1024 px only)</td><td><code>max(10px, env(safe-area-inset-top))</code></td><td>5</td><td>Page heading remains above scrolling content on narrow widths.</td></tr>
+                  <tr><td><code>.internal-layout__drawer</code></td><td>fixed</td><td>—</td><td>1000</td><td>Overlay menu always on top.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>Drawer state machine</h3>
+            <ul>
+              <li><strong>Trigger</strong>: viewport ≤1024 px <em>and</em> shell carries <code>.is-drawer-mode</code>.</li>
+              <li><strong>Open class</strong>: <code>.internal-layout__drawer.is-open</code> → <code>display: block</code>.</li>
+              <li><strong>Closed</strong>: <code>.internal-layout__drawer[hidden]</code> → <code>display: none !important</code> (HTML attribute, set by <code>internal-sidebar.js</code>).</li>
+              <li><strong>Body lock</strong>: <code>body.internal-sidebar-drawer-open</code> → <code>overflow: hidden</code> (prevents page scroll while drawer is open).</li>
+              <li><strong>Mobile (&lt;900 px)</strong>: sidebar moves below page title row in document order (no longer sticky).</li>
+            </ul>
+
+            <h3>Collapsed sidebar</h3>
+            <ul>
+              <li>Toggle: button rendered by <code>internal-sidebar.js</code> with <code>data-internal-sidebar-toggle</code>; only visible on desktop.</li>
+              <li>Class added: <code>.internal-layout__shell.is-sidebar-collapsed</code> → <code>grid-template-columns: 56px 1fr</code>.</li>
+              <li>Sidebar title rotates (CSS transform); toggle button shrinks to icon-only.</li>
+              <li>Persisted via <code>localStorage</code> key <code>docs.internal.sidebar.collapsed</code>.</li>
+            </ul>
+          </section>
+
+          <section id="conventions" class="card">
+            <h2>Stylesheet conventions</h2>
+            <h3>Where does a new style belong?</h3>
+            <ul>
+              <li><strong>Brand-new visual variable</strong> (color, radius, spacing, motion) → <code>:root</code> block in <code>docs.css</code>, then a matching dark override in <code>docs-theme.css</code>.</li>
+              <li><strong>New component class</strong> shared across page types → <code>docs-premium.css</code>. Keeps <code>docs.css</code> focused on tokens and globals.</li>
+              <li><strong>New layout primitive for internal pages</strong> (shell modifier, sticky region, drawer behavior) → <code>internal-layout.css</code>. Update the deep dive in this page in the same PR.</li>
+              <li><strong>Top-nav widget</strong> → <code>docs-site-nav.css</code>. Do not stash nav rules in <code>docs.css</code>.</li>
+              <li><strong>Landing-page-only styles</strong> → <code>home.css</code>. Anything that shows up only on <code>docs/index.html</code> must live here, not in <code>docs.css</code>.</li>
+              <li><strong>Code-syntax token</strong> → <code>docs-syntax-theme.css</code>. Pair with a token-emitting rule in <code>docs-syntax.js</code> (currently dormant).</li>
+            </ul>
+
+            <h3>Dark-mode override pattern</h3>
+            <p>Two mechanisms work together:</p>
+            <ol>
+              <li><strong>Variable redefinition</strong>: <code>docs-theme.css</code> redefines tokens at <code>:root</code> under <code>@media (prefers-color-scheme: dark)</code>. Most components inherit the new palette automatically because they read <code>var(--bg)</code>, <code>var(--card)</code>, etc.</li>
+              <li><strong>Explicit selector overrides</strong>: where a component needs a different look in dark (not just different colors), <code>docs.css</code> ships <code>:root[data-theme="dark"] .my-component { … }</code> blocks colocated with the light rules.</li>
+            </ol>
+            <p class="small">The explicit toggle path is required because the theme switcher writes <code>data-theme="dark"</code> on <code>&lt;html&gt;</code> independently of OS preference. Both code paths must visually agree.</p>
+
+            <h3>Naming</h3>
+            <ul>
+              <li>Use kebab-case BEM for layout/component classes: <code>.docs-callout</code>, <code>.docs-callout--warn</code>, <code>.internal-layout__sidebar</code>.</li>
+              <li>Prefix all global tokens with <code>--</code> and a domain word: <code>--docs-premium-*</code>, <code>--internal-*</code>, <code>--st-*</code>. Generic tokens (<code>--bg</code>, <code>--accent</code>, <code>--line</code>) stay un-prefixed but are scarce by design.</li>
+              <li>Avoid one-off ID selectors. The mount points listed in the JS reference are the only DOM IDs styled.</li>
+            </ul>
+          </section>
+
+          <section id="related" class="card">
+            <h2>Related internal docs</h2>
+            <ul>
+              <li><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a> — sister page for runtime modules.</li>
+              <li><a href="./docs-frontend-architecture-map.html">Architecture map</a> — block model and runtime ownership.</li>
+              <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — motion tokens, density, theme switching rationale.</li>
+              <li><a href="./docs-frontend-ui-kit.html">UI kit</a> — visual principles and design-token narrative.</li>
+              <li><a href="./documentation-process.html">Maintenance process</a> — change management for layout-impacting CSS edits.</li>
+            </ul>
+          </section>
+
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-29">2026-04-29</time></td>
+                    <td>Page created — first CSS architecture reference; documents 7 stylesheets, the <code>@import</code> chain, and includes a deep dive for <code>internal-layout.css</code>.</td>
+                    <td>Ivan Boyarkin</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        </main>
+      </div>
+    </div>
+
+  </body></html>

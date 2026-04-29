@@ -672,6 +672,397 @@ h1.internal-doc-h1 {
 }
 
 /*
+ * Spec lifecycle status badges (used in operation specs and resource hubs under
+ * internal/api/**). Five fixed states: draft → in-review → approved → implemented → deprecated.
+ * Colour intent: neutral / amber / blue / green / red.
+ */
+.internal-layout .badge--status-draft {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.internal-layout .badge--status-in-review {
+  background: #fef3c7;
+  border-color: #fcd34d;
+  color: #78350f;
+}
+
+.internal-layout .badge--status-approved {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0c4a6e;
+}
+
+.internal-layout .badge--status-implemented {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.internal-layout .badge--status-deprecated {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #7f1d1d;
+}
+
+/*
+ * Section requirement marker, rendered next to <h2> headings inside spec pages.
+ * `--required` = mandatory section (lint blocks if missing/empty).
+ * `--optional` = may be removed for trivial operations.
+ */
+.internal-layout .badge--req-required {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4c1d95;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.internal-layout .badge--req-optional {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+/*
+ * Spec metadata strip — one-line meta block under the HTTP tablet on operation specs.
+ * Renders status / owner / operationId / last-reviewed inline.
+ */
+.internal-spec-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  align-items: center;
+  margin: 12px 0 18px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--badge-default-bg);
+  font-size: 0.88rem;
+}
+
+.internal-spec-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.internal-spec-meta__label {
+  color: var(--muted, #4b5563);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+/*
+ * Code samples inside internal spec pages (request/response/envelope JSON).
+ * Smaller than the global pre to match the surrounding doc text density.
+ * The global pre defaults to 0.9rem; here we drop to 0.78rem matching the
+ * cue-sheet walkthrough convention used elsewhere in the docs.
+ */
+.internal-layout__main pre {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  padding: 12px 14px;
+}
+
+.internal-layout__main pre code {
+  font-size: inherit;
+}
+
+/*
+ * Field reference list — used in operation specs to describe path / header /
+ * query / body parameters and response fields without forcing readers through
+ * a too-wide table. Each field is one <dt>/<dd> pair: the name and a few
+ * inline badges on the dt, the meaning + structured attributes on the dd.
+ */
+.internal-field-list {
+  margin: 14px 0 18px;
+  padding: 0;
+}
+
+.internal-field-list > dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin: 14px 0 4px;
+  padding: 8px 12px 6px;
+  border-left: 3px solid var(--accent, #2563eb);
+  background: var(--badge-default-bg, #f8fafc);
+  border-radius: 0 8px 8px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.internal-field-list > dt > code {
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.internal-field-list > dt .badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  margin: 0;
+  font-weight: 500;
+  font-family: var(--font-sans, system-ui), sans-serif;
+  text-transform: lowercase;
+  letter-spacing: 0;
+}
+
+.internal-field-list > dd {
+  margin: 0 0 6px 14px;
+  padding: 4px 0 8px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.internal-field-list > dd p {
+  margin: 4px 0;
+}
+
+.internal-field-list > dd .internal-field-list__attrs {
+  margin: 6px 0 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 12px;
+  font-size: 0.82rem;
+}
+
+.internal-field-list > dd .internal-field-list__attrs dt {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans, system-ui), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #475569);
+  align-self: center;
+}
+
+.internal-field-list > dd .internal-field-list__attrs dd {
+  margin: 0;
+  padding: 0;
+  font-size: 0.82rem;
+}
+
+.internal-field-list .badge--field-req {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4c1d95;
+}
+
+.internal-field-list .badge--field-opt {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.internal-field-list .badge--field-type {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0c4a6e;
+}
+
+/*
+ * Long-page reading aids (docs-resume.js):
+ *   .docs-resume-top    floating "Back to top" button (bottom-right, fades in after scroll)
+ *   .docs-resume-banner first-load offer to jump to the previously-saved scroll position
+ */
+.docs-resume-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line, #cbd5e1);
+  background: var(--badge-default-bg, #ffffff);
+  color: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 30;
+}
+
+.docs-resume-top.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.docs-resume-top:hover {
+  background: #f8fafc;
+}
+
+.docs-resume-top svg {
+  flex-shrink: 0;
+}
+
+.docs-resume-banner {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 16px 0 18px;
+  padding: 10px 14px;
+  border: 1px solid #7dd3fc;
+  background: #e0f2fe;
+  color: #0c4a6e;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  z-index: 25;
+  box-shadow: 0 6px 18px rgba(12, 74, 110, 0.08);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.docs-resume-banner.is-leaving {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.docs-resume-banner__text {
+  flex: 1 1 280px;
+  min-width: 220px;
+}
+
+.docs-resume-banner__actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.docs-resume-banner__btn {
+  appearance: none;
+  border: 1px solid #7dd3fc;
+  background: #ffffff;
+  color: #0c4a6e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.docs-resume-banner__btn--primary {
+  background: #0c4a6e;
+  color: #f0f9ff;
+  border-color: #0c4a6e;
+}
+
+.docs-resume-banner__btn:hover {
+  filter: brightness(0.96);
+}
+
+[data-theme="dark"] .docs-resume-top {
+  background: #1f2937;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .docs-resume-top:hover {
+  background: #273345;
+}
+
+[data-theme="dark"] .docs-resume-banner {
+  background: #0c2a3a;
+  color: #e0f2fe;
+  border-color: #0369a1;
+}
+
+[data-theme="dark"] .docs-resume-banner__btn {
+  background: #1e3a52;
+  color: #e0f2fe;
+  border-color: #0369a1;
+}
+
+[data-theme="dark"] .docs-resume-banner__btn--primary {
+  background: #38bdf8;
+  color: #0b1220;
+  border-color: #38bdf8;
+}
+
+/*
+ * Diagram fallback: when the rendered SVG is missing (e.g. Kroki was unavailable
+ * during the last `make docs-fix`), the inline `onerror` on the <img> tags the
+ * <figure> as `.is-missing` and auto-opens the sibling <details> with PlantUML
+ * source. We replace the broken-image canvas with a friendly placeholder so the
+ * page does not show the browser's default broken-image icon.
+ */
+.sys-diagram.is-missing .sys-diagram__canvas {
+  position: relative;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line, #cbd5e1);
+  background: var(--badge-default-bg, #f8fafc);
+  border-radius: 10px;
+  padding: 18px;
+  color: var(--muted, #475569);
+  font-size: 0.85rem;
+}
+
+.sys-diagram.is-missing .sys-diagram__canvas img {
+  display: none;
+}
+
+.sys-diagram.is-missing .sys-diagram__canvas::after {
+  content: "Diagram SVG not generated yet — run `make docs-fix`.";
+  text-align: center;
+  font-style: italic;
+}
+
+details.docs-uml-source {
+  margin: 8px 0 18px;
+  padding: 6px 12px;
+  border: 1px solid var(--line, #cbd5e1);
+  border-radius: 8px;
+  background: var(--badge-default-bg, #f8fafc);
+  font-size: 0.85rem;
+}
+
+details.docs-uml-source > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 2px 0;
+  color: var(--muted, #475569);
+}
+
+details.docs-uml-source[open] > summary {
+  margin-bottom: 6px;
+}
+
+details.docs-uml-source pre {
+  margin: 4px 0 8px;
+}
+
+/*
  * Tables in .docs-table-scroll: global docs.css sets `width: max-content` on the inner
  * table, which stretches layout and breaks column balance. Inside internal pages, use
  * full width and fixed table layout so the four-column layer table formats predictably.

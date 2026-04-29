@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -39,7 +37,6 @@
         <li>Optional: <code>make env-check</code> to verify config and database path.</li>
       </ol>
     </section>
-
 
     <section class="card">
       <h2>Run targets</h2>
@@ -130,8 +127,7 @@
         Kibana: <code>python scripts/check_es_request_id.py</code> or
         <code>python scripts/check_es_request_id.py &lt;uuid&gt;</code>.
         Smoke test: <code>python scripts/check_logging_links.py</code>. Stop:
-        <code>docker compose -f docker-compose.logging.yml down</code>. Policy: <a
-          href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
+        <code>docker compose -f docker-compose.logging.yml down</code>. Policy: <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
       </p>
 
       <h3>Data path (why Discover can be empty)</h3>
@@ -181,82 +177,79 @@
         <li>
           Serve docs over HTTP (not <code>file://</code>):
           <pre><code>cd docs
-              python3 -m http.server 8765</code></pre>
-        </li>
-        <li>
-          Start API locally (telemetry endpoint lives on API host):
-          <pre><code>make run</code></pre>
-        </li>
-        <li>
-          Open <code>http://127.0.0.1:8765/index.html</code>, type a few queries, and click at least one result.
-        </li>
-        <li>
-          In browser Network, verify index fetch:
-          <code>GET /assets/search-index.json</code> returns <code>200</code>.
-        </li>
-        <li>
-          Verify telemetry writes in SQLite:
-          <pre><code>sqlite3 study_app.db "select event, count(*) from docs_search_events group by event order by event;"</code></pre>
-        </li>
-        <li>
-          Verify KPI aggregation endpoint:
-          <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
-        </li>
-      </ol>
-      <h3>Why Network can show only OPTIONS</h3>
-      <ul>
-        <li>Telemetry may be sent with <code>navigator.sendBeacon</code>; in DevTools this is often shown as
-          <em>ping/other</em>, not as fetch/XHR.
-        </li>
-        <li>When fallback <code>fetch</code> is used, browser sends CORS preflight <code>OPTIONS</code> before
-          <code>POST</code>.
-        </li>
-        <li>If DevTools only shows <code>OPTIONS</code>, trust the SQLite/API checks above to confirm events arrived.
-        </li>
-      </ul>
-    </section>
-    <section class="card">
+            python3 -m http.server 8765</code></pre>
+          </li>
+          <li>
+            Start API locally (telemetry endpoint lives on API host):
+            <pre><code>make run</code></pre>
+          </li>
+          <li>
+            Open <code>http://127.0.0.1:8765/index.html</code>, type a few queries, and click at least one result.
+          </li>
+          <li>
+            In browser Network, verify index fetch:
+            <code>GET /assets/search-index.json</code> returns <code>200</code>.
+          </li>
+          <li>
+            Verify telemetry writes in SQLite:
+            <pre><code>sqlite3 study_app.db "select event, count(*) from docs_search_events group by event order by event;"</code></pre>
+          </li>
+          <li>
+            Verify KPI aggregation endpoint:
+            <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
+          </li>
+        </ol>
+        <h3>Why Network can show only OPTIONS</h3>
+        <ul>
+          <li>Telemetry may be sent with <code>navigator.sendBeacon</code>; in DevTools this is often shown as
+            <em>ping/other</em>, not as fetch/XHR.
+          </li>
+          <li>When fallback <code>fetch</code> is used, browser sends CORS preflight <code>OPTIONS</code> before
+            <code>POST</code>.
+          </li>
+          <li>If DevTools only shows <code>OPTIONS</code>, trust the SQLite/API checks above to confirm events arrived.
+          </li>
+        </ul>
+      </section>
+      <section class="card">
 
-      <h2>Sanity checks</h2>
-      <ul>
-        <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code>
-          (responses
-          include <code>X-Request-Id</code>)</li>
-        <li>Observability endpoints: <code>python scripts/check_observability_links.py</code></li>
-        <li>Logging stack (when running): <code>python scripts/check_logging_links.py</code></li>
-      </ul>
-    </section>
+        <h2>Sanity checks</h2>
+        <ul>
+          <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code>
+            (responses
+            include <code>X-Request-Id</code>)</li>
+            <li>Observability endpoints: <code>python scripts/check_observability_links.py</code></li>
+            <li>Logging stack (when running): <code>python scripts/check_logging_links.py</code></li>
+          </ul>
+        </section>
 
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
-
-</body>
-
-</html>
+    </body></html>

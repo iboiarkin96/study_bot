@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -208,7 +206,7 @@
       </pre>
       <p class="small">
         The static site serves the contract and UI only; <strong>validation, business logic, and
-          persistence</strong> run in the sandbox service.
+        persistence</strong> run in the sandbox service.
       </p>
     </section>
 
@@ -276,135 +274,132 @@
         <li>Integrators validate payloads and read real responses and persistence from a stable public URL.</li>
         <li>Same industry pattern as Stripe, PayPal, Amazon SP-API at a small-team scale: isolate environment, separate
           credentials, explicit CORS.</li>
-        <li>No Ajv/interceptor stack to maintain on the static site; fewer moving parts than the browser-only path.</li>
-        <li>Readers still get a quick visual view of the OpenAPI snapshot even before the sandbox is up.</li>
-      </ul>
-      <h3>Trade-offs</h3>
-      <ul>
-        <li>
-          <strong>Running cost and ops.</strong> A sandbox must stay deployed; cold starts on free tiers
-          are tolerable or mitigated.
-        </li>
-        <li>
-          <strong>Data hygiene.</strong> The sandbox database fills with test data; plan resets or TTL
-          where needed.
-        </li>
-        <li>
-          <strong>Secrets in the browser.</strong> Sandbox keys in Authorize are expected; treat them as
-          high-value-because-scoped, rotate and revoke, and never reuse production material.
-        </li>
-        <li>
-          <strong>Coupling.</strong> Sandbox base URL, CORS, and the OpenAPI <code>servers</code> override
-          must move together on redeploys.
-        </li>
-      </ul>
-    </section>
+          <li>No Ajv/interceptor stack to maintain on the static site; fewer moving parts than the browser-only path.</li>
+          <li>Readers still get a quick visual view of the OpenAPI snapshot even before the sandbox is up.</li>
+        </ul>
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>
+            <strong>Running cost and ops.</strong> A sandbox must stay deployed; cold starts on free tiers
+            are tolerable or mitigated.
+          </li>
+          <li>
+            <strong>Data hygiene.</strong> The sandbox database fills with test data; plan resets or TTL
+            where needed.
+          </li>
+          <li>
+            <strong>Secrets in the browser.</strong> Sandbox keys in Authorize are expected; treat them as
+            high-value-because-scoped, rotate and revoke, and never reuse production material.
+          </li>
+          <li>
+            <strong>Coupling.</strong> Sandbox base URL, CORS, and the OpenAPI <code>servers</code> override
+            must move together on redeploys.
+          </li>
+        </ul>
+      </section>
 
-    <section class="card">
-      <h2>Implementation plan</h2>
-      <ol>
-        <li>
-          Deploy the sandbox: image from ADR 0021, own DB, record the public base URL
-          (placeholder example: <code>https://etr-study-api-sandbox.example</code>).
-        </li>
-        <li>
-          Configure CORS on the sandbox (e.g. <code>CORS_ORIGINS</code> per
-          <a href="./0005-api-security-defaults.html">ADR 0005</a>) to include
-          <code>https://iboiarkin96.github.io</code>. Verify with
-          <code>OPTIONS</code> and a browser from that origin.
-        </li>
-        <li>
-          Define how sandbox API keys are created, scoped, and rotated; document for integrators
-          (not in OpenAPI text alone).
-        </li>
-        <li>
-          Update <code>docs/openapi/index.html</code>: <code>tryItOutEnabled: true</code>,
-          <code>persistAuthorization: true</code>, <code>servers</code> → sandbox only, pinned Swagger
-          UI + SRI or vendored assets. Prose: "Try it out targets the <strong>sandbox</strong> —
-          not production."
-        </li>
-        <li>
-          Smoke: from the GitHub Pages URL, Authorize, execute a write, then read back to confirm
-          persistence.
-        </li>
-      </ol>
-    </section>
+      <section class="card">
+        <h2>Implementation plan</h2>
+        <ol>
+          <li>
+            Deploy the sandbox: image from ADR 0021, own DB, record the public base URL
+            (placeholder example: <code>https://etr-study-api-sandbox.example</code>).
+          </li>
+          <li>
+            Configure CORS on the sandbox (e.g. <code>CORS_ORIGINS</code> per
+            <a href="./0005-api-security-defaults.html">ADR 0005</a>) to include
+            <code>https://iboiarkin96.github.io</code>. Verify with
+            <code>OPTIONS</code> and a browser from that origin.
+          </li>
+          <li>
+            Define how sandbox API keys are created, scoped, and rotated; document for integrators
+            (not in OpenAPI text alone).
+          </li>
+          <li>
+            Update <code>docs/openapi/index.html</code>: <code>tryItOutEnabled: true</code>,
+            <code>persistAuthorization: true</code>, <code>servers</code> → sandbox only, pinned Swagger
+            UI + SRI or vendored assets. Prose: "Try it out targets the <strong>sandbox</strong> —
+            not production."
+          </li>
+          <li>
+            Smoke: from the GitHub Pages URL, Authorize, execute a write, then read back to confirm
+            persistence.
+          </li>
+        </ol>
+      </section>
 
-    <section class="card">
-      <h2>Validation</h2>
-      <ul>
-        <li>
-          <strong>Preflight:</strong>
-          <code>curl -s -X OPTIONS &lt;sandbox&gt;/&lt;path&gt; -H "Origin: https://iboiarkin96.github.io" -H "Access-Control-Request-Method: POST" -i</code>
-          — must reflect an allowed origin for the docs site.
-        </li>
-        <li>
-          <strong>Browser E2E:</strong> <code>POST</code> then <code>GET</code> (or equivalent) with
-          sandbox credentials; assert non-production markers if you expose them (e.g. environment header).
-        </li>
-        <li>
-          <strong>SRI:</strong> if using CDN, script/link <code>integrity</code> matches the pinned file.
-        </li>
-        <li>
-          <strong>Contract:</strong> CI still runs <code>make contract-test</code> on the OpenAPI
-          baseline; the sandbox does not replace that gate.
-        </li>
-      </ul>
-    </section>
+      <section class="card">
+        <h2>Validation</h2>
+        <ul>
+          <li>
+            <strong>Preflight:</strong>
+            <code>curl -s -X OPTIONS &lt;sandbox&gt;/&lt;path&gt; -H "Origin: https://iboiarkin96.github.io" -H "Access-Control-Request-Method: POST" -i</code>
+            — must reflect an allowed origin for the docs site.
+          </li>
+          <li>
+            <strong>Browser E2E:</strong> <code>POST</code> then <code>GET</code> (or equivalent) with
+            sandbox credentials; assert non-production markers if you expose them (e.g. environment header).
+          </li>
+          <li>
+            <strong>SRI:</strong> if using CDN, script/link <code>integrity</code> matches the pinned file.
+          </li>
+          <li>
+            <strong>Contract:</strong> CI still runs <code>make contract-test</code> on the OpenAPI
+            baseline; the sandbox does not replace that gate.
+          </li>
+        </ul>
+      </section>
 
-    <section class="card">
-      <h2>Compatibility and migration</h2>
-      <ul>
-        <li>
-          Browsing the spec without executing remains possible; <strong>Try it out</strong> becomes
-          available once <code>index.html</code> is updated and the sandbox is up.
-        </li>
-        <li>
-          Rollback: set <code>tryItOutEnabled: false</code> and remove the sandbox server from defaults;
-          pause the sandbox app independently.
-        </li>
-      </ul>
-    </section>
+      <section class="card">
+        <h2>Compatibility and migration</h2>
+        <ul>
+          <li>
+            Browsing the spec without executing remains possible; <strong>Try it out</strong> becomes
+            available once <code>index.html</code> is updated and the sandbox is up.
+          </li>
+          <li>
+            Rollback: set <code>tryItOutEnabled: false</code> and remove the sandbox server from defaults;
+            pause the sandbox app independently.
+          </li>
+        </ul>
+      </section>
 
+      <section id="page-history" class="card">
+        <h2>Page history</h2>
+        <div class="docs-table-scroll" role="region" aria-label="Page history">
+          <table class="docs-page-history">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Change</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><time datetime="2026-04-25">2026-04-25</time></td>
+                <td>
+                  Merged with ADR 0028 content: removed "superseded" framing; added full decision,
+                  architecture, scope, alternatives, implementation plan, validation, and migration
+                  sections; industry comparison table; consolidated into single authoritative ADR.
+                </td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+              <tr>
+                <td><time datetime="2026-04-21">2026-04-21</time></td>
+                <td>Added Page history section (repository baseline).</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-25">2026-04-25</time></td>
-              <td>
-                Merged with ADR 0028 content: removed "superseded" framing; added full decision,
-                architecture, scope, alternatives, implementation plan, validation, and migration
-                sections; industry comparison table; consolidated into single authoritative ADR.
-              </td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+        Found a bug? Report issue
+      </button>
+      <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+    </main>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
-
-</body>
-
-</html>
+  </body></html>

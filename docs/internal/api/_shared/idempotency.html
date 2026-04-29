@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Idempotency — shared internal rules — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Idempotency — shared rules</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            <strong>Single source of truth</strong> for how the internal API enforces idempotent writes.
+            Per-operation specs link here for the global rules and only describe their own deltas
+            (namespace value, key composition, replay status). Governing ADR:
+            <a href="../../../adr/0006-idempotency-write-operations.html">ADR 0006</a>.
+          </p>
+        </section>
+
+        <section class="card" id="when-required">
+          <h2>When idempotency is required</h2>
+          <p>
+            <strong>Required</strong> for every state-mutating HTTP method (<code>POST</code>,
+            <code>PATCH</code>, <code>PUT</code>, <code>DELETE</code>) under <code>/api/v1/**</code>,
+            unless the operation is documented as <em>read-only</em>.
+          </p>
+          <p>
+            <strong>Not used</strong> for <code>GET</code> and <code>HEAD</code>. The header is
+            silently ignored on read endpoints — no error, no validation.
+          </p>
+        </section>
+
+        <section class="card" id="header">
+          <h2>The <code>Idempotency-Key</code> header</h2>
+          <dl class="internal-field-list">
+            <dt>
+              <code>Idempotency-Key</code>
+              <span class="badge badge--field-type">string</span>
+              <span class="badge badge--field-req">required for writes</span>
+            </dt>
+            <dd>
+              <p>Client-generated token that uniquely identifies one logical write attempt. The
+                server uses it to detect retries and to deduplicate side effects.</p>
+              <dl class="internal-field-list__attrs">
+                <dt>Format</dt>
+                <dd>Printable ASCII (no whitespace-only).</dd>
+                <dt>Length</dt>
+                <dd>1–128 characters.</dd>
+                <dt>Recommended generation</dt>
+                <dd>UUID v4, or
+                  <code>{operation_id}-{stable_business_key}-{rfc3339_timestamp}</code>.</dd>
+                <dt>Lifetime</dt>
+                <dd>The integrator should keep the same key for retries of the same logical
+                  intent and rotate it when the intent changes.</dd>
+              </dl>
+            </dd>
+          </dl>
+        </section>
+
+        <section class="card" id="storage-key">
+          <h2>How the server keys deduplication</h2>
+          <p>
+            The composite storage key in <code>idempotency_keys</code> is:
+          </p>
+          <ul>
+            <li><code>owner_client_uuid</code> — derived from
+              <code>(system_user_id, system_uuid)</code> in the body, OR from the API-key principal
+              for endpoints that do not carry a user composite key.</li>
+            <li><code>endpoint_path</code> — operation-specific value, declared on the per-operation
+              spec page. Always includes the HTTP method; for parameterised paths, the <strong>concrete
+                resource UUID</strong> is substituted into the namespace so that each resource has its
+              own bucket.</li>
+            <li><code>idempotency_key</code> — the verbatim <code>Idempotency-Key</code> header
+              value.</li>
+            <li><code>payload_hash</code> — SHA-256 of the canonicalised JSON body
+              (see <a href="#canonical-body">Canonical body</a>).</li>
+            <li><code>response_status</code>, <code>response_body</code>,
+              <code>response_headers</code> — stored on first success for replay.</li>
+            <li><code>created_at</code> — used to enforce the
+              <a href="#ttl">24-hour TTL</a>.</li>
+          </ul>
+          <p class="small">
+            <strong>Scope.</strong> Uniqueness is on
+            <code>(owner_client_uuid, endpoint_path, idempotency_key)</code>. Two different users
+            can use the same key without colliding (per
+            <a href="../../analysis/system-design.html#schema-design-notes">system-design ·
+              idempotency_keys scope</a>).
+          </p>
+        </section>
+
+        <section class="card" id="canonical-body">
+          <h2>Canonical body for hashing</h2>
+          <p>
+            The <code>payload_hash</code> is SHA-256 of the request body normalised to a
+            canonical JSON form so semantically equal payloads collide deterministically:
+          </p>
+          <ul>
+            <li>Object keys sorted ascending by code point.</li>
+            <li>Insignificant whitespace stripped (no spaces between tokens).</li>
+            <li>Strings preserved verbatim including unicode escapes.</li>
+            <li>Numbers serialised by the standard library JSON encoder (no trailing zeros).</li>
+            <li>Arrays preserve order — order is part of the payload identity.</li>
+          </ul>
+          <p class="small">
+            Implementations should reuse a single
+            <code>canonicalize(body) -&gt; bytes</code> helper across all writers to avoid drift.
+            Drift between clients is acceptable — the integrator is responsible for sending the
+            same bytes on retries.
+          </p>
+        </section>
+
+        <section class="card" id="behaviour-table">
+          <h2>Behaviour matrix</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Idempotency behaviour matrix">
+            <table>
+              <thead>
+                <tr>
+                  <th>Situation</th>
+                  <th>Server behaviour</th>
+                  <th>Outcome</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>First request, valid key + body.</td>
+                  <td>Execute the write; persist a row in <code>idempotency_keys</code> with the
+                    response.</td>
+                  <td>Original status (e.g. <code>201</code> / <code>200</code>) and body.</td>
+                </tr>
+                <tr>
+                  <td>Same key, identical body, within TTL.</td>
+                  <td>Skip side effects; replay stored response byte-for-byte.</td>
+                  <td>Original status and body.</td>
+                </tr>
+                <tr>
+                  <td>Same key, different body hash.</td>
+                  <td>Reject without writes.</td>
+                  <td><code>409 COMMON_409
+                      IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>.</td>
+                </tr>
+                <tr>
+                  <td>Missing or whitespace-only header on a write.</td>
+                  <td>Reject before the handler runs.</td>
+                  <td><code>400 COMMON_400 IDEMPOTENCY_KEY_REQUIRED</code>.</td>
+                </tr>
+                <tr>
+                  <td>Header present on a read endpoint.</td>
+                  <td>Ignore.</td>
+                  <td>Normal read response.</td>
+                </tr>
+                <tr>
+                  <td>Same key after TTL expiry.</td>
+                  <td>Treat as a new request.</td>
+                  <td>Whatever the operation returns for a fresh write.</td>
+                </tr>
+                <tr>
+                  <td>Crash mid-transaction (no row in <code>idempotency_keys</code>).</td>
+                  <td>Next retry with the same key writes for real.</td>
+                  <td>Operation result of the retry — guarantees no lost writes.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="ttl">
+          <h2>TTL and clean-up</h2>
+          <p>
+            Default TTL: <strong>24 hours</strong> from <code>created_at</code>. Rows older than
+            TTL are eligible for deletion by the cleanup job — the running handler ignores them.
+            Per-operation specs may shorten or extend the TTL via NFR; document the deviation
+            explicitly on the operation page.
+          </p>
+        </section>
+
+        <section class="card" id="concurrency-vs-idempotency">
+          <h2>Idempotency vs optimistic concurrency</h2>
+          <p>
+            These are <strong>distinct</strong> concerns and a spec must answer both:
+          </p>
+          <ul>
+            <li><strong>Idempotency</strong> protects against the same logical intent being
+              <em>retried</em> by the same caller (network retry, client crash). Replay returns
+              the original outcome.</li>
+            <li><strong>Optimistic concurrency</strong> protects against two distinct intents
+              racing on the same resource. Replay is irrelevant — the second intent is rejected
+              with a state-version conflict (e.g. <code>schedule_revision</code> guard on
+              <a href="../conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html">
+                review</a>).</li>
+          </ul>
+          <p class="small">
+            An operation that needs both must implement both: the idempotency key handles retries,
+            a row-version column handles racing intents. They never substitute for each other.
+          </p>
+        </section>
+
+        <section class="card" id="client-recipe">
+          <h2>Client recipe</h2>
+          <ol>
+            <li>Generate one <code>Idempotency-Key</code> per logical write intent
+              (e.g. before the user clicks “Save”).</li>
+            <li>Persist the key locally until the request succeeds or you decide to abandon it.</li>
+            <li>On any retry — network error, 5xx, timeout — resend the same key with the same
+              body.</li>
+            <li>If you change the body, generate a <strong>new</strong> key. Sending the old key
+              with a new body returns <code>409</code>.</li>
+            <li>On <code>409 COMMON_409</code>, treat as a programmer mistake (you reused a key
+              with different bytes). Do not silently retry.</li>
+          </ol>
+        </section>
+
+        <section class="card" id="errors">
+          <h2>Errors emitted by the idempotency layer</h2>
+          <p class="small">
+            Full envelope shape: see <a href="./error-envelope.html">_shared/error-envelope.html</a>.
+            Each entry below is also registered in
+            <a href="./error-catalog.html">_shared/error-catalog.html</a>.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Idempotency-related errors">
+            <table>
+              <thead>
+                <tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>400</code></td><td><code>COMMON_400</code></td>
+                  <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                  <td>Header absent or whitespace-only on a write.</td>
+                </tr>
+                <tr>
+                  <td><code>409</code></td><td><code>COMMON_409</code></td>
+                  <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                  <td>Same key, different canonical body.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="traceability">
+          <h2>Traceability</h2>
+          <ul>
+            <li><strong>ADR:</strong>
+              <a href="../../../adr/0006-idempotency-write-operations.html">0006 — idempotency for
+                write operations</a>.</li>
+            <li><strong>System design:</strong>
+              <a href="../../analysis/system-design.html#schema-design-notes">persistence model ·
+                idempotency_keys scope</a>.</li>
+            <li><strong>Related shared pages:</strong>
+              <a href="./error-envelope.html">error envelope</a>,
+              <a href="./error-catalog.html">error catalog</a>.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr><th>Date</th><th>Change</th><th>Author</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 3: created shared idempotency overlay; consolidated rules previously
+                    duplicated across operation specs.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

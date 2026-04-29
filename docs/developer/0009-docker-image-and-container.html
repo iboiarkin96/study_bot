@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -109,53 +107,50 @@
             -e API_MOCK_API_KEY=local-dev-key \
             -v study-app-data:/data \
             study-app-api:local</code></pre>
-          Then open <code>http://127.0.0.1:8000/live</code>. For <code>qa</code>/<code>prod</code> rules,
-          non-default API keys and stricter CORS apply (<code>app/core/config.py</code>). Pass secrets via
-          <code>-e</code>
-          or your platform’s secret mechanism — not committed files.
-        </li>
-      </ul>
-    </section>
-    <section class="card">
+            Then open <code>http://127.0.0.1:8000/live</code>. For <code>qa</code>/<code>prod</code> rules,
+            non-default API keys and stricter CORS apply (<code>app/core/config.py</code>). Pass secrets via
+            <code>-e</code>
+            or your platform’s secret mechanism — not committed files.
+          </li>
+        </ul>
+      </section>
+      <section class="card">
 
-      <h2 id="sqlite-and-replicas">SQLite and replicas</h2>
-      <p>
-        This API uses SQLite. A single container with a mounted data directory is fine for demos. Do not assume multiple
-        replicas can share one SQLite file; for horizontal scaling you would move to a shared database
-        (for example PostgreSQL) — a future architectural change.
-      </p>
-    </section>
+        <h2 id="sqlite-and-replicas">SQLite and replicas</h2>
+        <p>
+          This API uses SQLite. A single container with a mounted data directory is fine for demos. Do not assume multiple
+          replicas can share one SQLite file; for horizontal scaling you would move to a shared database
+          (for example PostgreSQL) — a future architectural change.
+        </p>
+      </section>
 
+      <section id="page-history" class="card">
+        <h2>Page history</h2>
+        <div class="docs-table-scroll" role="region" aria-label="Page history">
+          <table class="docs-page-history">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Change</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><time datetime="2026-04-21">2026-04-21</time></td>
+                <td>Added Page history section (repository baseline).</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+        Found a bug? Report issue
+      </button>
+      <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+    </main>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
-
-</body>
-
-</html>
+  </body></html>

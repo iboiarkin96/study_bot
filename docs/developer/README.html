@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -82,7 +80,7 @@
             <li>
               <a href="./0010-make-commands-and-workflows.html">Make commands and workflows</a> — canonical quality
               gates (<code>make fix</code>, <code>make verify</code>, <code>make release-check</code>) and
-              if&thinsp;→&thinsp;then scenario table.
+              if → then scenario table.
             </li>
             <li>
               <a href="../howto/0003-make-commands-inventory.html">Make commands inventory</a> — full
@@ -118,153 +116,151 @@
             <li>
               <a href="../howto/0001-onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and
                 docs</a> — canonical end-to-end walkthrough for new contributors.
-            </li>
-            <li>
-              <a href="./0004-how-to-add-post-contract.html">How to add a POST contract</a> — beginner endpoint
-              implementation example with schema, service, and OpenAPI.
-            </li>
-            <li>
-              <a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">Python docstrings and pdoc</a> —
-              Google-style docstring rules and how pdoc generates reviewable API HTML.
-            </li>
-            <li>
-              <a href="../adr/0017-branch-naming-and-repository-workflow.html">Branches and repository workflow</a> —
-              branch naming, trunk strategy on <code>main</code>, semver tags, and hotfix flow.
-            </li>
-          </ul>
-        </section>
+              </li>
+              <li>
+                <a href="./0004-how-to-add-post-contract.html">How to add a POST contract</a> — beginner endpoint
+                implementation example with schema, service, and OpenAPI.
+              </li>
+              <li>
+                <a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">Python docstrings and pdoc</a> —
+                Google-style docstring rules and how pdoc generates reviewable API HTML.
+              </li>
+              <li>
+                <a href="../adr/0017-branch-naming-and-repository-workflow.html">Branches and repository workflow</a> —
+                branch naming, trunk strategy on <code>main</code>, semver tags, and hotfix flow.
+              </li>
+            </ul>
+          </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Standards</div>
+          <div class="docs-section-divider" aria-hidden="true">Standards</div>
 
-        <section id="standards" class="card">
-          <h2>Engineering standards (mandatory)</h2>
-          <ul>
-            <li><strong>Contract-first:</strong> API behavior must match request/response/error contracts.</li>
-            <li><strong>Validation boundaries:</strong> validate at API boundary; do not duplicate shape validation
-              in inner layers.</li>
-            <li><strong>Error governance:</strong> existing <code>code</code> and <code>key</code> values are
-              immutable — add, do not repurpose.</li>
-            <li><strong>Testing policy:</strong> API changes require success + failure tests and OpenAPI contract
-              checks.</li>
-            <li><strong>Security baseline:</strong> protected endpoints must keep auth, rate limits, and security
-              headers enabled.</li>
-            <li><strong>Observability baseline:</strong> maintain <code>/live</code>, <code>/ready</code>,
-              <code>/metrics</code>, and request correlation IDs.</li>
-            <li><strong>Config governance:</strong> use explicit <code>APP_ENV</code> profiles; block insecure
-              production defaults at startup.</li>
-            <li><strong>Versioning:</strong> major version in URL prefix (<code>/api/v1</code>); breaking changes
-              require a version bump — see <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.</li>
-          </ul>
-        </section>
+          <section id="standards" class="card">
+            <h2>Engineering standards (mandatory)</h2>
+            <ul>
+              <li><strong>Contract-first:</strong> API behavior must match request/response/error contracts.</li>
+              <li><strong>Validation boundaries:</strong> validate at API boundary; do not duplicate shape validation
+                in inner layers.</li>
+                <li><strong>Error governance:</strong> existing <code>code</code> and <code>key</code> values are
+                  immutable — add, do not repurpose.</li>
+                  <li><strong>Testing policy:</strong> API changes require success + failure tests and OpenAPI contract
+                    checks.</li>
+                    <li><strong>Security baseline:</strong> protected endpoints must keep auth, rate limits, and security
+                      headers enabled.</li>
+                      <li><strong>Observability baseline:</strong> maintain <code>/live</code>, <code>/ready</code>,
+                        <code>/metrics</code>, and request correlation IDs.</li>
+                        <li><strong>Config governance:</strong> use explicit <code>APP_ENV</code> profiles; block insecure
+                          production defaults at startup.</li>
+                          <li><strong>Versioning:</strong> major version in URL prefix (<code>/api/v1</code>); breaking changes
+                            require a version bump — see <a href="../adr/0004-api-versioning-policy.html">ADR 0004</a>.</li>
+                          </ul>
+                        </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Full index</div>
+                        <div class="docs-section-divider" aria-hidden="true">Full index</div>
 
-        <section id="full-index" class="card">
-          <h2>All developer guides</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Full developer guides index">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Guide</th>
-                  <th scope="col">Summary</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><a href="./0001-requirements.html">0001 — Requirements guide</a></td>
-                  <td>Functional and non-functional requirements interpretation; done criteria for developers.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0002-schemas-and-contracts.html">0002 — Schemas and contracts</a></td>
-                  <td>Where schemas live, contract rules, idempotency, and how to evolve without breaking callers.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0003-business-logic.html">0003 — Business logic guide</a></td>
-                  <td>Layered architecture, where validation runs, and responsibility boundaries per layer.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0004-how-to-add-post-contract.html">0004 — How to add a POST contract</a></td>
-                  <td>Step-by-step endpoint implementation example (schema → service → repo → router → tests).</td>
-                </tr>
-                <tr>
-                  <td><a href="./0005-error-matrix-by-status.html">0005 — Error matrix by status</a></td>
-                  <td>COMMON vs entity error pools, service-wide table, and router review checklist.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0006-api-load-testing.html">0006 — API load testing</a></td>
-                  <td>Synthetic traffic runner, scenario configuration, and Grafana/Prometheus observability.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0007-local-development.html">0007 — Local development</a></td>
-                  <td>First-time setup, run targets, ports, observability stack, and logging with Elasticsearch.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0008-docs-pipeline.html">0008 — Documentation pipeline</a></td>
-                  <td>What <code>make docs-fix</code> generates, managed paths, <code>docs-check</code> in CI.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0009-docker-image-and-container.html">0009 — Docker image and container</a></td>
-                  <td>Image build with <code>docker build</code>, local run, and what a real deployment involves.</td>
-                </tr>
-                <tr>
-                  <td><a href="./0010-make-commands-and-workflows.html">0010 — Make commands and workflows</a></td>
-                  <td>Entry-point targets, composite pipelines, commands by theme, and if&thinsp;→&thinsp;then scenarios.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+                        <section id="full-index" class="card">
+                          <h2>All developer guides</h2>
+                          <div class="docs-table-scroll" role="region" aria-label="Full developer guides index">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th scope="col">Guide</th>
+                                  <th scope="col">Summary</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><a href="./0001-requirements.html">0001 — Requirements guide</a></td>
+                                  <td>Functional and non-functional requirements interpretation; done criteria for developers.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0002-schemas-and-contracts.html">0002 — Schemas and contracts</a></td>
+                                  <td>Where schemas live, contract rules, idempotency, and how to evolve without breaking callers.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0003-business-logic.html">0003 — Business logic guide</a></td>
+                                  <td>Layered architecture, where validation runs, and responsibility boundaries per layer.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0004-how-to-add-post-contract.html">0004 — How to add a POST contract</a></td>
+                                  <td>Step-by-step endpoint implementation example (schema → service → repo → router → tests).</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0005-error-matrix-by-status.html">0005 — Error matrix by status</a></td>
+                                  <td>COMMON vs entity error pools, service-wide table, and router review checklist.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0006-api-load-testing.html">0006 — API load testing</a></td>
+                                  <td>Synthetic traffic runner, scenario configuration, and Grafana/Prometheus observability.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0007-local-development.html">0007 — Local development</a></td>
+                                  <td>First-time setup, run targets, ports, observability stack, and logging with Elasticsearch.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0008-docs-pipeline.html">0008 — Documentation pipeline</a></td>
+                                  <td>What <code>make docs-fix</code> generates, managed paths, <code>docs-check</code> in CI.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0009-docker-image-and-container.html">0009 — Docker image and container</a></td>
+                                  <td>Image build with <code>docker build</code>, local run, and what a real deployment involves.</td>
+                                </tr>
+                                <tr>
+                                  <td><a href="./0010-make-commands-and-workflows.html">0010 — Make commands and workflows</a></td>
+                                  <td>Entry-point targets, composite pipelines, commands by theme, and if → then scenarios.</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
 
-        <nav class="docs-next-steps" aria-label="Next steps">
-          <p class="docs-next-steps__heading">See also</p>
-          <ul class="docs-next-steps__list">
-            <li><a class="docs-next-steps__item" href="../howto/README.html">How-to guides</a></li>
-            <li><a class="docs-next-steps__item" href="../adr/README.html">Architecture Decision Records</a></li>
-            <li><a class="docs-next-steps__item" href="../runbooks/README.html">Runbooks</a></li>
-          </ul>
-        </nav>
+                        <nav class="docs-next-steps" aria-label="Next steps">
+                          <p class="docs-next-steps__heading">See also</p>
+                          <ul class="docs-next-steps__list">
+                            <li><a class="docs-next-steps__item" href="../howto/README.html">How-to guides</a></li>
+                            <li><a class="docs-next-steps__item" href="../adr/README.html">Architecture Decision Records</a></li>
+                            <li><a class="docs-next-steps__item" href="../runbooks/README.html">Runbooks</a></li>
+                          </ul>
+                        </nav>
 
-        <section id="page-history" class="card">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Change</th>
-                  <th scope="col">Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-28">2026-04-28</time></td>
-                  <td>Restructured as navigation hub: section dividers, bullet-list sections, full index table.</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-                <tr>
-                  <td><time datetime="2026-04-23">2026-04-23</time></td>
-                  <td>Developer hub consolidated here; former <code>docs/internal/developers.html</code> removed.</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-                <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Added Page history section (repository baseline).</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+                        <section id="page-history" class="card">
+                          <h2>Page history</h2>
+                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                            <table class="docs-page-history">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Date</th>
+                                  <th scope="col">Change</th>
+                                  <th scope="col">Author</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><time datetime="2026-04-28">2026-04-28</time></td>
+                                  <td>Restructured as navigation hub: section dividers, bullet-list sections, full index table.</td>
+                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                                <tr>
+                                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                  <td>Developer hub consolidated here; former <code>docs/internal/developers.html</code> removed.</td>
+                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                                <tr>
+                                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                  <td>Added Page history section (repository baseline).</td>
+                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-      </main>
-    </div>
-  </div>
+                        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+                          Found a bug? Report issue
+                        </button>
+                        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+                      </main>
+                    </div>
+                  </div>
 
-</body>
-
-</html>
+                </body></html>

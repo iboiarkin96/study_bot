@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -73,121 +71,118 @@
       <ul>
         <li><code>docs/developer/README.html</code> — Developers Docs (engineering workflow hub, mandatory standards,
           and index of guides under <code>docs/developer/</code> and <code>docs/howto/</code>)</li>
-        <li><code>docs/adr/README.html</code> — ADR index</li>
-        <li><code>docs/runbooks/README.html</code> — runbooks index</li>
-        <li><code>docs/backlog/README.html</code> — product and quality backlog</li>
-      </ul>
+          <li><code>docs/adr/README.html</code> — ADR index</li>
+          <li><code>docs/runbooks/README.html</code> — runbooks index</li>
+          <li><code>docs/backlog/README.html</code> — product and quality backlog</li>
+        </ul>
 
-      <h3>Other human-readable docs</h3>
-      <ul>
-        <li>Human docs:
-          <ul>
-            <li><code>README.md</code> (repository root)</li>
-            <li><code>docs/internal/analysis/system-design.html</code> — system architecture and requirements</li>
-            <li><code>docs/internal/analysis/methodology.html</code> — learning methodology (<span
-                class="docs-tooltip docs-tooltip--etr">ETR</span> narrative; non-normative for APIs)</li>
-          </ul>
-        </li>
-        <li>Diagram sources:
-          <ul>
-            <li><code>docs/uml/**/*.puml</code></li>
-          </ul>
-        </li>
-        <li>Generated diagrams:
-          <ul>
-            <li><code>docs/uml/rendered/*.svg</code></li>
-          </ul>
-        </li>
-        <li>Sync tooling:
-          <ul>
-            <li><code>scripts/regenerate_docs.py</code></li>
-            <li><code>scripts/sync_docs.py</code></li>
-          </ul>
-        </li>
-        <li>Make targets:
-          <ul>
-            <li>
-              <code>make docs-fix</code>
-            </li>
-            <li><code>make docs-check</code> (included in the canonical <code>make verify</code> locally and in CI)</li>
-            <li><code>make release-check</code></li>
-            <li><code>make release DEPLOY_CMD="..."</code></li>
-          </ul>
-        </li>
-      </ul>
+        <h3>Other human-readable docs</h3>
+        <ul>
+          <li>Human docs:
+            <ul>
+              <li><code>README.md</code> (repository root)</li>
+              <li><code>docs/internal/analysis/system-design.html</code> — system architecture and requirements</li>
+              <li><code>docs/internal/analysis/methodology.html</code> — learning methodology (<span class="docs-tooltip docs-tooltip--etr">ETR</span> narrative; non-normative for APIs)</li>
+            </ul>
+          </li>
+          <li>Diagram sources:
+            <ul>
+              <li><code>docs/uml/**/*.puml</code></li>
+            </ul>
+          </li>
+          <li>Generated diagrams:
+            <ul>
+              <li><code>docs/uml/rendered/*.svg</code></li>
+            </ul>
+          </li>
+          <li>Sync tooling:
+            <ul>
+              <li><code>scripts/regenerate_docs.py</code></li>
+              <li><code>scripts/sync_docs.py</code></li>
+            </ul>
+          </li>
+          <li>Make targets:
+            <ul>
+              <li>
+                <code>make docs-fix</code>
+              </li>
+              <li><code>make docs-check</code> (included in the canonical <code>make verify</code> locally and in CI)</li>
+              <li><code>make release-check</code></li>
+              <li><code>make release DEPLOY_CMD="..."</code></li>
+            </ul>
+          </li>
+        </ul>
 
-      <h3>Authoring model</h3>
-      <p>
-        Narrative documentation under <code>docs/adr/</code>, <code>docs/developer/</code>, <code>docs/runbooks/</code>,
-        and related trees is <strong>authored as HTML</strong> and normalized by
-        <code>scripts/format_docs_html.py</code>.
-        Optional Markdown files (<code>*.md</code>) in those folders are supported: when present,
-        <code>scripts/render_docs_html.py</code> writes companion <code>*.html</code> next to them. Markdown is not
-        required for those sections.
-      </p>
+        <h3>Authoring model</h3>
+        <p>
+          Narrative documentation under <code>docs/adr/</code>, <code>docs/developer/</code>, <code>docs/runbooks/</code>,
+          and related trees is <strong>authored as HTML</strong> and normalized by
+          <code>scripts/format_docs_html.py</code>.
+          Optional Markdown files (<code>*.md</code>) in those folders are supported: when present,
+          <code>scripts/render_docs_html.py</code> writes companion <code>*.html</code> next to them. Markdown is not
+          required for those sections.
+        </p>
 
-      <h3>Quality gate: <code>docs-check</code></h3>
-      <p>
-        <code>make docs-check</code> records <code>git diff HEAD</code>, runs <code>docs-fix</code>, and compares the
-        diff again. If anything changed, committed generated output was stale—run <code>make docs-fix</code> and
-        commit. See <a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a>.
-      </p>
+        <h3>Quality gate: <code>docs-check</code></h3>
+        <p>
+          <code>make docs-check</code> records <code>git diff HEAD</code>, runs <code>docs-fix</code>, and compares the
+          diff again. If anything changed, committed generated output was stale—run <code>make docs-fix</code> and
+          commit. See <a href="../developer/0008-docs-pipeline.html">Documentation pipeline</a>.
+        </p>
 
-    </section>
-    <section class="card">
-      <h2>Consequences</h2>
-      <h3>Positive</h3>
-      <ul>
-        <li>Documentation remains aligned with runtime behavior.</li>
-        <li>Changes are auditable in PR history.</li>
-        <li>Release process blocks stale docs and missing generated artifacts.</li>
-      </ul>
+      </section>
+      <section class="card">
+        <h2>Consequences</h2>
+        <h3>Positive</h3>
+        <ul>
+          <li>Documentation remains aligned with runtime behavior.</li>
+          <li>Changes are auditable in PR history.</li>
+          <li>Release process blocks stale docs and missing generated artifacts.</li>
+        </ul>
 
-      <h3>Trade-offs</h3>
-      <ul>
-        <li>Slightly longer pre-release pipeline.</li>
-        <li>Developers must run docs commands as part of regular workflow.</li>
-      </ul>
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>Slightly longer pre-release pipeline.</li>
+          <li>Developers must run docs commands as part of regular workflow.</li>
+        </ul>
 
-    </section>
-    <section class="card">
-      <h2>Usage</h2>
-      <p>Typical workflow:</p>
-      <pre><code>
-        make test
-        make docs-fix
-        make release-check
-      </code></pre>
-    </section>
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      </section>
+      <section class="card">
+        <h2>Usage</h2>
+        <p>Typical workflow:</p>
+        <pre><code>
+          make test
+          make docs-fix
+          make release-check
+        </code></pre>
+      </section>
+      <section id="page-history" class="card">
+        <h2>Page history</h2>
+        <div class="docs-table-scroll" role="region" aria-label="Page history">
+          <table class="docs-page-history">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Change</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><time datetime="2026-04-21">2026-04-21</time></td>
+                <td>Added Page history section (repository baseline).</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+        Found a bug? Report issue
+      </button>
+      <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+    </main>
 
-</body>
-
-</html>
+  </body></html>

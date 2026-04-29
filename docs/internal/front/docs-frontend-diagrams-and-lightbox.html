@@ -20,7 +20,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend diagrams and lightbox</h1>
+        <h1>Docs frontend diagrams and lightbox <span class="docs-page-type docs-page-type--component">Component</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -143,6 +143,33 @@
           </ol>
         </section>
 
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Embed diagrams as <code>&lt;figure&gt;</code> with a rendered <code>&lt;img&gt;</code> from a PlantUML source — small payload, lightbox-friendly.</td>
+                <td>Inline SVG large enough to need a lightbox — slows page paint and defeats the purpose of the viewer.</td>
+              </tr>
+              <tr>
+                <td>Author diagrams in PlantUML per <a href="../../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>.</td>
+                <td>Use Mermaid or any other diagramming syntax — portal style is PlantUML-only.</td>
+              </tr>
+              <tr>
+                <td>Load <code>docs-diagram-lightbox.js</code> only on pages that ship diagrams.</td>
+                <td>Add it to the global template — paying the runtime cost on every page is wasteful.</td>
+              </tr>
+              <tr>
+                <td>Verify keyboard close (<kbd>Esc</kbd>) and focus restoration to the launching <code>&lt;img&gt;</code>.</td>
+                <td>Leave focus stranded on <code>document.body</code> after closing — screen-reader users lose place.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
         <section id="related-pages" class="card">
           <h2>Related pages</h2>
           <ul>
@@ -164,6 +191,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (PNG vs inline SVG, PlantUML-only, opt-in loading, focus restore).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-23">2026-04-23</time></td>
                   <td>Added implementation contract for diagrams and <code>docs-diagram-lightbox.js</code> behavior.</td>

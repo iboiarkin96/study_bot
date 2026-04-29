@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -54,159 +52,155 @@
       <ul>
         <li><strong>Zero-result rate</strong> =
           <code>count(search_query where results_count = 0) / count(search_query)</code>.</li>
-        <li><strong>Query CTR</strong> =
-          <code>count(distinct query_id with at least one search_result_click) / count(search_query)</code>.</li>
-        <li><strong>TTFS</strong> (time-to-first-success) = distribution of first
-          <code>search_success.time_to_success_ms</code> per session (p50/p75).</li>
-      </ul>
-      <p>
-        Data source: <code>GET /internal/telemetry/docs-search/metrics?window_minutes=&lt;N&gt;</code>.
-      </p>
-    </section>
+          <li><strong>Query CTR</strong> =
+            <code>count(distinct query_id with at least one search_result_click) / count(search_query)</code>.</li>
+            <li><strong>TTFS</strong> (time-to-first-success) = distribution of first
+              <code>search_success.time_to_success_ms</code> per session (p50/p75).</li>
+            </ul>
+            <p>
+              Data source: <code>GET /internal/telemetry/docs-search/metrics?window_minutes=&lt;N&gt;</code>.
+            </p>
+          </section>
 
-    <section class="card">
-      <h2>Targets (rolling 7-day window)</h2>
-      <table>
-        <thead>
-          <tr>
-            <th><span tabindex="0"
-                data-tooltip="Key performance indicator for docs search (definitions in § Canonical KPI definitions).">KPI</span>
-            </th>
-            <th><span tabindex="0" data-tooltip="Desired level for the rolling 7-day window.">Target</span></th>
-            <th><span tabindex="0" data-tooltip="Investigate if the KPI stays here for 2+ consecutive days.">Warning
-                threshold</span></th>
-            <th><span tabindex="0"
-                data-tooltip="Escalate: open backlog work if any KPI is here for 24h (see Response playbook).">Breach
-                threshold</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Zero-result rate</td>
-            <td>≤ 12%</td>
-            <td>&gt; 12% and ≤ 18%</td>
-            <td>&gt; 18%</td>
-          </tr>
-          <tr>
-            <td>Query CTR</td>
-            <td>≥ 45%</td>
-            <td>&lt; 45% and ≥ 35%</td>
-            <td>&lt; 35%</td>
-          </tr>
-          <tr>
-            <td>TTFS p50</td>
-            <td>≤ 25s</td>
-            <td>&gt; 25s and ≤ 40s</td>
-            <td>&gt; 40s</td>
-          </tr>
-          <tr>
-            <td>TTFS p75</td>
-            <td>≤ 60s</td>
-            <td>&gt; 60s and ≤ 90s</td>
-            <td>&gt; 90s</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+          <section class="card">
+            <h2>Targets (rolling 7-day window)</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th><span tabindex="0" data-tooltip="Key performance indicator for docs search (definitions in § Canonical KPI definitions).">KPI</span>
+                  </th>
+                  <th><span tabindex="0" data-tooltip="Desired level for the rolling 7-day window.">Target</span></th>
+                  <th><span tabindex="0" data-tooltip="Investigate if the KPI stays here for 2+ consecutive days.">Warning
+                    threshold</span></th>
+                    <th><span tabindex="0" data-tooltip="Escalate: open backlog work if any KPI is here for 24h (see Response playbook).">Breach
+                      threshold</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Zero-result rate</td>
+                      <td>≤ 12%</td>
+                      <td>&gt; 12% and ≤ 18%</td>
+                      <td>&gt; 18%</td>
+                    </tr>
+                    <tr>
+                      <td>Query CTR</td>
+                      <td>≥ 45%</td>
+                      <td>&lt; 45% and ≥ 35%</td>
+                      <td>&lt; 35%</td>
+                    </tr>
+                    <tr>
+                      <td>TTFS p50</td>
+                      <td>≤ 25s</td>
+                      <td>&gt; 25s and ≤ 40s</td>
+                      <td>&gt; 40s</td>
+                    </tr>
+                    <tr>
+                      <td>TTFS p75</td>
+                      <td>≤ 60s</td>
+                      <td>&gt; 60s and ≤ 90s</td>
+                      <td>&gt; 90s</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
 
-    <section class="card">
-      <h2>Operating cadence</h2>
-      <ul>
-        <li><strong>Weekly:</strong> review KPIs for the last 7 and 30 days.</li>
-        <li><strong>Before big doc releases:</strong> confirm no KPI is in breach.</li>
-        <li><strong>Monthly:</strong> add a short trend note to <code>docs/CHANGELOG.md</code> or an audit page when
-          numbers move a lot.</li>
-      </ul>
-    </section>
+              <section class="card">
+                <h2>Operating cadence</h2>
+                <ul>
+                  <li><strong>Weekly:</strong> review KPIs for the last 7 and 30 days.</li>
+                  <li><strong>Before big doc releases:</strong> confirm no KPI is in breach.</li>
+                  <li><strong>Monthly:</strong> add a short trend note to <code>docs/CHANGELOG.md</code> or an audit page when
+                    numbers move a lot.</li>
+                  </ul>
+                </section>
 
-    <section class="card">
-      <h2>Response playbook</h2>
-      <h3>Warning (one KPI in warning for 2+ days)</h3>
-      <ol>
-        <li>Look at top zero-result queries and low click-through queries.</li>
-        <li>Rebuild the index: <code>python3 scripts/build_docs_search_index.py</code>.</li>
-        <li>Check recent content or nav changes that could hurt ranking.</li>
-      </ol>
+                <section class="card">
+                  <h2>Response playbook</h2>
+                  <h3>Warning (one KPI in warning for 2+ days)</h3>
+                  <ol>
+                    <li>Look at top zero-result queries and low click-through queries.</li>
+                    <li>Rebuild the index: <code>python3 scripts/build_docs_search_index.py</code>.</li>
+                    <li>Check recent content or nav changes that could hurt ranking.</li>
+                  </ol>
 
-      <h3>Breach (any KPI in breach for 24h)</h3>
-      <ol>
-        <li>Open a backlog item and assign an owner to fix within 48h.</li>
-        <li>Run the checks in <a href="./0001-docs-search-implementation.html">RFC 0001</a> (local validation +
-          telemetry).</li>
-        <li>Fix quickly: rebuild index, roll back ranking changes, or fix nav/content.</li>
-        <li>If users see clearly worse search, add a short runbook or changelog note.</li>
-      </ol>
-    </section>
+                  <h3>Breach (any KPI in breach for 24h)</h3>
+                  <ol>
+                    <li>Open a backlog item and assign an owner to fix within 48h.</li>
+                    <li>Run the checks in <a href="./0001-docs-search-implementation.html">RFC 0001</a> (local validation +
+                      telemetry).</li>
+                      <li>Fix quickly: rebuild index, roll back ranking changes, or fix nav/content.</li>
+                      <li>If users see clearly worse search, add a short runbook or changelog note.</li>
+                    </ol>
+                  </section>
 
-    <section class="card">
-      <h2>Runbook links</h2>
-      <ul>
-        <li><a href="./0001-docs-search-implementation.html#troubleshooting">RFC 0001 troubleshooting</a></li>
-        <li><a href="../runbooks/0003-logging-failing.html">Runbook: Logging failing</a> (telemetry/log signal checks)
-        </li>
-        <li><a href="../runbooks/0005-quality-check-failing.html">Runbook: Quality-check failing</a> (CI and docs
-          pipeline gates)</li>
-      </ul>
-    </section>
+                  <section class="card">
+                    <h2>Runbook links</h2>
+                    <ul>
+                      <li><a href="./0001-docs-search-implementation.html#troubleshooting">RFC 0001 troubleshooting</a></li>
+                      <li><a href="../runbooks/0003-logging-failing.html">Runbook: Logging failing</a> (telemetry/log signal checks)
+                      </li>
+                      <li><a href="../runbooks/0005-quality-check-failing.html">Runbook: Quality-check failing</a> (CI and docs
+                        pipeline gates)</li>
+                      </ul>
+                    </section>
 
-    <section class="card">
-      <h2>Change management</h2>
-      <ul>
-        <li>Change KPI thresholds only after at least 30 days of data and a short written reason.</li>
-        <li>Update this RFC and mention the change in <code>docs/CHANGELOG.md</code>.</li>
-        <li>Update an ADR only if the architecture changes — not for small threshold tweaks.</li>
-      </ul>
-    </section>
+                    <section class="card">
+                      <h2>Change management</h2>
+                      <ul>
+                        <li>Change KPI thresholds only after at least 30 days of data and a short written reason.</li>
+                        <li>Update this RFC and mention the change in <code>docs/CHANGELOG.md</code>.</li>
+                        <li>Update an ADR only if the architecture changes — not for small threshold tweaks.</li>
+                      </ul>
+                    </section>
 
-    <section id="page-history" class="card">
+                    <section id="page-history" class="card">
 
-      <h2>Page history</h2>
+                      <h2>Page history</h2>
 
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
+                      <div class="docs-table-scroll" role="region" aria-label="Page history">
 
-        <table class="docs-page-history">
+                        <table class="docs-page-history">
 
-          <thead>
+                          <thead>
 
-            <tr>
+                            <tr>
 
-              <th scope="col">Date</th>
+                              <th scope="col">Date</th>
 
-              <th scope="col">Change</th>
+                              <th scope="col">Change</th>
 
-              <th scope="col">Author</th>
+                              <th scope="col">Author</th>
 
-            </tr>
+                            </tr>
 
-          </thead>
+                          </thead>
 
-          <tbody>
+                          <tbody>
 
-            <tr>
+                            <tr>
 
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
+                              <td><time datetime="2026-04-21">2026-04-21</time></td>
 
-              <td>Added Page history section (repository baseline).</td>
+                              <td>Added Page history section (repository baseline).</td>
 
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
 
-            </tr>
+                            </tr>
 
-          </tbody>
+                          </tbody>
 
-        </table>
+                        </table>
 
-      </div>
+                      </div>
 
-    </section>
+                    </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
+                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+                      Found a bug? Report issue
+                    </button>
+                    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+                  </main>
 
-</body>
-
-</html>
+                </body></html>

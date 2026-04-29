@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend JavaScript modules — reference</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend JavaScript modules <span class="docs-page-type docs-page-type--reference">Reference</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            Lookup table for every JavaScript module under <code>docs/assets/*.js</code>: file role, where it is
+            loaded, what it exports, what <code>data-*</code> contracts it consumes, what custom events it dispatches,
+            and which storage keys it owns. Use this page when you need to answer <em>"what runtime owns this
+            behavior?"</em> or <em>"is it safe to rename this attribute?"</em>.
+          </p>
+          <p class="small">
+            For runtime block diagram and ownership zones, see the
+            <a href="./docs-frontend-architecture-map.html">architecture map</a>. For UI-level component descriptions,
+            see the <a href="./docs-frontend-ui-kit.html">UI kit</a>. For CSS layer organization, see the
+            <a href="./docs-frontend-css-architecture.html">CSS architecture reference</a>.
+          </p>
+        </section>
+
+        <section id="summary" class="card">
+          <h2>At-a-glance summary</h2>
+          <p class="small">
+            All sizes are source-file bytes (not minified, no transpile step in this project). "Loaded?" reflects
+            whether the file is reachable from a normally-loaded HTML page; "—" means dynamic-load by another module
+            rather than a direct <code>&lt;script&gt;</code> tag.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="JavaScript modules summary">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">File</th>
+                  <th scope="col">Size</th>
+                  <th scope="col">Role (one line)</th>
+                  <th scope="col">Loaded?</th>
+                  <th scope="col">Related spec</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>docs-nav.js</code></td>
+                  <td>147 KB</td>
+                  <td>Core runtime — top nav, search, theme, in-page TOC, feedback, quick actions</td>
+                  <td>direct, every page</td>
+                  <td><a href="./docs-frontend-navigation-search-and-discovery.html">navigation, search, discovery</a></td>
+                </tr>
+                <tr>
+                  <td><code>internal-sidebar.js</code></td>
+                  <td>35 KB</td>
+                  <td>Left navigation tree, drawer state, collapse toggle, active highlighting</td>
+                  <td>direct, internal pages</td>
+                  <td><a href="./docs-frontend-navigation-search-and-discovery.html">navigation, search, discovery</a></td>
+                </tr>
+                <tr>
+                  <td><code>home-landing.js</code></td>
+                  <td>29 KB</td>
+                  <td>Landing-page intro overlay, glyph rain, parallax, magnetic CTAs, scroll progress</td>
+                  <td>direct, <code>docs/index.html</code> only</td>
+                  <td><a href="./screens/docs-screen-home-landing.html">home landing screen spec</a></td>
+                </tr>
+                <tr>
+                  <td><code>docs-portal-data.js</code></td>
+                  <td>18 KB</td>
+                  <td>Static data export — maintainers, people profiles, group memberships</td>
+                  <td>direct, every page</td>
+                  <td><a href="./docs-frontend-feedback-and-editorial-workflow.html">feedback &amp; editorial workflow</a></td>
+                </tr>
+                <tr>
+                  <td><code>docs-internal-meta.js</code></td>
+                  <td>14 KB</td>
+                  <td>Page maintainers panel, employee portal profile rendering, paginated maintained-pages list</td>
+                  <td>direct, every page</td>
+                  <td><a href="./docs-frontend-ui-kit.html">UI kit</a></td>
+                </tr>
+                <tr>
+                  <td><code>docs-syntax.js</code></td>
+                  <td>14 KB</td>
+                  <td>Client-side syntax highlighter (Python / Bash / JSON / YAML / HTTP / JS)</td>
+                  <td><strong>Not loaded anywhere</strong> — see note in the detail section</td>
+                  <td>— (undocumented historically)</td>
+                </tr>
+                <tr>
+                  <td><code>docs-diagram-lightbox.js</code></td>
+                  <td>8 KB</td>
+                  <td>Full-screen diagram viewer with zoom, pan, keyboard navigation</td>
+                  <td>direct, on diagram-bearing pages only</td>
+                  <td><a href="./docs-frontend-diagrams-and-lightbox.html">diagrams &amp; lightbox</a></td>
+                </tr>
+                <tr>
+                  <td><code>docs-resume.js</code></td>
+                  <td>5.7 KB</td>
+                  <td>"Resume reading" banner + back-to-top floating button for long pages</td>
+                  <td>direct, opt-in per page</td>
+                  <td>see <a href="#docs-resume">detail below</a> — no dedicated component spec yet</td>
+                </tr>
+                <tr>
+                  <td><code>docs-popups.js</code></td>
+                  <td>4.6 KB</td>
+                  <td>Sticky-TOC promo toast and continue-reading toast — used by the core runtime</td>
+                  <td>indirect — injected by <code>docs-nav.js</code></td>
+                  <td><a href="./docs-frontend-popups-and-overlays.html">popups &amp; overlays</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="docs-nav" class="card">
+          <h2><code>docs-nav.js</code> — core runtime</h2>
+          <dl class="docs-module-meta">
+            <dt>Wrapped in IIFE</dt><dd>Yes</dd>
+            <dt>Init trigger</dt><dd><code>DOMContentLoaded</code> (deferred)</dd>
+            <dt>Loaded by</dt><dd>Every HTML page in <code>docs/</code> via the standard <code>&lt;script defer src="…/assets/docs-nav.js"&gt;</code> tag.</dd>
+            <dt>CustomEvents emitted</dt>
+            <dd>
+              <ul>
+                <li><code>docs-palette-telemetry</code> — quick-actions usage signal</li>
+                <li><code>docs-search-telemetry</code> — search usage signal</li>
+                <li><code>internal-sidebar:toggle-drawer</code> — request to open/close left drawer</li>
+              </ul>
+            </dd>
+            <dt>CustomEvents listened</dt>
+            <dd><code>internal-sidebar:drawer-state</code> — react to drawer open/close from <code>internal-sidebar.js</code></dd>
+            <dt><code>data-*</code> attributes consumed</dt>
+            <dd>
+              <code>data-adr-weight</code>, <code>data-rfc-weight</code>, <code>data-docs-theme-toggle</code>,
+              <code>data-search-action</code>, <code>data-search-query</code>, <code>data-legend-id</code>,
+              <code>data-inpage-toc</code>, <code>data-docs-lifecycle</code>, <code>data-docs-page-title-row</code>,
+              <code>data-internal-drawer-menu</code>, <code>data-docs-quick-actions-open</code>,
+              <code>data-docs-reading-mode-toggle</code>, <code>data-action-key</code>, <code>data-qa-close</code>
+            </dd>
+            <dt><code>data-*</code> attributes set</dt>
+            <dd>
+              <code>data-theme</code> (on <code>&lt;html&gt;</code>), <code>data-lang</code> (on <code>&lt;pre&gt;</code>),
+              <code>data-docs-lifecycle-version</code>, <code>data-theme-mode</code>,
+              <code>data-search-action</code>, <code>data-search-query</code>,
+              <code>data-docs-page-title-row</code>, <code>data-internal-drawer-menu</code>,
+              <code>dataset.docsFeedbackMounted</code>
+            </dd>
+            <dt>Storage keys owned</dt>
+            <dd>
+              <code>docs-theme-preference</code>, <code>docs-reading-mode-enabled</code>,
+              <code>docs-hotkey-hint-dismissed-v1</code>, <code>docs-reading-progress-v1</code>,
+              <code>docs.internal.sidebar.collapsed</code>, <code>docs.internal.sidebar.drawer.open</code>
+            </dd>
+            <dt>DOM mount points</dt>
+            <dd>
+              <code>#docs-top-nav</code>, <code>#internal-sidebar-mount</code>, <code>#docs-page-meta-mount</code>,
+              <code>.docs-inpage-toc-mount</code>, <code>#docs-feedback-anchor</code>, <code>#docs-search-results</code>
+            </dd>
+          </dl>
+          <p class="small">Renames or removals here propagate to nearly every page. Touch with the change-management
+            checklist in the <a href="./documentation-process.html">maintenance process</a>.</p>
+          </section>
+
+          <section id="internal-sidebar" class="card">
+            <h2><code>internal-sidebar.js</code> — left tree navigation</h2>
+            <dl class="docs-module-meta">
+              <dt>Wrapped in IIFE</dt><dd>Yes</dd>
+              <dt>Init trigger</dt><dd><code>DOMContentLoaded</code></dd>
+              <dt>Loaded by</dt><dd>Every internal page (<code>docs/index.html</code>, <code>docs/internal/**/*.html</code>, all portal pages).</dd>
+              <dt>CustomEvents emitted</dt><dd><code>internal-sidebar:drawer-state</code></dd>
+              <dt>CustomEvents listened</dt><dd><code>internal-sidebar:toggle-drawer</code></dd>
+              <dt><code>data-*</code> attributes consumed</dt>
+              <dd><code>data-internal-sidebar-toggle</code>, <code>data-internal-sidebar-group-info</code></dd>
+              <dt><code>data-*</code> attributes set</dt>
+              <dd><code>data-internal-sidebar-toggle</code>, <code>data-internal-sidebar-drawer-menu</code></dd>
+              <dt>Storage keys owned</dt>
+              <dd><code>docs.internal.sidebar.collapsed</code>, <code>docs.internal.sidebar.drawer.open</code></dd>
+              <dt>DOM mount points</dt>
+              <dd><code>#internal-sidebar-mount</code>, <code>.internal-layout__sidebar</code>, <code>.internal-layout__main</code></dd>
+              <dt>Single source of truth</dt>
+              <dd><code>INTERNAL_SIDEBAR_NAV</code> array literal at the top of the module — every nav change happens there. Sidebar tree, drawer top-nav sections, and active-state logic all derive from it.</dd>
+            </dl>
+          </section>
+
+          <section id="home-landing" class="card">
+            <h2><code>home-landing.js</code> — landing page choreography</h2>
+            <dl class="docs-module-meta">
+              <dt>Wrapped in IIFE</dt><dd>Yes</dd>
+              <dt>Init trigger</dt><dd><code>DOMContentLoaded</code> (or immediate if document already loaded)</dd>
+              <dt>Loaded by</dt><dd><code>docs/index.html</code> only</dd>
+              <dt>CustomEvents emitted</dt><dd><code>home:intro-done</code> — fires when boot intro overlay finishes</dd>
+              <dt>CustomEvents listened</dt><dd><code>home:intro-done</code> (intra-module, used to gate persistent-page animations)</dd>
+              <dt><code>data-*</code> attributes consumed</dt>
+              <dd>
+                <code>data-home-intro</code>, <code>data-home-intro-rain</code>, <code>data-home-intro-wordmark</code>,
+                <code>data-home-intro-glyphs</code>, <code>data-home-intro-progress</code>,
+                <code>data-home-intro-progress-pct</code>, <code>data-home-intro-status</code>,
+                <code>data-home-intro-skip</code>, <code>data-home-parallax-host</code>,
+                <code>data-home-parallax-layer</code>, <code>data-home-dotgrid</code>,
+                <code>data-home-tickers</code>, <code>data-home-ticker-target</code>,
+                <code>data-home-ticker-suffix</code>, <code>data-home-decrypt</code>,
+                <code>data-home-variable-weight</code>, <code>data-home-terminal</code>,
+                <code>data-home-terminal-target</code>, <code>data-home-vt</code>,
+                <code>data-home-magnetic</code>, <code>data-home-reveal</code>,
+                <code>data-home-scroll-progress</code>, <code>data-section-tint</code>
+              </dd>
+              <dt><code>data-*</code> attributes set</dt>
+              <dd><code>dataset.fixed</code>, <code>dataset.locked</code>, <code>dataset.done</code> (wordmark span state machine)</dd>
+              <dt>Storage keys owned</dt><dd>—</dd>
+              <dt>Selector hooks</dt>
+              <dd>All mounts are <code>data-home-*</code> selectors, no element IDs. The full anatomy is documented in
+                the <a href="./screens/docs-screen-home-landing.html">home landing screen spec</a>.</dd>
+              </dl>
+            </section>
+
+            <section id="docs-portal-data" class="card">
+              <h2><code>docs-portal-data.js</code> — portal data store</h2>
+              <dl class="docs-module-meta">
+                <dt>Wrapped in IIFE</dt><dd>No (pure data export)</dd>
+                <dt>Init trigger</dt><dd>Parsed on script load — assigns immediately</dd>
+                <dt>Loaded by</dt><dd>Every page that renders portal/maintainer info; bundled in standard internal-page template.</dd>
+                <dt>Window globals exported</dt>
+                <dd><code>window.__DOCS_PORTAL_DATA__</code> — JSON object with two top-level keys: <code>maintainerPages</code> (page → maintainer-id mapping) and <code>people</code> (employee profile array).</dd>
+                <dt>Consumed by</dt><dd><code>docs-internal-meta.js</code> (renders maintainer panels and people profiles).</dd>
+                <dt>Generation</dt>
+                <dd>This file is hand-edited today. Long-term ambition is to generate it from a YAML or JSON source — see <a href="./docs-frontend-feedback-and-editorial-workflow.html#portal-data-model">portal data model</a>.</dd>
+              </dl>
+            </section>
+
+            <section id="docs-internal-meta" class="card">
+              <h2><code>docs-internal-meta.js</code> — page-meta &amp; portal rendering</h2>
+              <dl class="docs-module-meta">
+                <dt>Wrapped in IIFE</dt><dd>Yes</dd>
+                <dt>Init trigger</dt><dd><code>DOMContentLoaded</code> (or immediate)</dd>
+                <dt>Loaded by</dt><dd>Standard internal-page template; loaded on every <code>docs/internal/**/*.html</code> and most public pages.</dd>
+                <dt>Window globals exported</dt>
+                <dd><code>window.__DOCS_INTERNAL_META__</code>, <code>window.initDocsInternalMeta</code></dd>
+                <dt><code>data-*</code> attributes consumed</dt>
+                <dd>
+                  <code>data-maintainer-ids</code> (on <code>&lt;body&gt;</code>) — comma-separated maintainer IDs.<br>
+                  <code>data-person-id</code> (on <code>&lt;body&gt;</code>) — used on portal employee profile pages.
+                </dd>
+                <dt><code>data-*</code> attributes set</dt><dd><code>data-maintained-act</code> (pagination buttons)</dd>
+                <dt>DOM mount points</dt>
+                <dd>
+                  <code>#docs-page-meta-mount</code> — "Edited by" panel,<br>
+                  <code>#portal-maintained-mount</code> — list of pages a person maintains,<br>
+                  <code>#portal-people-mount</code> — full employee directory grid.
+                </dd>
+              </dl>
+            </section>
+
+            <section id="docs-syntax" class="card">
+              <h2><code>docs-syntax.js</code> — syntax highlighter (currently unwired)</h2>
+              <div class="callout callout--warn">
+                <strong>Status:</strong> file exists in <code>docs/assets/</code> but is <strong>not loaded by any HTML
+                page</strong>. The Phase 1 portal redesign created it together with
+                <code>docs-syntax-theme.css</code> intending to wire it into the six hub pages
+                (<code>adr/</code>, <code>developer/</code>, <code>howto/</code>, <code>runbooks/</code>,
+                <code>qa/</code>, <code>rfc/</code> READMEs). The <code>&lt;script&gt;</code> tags were either reverted
+                or never persisted. Until a wire-up decision is made, treat this module as <strong>available but
+                inactive</strong> — its <code>.st-*</code> token classes still ship in <code>docs-syntax-theme.css</code>
+                and are visible if highlighting is added back later.
+              </div>
+              <dl class="docs-module-meta">
+                <dt>Wrapped in IIFE</dt><dd>Yes (<code>initDocsSyntaxHighlight</code>)</dd>
+                <dt>Init trigger</dt><dd><code>DOMContentLoaded</code> or <code>requestIdleCallback</code> if already loaded</dd>
+                <dt>Loaded by</dt><dd><strong>Nothing.</strong> No <code>&lt;script&gt;</code> tag references it; <code>docs-nav.js</code> does not <code>import()</code> it dynamically.</dd>
+                <dt>Languages supported</dt><dd>Python, Bash, JSON, YAML, HTTP, JavaScript</dd>
+                <dt><code>data-*</code> attributes set</dt><dd><code>data-lang</code> on <code>&lt;pre&gt;</code> elements (read by <code>pre[data-lang]::before</code> badge in <code>docs-syntax-theme.css</code>)</dd>
+                <dt>DOM target</dt><dd><code>pre &gt; code</code> (every code block in document)</dd>
+                <dt>Decision pending</dt>
+                <dd>Two options: (a) wire <code>&lt;script defer src="…/assets/docs-syntax.js"&gt;</code> into every page that ships <code>&lt;pre&gt;&lt;code&gt;</code> (preferred — matches the original Phase 1 intent); (b) delete <code>docs-syntax.js</code> and <code>docs-syntax-theme.css</code> and remove the <code>@import</code> from <code>docs.css</code>.</dd>
+              </dl>
+            </section>
+
+            <section id="docs-diagram-lightbox" class="card">
+              <h2><code>docs-diagram-lightbox.js</code> — full-screen diagram viewer</h2>
+              <dl class="docs-module-meta">
+                <dt>Wrapped in IIFE</dt><dd>Yes</dd>
+                <dt>Init trigger</dt><dd><code>DOMContentLoaded</code> (deferred)</dd>
+                <dt>Loaded by</dt>
+                <dd>
+                  Five pages currently — wherever PlantUML diagrams need fullscreen expansion:
+                  <code>developer/README.html</code>, <code>developer/0010-make-commands-and-workflows.html</code>,
+                  <code>internal/analysis/system-design.html</code>, <code>internal/analysis/methodology.html</code>,
+                  <code>internal/front/docs-frontend-diagrams-and-lightbox.html</code>.
+                </dd>
+                <dt>DOM injected</dt><dd>Creates <code>#docs-diagram-lightbox</code> dynamically on first open.</dd>
+                <dt>Behavior contract</dt>
+                <dd>Documented in the <a href="./docs-frontend-diagrams-and-lightbox.html">diagrams &amp; lightbox</a> page (open flow, zoom, pan, keyboard, focus management).</dd>
+              </dl>
+            </section>
+
+            <section id="docs-resume" class="card">
+              <h2><code>docs-resume.js</code> — long-page reading aids</h2>
+              <dl class="docs-module-meta">
+                <dt>Wrapped in IIFE</dt><dd>Yes</dd>
+                <dt>Init trigger</dt><dd><code>DOMContentLoaded</code></dd>
+                <dt>Loaded by</dt><dd>Pages that opt-in via direct <code>&lt;script defer src="…/assets/docs-resume.js"&gt;</code>. Currently used on long internal API operation pages (e.g. <code>conspectus/operations/post-…actions-review.html</code>). Gracefully no-ops if the page has no scrollable content.</dd>
+                <dt>Behavior</dt>
+                <dd>
+                  <ul>
+                    <li><strong>Resume reading banner</strong> — if the reader scrolled past 25 % of the page on a previous visit (within 14 days), shows a top banner with a one-click "jump to where I left off" action.</li>
+                    <li><strong>Back to top button</strong> — floating button appears after 600 px of scroll; smooth-scrolls to top on click.</li>
+                  </ul>
+                </dd>
+                <dt>Storage keys owned</dt>
+                <dd>
+                  <code>localStorage</code>: <code>docs.resume.&lt;path&gt;</code> — JSON <code>{ scrollY, ts }</code>, TTL 14 days.<br>
+                  <code>sessionStorage</code>: <code>docs.resume.seen.&lt;path&gt;</code> — <code>"1"</code> when the banner was acted on or dismissed in this tab.
+                </dd>
+                <dt>Tuning constants</dt>
+                <dd><code>TTL_MS = 14 days</code>, <code>MIN_SCROLL_FRACTION = 0.25</code>, <code>BACK_TO_TOP_THRESHOLD = 600 px</code>, <code>SAVE_THROTTLE_MS = 750 ms</code>.</dd>
+                <dt>CSS dependency</dt>
+                <dd>Visual rules live in <code>internal-layout.css</code> (banner and floating button). See <a href="./docs-frontend-css-architecture.html#internal-layout-deep-dive">internal-layout deep dive</a>.</dd>
+                <dt>Status</dt>
+                <dd>Recently added (2026-04-29) — does not yet have a dedicated component spec page. Backlog: write a Component-type spec under <code>docs/internal/front/</code> covering banner anatomy, button states, opt-in pattern, and the long-page acceptance criteria.</dd>
+              </dl>
+            </section>
+
+            <section id="docs-popups" class="card">
+              <h2><code>docs-popups.js</code> — toast popups</h2>
+              <dl class="docs-module-meta">
+                <dt>Wrapped in IIFE</dt><dd>Yes</dd>
+                <dt>Init trigger</dt><dd>Immediate (IIFE on parse)</dd>
+                <dt>Loaded by</dt>
+                <dd>Indirect — <code>docs-nav.js</code> calls <code>injectDocsPopupsRuntime()</code> which adds a
+                  <code>&lt;script&gt;</code> tag pointing at <code>assets/docs-popups.js</code>. The injection guards
+                  against duplication via <code>!window.DocsPopups</code>.</dd>
+                  <dt>Window globals exported</dt>
+                  <dd><code>window.DocsPopups</code> with two methods:
+                    <code>showStickyTocPromoToast()</code> and <code>showContinueReadingToast()</code>.
+                  </dd>
+                  <dt><code>data-*</code> attributes</dt>
+                  <dd>Generates markup with <code>data-popup-dismiss</code> and <code>data-popup-enable</code> hooks; reads them back to manage toast lifecycle.</dd>
+                  <dt>Surface contract</dt>
+                  <dd>Visual rules and acceptance criteria live in <a href="./docs-frontend-popups-and-overlays.html">popups &amp; overlays</a>.</dd>
+                </dl>
+              </section>
+
+              <section id="conventions" class="card">
+                <h2>Naming and ownership conventions</h2>
+                <ul>
+                  <li><strong>One module per concern.</strong> If a behavior crosses two ownership zones from the
+                    <a href="./docs-frontend-architecture-map.html">architecture map</a>, split it.</li>
+                    <li><strong>IIFE by default.</strong> Modules wrap their internal helpers in
+                      <code>(function(){…})();</code> and only expose what is needed via <code>window.X</code>.</li>
+                      <li><strong>Prefix all globals with <code>window.__DOCS_</code> or <code>window.Docs</code>.</strong>
+                        Anything else collides with page-level scripts.</li>
+                        <li><strong>Custom events use a namespace.</strong> Examples: <code>docs-search-telemetry</code>,
+                          <code>internal-sidebar:drawer-state</code>, <code>home:intro-done</code>. New events must use one of:
+                          <code>docs-*</code>, <code>internal-sidebar:*</code>, <code>home:*</code>.</li>
+                          <li><strong><code>data-*</code> attributes are a contract.</strong> Renaming an attribute is a breaking
+                            change for every HTML page that consumes it. Update the consumer module, every HTML page, and this
+                            reference in the same PR.</li>
+                            <li><strong>Storage keys are versioned where state can drift.</strong> Add <code>-v1</code>,
+                              <code>-v2</code> suffixes when format changes; never silently rewrite existing payloads.</li>
+                              <li><strong>Mount discovery is permissive.</strong> Modules tolerate missing mount points — pages that
+                                do not need a feature simply omit the mount, and the module exits silently.</li>
+                              </ul>
+                            </section>
+
+                            <section id="related" class="card">
+                              <h2>Related internal docs</h2>
+                              <ul>
+                                <li><a href="./docs-frontend-architecture-map.html">Docs frontend architecture map and feature inventory</a> — block model, ownership zones, feature ledger.</li>
+                                <li><a href="./docs-frontend-css-architecture.html">CSS architecture reference</a> — sister page covering stylesheet layers.</li>
+                                <li><a href="./docs-frontend-glossary.html">Docs frontend glossary</a> — terminology used in module docstrings.</li>
+                                <li><a href="./documentation-process.html">Maintenance process</a> — change management for runtime modules.</li>
+                              </ul>
+                            </section>
+
+                            <section id="page-history" class="card">
+                              <h2>Page history</h2>
+                              <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                <table class="docs-page-history">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Date</th>
+                                      <th scope="col">Change</th>
+                                      <th scope="col">Author</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                      <td>Page created — first JS modules reference for the docs portal frontend; documents 8 modules including the previously phantom <code>docs-syntax.js</code>.</td>
+                                      <td>Ivan Boyarkin</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </section>
+
+                            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                          </main>
+                        </div>
+                      </div>
+
+                    </body></html>

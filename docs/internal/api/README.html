@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -37,6 +35,37 @@
           </p>
         </section>
 
+        <section class="card" id="documentation-layers">
+          <h2>Documentation layers (read this first)</h2>
+          <p>
+            <strong>This space is the source of truth for requirements.</strong> Pages under
+            <code>docs/internal/api/</code> are written by the systems analyst <em>for</em> the developer: they
+            describe what to build, what business rules apply, what to validate, what to log, what to test,
+            and — explicitly — what the developer must put into the public OpenAPI contract.
+          </p>
+          <p>The two layers and their audiences:</p>
+          <ul>
+            <li>
+              <strong><a href="../../openapi/index.html">docs/openapi/</a> — external contract.</strong>
+              OpenAPI 3.x + Swagger UI. Audience: integrators (external partners, mobile apps, third-party
+              clients). Output artefact: authored by developers <em>after</em> implementing the spec on this side.
+            </li>
+            <li>
+              <strong>docs/internal/api/ — internal technical specification.</strong> Audience: developers and
+              QA inside the team. Holds business context, acceptance criteria, functional and non-functional
+              requirements, validation rules, state transitions, side effects, observability requirements,
+              test plan, and OpenAPI authoring hints. The OpenAPI file is generated from the decisions made here.
+            </li>
+          </ul>
+          <p>
+            Per-operation pages follow the analyst-spec template in
+            <a href="./_shared/spec-template.html"><code>_shared/spec-template.html</code></a>. Cross-cutting
+            concerns (idempotency, error envelope, auth, pagination, versioning, observability conventions,
+            OpenAPI authoring guide) live once under <code>_shared/</code> and are linked from each operation —
+            never duplicated.
+          </p>
+        </section>
+
         <section class="card">
           <h2>Resources</h2>
           <ul>
@@ -46,8 +75,7 @@
               summary, technical depth); per-method pages link back to anchors on that page.
             </li>
             <li>
-              <a href="./conspectus/index.html">Conspectus</a> — <span class="docs-tooltip docs-tooltip--etr"
-                tabindex="0">ETR</span> study note under <code>/api/v1/conspectuses</code>
+              <a href="./conspectus/index.html">Conspectus</a> — <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> study note under <code>/api/v1/conspectuses</code>
               (plus related <code>/schedule/summary</code> and <code>/errors</code>); the
               <a href="./conspectus/index.html">resource hub</a> explains the entity, field mapping, API surface, and
               links to <strong>per-method pages</strong> under <code>conspectus/operations/</code> (same pattern as User).
@@ -96,6 +124,4 @@
     </div>
   </div>
 
-</body>
-
-</html>
+</body></html>

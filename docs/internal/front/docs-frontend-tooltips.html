@@ -19,7 +19,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend: tooltips and inline hints</h1>
+        <h1>Docs frontend: tooltips and inline hints <span class="docs-page-type docs-page-type--component">Component</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -103,6 +103,33 @@
           </ol>
         </section>
 
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Use Pattern A (<code>data-tooltip</code>) for compact backlog-style hints — short labels under ~10 words.</td>
+                <td>Use it for paragraph-length explanations — use a <code>.callout</code> from the UI kit instead.</td>
+              </tr>
+              <tr>
+                <td>Use Pattern B (<code>.docs-tooltip</code>) only for glossary terms that need an in-place definition.</td>
+                <td>Sprinkle <code>&lt;dfn&gt;</code>-like markup across narrative text — readability drops fast.</td>
+              </tr>
+              <tr>
+                <td>Verify the tooltip appears on keyboard <kbd>Tab</kbd> focus, not only on mouse hover.</td>
+                <td>Ship a tooltip that disappears the moment focus moves to it — keyboard users get nothing.</td>
+              </tr>
+              <tr>
+                <td>Test inside scrollable tables and under sticky chrome — both clip tooltips by default.</td>
+                <td>Position a tooltip absolutely without checking that it escapes <code>overflow: hidden</code> ancestors.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -115,6 +142,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (Pattern A vs B, keyboard focus, clipping).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-24">2026-04-24</time></td>
                   <td>Registered in internal sidebar and portal search; cross-links from UI kit and glossary; code examples use inline <code>&lt;pre&gt;</code> styling; <code>docs.css</code> comment points here.</td>

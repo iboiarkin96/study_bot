@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Field naming &amp; format conventions — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Field naming &amp; format conventions</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Single source of truth for field naming, types, formats, timezones, and PII
+            classification across the internal API. Per-operation field tables in Section 7 / 8 of
+            an analyst spec inherit these defaults; deviations must be documented in the spec
+            with a reason.
+          </p>
+        </section>
+
+        <section class="card" id="naming">
+          <h2>Naming</h2>
+          <ul>
+            <li><strong>JSON keys</strong>: <code>snake_case</code>. Always.</li>
+            <li><strong>Boolean fields</strong>: <code>is_*</code> / <code>has_*</code> / <code>can_*</code>
+              prefix (<code>is_archived</code>, <code>has_due_items</code>). Never inverted
+              (<code>is_not_active</code>) — use the positive form.</li>
+            <li><strong>Date / time fields</strong>: suffix <code>_at</code> for instants
+              (<code>created_at</code>, <code>next_review_at</code>); suffix <code>_on</code>
+              for calendar dates (<code>due_on</code>, when added).</li>
+            <li><strong>Counts</strong>: suffix <code>_count</code>
+              (<code>review_count</code>); never <code>num_…</code> or <code>n_…</code>.</li>
+            <li><strong>Identifiers</strong>: suffix <code>_uuid</code> for UUIDs
+              (<code>conspectus_uuid</code>, <code>client_uuid</code>); suffix <code>_id</code>
+              for non-UUID identifiers (<code>system_user_id</code>,
+              <code>schedule_policy_id</code>).</li>
+            <li><strong>Versions</strong>: <code>algorithm_version</code> (semver string),
+              <code>schedule_revision</code> (monotonic integer),
+              <code>cue_sheet_schema_version</code> (integer).</li>
+            <li><strong>Avoid</strong> reserved-word collisions across stacks: do not use
+              <code>type</code>, <code>id</code> alone, <code>class</code>, <code>schema</code>
+              as bare field names.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="types">
+          <h2>Types and formats</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Type and format conventions">
+            <table>
+              <thead>
+                <tr>
+                  <th>Domain</th><th>JSON type</th><th>Format / pattern</th><th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>UUID</td>
+                  <td>string</td>
+                  <td><code>uuid</code> (RFC 4122 canonical, lowercase, 36 chars)</td>
+                  <td>Use the shared <code>$ref Uuid</code> component.</td>
+                </tr>
+                <tr>
+                  <td>Instant (point in time)</td>
+                  <td>string</td>
+                  <td><code>date-time</code> (RFC 3339, UTC, e.g. <code>2026-04-29T10:11:00Z</code>)</td>
+                  <td>Always UTC on the wire (<code>Z</code> suffix). Conversion to local time
+                    is the client’s job.</td>
+                </tr>
+                <tr>
+                  <td>Calendar date</td>
+                  <td>string</td>
+                  <td><code>date</code> (<code>YYYY-MM-DD</code>)</td>
+                  <td>Use only when calendar semantics matter (e.g. due-today views with the
+                    user’s timezone resolved server-side).</td>
+                </tr>
+                <tr>
+                  <td>Duration</td>
+                  <td>string</td>
+                  <td>ISO 8601 (<code>PT1H</code>, <code>P3D</code>, <code>P14D</code>)</td>
+                  <td>Used in policy <code>rules</code> JSON and admin endpoints.</td>
+                </tr>
+                <tr>
+                  <td>Integer ID</td>
+                  <td>integer</td>
+                  <td><code>int64</code></td>
+                  <td>Avoid for new fields when a UUID is feasible.</td>
+                </tr>
+                <tr>
+                  <td>Monotonic counter</td>
+                  <td>integer</td>
+                  <td><code>int64</code>, ≥ 1</td>
+                  <td>e.g. <code>schedule_revision</code>, <code>content_version</code>.</td>
+                </tr>
+                <tr>
+                  <td>Enum</td>
+                  <td>string</td>
+                  <td>Defined as a component <code>$ref</code> with <code>enum: [...]</code></td>
+                  <td>Lowercase values (<code>easy</code>, not <code>Easy</code>); never numeric
+                    enums.</td>
+                </tr>
+                <tr>
+                  <td>Free-form object</td>
+                  <td>object</td>
+                  <td>—</td>
+                  <td>Always pair with a <code>{field}_schema_version</code> integer to evolve
+                    the inner shape safely.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="timezones">
+          <h2>Timezones</h2>
+          <ul>
+            <li>The wire format for instants is <strong>always UTC</strong>
+              (<code>Z</code>-suffixed RFC 3339).</li>
+            <li>The user’s preferred timezone is stored on
+              <code>users.timezone</code> as an IANA string (e.g.
+              <code>Europe/Berlin</code>) and used server-side to compute calendar-day
+              boundaries (e.g. “due today”).</li>
+            <li>If <code>users.timezone</code> is not set, calendar-boundary endpoints document
+              UTC fallback explicitly in their spec.</li>
+            <li>Clients never receive a non-UTC instant. Local rendering is the client’s
+              responsibility.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="nullable">
+          <h2>Nullability and defaults</h2>
+          <ul>
+            <li>Use <strong>absence</strong> (omit the field) for “not provided” on requests;
+              use <code>null</code> only when the API has to distinguish “explicitly cleared”
+              from “unchanged” (rare).</li>
+            <li>On responses, prefer omitting null-valued optional fields. The OpenAPI says
+              <code>nullable: true</code> only when the absence has its own meaning.</li>
+            <li>Defaults that the server applies on create live in the OpenAPI as
+              <code>default:</code> on the <strong>request</strong> schema, not the response;
+              the response always carries the resolved value.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="pii">
+          <h2>PII classification</h2>
+          <p>
+            Every field carries a PII class that drives logging, masking, and retention
+            decisions. The class is declared in the field table under <em>PII class</em>.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="PII classes">
+            <table>
+              <thead>
+                <tr><th>Class</th><th>Examples</th><th>Logging</th><th>Retention</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>none</strong></td>
+                  <td>Enum, slot, UUID issued by us.</td>
+                  <td>Plaintext.</td>
+                  <td>No special handling.</td>
+                </tr>
+                <tr>
+                  <td><strong>low</strong> (opaque)</td>
+                  <td>Integrator-supplied opaque IDs
+                    (<code>system_user_id</code>, <code>system_uuid</code>).</td>
+                  <td>Plaintext.</td>
+                  <td>Same as the rest of the row.</td>
+                </tr>
+                <tr>
+                  <td><strong>medium</strong></td>
+                  <td>Display name, optional username.</td>
+                  <td>Mask in logs unless the operation explicitly logs them.</td>
+                  <td>Per data-retention policy (when defined).</td>
+                </tr>
+                <tr>
+                  <td><strong>high</strong></td>
+                  <td>Free-text learner content
+                    (<code>dense_paragraph</code>, <code>bullets</code>,
+                    <code>cue_sheet</code>).</td>
+                  <td><strong>Never log content</strong> — log only sizes and counts.</td>
+                  <td>Per data-retention policy; eligible for export and deletion.</td>
+                </tr>
+                <tr>
+                  <td><strong>secret</strong></td>
+                  <td>API keys, idempotency-key raw values.</td>
+                  <td><strong>Never log.</strong> Mask to last 4 chars; use SHA-256 for
+                    correlation if needed.</td>
+                  <td>Stored encrypted at rest.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="anti-patterns">
+          <h2>Anti-patterns</h2>
+          <ul>
+            <li><strong>camelCase JSON keys.</strong> Forbidden — we use snake_case
+              everywhere on the wire and convert to language-native style in clients.</li>
+            <li><strong>Local timezones on the wire.</strong> Forbidden — UTC only.</li>
+            <li><strong>Mixed types for the same logical field.</strong> Once a field is
+              <code>integer</code>, it stays integer (changing to string is a breaking change).</li>
+            <li><strong>Magic strings for enums.</strong> Always declare a component
+              <code>$ref</code> with an explicit <code>enum</code> array; never inline
+              <code>{type: string}</code> with a description telling clients which values are
+              valid.</li>
+            <li><strong>Free-form metadata objects without a schema version.</strong> Always
+              pair with <code>{field}_schema_version</code>.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="traceability">
+          <h2>Traceability</h2>
+          <ul>
+            <li><strong>Related shared pages:</strong>
+              <a href="./openapi-authoring-guide.html">OpenAPI authoring guide</a>,
+              <a href="./error-envelope.html">error envelope</a>.</li>
+            <li><strong>System design:</strong>
+              <a href="../../analysis/system-design.html#persistence-model">persistence model</a>
+              for ID and timezone storage choices.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 3: shared field-naming, format, timezone, nullability and PII
+                    conventions.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

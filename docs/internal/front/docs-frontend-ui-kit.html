@@ -20,7 +20,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend UI kit (component style spec)</h1>
+        <h1>Docs frontend UI kit (component style spec) <span class="docs-page-type docs-page-type--component">Component</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -207,6 +207,33 @@
           </ul>
         </section>
 
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Reuse one of the five inventory components first. Compose primitives if needed.</td>
+                <td>Add a sixth UI primitive without updating the inventory and getting a design review — drift starts here.</td>
+              </tr>
+              <tr>
+                <td>Reach for design tokens — <code>var(--bg)</code>, <code>var(--accent)</code>, <code>var(--space-*)</code>, <code>var(--radius-*)</code>.</td>
+                <td>Hardcode hex colors or pixel spacing — they break dark mode and density refactors.</td>
+              </tr>
+              <tr>
+                <td>Add cross-page component CSS to <code>docs-premium.css</code>.</td>
+                <td>Stash it in <code>docs.css</code> — that file is reserved for tokens and globals (see <a href="./docs-frontend-css-architecture.html">CSS architecture</a>).</td>
+              </tr>
+              <tr>
+                <td>Verify both light and dark themes in the same PR; capture screenshots in the gallery if the change is visual.</td>
+                <td>Ship a component that looks right in only one theme — the next reader will assume it's broken.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -219,6 +246,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (token usage, <code>docs-premium.css</code> ownership, theme parity).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-23">2026-04-23</time></td>
                   <td>Refactored UI kit into style-only specification and removed duplicated runtime behavior narrative.</td>

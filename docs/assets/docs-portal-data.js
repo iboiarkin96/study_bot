@@ -117,11 +117,11 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "adr/README.html",
-        "title": "ADR Index"
+        "title": "ADR Index — ETR Study API"
       },
       {
         "path": "audit/AUDIT_TEMPLATE.html",
-        "title": "Assessment template — AUDIT_TEMPLATE.html"
+        "title": "Assessment template — docs/audit"
       },
       {
         "path": "audit/README.html",
@@ -130,10 +130,6 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "audit/api/2026-04-14-rest-api-assessment.html",
         "title": "REST API Assessment — Study App — formed 14 Apr 2026"
-      },
-      {
-        "path": "audit/api/README.html",
-        "title": "REST / HTTP API assessments — index"
       },
       {
         "path": "audit/docs/2026-04-14-documentation-experience-assessment.html",
@@ -152,10 +148,6 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "UI/UX Assessment (premium benchmark) — Study App product and docs experience — formed 2026-04-23"
       },
       {
-        "path": "audit/docs/README.html",
-        "title": "Documentation experience assessments — index"
-      },
-      {
         "path": "backlog/README.html",
         "title": "Backlog — quality and scale roadmap"
       },
@@ -170,10 +162,6 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "developer/0003-business-logic.html",
         "title": "Business Logic Guide"
-      },
-      {
-        "path": "developer/0004-how-to-add-post-contract.html",
-        "title": "Moved — POST /api/v1/contract guide"
       },
       {
         "path": "developer/0005-error-matrix-by-status.html",
@@ -204,16 +192,8 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Developers Docs — Study App"
       },
       {
-        "path": "howto/0004-how-to-add-post-contract.html",
-        "title": "Guide For Beginners: Add new endpoint and docs"
-      },
-      {
-        "path": "howto/README.html",
-        "title": "How-to guides — Study App"
-      },
-      {
-        "path": "howto/0005-how-to-change-docs-frontend-safely.html",
-        "title": "How to change docs frontend safely (playbooks)"
+        "path": "howto/0001-onboarding-from-zero-to-endpoint-docs.html",
+        "title": "Onboarding: from zero to endpoint and docs — Study App"
       },
       {
         "path": "howto/0002-internal-service-docs-layout.html",
@@ -224,8 +204,16 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Make commands inventory — How-to guides — Study App"
       },
       {
-        "path": "howto/0001-onboarding-from-zero-to-endpoint-docs.html",
-        "title": "Onboarding: from zero to endpoint and docs — Study App"
+        "path": "howto/0004-how-to-add-post-contract.html",
+        "title": "Guide For Beginners: Add new endpoint and docs"
+      },
+      {
+        "path": "howto/0005-how-to-change-docs-frontend-safely.html",
+        "title": "How to change docs frontend safely (playbooks)"
+      },
+      {
+        "path": "howto/README.html",
+        "title": "How-to guides — Study App"
       },
       {
         "path": "index.html",
@@ -246,6 +234,10 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/api/README.html",
         "title": "HTTP API — internal documentation hub — Study App"
+      },
+      {
+        "path": "internal/api/_shared/spec-template.html",
+        "title": "Specification template — Internal API — Study App"
       },
       {
         "path": "internal/api/conspectus/index.html",
@@ -308,12 +300,12 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "PUT /api/v1/user/{system_uuid}/{system_user_id} — User — Study App"
       },
       {
-        "path": "internal/api/user/user-http-api.html",
-        "title": "Moved — User resource"
-      },
-      {
         "path": "internal/front/docs-frontend-architecture-map.html",
         "title": "Docs frontend architecture map and feature inventory"
+      },
+      {
+        "path": "internal/front/docs-frontend-css-architecture.html",
+        "title": "Docs frontend CSS architecture — reference"
       },
       {
         "path": "internal/front/docs-frontend-diagrams-and-lightbox.html",
@@ -334,6 +326,10 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/front/docs-frontend-hotkeys.html",
         "title": "Docs frontend hotkeys"
+      },
+      {
+        "path": "internal/front/docs-frontend-js-modules-reference.html",
+        "title": "Docs frontend JavaScript modules — reference"
       },
       {
         "path": "internal/front/docs-frontend-menu-and-theme-controls.html",
@@ -360,6 +356,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Docs frontend UI system, motion, and adaptivity"
       },
       {
+        "path": "internal/front/documentation-process.html",
+        "title": "Documentation maintenance process"
+      },
+      {
         "path": "internal/front/documentation-style-guide.html",
         "title": "Documentation style guide and audit standard"
       },
@@ -368,8 +368,16 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Screen spec: Backlog cockpit"
       },
       {
+        "path": "internal/front/screens/docs-screen-home-landing.html",
+        "title": "Screen spec: Engineering hub home (docs/index.html)"
+      },
+      {
         "path": "internal/front/screens/docs-screen-template.html",
-        "title": "Screen spec template"
+        "title": "Screen spec template — international standard"
+      },
+      {
+        "path": "internal/manager/README.html",
+        "title": "Manager docs — Study App"
       },
       {
         "path": "internal/manager/sdlc-raci-matrix.html",
@@ -412,6 +420,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "QA checklists — Documentation testing hub"
       },
       {
+        "path": "rfc/0000-template.html",
+        "title": "RFC template"
+      },
+      {
         "path": "rfc/0001-docs-search-implementation.html",
         "title": "RFC 0001: Documentation Search Implementation"
       },
@@ -421,7 +433,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "rfc/README.html",
-        "title": "RFC Index"
+        "title": "RFC Index — ETR Study API"
       },
       {
         "path": "runbooks/0000-template.html",
@@ -465,7 +477,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "runbooks/0010-in-page-toc-missing.html",
-        "title": "Runbook: In-page “On this page” sidebar missing or empty"
+        "title": "Runbook: In-page \"On this page\" sidebar missing or empty"
       },
       {
         "path": "runbooks/README.html",
@@ -479,14 +491,6 @@ window.__DOCS_PORTAL_DATA__ = {
       }
     ],
     "16fc8b78537109162984a2fdbef6e143": [
-      {
-        "path": "internal/api/errors.html",
-        "title": "Error catalog and sync — Study App"
-      },
-      {
-        "path": "internal/api/errors.html",
-        "title": "Error catalog and sync — Study App"
-      },
       {
         "path": "internal/api/errors.html",
         "title": "Error catalog and sync — Study App"

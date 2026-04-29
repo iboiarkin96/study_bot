@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -100,133 +98,131 @@
               <td>Hand-maintained</td>
               <td>Authoritative env reference. Copied to <code>.env</code> via <code>make env-init</code>;
                 not injected into README.</td>
-            </tr>
-            <tr>
-              <td><code>docs/**/*.html</code> (except backlog, pdoc)</td>
-              <td>Hand-edited, normalized</td>
-              <td>Prose for ADRs, runbooks, developer guides. Normalized by <code>format_docs_html.py</code>
-                on each <code>docs-fix</code> run.</td>
-            </tr>
-            <tr>
-              <td><code>docs/pdoc/</code></td>
-              <td>Generated — <code>pdoc</code></td>
-              <td>From Python docstrings on <code>app</code>. Commit the tree after <code>docs-fix</code>.</td>
-            </tr>
-            <tr>
-              <td><code>docs/openapi/openapi-baseline.json</code></td>
-              <td>Managed — OpenAPI governance</td>
-              <td>Updated via <code>make openapi-accept-changes</code>, not <code>docs-fix</code>.</td>
-            </tr>
-            <tr>
-              <td><code>docs/openapi/index.html</code></td>
-              <td>Hand-maintained</td>
-              <td>Static Swagger UI (browse-only). Legacy <code>openapi-explorer.html</code> redirects here.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+              </tr>
+              <tr>
+                <td><code>docs/**/*.html</code> (except backlog, pdoc)</td>
+                <td>Hand-edited, normalized</td>
+                <td>Prose for ADRs, runbooks, developer guides. Normalized by <code>format_docs_html.py</code>
+                  on each <code>docs-fix</code> run.</td>
+                </tr>
+                <tr>
+                  <td><code>docs/pdoc/</code></td>
+                  <td>Generated — <code>pdoc</code></td>
+                  <td>From Python docstrings on <code>app</code>. Commit the tree after <code>docs-fix</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>docs/openapi/openapi-baseline.json</code></td>
+                  <td>Managed — OpenAPI governance</td>
+                  <td>Updated via <code>make openapi-accept-changes</code>, not <code>docs-fix</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>docs/openapi/index.html</code></td>
+                  <td>Hand-maintained</td>
+                  <td>Static Swagger UI (browse-only). Legacy <code>openapi-explorer.html</code> redirects here.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <section id="docs-check" class="card">
-      <h2>make docs-check (CI gate)</h2>
-      <p>
-        <code>docs-check</code> saves <code>git diff HEAD</code>, runs <code>docs-fix</code>, then compares
-        the two diffs. If they differ, <code>docs-fix</code> changed something — commit the result before pushing.
-      </p>
-      <p>
-        Files that <code>docs-fix</code> never touches are unaffected. If generated output already matches
-        <code>HEAD</code>, the two diffs are identical and the check passes.
-      </p>
-    </section>
+        <section id="docs-check" class="card">
+          <h2>make docs-check (CI gate)</h2>
+          <p>
+            <code>docs-check</code> saves <code>git diff HEAD</code>, runs <code>docs-fix</code>, then compares
+            the two diffs. If they differ, <code>docs-fix</code> changed something — commit the result before pushing.
+          </p>
+          <p>
+            Files that <code>docs-fix</code> never touches are unaffected. If generated output already matches
+            <code>HEAD</code>, the two diffs are identical and the check passes.
+          </p>
+        </section>
 
-    <section id="pdoc" class="card">
-      <h2>Python API reference (pdoc)</h2>
-      <p>
-        HTTP contracts are covered by OpenAPI and developer guides. Internal Python modules — packages,
-        classes, functions — are documented from docstrings via <a href="https://pdoc.dev/">pdoc</a>,
-        similar in spirit to Rust's <code>cargo doc</code>.
-      </p>
-      <p>
-        Use Google-style docstrings; template and checklist:
-        <a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a>.
-        Run <code>make install</code> then <code>make docs-fix</code> to refresh. Output goes to
-        <code>docs/pdoc/</code>; commit it with other doc updates.
-      </p>
-    </section>
+        <section id="pdoc" class="card">
+          <h2>Python API reference (pdoc)</h2>
+          <p>
+            HTTP contracts are covered by OpenAPI and developer guides. Internal Python modules — packages,
+            classes, functions — are documented from docstrings via <a href="https://pdoc.dev/">pdoc</a>,
+            similar in spirit to Rust's <code>cargo doc</code>.
+          </p>
+          <p>
+            Use Google-style docstrings; template and checklist:
+            <a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a>.
+            Run <code>make install</code> then <code>make docs-fix</code> to refresh. Output goes to
+            <code>docs/pdoc/</code>; commit it with other doc updates.
+          </p>
+        </section>
 
-    <section id="inpage-toc" class="card">
-      <h2>In-page "On this page" sidebar</h2>
-      <p>
-        Pages that load <code>docs-nav.js</code> show a sticky outline beside the article. Place this mount
-        as the <strong>last child</strong> of <code>&lt;main&gt;</code>:
-      </p>
-      <pre><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code></pre>
-      <p>
-        The script builds anchor links from all <code>h2</code> / <code>h3</code> headings
-        (generating an <code>id</code> where missing). Headings inside <code>figure.sys-diagram</code> and
-        <code>p.lead</code> are excluded. If the mount element is absent, the script adds it automatically.
-      </p>
-      <p>
-        Do not write a manual "Contents" block on pages that use this script — it will duplicate the generated
-        sidebar. If the sidebar is missing, see
-        <a href="../runbooks/0010-in-page-toc-missing.html">Runbook: In-page sidebar missing or empty</a>.
-      </p>
-    </section>
+        <section id="inpage-toc" class="card">
+          <h2>In-page "On this page" sidebar</h2>
+          <p>
+            Pages that load <code>docs-nav.js</code> show a sticky outline beside the article. Place this mount
+            as the <strong>last child</strong> of <code>&lt;main&gt;</code>:
+          </p>
+          <pre><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code></pre>
+          <p>
+            The script builds anchor links from all <code>h2</code> / <code>h3</code> headings
+            (generating an <code>id</code> where missing). Headings inside <code>figure.sys-diagram</code> and
+            <code>p.lead</code> are excluded. If the mount element is absent, the script adds it automatically.
+          </p>
+          <p>
+            Do not write a manual "Contents" block on pages that use this script — it will duplicate the generated
+            sidebar. If the sidebar is missing, see
+            <a href="../runbooks/0010-in-page-toc-missing.html">Runbook: In-page sidebar missing or empty</a>.
+          </p>
+        </section>
 
-    <section id="versioning-and-publishing" class="card">
-      <h2>Versioning and optional publishing</h2>
-      <p>
-        <strong>Default:</strong> docs live in git alongside code. After a feature merges to
-        <code>main</code>, <code>docs/</code> reflects the current state. Release history uses
-        <a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a> and git tags.
-      </p>
-      <p>
-        <strong>GitHub Pages</strong> from the <code>docs/</code> folder: Settings → Pages → Deploy from
-        branch → <code>/docs</code>. Add <code>docs/.nojekyll</code> so GitHub skips Jekyll. Project-site
-        URLs use <code>/{repo}/…</code> without a <code>/docs/</code> segment — the top nav script handles
-        this layout automatically.
-      </p>
-      <p>
-        <strong>Versioned prose site</strong> (optional): add MkDocs or Docusaurus, publish from CI on
-        version tags, keep <code>docs-fix</code> for UML and marker sync until you migrate those steps.
-        Docs-only PRs may merge before implementation lands; follow-up PRs carry code.
-      </p>
-    </section>
+        <section id="versioning-and-publishing" class="card">
+          <h2>Versioning and optional publishing</h2>
+          <p>
+            <strong>Default:</strong> docs live in git alongside code. After a feature merges to
+            <code>main</code>, <code>docs/</code> reflects the current state. Release history uses
+            <a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a> and git tags.
+          </p>
+          <p>
+            <strong>GitHub Pages</strong> from the <code>docs/</code> folder: Settings → Pages → Deploy from
+            branch → <code>/docs</code>. Add <code>docs/.nojekyll</code> so GitHub skips Jekyll. Project-site
+            URLs use <code>/{repo}/…</code> without a <code>/docs/</code> segment — the top nav script handles
+            this layout automatically.
+          </p>
+          <p>
+            <strong>Versioned prose site</strong> (optional): add MkDocs or Docusaurus, publish from CI on
+            version tags, keep <code>docs-fix</code> for UML and marker sync until you migrate those steps.
+            Docs-only PRs may merge before implementation lands; follow-up PRs carry code.
+          </p>
+        </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-28">2026-04-28</time></td>
-              <td>Restructured: fixed broken section markup, added hero, condensed versioning section.</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-28">2026-04-28</time></td>
+                  <td>Restructured: fixed broken section markup, added hero, condensed versioning section.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
 
-</body>
-
-</html>
+    </body></html>

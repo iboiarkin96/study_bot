@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -113,90 +111,87 @@
           <ul>
             <li><code>docs/internal/api/order/index.html</code> — hub page with business context, contract
               summary, and method index.</li>
-            <li><code>docs/internal/api/order/operations/</code> — one HTML file per HTTP endpoint,
-              named from method + path template (e.g. <code>post-api-v1-order.html</code>,
-              <code>get-api-v1-order--order_id.html</code>). Do not use Python <code>operationId</code>
-              as the filename.
-            </li>
-          </ul>
-        </li>
-        <li>
-          Register in the sidebar — open <code>docs/assets/internal-sidebar.js</code> and extend
-          <code>INTERNAL_SIDEBAR_NAV</code> with the new paths (relative to <code>docs/</code> root).
-        </li>
-        <li>
-          Link from the API hub — add a card and link on
-          <a href="../internal/api/README.html"><code>docs/internal/api/README.html</code></a>.
-        </li>
-        <li>
-          Write the content — put business rules, field contracts, and technical notes on the resource
-          <code>index.html</code>. Add operation pages for each endpoint.
-          See <a href="../internal/api/user/index.html"><code>internal/api/user/index.html</code></a>
-          as a reference.
-        </li>
-        <li>
-          Run <code>make docs-fix</code> to normalize HTML and rebuild the search index.
-        </li>
-      </ol>
-    </section>
+              <li><code>docs/internal/api/order/operations/</code> — one HTML file per HTTP endpoint,
+                named from method + path template (e.g. <code>post-api-v1-order.html</code>,
+                <code>get-api-v1-order--order_id.html</code>). Do not use Python <code>operationId</code>
+                as the filename.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Register in the sidebar — open <code>docs/assets/internal-sidebar.js</code> and extend
+            <code>INTERNAL_SIDEBAR_NAV</code> with the new paths (relative to <code>docs/</code> root).
+          </li>
+          <li>
+            Link from the API hub — add a card and link on
+            <a href="../internal/api/README.html"><code>docs/internal/api/README.html</code></a>.
+          </li>
+          <li>
+            Write the content — put business rules, field contracts, and technical notes on the resource
+            <code>index.html</code>. Add operation pages for each endpoint.
+            See <a href="../internal/api/user/index.html"><code>internal/api/user/index.html</code></a>
+            as a reference.
+          </li>
+          <li>
+            Run <code>make docs-fix</code> to normalize HTML and rebuild the search index.
+          </li>
+        </ol>
+      </section>
 
-    <section id="edit-pages" class="card">
-      <h2>How to edit existing pages</h2>
-      <ul>
-        <li>
-          <strong>Sidebar labels or order</strong> — edit <code>INTERNAL_SIDEBAR_NAV</code> in
-          <code>docs/assets/internal-sidebar.js</code>.
-        </li>
-        <li>
-          <strong>Top navigation</strong> (Home, Internal, …) — edit <code>renderTopNav</code> in
-          <code>docs/assets/docs-nav.js</code>.
-        </li>
-        <li>
-          <strong>Page body</strong> — edit the HTML file directly; run <code>make docs-fix</code> after to
-          normalize and rebuild the search index.
-        </li>
-        <li>
-          <strong>Renaming a page</strong> — update the file path in <code>internal-sidebar.js</code> and
-          <code>docs-portal-data.js</code>, then add a redirect stub at the old URL if bookmarks exist.
-        </li>
-      </ul>
-    </section>
+      <section id="edit-pages" class="card">
+        <h2>How to edit existing pages</h2>
+        <ul>
+          <li>
+            <strong>Sidebar labels or order</strong> — edit <code>INTERNAL_SIDEBAR_NAV</code> in
+            <code>docs/assets/internal-sidebar.js</code>.
+          </li>
+          <li>
+            <strong>Top navigation</strong> (Home, Internal, …) — edit <code>renderTopNav</code> in
+            <code>docs/assets/docs-nav.js</code>.
+          </li>
+          <li>
+            <strong>Page body</strong> — edit the HTML file directly; run <code>make docs-fix</code> after to
+            normalize and rebuild the search index.
+          </li>
+          <li>
+            <strong>Renaming a page</strong> — update the file path in <code>internal-sidebar.js</code> and
+            <code>docs-portal-data.js</code>, then add a redirect stub at the old URL if bookmarks exist.
+          </li>
+        </ul>
+      </section>
 
+      <section id="page-history" class="card">
+        <h2>Page history</h2>
+        <div class="docs-table-scroll" role="region" aria-label="Page history">
+          <table class="docs-page-history">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Change</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><time datetime="2026-04-28">2026-04-28</time></td>
+                <td>Redesigned: removed directory tree, added hero, condensed into focused sections.</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+              <tr>
+                <td><time datetime="2026-04-21">2026-04-21</time></td>
+                <td>Added Page history section (repository baseline).</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-28">2026-04-28</time></td>
-              <td>Redesigned: removed directory tree, added hero, condensed into focused sections.</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+        Found a bug? Report issue
+      </button>
+      <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+    </main>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
-
-</body>
-
-</html>
+  </body></html>

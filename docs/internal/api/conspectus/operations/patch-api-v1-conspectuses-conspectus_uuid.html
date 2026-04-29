@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -37,12 +35,10 @@
         <section class="docs-page-hero" aria-labelledby="overview">
           <h2 id="overview">Overview</h2>
           <p>
-            <strong>Specification.</strong> Intended partial update of <span class="docs-tooltip docs-tooltip--etr"
-              tabindex="0">ETR</span> fields (<code>title</code>, <code>cue_sheet</code>,
+            <strong>Specification.</strong> Intended partial update of <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields (<code>title</code>, <code>cue_sheet</code>,
             <code>dense_paragraph</code>, <code>bullets</code>). Ownership via <code>system_user_id</code> and
             <code>system_uuid</code> in the body. Does not change scheduling; for retrieve transitions see
-            <a
-              href="./post-api-v1-conspectuses-conspectus_uuid-actions-review.html"><code>POST …/actions/review</code></a>.
+            <a href="./post-api-v1-conspectuses-conspectus_uuid-actions-review.html"><code>POST …/actions/review</code></a>.
             Planned <code>operationId</code>: <code>patchConspectus</code>.
           </p>
         </section>
@@ -50,8 +46,7 @@
         <section class="card">
           <h2>Path, body, idempotency</h2>
           <p>
-            Path: <code>conspectus_uuid</code>. Body: composite owner key plus any subset of <span
-              class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields to change.
+            Path: <code>conspectus_uuid</code>. Body: composite owner key plus any subset of <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields to change.
           </p>
           <p>
             <strong>Idempotency:</strong> required. Namespace
@@ -82,52 +77,50 @@
                 <td><code>CONS_102</code> / <code>CONSPECTUS_PATCH_BODY_EMPTY</code></td>
                 <td>Body has owner fields only — no <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span>
                   field to update.</td>
-              </tr>
-              <tr>
-                <td><code>404</code></td>
-                <td><code>USER_404</code> / <code>CONS_404</code></td>
-                <td>User or conspectus not found for this key.</td>
-              </tr>
-              <tr>
-                <td><code>409</code></td>
-                <td><code>COMMON_409</code></td>
-                <td>Idempotency key reused with different body.</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section id="page-history" class="card">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Change</th>
-                  <th scope="col">Author</th>
                 </tr>
-              </thead>
-              <tbody>
                 <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Added Page history section (repository baseline).</td>
-                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  <td><code>404</code></td>
+                  <td><code>USER_404</code> / <code>CONS_404</code></td>
+                  <td>User or conspectus not found for this key.</td>
+                </tr>
+                <tr>
+                  <td><code>409</code></td>
+                  <td><code>COMMON_409</code></td>
+                  <td>Idempotency key reused with different body.</td>
                 </tr>
               </tbody>
             </table>
-          </div>
-        </section>
+          </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-      </main>
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added Page history section (repository baseline).</td>
+                    <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+          <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+            Found a bug? Report issue
+          </button>
+          <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+        </main>
+      </div>
     </div>
-  </div>
 
-</body>
-
-</html>
+  </body></html>

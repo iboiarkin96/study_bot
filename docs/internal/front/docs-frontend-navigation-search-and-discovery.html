@@ -20,7 +20,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend navigation, search, and discovery</h1>
+        <h1>Docs frontend navigation, search, and discovery <span class="docs-page-type docs-page-type--component">Component</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -259,6 +259,33 @@
                                                                                     </ol>
                                                                                   </section>
 
+                                                                                  <section id="dos-and-donts" class="card">
+                                                                                    <h2>Do's and Don'ts</h2>
+                                                                                    <table>
+                                                                                      <thead>
+                                                                                        <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+                                                                                      </thead>
+                                                                                      <tbody>
+                                                                                        <tr>
+                                                                                          <td>Add new sidebar entries to <code>INTERNAL_SIDEBAR_NAV</code> in <code>internal-sidebar.js</code> — the single source of truth.</td>
+                                                                                          <td>Duplicate links into the drawer top-nav config — both surfaces derive from the same array.</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                          <td>Verify the command palette opens with both <kbd>Cmd</kbd>+<kbd>K</kbd> and <kbd>/</kbd> after any keyboard-shortcut change.</td>
+                                                                                          <td>Repurpose either shortcut — both are documented contracts users rely on (see <a href="./docs-frontend-hotkeys.html">hotkeys</a>).</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                          <td>Update <code>assets/search-index.json</code> when adding a new top-level page so search results stay complete.</td>
+                                                                                          <td>Expect the index to auto-regenerate — it is currently committed by hand.</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                          <td>Group related sub-sections under <code>&lt;details&gt;</code> so the in-page TOC stays scannable on long pages.</td>
+                                                                                          <td>Flatten a page into 30 sibling <code>&lt;h2&gt;</code> headings — the TOC becomes a wall of links and orientation collapses.</td>
+                                                                                        </tr>
+                                                                                      </tbody>
+                                                                                    </table>
+                                                                                  </section>
+
                                                                                   <section id="page-history" class="card">
                                                                                     <h2>Page history</h2>
                                                                                     <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -271,6 +298,11 @@
                                                                                           </tr>
                                                                                         </thead>
                                                                                         <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (single source of truth, hotkey contracts, search-index hand-edit, TOC density).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                                                                                           <tr>
                                                                                             <td><time datetime="2026-04-23">2026-04-23</time></td>
                                                                                             <td>Added search-index lifecycle workflow and validation guidance for discoverability changes.</td>

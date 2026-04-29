@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -68,65 +66,63 @@
         <li>Config toggles and thresholds in <code>app/core/config.py</code> and <code>env/example</code>.</li>
         <li>Operational commands in <code>Makefile</code> and observability stack in
           <code>docker-compose.observability.yml</code>.</li>
-      </ul>
+        </ul>
 
-    </section>
-    <section class="card">
-      <h2>Operational Model</h2>
-      <ul>
-        <li>Prometheus uses pull-based scraping from <code>/metrics</code>.</li>
-        <li>Dockerized Prometheus + Grafana is the default local/staging bootstrap path.</li>
-        <li>Production deployment may run the same stack outside Docker (for example on a VM) with the same endpoint
-          contract.</li>
-      </ul>
+      </section>
+      <section class="card">
+        <h2>Operational Model</h2>
+        <ul>
+          <li>Prometheus uses pull-based scraping from <code>/metrics</code>.</li>
+          <li>Dockerized Prometheus + Grafana is the default local/staging bootstrap path.</li>
+          <li>Production deployment may run the same stack outside Docker (for example on a VM) with the same endpoint
+            contract.</li>
+          </ul>
 
-    </section>
-    <section class="card">
-      <h2>Consequences</h2>
-      <h3>Positive</h3>
-      <ul>
-        <li>Faster diagnosis of incidents via explicit readiness and standardized metrics.</li>
-        <li>Reduced risk of accidental contract drift through snapshot tests.</li>
-        <li>Consistent observability baseline from local to staging/production.</li>
-      </ul>
+        </section>
+        <section class="card">
+          <h2>Consequences</h2>
+          <h3>Positive</h3>
+          <ul>
+            <li>Faster diagnosis of incidents via explicit readiness and standardized metrics.</li>
+            <li>Reduced risk of accidental contract drift through snapshot tests.</li>
+            <li>Consistent observability baseline from local to staging/production.</li>
+          </ul>
 
-      <h3>Trade-offs</h3>
-      <ul>
-        <li>Additional maintenance for metrics and dashboards.</li>
-        <li>Need to enforce low-cardinality labels and avoid exposing sensitive dimensions.</li>
-      </ul>
+          <h3>Trade-offs</h3>
+          <ul>
+            <li>Additional maintenance for metrics and dashboards.</li>
+            <li>Need to enforce low-cardinality labels and avoid exposing sensitive dimensions.</li>
+          </ul>
 
-    </section>
+        </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
 
-</body>
-
-</html>
+    </body></html>

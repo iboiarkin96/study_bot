@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -44,8 +42,7 @@
         every commit if they are slow or environment-specific.
       </p>
       <p>
-        <a href="./0002-testing-policy.html">ADR 0002</a> mandates API tests; <a
-          href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> adds OpenAPI checks. This ADR ties
+        <a href="./0002-testing-policy.html">ADR 0002</a> mandates API tests; <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> adds OpenAPI checks. This ADR ties
         those layers together
         and places optional load testing beside observability
         (<a href="./0009-health-readiness-and-observability.html">ADR 0009</a>,
@@ -100,60 +97,58 @@
       <ul>
         <li>Tests: <code>tests/</code>, entrypoints <code>make test</code> and the canonical gate
           <code>make verify</code>.</li>
-        <li>Traffic runner: <code>tools/load_testing/runner.py</code>, scenarios
-          <code>tools/load_testing/scenarios/</code>, <code>tools/load_testing/README.html</code>.</li>
-        <li>
-          Developer-facing walkthrough:
-          <a href="../developer/0006-api-load-testing.html">API load testing (step-by-step)</a>.
-        </li>
-      </ul>
+          <li>Traffic runner: <code>tools/load_testing/runner.py</code>, scenarios
+            <code>tools/load_testing/scenarios/</code>, <code>tools/load_testing/README.html</code>.</li>
+            <li>
+              Developer-facing walkthrough:
+              <a href="../developer/0006-api-load-testing.html">API load testing (step-by-step)</a>.
+            </li>
+          </ul>
 
-    </section>
-    <section class="card">
-      <h2>Consequences</h2>
-      <h3>Positive</h3>
-      <ul>
-        <li>Clear separation: CI proves correctness; load tools prove behavior under volume and error mix.</li>
-        <li>Repeatable traffic recipes checked into git (YAML).</li>
-      </ul>
-      <h3>Trade-offs</h3>
-      <ul>
-        <li>Load scenarios can go stale; owners must update YAML when routes or auth change.</li>
-        <li>High request rates may hit in-memory rate limits — throttle via <code>--delay-ms</code> or test profiles.
-        </li>
-      </ul>
+        </section>
+        <section class="card">
+          <h2>Consequences</h2>
+          <h3>Positive</h3>
+          <ul>
+            <li>Clear separation: CI proves correctness; load tools prove behavior under volume and error mix.</li>
+            <li>Repeatable traffic recipes checked into git (YAML).</li>
+          </ul>
+          <h3>Trade-offs</h3>
+          <ul>
+            <li>Load scenarios can go stale; owners must update YAML when routes or auth change.</li>
+            <li>High request rates may hit in-memory rate limits — throttle via <code>--delay-ms</code> or test profiles.
+            </li>
+          </ul>
 
-    </section>
+        </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
 
-</body>
-
-</html>
+    </body></html>

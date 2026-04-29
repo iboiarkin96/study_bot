@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -40,7 +38,7 @@
       <h2 id="context-heading">Context</h2>
       <p>
         This ADR explains <strong>why</strong> we automate publishing a container image from Git, <strong>what
-          problem</strong>
+        problem</strong>
         that solves for newcomers and operators, and <strong>how far</strong> automation goes in this repository
         (registry
         delivery, not full production rollout).
@@ -68,7 +66,7 @@
           <strong>Onboarding</strong> — New contributors read “we have a <code>Dockerfile</code>”
           (<a href="./0015-container-image.html">ADR 0015</a>) but may not know how that image gets
           to a place where a VM or a PaaS can consume it. This ADR documents the <strong>first automated
-            hop</strong>: build → push to <strong>GHCR</strong>.
+          hop</strong>: build → push to <strong>GHCR</strong>.
         </li>
       </ul>
 
@@ -179,7 +177,7 @@
           <strong>In scope:</strong> GitHub Actions workflow changes, GHCR as the default registry, tagging policy tied
           to
           branches and <code>v*</code> release tags (<a href="./0017-branch-naming-and-repository-workflow.html">ADR
-            0017</a>),
+          0017</a>),
           documentation and ADR index updates.
         </li>
         <li>
@@ -199,99 +197,97 @@
             <li><strong>Pros:</strong> no CI minutes; full manual control.</li>
             <li><strong>Cons:</strong> easy to forget; inconsistent tags; no guarantee the image matches a commit that
               passed CI. Rejected as the default for the integration branch.</li>
-          </ul>
-        </li>
-        <li>
-          <span class="code-ctx">A separate workflow file for CD only</span>
-          <ul>
-            <li><strong>Pros:</strong> clearer separation of “CI” vs “CD” in the GitHub Actions UI.</li>
-            <li><strong>Cons:</strong> duplicated trigger conditions; a single workflow with <code>needs</code> keeps
-              ordering obvious. We keep CD in <code>ci.yml</code> for simplicity.</li>
-          </ul>
-        </li>
-        <li>
-          <span class="code-ctx">Deploy to a host (SSH or remote API) in the same job</span>
-          <ul>
-            <li><strong>Pros:</strong> end-to-end automation from push to running service.</li>
-            <li><strong>Cons:</strong> requires secrets and target infrastructure; not generic. Deferred until a
-              concrete environment exists.</li>
-          </ul>
-        </li>
-      </ol>
+            </ul>
+          </li>
+          <li>
+            <span class="code-ctx">A separate workflow file for CD only</span>
+            <ul>
+              <li><strong>Pros:</strong> clearer separation of “CI” vs “CD” in the GitHub Actions UI.</li>
+              <li><strong>Cons:</strong> duplicated trigger conditions; a single workflow with <code>needs</code> keeps
+                ordering obvious. We keep CD in <code>ci.yml</code> for simplicity.</li>
+              </ul>
+            </li>
+            <li>
+              <span class="code-ctx">Deploy to a host (SSH or remote API) in the same job</span>
+              <ul>
+                <li><strong>Pros:</strong> end-to-end automation from push to running service.</li>
+                <li><strong>Cons:</strong> requires secrets and target infrastructure; not generic. Deferred until a
+                  concrete environment exists.</li>
+                </ul>
+              </li>
+            </ol>
 
-    </section>
-    <section class="card">
-      <h2>Consequences</h2>
-      <h3>Positive</h3>
-      <ul>
-        <li>Every successful merge to the integration branch (and version tags) yields a pullable image that matches the
-          Dockerfile from <a href="./0015-container-image.html">ADR 0015</a>.</li>
-        <li>New contributors get one path: CI green → image on GHCR → pull and run anywhere Docker can reach the
-          registry.</li>
-        <li>The standard GitHub-hosted publish path does not require an extra personal access token for the push step.
-        </li>
-      </ul>
-      <h3>Trade-offs</h3>
-      <ul>
-        <li>GitHub Actions minutes accrue (public repos have generous limits; private repos need billing awareness).
-        </li>
-        <li>Package visibility and pull authentication for <em>consumers</em> of the image remain an operator concern
-          (configure package visibility or tokens as needed).</li>
-        <li>Running the container in production still requires a real database and secrets outside the workflow.</li>
-      </ul>
+          </section>
+          <section class="card">
+            <h2>Consequences</h2>
+            <h3>Positive</h3>
+            <ul>
+              <li>Every successful merge to the integration branch (and version tags) yields a pullable image that matches the
+                Dockerfile from <a href="./0015-container-image.html">ADR 0015</a>.</li>
+                <li>New contributors get one path: CI green → image on GHCR → pull and run anywhere Docker can reach the
+                  registry.</li>
+                  <li>The standard GitHub-hosted publish path does not require an extra personal access token for the push step.
+                  </li>
+                </ul>
+                <h3>Trade-offs</h3>
+                <ul>
+                  <li>GitHub Actions minutes accrue (public repos have generous limits; private repos need billing awareness).
+                  </li>
+                  <li>Package visibility and pull authentication for <em>consumers</em> of the image remain an operator concern
+                    (configure package visibility or tokens as needed).</li>
+                    <li>Running the container in production still requires a real database and secrets outside the workflow.</li>
+                  </ul>
 
-    </section>
-    <section class="card">
-      <h2>Compatibility and migration</h2>
-      <ul>
-        <li>Backward-compatibility impact: <strong>none</strong> for API contracts; automation and docs are additive
-          only.</li>
-        <li>Migration plan: not required for API consumers.</li>
-        <li>Rollback: remove or disable the <code>publish-image</code> job; local development workflow is unchanged.
-        </li>
-      </ul>
+                </section>
+                <section class="card">
+                  <h2>Compatibility and migration</h2>
+                  <ul>
+                    <li>Backward-compatibility impact: <strong>none</strong> for API contracts; automation and docs are additive
+                      only.</li>
+                      <li>Migration plan: not required for API consumers.</li>
+                      <li>Rollback: remove or disable the <code>publish-image</code> job; local development workflow is unchanged.
+                      </li>
+                    </ul>
 
-    </section>
-    <section class="card">
-      <h2>Validation</h2>
-      <ul>
-        <li>Technical: on push to <code>main</code>, the workflow completes <code>publish-image</code>; the image
-          appears under the repository’s Packages and is pullable with correct authentication.</li>
-        <li>Documentation: this ADR, the <a href="../adr/README.html">ADR index</a>, and contributor notes link to the
-          workflow as needed.</li>
-      </ul>
+                  </section>
+                  <section class="card">
+                    <h2>Validation</h2>
+                    <ul>
+                      <li>Technical: on push to <code>main</code>, the workflow completes <code>publish-image</code>; the image
+                        appears under the repository’s Packages and is pullable with correct authentication.</li>
+                        <li>Documentation: this ADR, the <a href="../adr/README.html">ADR index</a>, and contributor notes link to the
+                          workflow as needed.</li>
+                        </ul>
 
-    </section>
+                      </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+                      <section id="page-history" class="card">
+                        <h2>Page history</h2>
+                        <div class="docs-table-scroll" role="region" aria-label="Page history">
+                          <table class="docs-page-history">
+                            <thead>
+                              <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Change</th>
+                                <th scope="col">Author</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                <td>Added Page history section (repository baseline).</td>
+                                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
+                      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                      <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+                        Found a bug? Report issue
+                      </button>
+                      <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+                    </main>
 
-</body>
-
-</html>
+                  </body></html>

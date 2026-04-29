@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -47,12 +45,11 @@
           </p>
         </section>
 
-
         <section class="card">
           <h2>Request path and behavior</h2>
           <p>
             Intended: protected route; middleware per <a href="../../../../adr/0005-api-security-defaults.html">ADR
-              0005</a>.
+            0005</a>.
             Flow: resolve <code>client_uuid</code> via existing user lookup; persist conspectus row; compute initial
             slot and
             <code>next_review_at</code> from a schedule policy (implementation TBD).
@@ -61,13 +58,12 @@
             <strong>Idempotency:</strong> required <code>Idempotency-Key</code> header. Storage key
             <code>endpoint_path = "/api/v1/conspectuses"</code> (constant <code>CONSPECTUS_HTTP_BASE_PATH</code>) plus
             SHA-256 hash of canonical JSON body per <a href="../../../../adr/0006-idempotency-write-operations.html">ADR
-              0006</a>.
+            0006</a>.
             Replay returns stored <code>201</code> body.
           </p>
           <p><strong>Success:</strong> <code>201 Created</code> — body matches <code>ConspectusResponse</code>
             (includes
-            <code>conspectus_uuid</code>, <code>slot</code>, <code>next_review_at</code>, <span
-              class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields).
+            <code>conspectus_uuid</code>, <code>slot</code>, <code>next_review_at</code>, <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields).
           </p>
         </section>
 
@@ -153,6 +149,4 @@
     </div>
   </div>
 
-</body>
-
-</html>
+</body></html>

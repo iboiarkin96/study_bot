@@ -19,7 +19,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend glossary</h1>
+        <h1>Docs frontend glossary <span class="docs-page-type docs-page-type--foundation">Foundation</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -126,6 +126,31 @@
                 <td>Diagram lightbox</td>
                 <td>Full-screen diagram viewer with zoom, pan, keyboard controls, and focus-safe open/close behavior.</td>
                 <td><a href="./docs-frontend-diagrams-and-lightbox.html">Diagrams and lightbox</a></td>
+              </tr>
+              <tr>
+                <td>Page-type badge</td>
+                <td>Small inline label placed next to every page <code>&lt;h1&gt;</code> declaring one of six page types: Foundation, Architecture, Screen, Component, Reference, Contract. Drives size budget and required sections.</td>
+                <td><a href="./documentation-style-guide.html#page-type-taxonomy">Page-type taxonomy</a></td>
+              </tr>
+              <tr>
+                <td>Reference page</td>
+                <td>Page type whose body is dominated by a normalized lookup table; minimal narrative. Examples: JS modules reference, CSS architecture, hotkeys.</td>
+                <td><a href="./documentation-style-guide.html#page-type-taxonomy">Page-type taxonomy</a></td>
+              </tr>
+              <tr>
+                <td>Contract page</td>
+                <td>Page type that holds only stable normative requirements; implementation lives elsewhere. Size budget 80–200 lines.</td>
+                <td><a href="./docs-frontend-menu-and-theme-controls.html">Navigation and theme contract</a></td>
+              </tr>
+              <tr>
+                <td>Public surface</td>
+                <td>What a JavaScript module exposes to the rest of the runtime: <code>CustomEvent</code>s emitted/listened, <code>data-*</code> attributes consumed/set, <code>window</code> globals, storage keys, mount-point IDs. Renaming any of these is a breaking change.</td>
+                <td><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a></td>
+              </tr>
+              <tr>
+                <td><code>data-*</code> contract</td>
+                <td>The set of <code>data-</code>-prefixed HTML attributes a runtime module reads or writes. Acts as the bridge between markup pages and JS behavior.</td>
+                <td><a href="./docs-frontend-js-modules-reference.html#conventions">Naming and ownership conventions</a></td>
               </tr>
             </tbody>
           </table>
@@ -405,6 +430,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added 5 new core terms (Page-type badge, Reference page, Contract page, Public surface, <code>data-*</code> contract); added Foundation badge to H1.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-29">2026-04-29</time></td>
                   <td>Added home-screen terminology section (HUD bracket, radar ring, glyph rain/scramble, wordmark, lock-flash, terminal panel, magnetic CTA, mono-chip, ticker, dot-grid, parallax orb, vignette/scanlines, iris shutter, view transitions, variable-font axis, scan beam, anatomy diagram, screen spec, reduced motion, scroll progress) with plain-language definitions and implementation notes.</td>

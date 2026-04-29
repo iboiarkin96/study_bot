@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -169,90 +167,87 @@
             <li>Cons: would duplicate or replace the current <code>requirements.txt</code>-centric Makefile and CI;
               defer
               until a dedicated migration ADR.</li>
-          </ul>
-        </li>
-      </ol>
+            </ul>
+          </li>
+        </ol>
 
-    </section>
-    <section class="card">
-      <h2>Consequences</h2>
-      <h3>Positive</h3>
-      <ul>
-        <li>Reproducible installs and a defined path for CVE response.</li>
-        <li>Same command locally and in CI reduces “works on my machine” drift for security checks.</li>
-      </ul>
-      <h3>Trade-offs</h3>
-      <ul>
-        <li>Exact pins require deliberate upgrades; dependabot-style automation may still be added later.</li>
-        <li>pip-audit depends on advisory completeness; false negatives are possible for unreported issues.</li>
-      </ul>
+      </section>
+      <section class="card">
+        <h2>Consequences</h2>
+        <h3>Positive</h3>
+        <ul>
+          <li>Reproducible installs and a defined path for CVE response.</li>
+          <li>Same command locally and in CI reduces “works on my machine” drift for security checks.</li>
+        </ul>
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>Exact pins require deliberate upgrades; dependabot-style automation may still be added later.</li>
+          <li>pip-audit depends on advisory completeness; false negatives are possible for unreported issues.</li>
+        </ul>
 
-    </section>
-    <section class="card">
-      <h2>Compatibility and migration</h2>
-      <ul>
-        <li>Backward-compatibility impact: none for API consumers; dependency upgrades follow normal release notes.</li>
-        <li>Migration plan: add <code>pip-audit</code> to developer/CI install lists, implement
-          <code>make deps-audit</code>,
-          then gate CI.
-        </li>
-        <li>Rollback strategy: revert the failing upgrade commit or temporarily document an exception with expiry.</li>
-      </ul>
+      </section>
+      <section class="card">
+        <h2>Compatibility and migration</h2>
+        <ul>
+          <li>Backward-compatibility impact: none for API consumers; dependency upgrades follow normal release notes.</li>
+          <li>Migration plan: add <code>pip-audit</code> to developer/CI install lists, implement
+            <code>make deps-audit</code>,
+            then gate CI.
+          </li>
+          <li>Rollback strategy: revert the failing upgrade commit or temporarily document an exception with expiry.</li>
+        </ul>
 
-    </section>
-    <section class="card">
-      <h2>Implementation plan</h2>
-      <ol>
-        <li>Add pip-audit to the project’s install surface (for example <code>requirements.txt</code> or a documented CI
-          install step).</li>
-        <li>Implement <code>make deps-audit</code> and document it next to other verify targets.</li>
-        <li>Run pip-audit in CI after <code>pip install -r requirements.txt</code>; fail on unmitigated Critical/High
-          per
-          team policy above.</li>
-        <li>Reference this ADR from contributor or engineering-practices documentation.</li>
-      </ol>
+      </section>
+      <section class="card">
+        <h2>Implementation plan</h2>
+        <ol>
+          <li>Add pip-audit to the project’s install surface (for example <code>requirements.txt</code> or a documented CI
+            install step).</li>
+            <li>Implement <code>make deps-audit</code> and document it next to other verify targets.</li>
+            <li>Run pip-audit in CI after <code>pip install -r requirements.txt</code>; fail on unmitigated Critical/High
+              per
+              team policy above.</li>
+              <li>Reference this ADR from contributor or engineering-practices documentation.</li>
+            </ol>
 
-    </section>
-    <section class="card">
-      <h2>Validation</h2>
-      <ul>
-        <li>Technical checks: <code>make deps-audit</code> passes on a clean tree after upgrades; CI job green.</li>
-        <li>Operational checks: maintainers know where to record exceptions (PR description + optional issue).</li>
-        <li>Documentation updates: this ADR, backlog item, and developer docs cross-links.</li>
-      </ul>
+          </section>
+          <section class="card">
+            <h2>Validation</h2>
+            <ul>
+              <li>Technical checks: <code>make deps-audit</code> passes on a clean tree after upgrades; CI job green.</li>
+              <li>Operational checks: maintainers know where to record exceptions (PR description + optional issue).</li>
+              <li>Documentation updates: this ADR, backlog item, and developer docs cross-links.</li>
+            </ul>
 
-    </section>
+          </section>
 
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added Page history section (repository baseline).</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+          <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+            Found a bug? Report issue
+          </button>
+          <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+        </main>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-  </main>
-
-</body>
-
-</html>
+      </body></html>

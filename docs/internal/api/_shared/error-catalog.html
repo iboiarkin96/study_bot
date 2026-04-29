@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Error catalog — shared registry — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Error catalog — shared registry</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Authoritative registry of every <code>code</code> / <code>key</code> pair the API may
+            return. <strong>Every entry on a per-operation Error catalog (Section 12) must also
+              appear here</strong> — the consistency lint blocks the PR otherwise. Code home:
+            <code>app/errors/&lt;domain&gt;.py</code>. Envelope shape:
+            <a href="./error-envelope.html">_shared/error-envelope.html</a>.
+          </p>
+          <p class="small">
+            <strong>Note.</strong> The legacy auto-generated catalog also lives at
+            <a href="../errors.html">../errors.html</a> (synced from
+            <code>app/errors/</code> via <code>scripts/sync_docs.py</code>). This page is the
+            <em>analyst-facing</em> view: codes are organised by allocation policy, not by source
+            file. Both views must agree — the lint compares them.
+          </p>
+        </section>
+
+        <section class="card" id="allocation">
+          <h2>Allocation policy</h2>
+          <ul>
+            <li><strong>Domain prefixes.</strong> <code>COMMON_</code> (cross-cutting),
+              <code>USER_</code>, <code>CONS_</code> (conspectus), <code>ERR_</code> (error log).
+              New domains require an ADR.</li>
+            <li><strong>HTTP-aligned 3-digit suffix</strong> (e.g. <code>COMMON_400</code>) for
+              codes that map directly to an HTTP status. Reserved range: <code>000</code>
+              (validation), <code>4xx</code>, <code>5xx</code>.</li>
+            <li><strong>Domain-specific 3-digit suffix in the <code>1xx</code> range</strong>
+              (e.g. <code>USER_101</code>, <code>CONS_102</code>) for business-logic errors that
+              would otherwise share an HTTP status with a generic code.</li>
+            <li><strong>Append-only.</strong> Numbers are never reused. Retired codes stay in the
+              catalog with a <em>deprecated</em> badge.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="common">
+          <h2>COMMON</h2>
+          <p class="small">Cross-cutting errors emitted by middleware or shared validators.</p>
+          <div class="docs-table-scroll" role="region" aria-label="COMMON errors">
+            <table>
+              <thead>
+                <tr>
+                  <th>HTTP</th><th>Code</th><th>Key</th><th>Source</th><th>Used by</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>422</code></td><td><code>COMMON_000</code></td>
+                  <td><code>COMMON_VALIDATION_ERROR</code></td>
+                  <td><code>middleware.validation</code></td>
+                  <td>All write endpoints; field-level <code>details</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>400</code></td><td><code>COMMON_400</code></td>
+                  <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                  <td><code>middleware.idempotency</code></td>
+                  <td>All writes (see <a href="./idempotency.html">idempotency rules</a>).</td>
+                </tr>
+                <tr>
+                  <td><code>401</code></td><td><code>COMMON_401</code></td>
+                  <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                  <td><code>middleware.auth</code></td>
+                  <td>All endpoints (see <a href="./auth.html">auth rules</a>).</td>
+                </tr>
+                <tr>
+                  <td><code>409</code></td><td><code>COMMON_409</code></td>
+                  <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                  <td><code>middleware.idempotency</code></td>
+                  <td>All writes.</td>
+                </tr>
+                <tr>
+                  <td><code>413</code></td><td><code>COMMON_413</code></td>
+                  <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+                  <td><code>middleware.body_size</code></td>
+                  <td>All writes.</td>
+                </tr>
+                <tr>
+                  <td><code>429</code></td><td><code>COMMON_429</code></td>
+                  <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                  <td><code>middleware.rate_limit</code></td>
+                  <td>All endpoints.</td>
+                </tr>
+                <tr>
+                  <td><code>500</code></td><td><code>COMMON_500</code></td>
+                  <td><code>SECURITY_AUTH_STRATEGY_INVALID</code></td>
+                  <td><code>middleware.auth</code></td>
+                  <td>Misconfiguration — operator-only.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="user">
+          <h2>USER</h2>
+          <p class="small">
+            User-resource errors. The full validation series (USER_001 — USER_025) is generated
+            from <code>app/errors/user.py</code> and mirrored in
+            <a href="../errors.html#catalog-user">../errors.html#catalog-user</a>. Below is the
+            analyst-facing summary; lint cross-checks the two.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="USER errors">
+            <table>
+              <thead>
+                <tr>
+                  <th>HTTP</th><th>Code</th><th>Key</th><th>Used by</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>400</code></td><td><code>USER_101</code></td>
+                  <td><code>USER_CREATE_ALREADY_EXISTS</code></td>
+                  <td><code>POST /api/v1/user</code> (duplicate
+                    <code>(system_user_id, system_uuid)</code>).</td>
+                </tr>
+                <tr>
+                  <td><code>400</code></td><td><code>USER_102</code></td>
+                  <td><code>USER_PATCH_BODY_EMPTY</code></td>
+                  <td><code>PATCH /api/v1/user/…</code> (no fields to update).</td>
+                </tr>
+                <tr>
+                  <td><code>404</code></td><td><code>USER_404</code></td>
+                  <td><code>USER_NOT_FOUND</code></td>
+                  <td>All endpoints that resolve a user.</td>
+                </tr>
+                <tr>
+                  <td><code>422</code></td><td><code>USER_001..025</code></td>
+                  <td>Field-level validation keys (see auto-generated table).</td>
+                  <td>User write endpoints.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="conspectus">
+          <h2>CONS — Conspectus</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Conspectus errors">
+            <table>
+              <thead>
+                <tr><th>HTTP</th><th>Code</th><th>Key</th><th>Used by</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>400</code></td><td><code>CONS_102</code></td>
+                  <td><code>CONSPECTUS_PATCH_BODY_EMPTY</code></td>
+                  <td><code>PATCH /api/v1/conspectuses/{uuid}</code> (no ETR field to update).</td>
+                </tr>
+                <tr>
+                  <td><code>404</code></td><td><code>CONS_404</code></td>
+                  <td><code>CONSPECTUS_NOT_FOUND</code></td>
+                  <td>All conspectus endpoints (cross-tenant collapses to 404).</td>
+                </tr>
+                <tr>
+                  <td><code>409</code></td><td><code>CONS_409</code></td>
+                  <td><code>CONSPECTUS_REVIEW_REVISION_CONFLICT</code></td>
+                  <td><a href="../conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html">
+                      <code>POST …/actions/review</code></a> — optimistic concurrency on
+                    <code>schedule_revision</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="error-log">
+          <h2>ERR — Error log (learning errors)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Error-log errors">
+            <table>
+              <thead>
+                <tr><th>HTTP</th><th>Code</th><th>Key</th><th>Used by</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>404</code></td><td><code>ERR_404</code></td>
+                  <td><code>ERROR_LOG_REFERENCE_NOT_FOUND</code></td>
+                  <td><code>POST /api/v1/errors</code> when <code>conspectus_uuid</code> set but
+                    not owned by user.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="adding">
+          <h2>Adding a new error</h2>
+          <ol>
+            <li>Pick a domain (existing prefix or new ADR).</li>
+            <li>Allocate the next free numeric in
+              <code>app/errors/&lt;domain&gt;.py</code>.</li>
+            <li>Define the constants and add an OpenAPI example in
+              <code>app/openapi/examples/errors.py</code>.</li>
+            <li>Add a row to the appropriate section above and to the per-operation Error
+              catalog.</li>
+            <li>Run <code>make docs-fix</code> — markers in
+              <a href="../errors.html">../errors.html</a> regenerate from code.</li>
+            <li>Run <code>make docs-check</code> / <code>make verify</code> — consistency lint
+              cross-checks this page, the per-operation catalog, and the auto-generated
+              table.</li>
+          </ol>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 3: analyst-facing error registry; consistency-lint anchor.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

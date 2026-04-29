@@ -103,6 +103,42 @@
   border-top: 1px solid var(--line);
 }
 
+/* ── Placeholder variant (template demo, no real image) ───────────────── */
+.screen-gallery__item--placeholder { border-style: dashed; }
+.screen-gallery__placeholder {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: color-mix(in srgb, var(--bg) 88%, var(--card));
+  background-image: linear-gradient(135deg,
+    color-mix(in srgb, var(--line) 35%, transparent) 0,
+    color-mix(in srgb, var(--line) 35%, transparent) 1px,
+    transparent 1px,
+    transparent 12px);
+  text-align: center;
+}
+.screen-gallery__placeholder code {
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.screen-gallery__placeholder-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
 /* ── Anatomy diagram ───────────────────────────────────────────────────── */
 .anatomy-figure {
   margin: 8px 0 0;
