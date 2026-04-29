@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,10 +16,10 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Business Logic Guide</h1>
+    <h1 class="internal-h1--accent-tail">Business Logic Guide</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section id="overview" class="card">
+    <section class="docs-page-hero" id="overview" aria-labelledby="overview">
       <h2>Overview</h2>
       <p>How we split HTTP, services, repositories, and models.</p>
     </section>
@@ -45,14 +45,16 @@
         <div class="small">
           <p>
             <strong>Layered architecture</strong> stacks the system in horizontal layers. Each layer talks only to the
-            layer below. Inner layers (rules, persistence) do not import HTTP or transport details, so you can test and swap
+            layer below. Inner layers (rules, persistence) do not import HTTP or transport details, so you can test and
+            swap
             adapters.
           </p>
           <p>
             This is close to <strong>ports and adapters</strong>: the core defines behavior; HTTP and SQL are adapters.
           </p>
           <p>
-            <strong>Contract-first</strong> means OpenAPI describes the HTTP surface; implementation must match. The outer
+            <strong>Contract-first</strong> means OpenAPI describes the HTTP surface; implementation must match. The
+            outer
             adapter stays tied to a stable contract.
           </p>
         </div>
@@ -179,6 +181,7 @@
               <li>Any failure path must return stable error contract.</li>
             </ul>
           </section>
+
           <section class="card">
             <h2>Logging and observability</h2>
             <ul>
@@ -187,6 +190,7 @@
               <li>Log format/config: <code>app/core/logging.py</code>.</li>
             </ul>
           </section>
+
           <section class="card">
             <h2>Typical change flow</h2>
             <ol>
@@ -199,6 +203,7 @@
               <li>Run make pipeline.</li>
             </ol>
           </section>
+
           <section id="page-history" class="card">
             <h2>Page history</h2>
             <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -222,6 +227,10 @@
           </section>
 
           <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+          <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+            Found a bug? Report issue
+          </button>
+          <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
         </main>
 
       </body></html>

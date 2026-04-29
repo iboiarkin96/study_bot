@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,22 +16,23 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Error Matrix By Status</h1>
+    <h1 class="internal-h1--accent-tail">Error Matrix By Status</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section id="overview" class="card">
+    <section class="docs-page-hero" aria-labelledby="overview">
       <h2>Overview</h2>
       <p>
         How to mix shared <code>COMMON_*</code> errors with entity codes (e.g. <code>USER_*</code>), and how to review
         routers by HTTP status.
       </p>
     </section>
-    <section class="card">
+    <section id="page-history" class="card">
 
       <h2>Rule of thumb</h2>
       <ul>
         <li>Use <code>COMMON_*</code> when the same error applies everywhere.</li>
-        <li>Use entity prefixes (<code>USER_*</code>, later <code>CONTRACT_*</code>, etc.) for domain-specific cases.</li>
+        <li>Use entity prefixes (for example, <code>USER_*</code> for user) for domain-specific cases.
+        </li>
         <li>Never change the meaning of a published <code>code</code> + <code>key</code> pair.</li>
         <li>Mirror declared responses in OpenAPI examples and tests.</li>
       </ul>
@@ -42,7 +43,8 @@
       <ul>
         <li>
           <code>app/errors/common.py</code> and <code>app/errors/user.py</code> — one place for stable
-          <code>code</code>, <code>key</code>, and default <code>message</code> (plus validation maps). Import here; do not
+          <code>code</code>, <code>key</code>, and default <code>message</code> (plus validation maps). Import here; do
+          not
           copy strings.
         </li>
         <li><code>app/openapi/responses.py</code> - shared response blocks for routers.</li>
@@ -98,72 +100,6 @@
     </section>
     <section class="card">
 
-      <h2>Entity matrix example: user</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Endpoint</th>
-            <th>HTTP status</th>
-            <th>Class</th>
-            <th>Code prefix</th>
-            <th>Current examples</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>POST /api/v1/user</code></td>
-            <td><code>400</code></td>
-            <td>Mixed: COMMON + entity</td>
-            <td><code>COMMON_*</code> + <code>USER_*</code></td>
-            <td><code>IDEMPOTENCY_KEY_REQUIRED</code>, <code>USER_CREATE_ALREADY_EXISTS</code></td>
-          </tr>
-          <tr>
-            <td><code>POST /api/v1/user</code></td>
-            <td><code>422</code></td>
-            <td>Entity validation matrix</td>
-            <td><code>USER_00x</code></td>
-            <td><code>USER_001...USER_013</code></td>
-          </tr>
-          <tr>
-            <td><code>GET /api/v1/user/{system_user_id}</code></td>
-            <td><code>404</code></td>
-            <td>Entity business</td>
-            <td><code>USER_*</code></td>
-            <td><code>USER_NOT_FOUND</code> (<code>USER_404</code>)</td>
-          </tr>
-          <tr>
-            <td><code>PUT /api/v1/user/{system_user_id}</code></td>
-            <td><code>422</code></td>
-            <td>Entity validation matrix</td>
-            <td><code>USER_014…USER_024</code></td>
-            <td>Update body rules (e.g. <code>USER_UPDATE_TIMEZONE_INVALID</code>)</td>
-          </tr>
-          <tr>
-            <td><code>PATCH /api/v1/user/{system_user_id}</code></td>
-            <td><code>400</code></td>
-            <td>Entity business</td>
-            <td><code>USER_102</code></td>
-            <td><code>USER_PATCH_BODY_EMPTY</code> (no fields in body)</td>
-          </tr>
-          <tr>
-            <td><code>PATCH /api/v1/user/{system_user_id}</code></td>
-            <td><code>422</code></td>
-            <td>Entity validation matrix</td>
-            <td><code>USER_014…USER_024</code></td>
-            <td>Same field rules as PUT when a field is present</td>
-          </tr>
-          <tr>
-            <td><code>GET /api/v1/user/{system_user_id}</code></td>
-            <td><code>401</code>, <code>429</code></td>
-            <td>COMMON reusable</td>
-            <td><code>COMMON_*</code></td>
-            <td>Auth and rate-limit responses reused from shared pool</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-    <section class="card">
-
       <h2>Router review checklist (status-first)</h2>
       <ol>
         <li>List all response statuses declared in router <code>responses={...}</code>.</li>
@@ -175,13 +111,6 @@
     </section>
     <section class="card">
 
-      <h2>Related governance docs</h2>
-      <ul>
-        <li><a href="../adr/0003-error-contract-governance.html">ADR 0003: Error Contract Governance</a></li>
-        <li><a href="./0002-schemas-and-contracts.html">Schemas and Contracts Guide</a></li>
-      </ul>
-    </section>
-    <section id="page-history" class="card">
       <h2>Page history</h2>
       <div class="docs-table-scroll" role="region" aria-label="Page history">
         <table class="docs-page-history">
@@ -204,6 +133,10 @@
     </section>
 
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
 </body></html>

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend resume reading and back-to-top</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend resume-reading and back-to-top <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            Long-page reading aids for internal docs: a top <strong>resume-reading banner</strong> that offers a
+            one-click jump back to the reader's previous scroll position, and a floating <strong>back-to-top
+            button</strong> that appears after a scroll threshold. Both are opt-in per page — the runtime
+            (<a href="./docs-frontend-js-modules-reference.html#docs-resume"><code>docs-resume.js</code></a>) loads
+            only where the page declares it.
+          </p>
+          <p class="small">
+            Status: <span class="screen-status screen-status--in-progress">in-progress</span> — first deployed on
+            <code>internal/api/conspectus/operations/post-…actions-review.html</code> (long page, lots of state-table
+            scrolling). Stabilization criteria below.
+          </p>
+        </section>
+
+        <section id="anatomy" class="card">
+          <h2>Anatomy</h2>
+          <ol>
+            <li><strong>Resume banner</strong> — appears at the top of <code>.internal-layout__main</code> after
+              <code>DOMContentLoaded</code> if a saved scroll position exists for this URL within the 14-day TTL.
+              Includes a primary action ("Resume reading at section X") and a dismiss button. Single instance per
+              page.</li>
+            <li><strong>Back-to-top button</strong> — fixed-position circular button at the bottom-right of the
+              viewport. Hidden by default; reveals once <code>scrollY &gt; 600 px</code> and smooth-scrolls to
+              <code>0,0</code> on click. Persists across navigations within the page; respects safe-area-insets on
+              mobile.</li>
+          </ol>
+          <p class="small">
+            Both controls are visual children of <code>.internal-layout</code>; they are <em>not</em> portaled into
+            <code>document.body</code>, so the drawer overlay (z-index 1000) still covers them when active. CSS rules
+            live in <a href="./docs-frontend-css-architecture.html#internal-layout-deep-dive"><code>internal-layout.css</code></a>.
+          </p>
+        </section>
+
+        <section id="component-states" class="card">
+          <h2>States and accessibility</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Resume + back-to-top states and accessibility">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Component</th>
+                  <th scope="col">States</th>
+                  <th scope="col">Role / ARIA</th>
+                  <th scope="col">Keyboard</th>
+                  <th scope="col">Reduced motion</th>
+                  <th scope="col">Screen-reader announcement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Resume banner</td>
+                  <td>hidden, visible, dismissed (in this tab), expired (no save within 14 d), not-applicable (no prior scroll)</td>
+                  <td><code>role="status"</code> + <code>aria-live="polite"</code> on first appearance</td>
+                  <td><kbd>Tab</kbd> reaches the action and dismiss buttons; <kbd>Enter</kbd> jumps; <kbd>Esc</kbd> dismisses while focused</td>
+                  <td>Skip the fade-in; show flat</td>
+                  <td>"Resume reading from section X, button to jump or dismiss"</td>
+                </tr>
+                <tr>
+                  <td>Back-to-top button</td>
+                  <td>hidden (<code>scrollY &lt; 600 px</code>), visible, hovered, focused, smoothing (during animated scroll)</td>
+                  <td><code>aria-label="Back to top"</code>; <code>type="button"</code></td>
+                  <td><kbd>Tab</kbd> reaches it once visible; <kbd>Enter</kbd>/<kbd>Space</kbd> activates</td>
+                  <td>Skip smooth-scroll animation; jump instantly to top</td>
+                  <td>"Back to top, button"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="public-surface" class="card">
+          <h2>Public surface</h2>
+          <dl class="docs-module-meta">
+            <dt>Loaded by</dt>
+            <dd>Pages that opt in via <code>&lt;script defer src="…/assets/docs-resume.js"&gt;</code>. The script
+              gracefully no-ops on pages without scrollable content or without an <code>.internal-layout</code> host.</dd>
+            <dt>Storage keys</dt>
+            <dd>
+              <code>localStorage</code> · <code>docs.resume.&lt;path&gt;</code> — JSON <code>{ scrollY, ts }</code>,
+              throttled write at 750 ms, TTL 14 days.<br>
+              <code>sessionStorage</code> · <code>docs.resume.seen.&lt;path&gt;</code> — <code>"1"</code> when the
+              banner has been actioned or dismissed in the current tab. Cleared on tab close.
+            </dd>
+            <dt>Tuning constants (in source)</dt>
+            <dd>
+              <code>TTL_MS = 14 × 24 × 60 × 60 × 1000</code><br>
+              <code>MIN_SCROLL_FRACTION = 0.25</code> — banner only offers if reader passed 25% of the page before<br>
+              <code>BACK_TO_TOP_THRESHOLD = 600</code> px<br>
+              <code>SAVE_THROTTLE_MS = 750</code> ms
+            </dd>
+            <dt>CSS hooks</dt>
+            <dd><code>.docs-resume-banner</code>, <code>.docs-resume-banner__action</code>,
+              <code>.docs-resume-banner__dismiss</code>, <code>.docs-back-to-top</code> — all defined in
+              <code>internal-layout.css</code>.</dd>
+            <dt>CustomEvents</dt>
+            <dd>None emitted or listened. The module is self-contained.</dd>
+            <dt>Window globals</dt>
+            <dd>None.</dd>
+          </dl>
+        </section>
+
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Opt in only on pages where the reader is likely to scroll past 25% — long API operation pages, deep ADRs, audit reports.</td>
+                <td>Add the script globally — short pages get a banner that never resolves and a button that never appears, wasting bytes and runtime.</td>
+              </tr>
+              <tr>
+                <td>Bump the <code>SAVE_THROTTLE_MS</code> constant if the page has very long scroll regions and CPU-sensitive behavior (e.g. heavy SVG diagrams).</td>
+                <td>Reduce the throttle below 250 ms — repeated <code>localStorage</code> writes degrade performance and battery on mobile.</td>
+              </tr>
+              <tr>
+                <td>Test the <code>prefers-reduced-motion: reduce</code> path: button must scroll instantly, banner must show without fade.</td>
+                <td>Use <code>scrollIntoView({ behavior: "smooth" })</code> unconditionally — it ignores reduced-motion and animates anyway. Branch on the media query.</td>
+              </tr>
+              <tr>
+                <td>Treat the resume banner as informational — keep the dismiss button always reachable via <kbd>Tab</kbd> + <kbd>Esc</kbd>.</td>
+                <td>Make the banner sticky or full-screen — it would block the page and erode trust.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="acceptance" class="card">
+          <h2>Acceptance checklist</h2>
+          <ol>
+            <li>Loading a previously-scrolled page (within 14 days, scrollY &gt; 25% of page height) shows the banner above all other content.</li>
+            <li>Dismissing the banner persists for the current tab session — banner does not return on F5 in the same tab.</li>
+            <li>Closing and reopening the tab brings the banner back (sessionStorage cleared).</li>
+            <li>After 14 days, the banner does not appear even if a save exists — entry has expired.</li>
+            <li>The back-to-top button appears at <code>scrollY = 600 px</code> on every breakpoint and disappears below it.</li>
+            <li>Click on the back-to-top scrolls smoothly to top under <code>prefers-reduced-motion: no-preference</code>; jumps instantly under <code>reduce</code>.</li>
+            <li>Both controls are reachable via <kbd>Tab</kbd>, dismissable via <kbd>Esc</kbd> or activation.</li>
+            <li>No console errors and no stray timers after navigation.</li>
+          </ol>
+        </section>
+
+        <section id="implementation-map" class="card">
+          <h2>Implementation map</h2>
+          <ul>
+            <li><code>docs/assets/docs-resume.js</code> — runtime: scroll save/restore, banner/button render, dismiss persistence.</li>
+            <li><code>docs/assets/internal-layout.css</code> — visual styles for <code>.docs-resume-banner</code> and <code>.docs-back-to-top</code> (including reduced-motion overrides).</li>
+            <li><code>docs/internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html</code> — first opt-in consumer.</li>
+          </ul>
+        </section>
+
+        <section id="related" class="card">
+          <h2>Related internal docs</h2>
+          <ul>
+            <li><a href="./docs-frontend-js-modules-reference.html#docs-resume">JavaScript modules reference — <code>docs-resume.js</code></a></li>
+            <li><a href="./docs-frontend-css-architecture.html#internal-layout-deep-dive">CSS architecture — <code>internal-layout.css</code> deep dive</a></li>
+            <li><a href="./docs-frontend-popups-and-overlays.html">Popups and overlays</a> — sister page covering toast surfaces.</li>
+            <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — reduced-motion policy.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Page created — first dedicated component spec for the resume-reading banner and back-to-top button.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

@@ -7,7 +7,6 @@
   <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
   <link rel="stylesheet" href="../../assets/docs.css" />
   <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
   <script defer src="../../assets/internal-sidebar.js"></script>
   <script defer src="../../assets/docs-nav.js"></script>
   <script defer src="../../assets/docs-portal-data.js"></script>
@@ -20,7 +19,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend glossary</h1>
+        <h1>Docs frontend glossary <span class="docs-page-type docs-page-type--foundation">Foundation</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -128,8 +127,286 @@
                 <td>Full-screen diagram viewer with zoom, pan, keyboard controls, and focus-safe open/close behavior.</td>
                 <td><a href="./docs-frontend-diagrams-and-lightbox.html">Diagrams and lightbox</a></td>
               </tr>
+              <tr>
+                <td>Page-type badge</td>
+                <td>Small inline label placed next to every page <code>&lt;h1&gt;</code> declaring one of six page types: Foundation, Architecture, Screen, Component, Reference, Contract. Drives size budget and required sections.</td>
+                <td><a href="./documentation-style-guide.html#page-type-taxonomy">Page-type taxonomy</a></td>
+              </tr>
+              <tr>
+                <td>Reference page</td>
+                <td>Page type whose body is dominated by a normalized lookup table; minimal narrative. Examples: JS modules reference, CSS architecture, hotkeys.</td>
+                <td><a href="./documentation-style-guide.html#page-type-taxonomy">Page-type taxonomy</a></td>
+              </tr>
+              <tr>
+                <td>Contract page</td>
+                <td>Page type that holds only stable normative requirements; implementation lives elsewhere. Size budget 80–200 lines.</td>
+                <td><a href="./docs-frontend-menu-and-theme-controls.html">Navigation and theme contract</a></td>
+              </tr>
+              <tr>
+                <td>Public surface</td>
+                <td>What a JavaScript module exposes to the rest of the runtime: <code>CustomEvent</code>s emitted/listened, <code>data-*</code> attributes consumed/set, <code>window</code> globals, storage keys, mount-point IDs. Renaming any of these is a breaking change.</td>
+                <td><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a></td>
+              </tr>
+              <tr>
+                <td><code>data-*</code> contract</td>
+                <td>The set of <code>data-</code>-prefixed HTML attributes a runtime module reads or writes. Acts as the bridge between markup pages and JS behavior.</td>
+                <td><a href="./docs-frontend-js-modules-reference.html#conventions">Naming and ownership conventions</a></td>
+              </tr>
             </tbody>
           </table>
+        </section>
+
+        <section id="home-screen-terms" class="card">
+          <h2>Home screen terms (engineering hub landing)</h2>
+          <p>
+            Terms specific to the docs portal home screen (<a href="../../index.html"><code>docs/index.html</code></a>)
+            and its boot intro overlay. Each term has a short, plain-language definition first, then a precise
+            implementation note. If you don't know a term while reading code or specs, look it up here before guessing.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Plain-language definition</th>
+                <th>Implementation note</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hero</td>
+                <td>The large, attention-grabbing block at the top of a landing page. Holds the title, tagline, and primary CTAs.</td>
+                <td><code>.home-hero</code> in <code>home.css</code>; isolated stacking context with background layers behind and content grid in front.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-region">Home spec — Hero</a></td>
+              </tr>
+              <tr>
+                <td>Eyebrow</td>
+                <td>A short uppercase label sitting above a heading, used to label the section ("Engineering Documentation").</td>
+                <td><code>.home-hero__eyebrow</code>; small, accent-colored, with a leading 18×2px accent bar.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-eyebrow">Home spec — Eyebrow</a></td>
+              </tr>
+              <tr>
+                <td>Tagline</td>
+                <td>One-line subtitle below the H1 that summarizes the page's purpose.</td>
+                <td><code>.home-hero__tagline</code>; muted color, max-width 58 characters.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-tagline">Home spec — Tagline</a></td>
+              </tr>
+              <tr>
+                <td>Wordmark</td>
+                <td>A textual logo: the product name set in a distinctive type style, treated as a brand mark.</td>
+                <td>The home boot intro renders <code>ETR // API</code> as a wordmark with per-character spans for the scramble effect.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#wordmark-detail">Home spec — Wordmark scramble</a></td>
+              </tr>
+              <tr>
+                <td>Glyph</td>
+                <td>A single visual character — a letter, digit, symbol, or pictogram.</td>
+                <td>Used in this codebase to mean "one drawn character" (e.g. one cell of the rain canvas, one slot of the wordmark).</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Glyph rain (Matrix rain)</td>
+                <td>A background of falling random characters in vertical streams, styled after the "code rain" from <em>The Matrix</em>.</td>
+                <td>Canvas-based; columns of glyphs (Katakana + ASCII) fall at random speeds with bright head + faded trail. Implemented in <code>startGlyphRain()</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#rain-detail">Home spec — Glyph rain</a></td>
+              </tr>
+              <tr>
+                <td>Glyph scramble (decrypt effect)</td>
+                <td>A reveal animation where a piece of text first cycles through random characters and then "settles" into the real text, character by character.</td>
+                <td>Used in two places: the intro wordmark (<code>startWordmarkScramble</code>) and the H1 (<code>bindHeroDecrypt</code>). Each char rolls random glyphs every ~50ms, then locks at a per-char timestamp.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#wordmark-detail">Home spec — Wordmark scramble</a></td>
+              </tr>
+              <tr>
+                <td>Lock-in / lock-flash</td>
+                <td>The moment when a scrambling character settles to its final letter, accompanied by a brief brightness flash and scale pulse.</td>
+                <td>CSS animation <code>ig-lockflash</code> (scale 1.18 → 0.98 → 1, 380ms). Triggered by adding <code>.ig-char--locked</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#wordmark-detail">Home spec — Wordmark scramble</a></td>
+              </tr>
+              <tr>
+                <td>HUD bracket</td>
+                <td>An L-shaped corner mark used in heads-up displays (HUD) to frame an object of interest, like the targeting reticle in a video game.</td>
+                <td>Four <code>.home-intro__bracket</code> elements at corners of <code>.home-intro__stage</code>; idle pulse + one-shot snap on full lock.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#brackets-detail">Home spec — HUD brackets</a></td>
+              </tr>
+              <tr>
+                <td>Crosshair tick</td>
+                <td>A short vertical line above and below an object, marking its center axis — like the tick marks of a sniper scope.</td>
+                <td><code>.home-intro__crosshair--top/bot</code> at the vertical center of the HUD stage.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#brackets-detail">Home spec — HUD brackets</a></td>
+              </tr>
+              <tr>
+                <td>Radar pulse ring (sonar ring)</td>
+                <td>A circle that grows from a center point and fades out, mimicking a radar or sonar ping.</td>
+                <td>Three <code>.home-intro__radar</code> elements expand from <code>scale(0.5)</code> to <code>scale(7.2)</code> over 3.6s, staggered 0/1.2/2.4s.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#radar-detail">Home spec — Radar rings</a></td>
+              </tr>
+              <tr>
+                <td>Vignette</td>
+                <td>A dark border-fade around the edges of an image or screen that pulls the eye toward the center.</td>
+                <td><code>.home-intro__vignette</code> — radial gradient that darkens the outer 35% of the overlay.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#boot-intro">Home spec — Boot intro</a></td>
+              </tr>
+              <tr>
+                <td>Scanlines</td>
+                <td>Faint horizontal stripes overlaid on a screen, evoking a CRT television or technical instrument display.</td>
+                <td><code>.home-intro__scanlines</code> — 1px-on / 3px-off repeating linear gradient at low opacity.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#boot-intro">Home spec — Boot intro</a></td>
+              </tr>
+              <tr>
+                <td>Iris shutter</td>
+                <td>A circular wipe that closes (or opens) like a camera aperture, used here to dismiss the intro overlay.</td>
+                <td><code>runShutterExit()</code> animates a <code>clip-path: circle(150% → 0%)</code> over 720ms with <code>cubic-bezier(0.87, 0, 0.13, 1)</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#iris-shutter-detail">Home spec — Iris shutter</a></td>
+              </tr>
+              <tr>
+                <td>Mask reveal</td>
+                <td>An animation that reveals content by uncovering it from behind a moving mask — a wipe, a curtain, or a clip-path.</td>
+                <td>Pattern used in earlier intro iterations; current intro uses iris shutter on exit and per-character scramble on entry.</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Skip button (skip control)</td>
+                <td>A button that lets the user dismiss an intro/animation early instead of waiting it out.</td>
+                <td><code>.home-intro__skip</code>; absolute top-right; <kbd>Esc</kbd> bound as keyboard equivalent.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#skip-detail">Home spec — Skip</a></td>
+              </tr>
+              <tr>
+                <td>Status pill</td>
+                <td>A small rounded label showing the current state of a system. Often paired with a colored dot.</td>
+                <td><code>.home-intro__status</code> — monospace text with a pulsing cyan dot; transitions to steady white on <code>.is-locked</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#status-detail">Home spec — Status pill</a></td>
+              </tr>
+              <tr>
+                <td>Progress bar</td>
+                <td>A horizontal bar that fills from 0% to 100% to show how much of a process is complete.</td>
+                <td>Two on this page: (a) <code>.home-intro__bar</code> tied to wordmark glyph lock count; (b) <code>.home-scroll-progress</code> tied to scroll position via <code>scaleX</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#wordmark-detail">Home spec — Progress bar</a></td>
+              </tr>
+              <tr>
+                <td>Scroll progress bar</td>
+                <td>A thin bar fixed at the top of the viewport that fills as the user scrolls down the page.</td>
+                <td><code>.home-scroll-progress</code>; updated each scroll/resize via rAF in <code>bindScrollProgress()</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#screen-layout">Home spec — Scroll progress</a></td>
+              </tr>
+              <tr>
+                <td>CTA (Call To Action)</td>
+                <td>A clickable button or link inviting the user to take a primary action ("Start", "Sign up", "Open the docs").</td>
+                <td><code>.home-hero__cta</code>; primary uses gradient fill + magnetic effect, secondaries use card border.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-cta">Home spec — CTAs</a></td>
+              </tr>
+              <tr>
+                <td>Magnetic CTA</td>
+                <td>A button that subtly slides toward the cursor when the cursor is near, as if attracted to it.</td>
+                <td>Opt-in via <code>data-home-magnetic</code>; pointer offset is mapped to a damped translate, clamped to ±9/±7px. See <code>bindMagneticCta()</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-cta">Home spec — Magnetic CTA</a></td>
+              </tr>
+              <tr>
+                <td>Mono-chip</td>
+                <td>A small rounded pill of monospace text used to display short metadata (a version, an environment, a tag).</td>
+                <td><code>.home-chip</code>; backdrop-blurred 6px, monospace 0.7rem, optional leading status dot.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-chips">Home spec — Mono-chips</a></td>
+              </tr>
+              <tr>
+                <td>Number ticker (count-up)</td>
+                <td>A number that animates from zero up to a target value when it scrolls into view.</td>
+                <td><code>.home-ticker__num</code> with <code>data-home-ticker-target</code> + optional <code>data-home-ticker-suffix</code>; cubic-out easing over 900ms; stagger 80ms; uses <code>tabular-nums</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-tickers">Home spec — Tickers</a></td>
+              </tr>
+              <tr>
+                <td>Terminal panel (live code panel)</td>
+                <td>A card styled like a terminal window (with traffic-light dots and monospace text) that shows a code or shell example.</td>
+                <td><code>.home-hero__terminal</code>; macOS chrome, syntax-colored typing of <code>TERMINAL_SCRIPT</code> via <code>bindLiveTerminal()</code>; gated on intro-done + visibility.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-terminal">Home spec — Terminal</a></td>
+              </tr>
+              <tr>
+                <td>Caret (typing cursor)</td>
+                <td>The blinking vertical bar shown at the current insertion point in a text editor or terminal.</td>
+                <td><code>.home-terminal__caret</code> 8×1em block; blinks via <code>@keyframes cursor-blink</code> at 720ms <code>steps(2, end)</code>.</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Cursor-reactive dot grid</td>
+                <td>A regular grid of small dots that brightens and grows where the cursor is hovering, as if the cursor lights up nearby dots.</td>
+                <td>Canvas-based; spacing 26px, react radius 140px. Implemented in <code>bindDotGrid()</code>; rAF-throttled, theme-aware.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-bg">Home spec — Hero background</a></td>
+              </tr>
+              <tr>
+                <td>Parallax orb</td>
+                <td>A blurred glowing disc placed in the background that drifts slightly when the user moves the cursor, creating a sense of depth.</td>
+                <td><code>.home-hero__orb--one/two/three</code>; depth multipliers <code>0.28 / 0.18 / 0.12</code>. Driven by <code>bindHeroParallax()</code> with damping 0.12.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-bg">Home spec — Hero background</a></td>
+              </tr>
+              <tr>
+                <td>Section tint shift</td>
+                <td>A subtle change in the background color tone between scroll sections, used to give each section a distinct mood.</td>
+                <td><code>[data-section-tint="cool|teal|mono"]</code>; <code>.is-tinted</code> applied via <code>IntersectionObserver</code>; tint rendered in <code>::before</code> as a radial gradient.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#card-sections">Home spec — Section tints</a></td>
+              </tr>
+              <tr>
+                <td>Card stagger reveal</td>
+                <td>A reveal animation where cards in a row fade/slide in one after another with a small time delay, instead of all at once.</td>
+                <td><code>bindRevealOnScroll()</code> sets <code>transition-delay: i * 65ms</code> per card and adds <code>.is-visible</code> in a double-rAF.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#card-sections">Home spec — Card sections</a></td>
+              </tr>
+              <tr>
+                <td>Shimmer sweep</td>
+                <td>A diagonal translucent band that sweeps across a card on hover, like light catching the surface.</td>
+                <td><code>.home-card::after</code>; <code>translateX(-110% → 110%)</code> over 620ms.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#card-sections">Home spec — Card hover</a></td>
+              </tr>
+              <tr>
+                <td>3D card tilt</td>
+                <td>A small 3D rotation applied to a card on hover so it feels like it's leaning toward the cursor.</td>
+                <td><code>.home-card:hover</code> applies <code>translateY(-3px) rotateX(1.2deg) rotateY(-1.4deg)</code> (motion-allowed only).</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Variable font (wght axis)</td>
+                <td>A font file that can interpolate between many weights/widths along an axis, instead of shipping discrete weight files.</td>
+                <td><code>font-variation-settings: "wght" var(--home-h1-wght)</code> on <code>.home-hero__title</code>; <code>--home-h1-wght</code> animated 500 → 760 on scroll.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-h1">Home spec — H1</a></td>
+              </tr>
+              <tr>
+                <td>View Transitions API</td>
+                <td>A browser API that animates the change between two states — including the transition between two pages — automatically. Currently Chromium-only.</td>
+                <td><code>document.startViewTransition()</code> in <code>bindViewTransitions()</code>; per-CTA <code>view-transition-name</code> via CSS for shared-element morphs.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#hero-cta">Home spec — CTAs</a></td>
+              </tr>
+              <tr>
+                <td>Scan beam</td>
+                <td>A bright bar that sweeps once across an element, like a barcode scanner reading the wordmark.</td>
+                <td><code>.home-intro__wordmark-beam</code>; one-shot animation <code>ig-beam</code> on <code>.home-intro__wordmark.is-locked</code>.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#wordmark-detail">Home spec — Wordmark</a></td>
+              </tr>
+              <tr>
+                <td>Reduced motion</td>
+                <td>A user preference (operating system setting) that asks websites to minimize non-essential animations. Respecting it is an accessibility requirement.</td>
+                <td><code>@media (prefers-reduced-motion: reduce)</code> gate; everything decorative is disabled or simplified, intro is removed, terminal renders statically.</td>
+                <td><a href="./screens/docs-screen-home-landing.html#accessibility-motion">Home spec — Accessibility</a></td>
+              </tr>
+              <tr>
+                <td>Anatomy diagram</td>
+                <td>A labelled illustration that names every visible region of a screen or component, like a wiring diagram for the UI.</td>
+                <td>Annotated SVG embedded in screen specs (preferred over screenshots — version-controllable, doesn't go stale on style tweaks).</td>
+                <td><a href="./screens/docs-screen-home-landing.html#anatomy-diagram">Home spec — Anatomy</a></td>
+              </tr>
+              <tr>
+                <td>Screen spec</td>
+                <td>A single-page document that fully describes one screen of the product: layout, behavior, data hooks, edge cases, and where to change it.</td>
+                <td>Lives in <code>docs/internal/front/screens/docs-screen-*.html</code>. Always start from <a href="./screens/docs-screen-template.html">the template</a>.</td>
+                <td><a href="./screens/docs-screen-template.html">Screen spec template</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="reading-tips" class="card">
+          <h2>How to use this glossary</h2>
+          <ul>
+            <li><strong>While reading code:</strong> if a CSS class or function name uses an unfamiliar word ("orb", "wordmark", "shimmer"), find it here first. The implementation note tells you exactly which selector or function to look at.</li>
+            <li><strong>While writing PR descriptions:</strong> use these terms verbatim. "Adjusted radar pulse timing" beats "made the circle thing slower" — reviewers know exactly what changed.</li>
+            <li><strong>While writing a new screen spec:</strong> use the same term across the spec, glossary, and code. Add new terms <em>here</em> in the same PR that introduces them in the screen.</li>
+            <li><strong>If a term feels ambiguous:</strong> open an issue or fix it directly — glossary precision is the foundation of every other doc.</li>
+          </ul>
         </section>
 
         <section id="usage-guidelines" class="card">
@@ -153,6 +430,16 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added 5 new core terms (Page-type badge, Reference page, Contract page, Public surface, <code>data-*</code> contract); added Foundation badge to H1.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added home-screen terminology section (HUD bracket, radar ring, glyph rain/scramble, wordmark, lock-flash, terminal panel, magnetic CTA, mono-chip, ticker, dot-grid, parallax orb, vignette/scanlines, iris shutter, view transitions, variable-font axis, scan beam, anatomy diagram, screen spec, reduced motion, scroll progress) with plain-language definitions and implementation notes.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-24">2026-04-24</time></td>
                   <td>Linked glossary term for <code>data-tooltip</code> hints to new normative tooltips page.</td>

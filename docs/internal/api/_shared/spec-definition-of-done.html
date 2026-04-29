@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Operation spec — Definition of Done — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Operation spec — Definition of Done</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            A spec is <strong>Done</strong> when every box below is ticked. The list is the
+            single contract the systems analyst owes the developer before implementation
+            starts; the linters in <code>scripts/spec_lint.py</code> and
+            <code>scripts/spec_consistency.py</code> automate the structural checks, and a peer
+            review confirms the content quality. PR cannot merge with a failing lint.
+          </p>
+          <p class="small">
+            Use the template at
+            <a href="./spec-template.html"><code>_shared/spec-template.html</code></a> as the
+            starting point. Cross-cutting topics (idempotency, error envelope, auth, pagination,
+            versioning, observability) are linked, never duplicated.
+          </p>
+        </section>
+
+        <section class="card" id="dod-checklist">
+          <h2>Definition of Done — checklist</h2>
+
+          <h3>Header &amp; metadata</h3>
+          <ul>
+            <li><input type="checkbox" disabled> <strong>Status</strong> set to one of
+              <code>draft</code> · <code>in-review</code> · <code>approved</code> ·
+              <code>implemented</code> · <code>deprecated</code>; matches the badge in the
+              metadata strip.</li>
+            <li><input type="checkbox" disabled> <strong>Owner</strong> linked to a portal
+              people page.</li>
+            <li><input type="checkbox" disabled> <strong>operationId</strong> present, unique,
+              and consistent across body attribute and metadata strip.</li>
+            <li><input type="checkbox" disabled> <strong>Last reviewed</strong> date is
+              ≤ 30 days old (refresh on each spec change).</li>
+            <li><input type="checkbox" disabled> <strong>HTTP method tablet + path</strong>
+              displayed and matches the body <code>operationId</code>.</li>
+          </ul>
+
+          <h3>Sections — content</h3>
+          <ul>
+            <li><input type="checkbox" disabled> <strong>1. Business context</strong> — 2–4
+              sentences anchored to methodology / system-design.</li>
+            <li><input type="checkbox" disabled> <strong>2. User stories</strong> — at least
+              one in <em>“As a … I want … so that …”</em> form.</li>
+            <li><input type="checkbox" disabled> <strong>3. Acceptance criteria</strong> —
+              every AC has an ID, Given / When / Then; happy + unhappy + at least one edge
+              case covered.</li>
+            <li><input type="checkbox" disabled> <strong>4. Functional requirements</strong> —
+              every FR has an ID and is testable.</li>
+            <li><input type="checkbox" disabled> <strong>5. Non-functional requirements</strong>
+              — every NFR has a measurable threshold (latency ms, payload bytes, %, …).</li>
+            <li><input type="checkbox" disabled> <strong>6. Authorization</strong> — links to
+              <a href="./auth.html">_shared/auth.html</a>; ownership rule explicit.</li>
+            <li><input type="checkbox" disabled> <strong>7. Request contract</strong> — every
+              parameter has type, format, required, constraints, business meaning, OpenAPI
+              mapping; includes a JSON example.</li>
+            <li><input type="checkbox" disabled> <strong>8. Response contract</strong> — same
+              for each success status; example provided per status.</li>
+            <li><input type="checkbox" disabled> <strong>9. State transitions</strong> — present
+              if the operation mutates a state machine; otherwise removed (not left empty).</li>
+            <li><input type="checkbox" disabled> <strong>10. Side effects</strong> — DB writes,
+              events, downstream calls listed per outcome (success / failure / replay); use
+              <em>None.</em> for read-only.</li>
+            <li><input type="checkbox" disabled> <strong>11. Idempotency &amp; concurrency</strong>
+              — namespace, key composition, replay behaviour, concurrency model declared; links
+              to <a href="./idempotency.html">_shared/idempotency.html</a>.</li>
+            <li><input type="checkbox" disabled> <strong>12. Error catalog</strong> — every
+              <code>code/key</code> exists in
+              <a href="./error-catalog.html">_shared/error-catalog.html</a>; envelope examples
+              for non-trivial errors.</li>
+            <li><input type="checkbox" disabled> <strong>13. Edge cases</strong> — at least 5
+              concrete cases; or explicit <em>None.</em></li>
+            <li><input type="checkbox" disabled> <strong>14. Observability</strong> — log
+              events, metrics, traces, alerts per
+              <a href="./observability-conventions.html">_shared/observability-conventions.html</a>.</li>
+            <li><input type="checkbox" disabled> <strong>15. Test plan</strong> — unit /
+              integration / contract / e2e mapped to AC IDs.</li>
+            <li><input type="checkbox" disabled> <strong>16. OpenAPI authoring hints</strong> —
+              follows <a href="./openapi-authoring-guide.html">openapi-authoring-guide</a>;
+              names every reused component and example.</li>
+            <li><input type="checkbox" disabled> <strong>17. Open questions</strong> — explicit
+              list with owner + deadline, or literal <em>None.</em></li>
+            <li><input type="checkbox" disabled> <strong>18. Out of scope</strong> — explicit
+              list, or literal <em>None.</em></li>
+            <li><input type="checkbox" disabled> <strong>19. Traceability</strong> — methodology
+              / system-design / ADR / OpenAPI cross-links; at least one ADR.</li>
+            <li><input type="checkbox" disabled> <strong>20. Spec changelog</strong> — first
+              entry seeded; subsequent entries added on every contract-affecting change.</li>
+            <li><input type="checkbox" disabled> <strong>Page history</strong> — at least one
+              row.</li>
+          </ul>
+
+          <h3>Quality gates</h3>
+          <ul>
+            <li><input type="checkbox" disabled> <code>python scripts/spec_lint.py --paths
+                &lt;file&gt;</code> exits 0.</li>
+            <li><input type="checkbox" disabled> <code>python scripts/spec_consistency.py</code>
+              exits 0 (no <em>FAIL</em>; warnings reviewed).</li>
+            <li><input type="checkbox" disabled> Page renders cleanly: no broken links, no
+              missing diagrams, examples readable, in-page TOC populated.</li>
+            <li><input type="checkbox" disabled> <code>make docs-fix</code> changes nothing
+              afterwards (no drift).</li>
+            <li><input type="checkbox" disabled> Reviewed by at least one developer who agrees
+              the spec is implementable as written.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="status-meanings">
+          <h2>Status badge meanings</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Status badges">
+            <table>
+              <thead>
+                <tr><th>Status</th><th>Meaning</th><th>What can change without an ADR</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="spec-status-pill spec-status-pill--draft">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">📝</span>
+                      <span class="spec-status-pill__label">Draft</span></span></td>
+                  <td>Authoring in progress. Not implementable yet.</td>
+                  <td>Anything.</td>
+                </tr>
+                <tr>
+                  <td><span class="spec-status-pill spec-status-pill--in-review">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">👀</span>
+                      <span class="spec-status-pill__label">In review</span></span></td>
+                  <td>Submitted for peer review.</td>
+                  <td>Wording, examples; not the contract surface.</td>
+                </tr>
+                <tr>
+                  <td><span class="spec-status-pill spec-status-pill--approved">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">✅</span>
+                      <span class="spec-status-pill__label">Approved</span></span></td>
+                  <td>Reviewers signed off; implementation may start.</td>
+                  <td>Implementation-detail clarifications. Contract changes require a new
+                    review.</td>
+                </tr>
+                <tr>
+                  <td><span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span></td>
+                  <td>OpenAPI updated; tests green; live.</td>
+                  <td>Additive changes only (per
+                    <a href="./versioning.html">versioning</a>).</td>
+                </tr>
+                <tr>
+                  <td><span class="spec-status-pill spec-status-pill--deprecated">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">🚫</span>
+                      <span class="spec-status-pill__label">Deprecated</span></span></td>
+                  <td>Sunset announced; new clients should not adopt.</td>
+                  <td>Documentation / sunset clarifications only.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="lint-cli">
+          <h2>Running the lint locally</h2>
+<pre><code># Lint every operation spec:
+python scripts/spec_lint.py
+
+# Lint one spec:
+python scripts/spec_lint.py --paths \
+  docs/internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html
+
+# Cross-document consistency (operationId, error catalog):
+python scripts/spec_consistency.py
+
+# Treat warnings as failures (CI mode):
+python scripts/spec_consistency.py --strict-warnings
+</code></pre>
+        </section>
+
+        <section class="card" id="traceability">
+          <h2>Traceability</h2>
+          <ul>
+            <li><strong>Template:</strong>
+              <a href="./spec-template.html">_shared/spec-template.html</a>.</li>
+            <li><strong>Linters:</strong> <code>scripts/spec_lint.py</code>,
+              <code>scripts/spec_consistency.py</code>.</li>
+            <li><strong>Related shared pages:</strong>
+              <a href="./idempotency.html">idempotency</a>,
+              <a href="./error-envelope.html">error envelope</a>,
+              <a href="./error-catalog.html">error catalog</a>,
+              <a href="./auth.html">auth</a>,
+              <a href="./pagination.html">pagination</a>,
+              <a href="./versioning.html">versioning</a>,
+              <a href="./observability-conventions.html">observability conventions</a>,
+              <a href="./field-conventions.html">field conventions</a>,
+              <a href="./openapi-authoring-guide.html">OpenAPI authoring guide</a>.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 4: Definition of Done published; lint scripts wired.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

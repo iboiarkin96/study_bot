@@ -27,6 +27,19 @@
   min-width: 0;
 }
 
+/* Subtle accent shift for standard internal page H1 titles. */
+.internal-h1--accent-tail {
+  /* Keep most of the title neutral; shift color only near the end. */
+  background: linear-gradient(90deg,
+      var(--text) 0%,
+      var(--text) 74%,
+      color-mix(in srgb, var(--accent) 88%, var(--text)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .internal-layout__page-title-row .top-nav__theme-btn--flashlight {
   flex: 0 0 auto;
   margin-left: auto;
@@ -113,6 +126,16 @@
 
 }
 
+/*
+ * Internal docs + tablet width: keep sticky in-page TOC below the sticky title row.
+ * Without this offset, the collapsed TOC rail can sit under the title strip and lose clicks.
+ */
+@media (min-width: 901px) and (max-width: 1024px) {
+  .internal-layout .docs-inpage-toc {
+    top: calc(max(10px, env(safe-area-inset-top, 0px)) + 58px);
+  }
+}
+
 .internal-layout__shell {
   display: grid;
   grid-template-columns: min(288px, 92vw) minmax(0, 1fr);
@@ -138,6 +161,9 @@
   overflow: auto;
   padding: 4px 16px 20px 0;
   border-right: 1px solid var(--line, #dbe3ef);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--line) 80%, transparent) transparent;
+  scroll-padding-bottom: 20px;
 }
 
 @media (max-width: 900px) {
@@ -182,8 +208,12 @@
   background: var(--card, #ffffff);
   color: var(--text, #0f172a);
   border-right: 1px solid var(--line, #dbe3ef);
-  box-shadow: var(--nav-group-shadow, 0 18px 44px rgba(2, 6, 23, 0.28));
+  box-shadow:
+    var(--nav-group-shadow, 0 18px 44px rgba(2, 6, 23, 0.28)),
+    4px 0 32px rgba(2, 6, 23, 0.08);
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--line, #dbe3ef) 80%, transparent) transparent;
   padding: max(14px, env(safe-area-inset-top, 0px)) 14px max(14px, env(safe-area-inset-bottom, 0px));
   -webkit-font-smoothing: antialiased;
 }
@@ -320,49 +350,35 @@
   margin: 0 0 10px;
 }
 
-@property --internal-toggle-border-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
 .internal-layout__sidebar-toggle {
-  --internal-toggle-border-angle: 0deg;
-  display: inline-block;
-  margin: 0 0 12px;
-  border: 2px solid transparent;
-  border-radius: 999px;
-  background:
-    linear-gradient(var(--internal-toggle-bg), var(--internal-toggle-bg)) padding-box,
-    conic-gradient(from var(--internal-toggle-border-angle),
-      #1d4ed8 0deg 58deg,
-      #bfdbfe 58deg 182deg,
-      #1d4ed8 182deg 242deg,
-      #bfdbfe 242deg 360deg) border-box;
-  color: var(--internal-toggle-fg);
-  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 16px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #64748b);
+  font-size: 0.75rem;
+  font-weight: 500;
   line-height: 1.2;
-  padding: 5px 11px;
+  padding: 5px 10px;
   cursor: pointer;
-  position: relative;
-  isolation: isolate;
-  animation: internal-toggle-border-sweep 10s linear infinite;
+  transition:
+    color var(--motion-fast, 150ms) ease,
+    border-color var(--motion-fast, 150ms) ease,
+    background var(--motion-fast, 150ms) ease;
 }
 
 .internal-layout__sidebar-toggle:hover {
-  color: var(--internal-toggle-hover-fg);
+  color: var(--text, #0f172a);
+  border-color: color-mix(in srgb, var(--line, #dbe3ef) 50%, var(--accent, #2563eb));
+  background: color-mix(in srgb, var(--accent, #2563eb) 5%, transparent);
 }
 
-@keyframes internal-toggle-border-sweep {
-  to {
-    --internal-toggle-border-angle: 360deg;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .internal-layout__sidebar-toggle {
-    animation: none;
-  }
+.internal-layout__sidebar-toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent, #2563eb) 70%, transparent);
+  outline-offset: 2px;
 }
 
 .internal-layout__shell.is-sidebar-collapsed {
@@ -387,14 +403,10 @@
 
 .internal-layout__shell.is-sidebar-collapsed .internal-layout__sidebar-toggle {
   margin-bottom: 0;
-  writing-mode: horizontal-tb;
-  min-height: 0;
-  min-width: 44px;
-  padding: 8px 6px;
-  border-radius: 16px;
-  line-height: 1.1;
-  text-align: center;
-  white-space: pre-line;
+  min-width: 34px;
+  padding: 6px;
+  justify-content: center;
+  border-radius: 8px;
 }
 
 
@@ -468,12 +480,17 @@
 .internal-sidebar__tree ul {
   list-style: none;
   margin: 0;
-  padding: 4px 0 6px 12px;
-  border-left: 2px solid var(--internal-tree-border);
+  padding: 2px 0 4px 12px;
+  border-left: 1px solid var(--internal-tree-border);
 }
 
 .internal-sidebar__tree>li {
   margin: 4px 0;
+}
+
+.internal-sidebar__divider {
+  margin: 10px 8px;
+  border-top: 1px solid var(--internal-tree-border);
 }
 
 .internal-sidebar__tree a {
@@ -494,31 +511,26 @@
 
 .internal-sidebar__tree a.is-active {
   background: var(--internal-tree-active-bg);
-  border: 1px solid var(--internal-tree-active-border);
-  font-weight: 650;
+  font-weight: 600;
   color: var(--internal-tree-active-text);
 }
 
 .internal-sidebar__group {
-  margin: 4px 0;
-  border: 1px solid var(--line, #dbe3ef);
-  border-radius: 10px;
-  background: var(--internal-group-bg);
-  overflow: hidden;
-}
-
-.internal-sidebar__group[open] {
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  margin: 0;
 }
 
 .internal-sidebar__summary {
   cursor: pointer;
   list-style: none;
-  font-weight: 650;
-  font-size: 0.88rem;
-  padding: 9px 12px 9px 32px;
+  font-weight: 600;
+  font-size: 0.69rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+  padding: 14px 8px 5px 22px;
   position: relative;
   user-select: none;
+  transition: color var(--motion-fast, 150ms) ease;
 }
 
 .internal-sidebar__summary::-webkit-details-marker {
@@ -528,24 +540,25 @@
 .internal-sidebar__summary::before {
   content: "";
   position: absolute;
-  left: 12px;
+  left: 7px;
   top: 50%;
-  width: 0.32em;
-  height: 0.32em;
-  margin-top: -0.18em;
-  border-right: 2px solid var(--accent, #2563eb);
-  border-bottom: 2px solid var(--accent, #2563eb);
+  width: 0.28em;
+  height: 0.28em;
+  margin-top: -0.05em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
   transform: rotate(-45deg);
   transition: transform 0.12s ease;
+  opacity: 0.7;
 }
 
 .internal-sidebar__group[open]>.internal-sidebar__summary::before {
   transform: rotate(45deg);
-  margin-top: -0.1em;
+  margin-top: -0.14em;
 }
 
 .internal-sidebar__summary:hover {
-  background: var(--internal-summary-hover-bg);
+  color: var(--text, #0f172a);
 }
 
 .internal-sidebar__group .internal-sidebar__tree {
@@ -657,6 +670,654 @@ h1.internal-doc-h1 {
 }
 
 /*
+ * Spec lifecycle status badges (used in operation specs and resource hubs under
+ * internal/api/**). Five fixed states: draft → in-review → approved → implemented → deprecated.
+ * Colour intent: neutral / amber / blue / green / red.
+ */
+.internal-layout .badge--status-draft {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.internal-layout .badge--status-in-review {
+  background: #fef3c7;
+  border-color: #fcd34d;
+  color: #78350f;
+}
+
+.internal-layout .badge--status-approved {
+  background: #e0f2fe;
+  border-color: #3b82f6;
+  color: #1e3a8a;
+}
+
+.internal-layout .badge--status-implemented {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.internal-layout .badge--status-deprecated {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #7f1d1d;
+}
+
+/*
+ * Section requirement marker, rendered next to <h2> headings inside spec pages.
+ * `--required` = mandatory section (lint blocks if missing/empty).
+ * `--optional` = may be removed for trivial operations.
+ */
+.internal-layout .badge--req-required {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4c1d95;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.internal-layout .badge--req-optional {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+/*
+ * Spec metadata strip — one-line meta block under the HTTP tablet on operation specs.
+ * Renders status / owner / operationId / last-reviewed inline.
+ */
+.internal-spec-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  align-items: center;
+  margin: 12px 0 18px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--badge-default-bg);
+  font-size: 0.88rem;
+}
+
+.internal-spec-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.internal-spec-meta__label {
+  color: var(--muted, #4b5563);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+/*
+ * Spec lifecycle pill — premium status card driven entirely by the
+ * `data-spec-status` attribute on `<body>`; hydrated by docs-spec-status.js.
+ * Five tones share one shape; CSS variables (`--pill-from`, `--pill-to`,
+ * `--pill-border`, `--pill-fg`) are swapped per tone.
+ */
+.spec-status-pill {
+  --pill-from: #f1f5f9;
+  --pill-to: #e2e8f0;
+  --pill-border: #cbd5e1;
+  --pill-fg: #1e293b;
+  --pill-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 10px;
+  border: 1px solid var(--pill-border);
+  border-radius: 999px;
+  background-image: linear-gradient(135deg, var(--pill-from) 0%, var(--pill-to) 100%);
+  color: var(--pill-fg);
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  vertical-align: middle;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    var(--pill-shadow);
+}
+
+.spec-status-pill__emoji {
+  font-size: 0.95rem;
+  line-height: 1;
+  filter: saturate(1.1);
+}
+
+.spec-status-pill__label {
+  line-height: 1;
+}
+
+/* ── Tones — light theme ─────────────────────────────────────────── */
+
+.spec-status-pill--draft {
+  --pill-from: #f8fafc;
+  --pill-to: #e2e8f0;
+  --pill-border: #94a3b8;
+  --pill-fg: #1e293b;
+}
+
+.spec-status-pill--in-review {
+  --pill-from: #fffbeb;
+  --pill-to: #fde68a;
+  --pill-border: #d97706;
+  --pill-fg: #78350f;
+}
+
+.spec-status-pill--approved {
+  --pill-from: #eff6ff;
+  --pill-to: #bfdbfe;
+  --pill-border: #2563eb;
+  --pill-fg: #1e3a8a;
+}
+
+.spec-status-pill--implemented {
+  --pill-from: #ecfdf5;
+  --pill-to: #a7f3d0;
+  --pill-border: #16a34a;
+  --pill-fg: #064e3b;
+}
+
+.spec-status-pill--deprecated {
+  --pill-from: #fef2f2;
+  --pill-to: #fecaca;
+  --pill-border: #dc2626;
+  --pill-fg: #7f1d1d;
+}
+
+/* ── Tones — dark theme ──────────────────────────────────────────── */
+
+[data-theme="dark"] .spec-status-pill {
+  --pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    var(--pill-shadow);
+}
+
+[data-theme="dark"] .spec-status-pill--draft {
+  --pill-from: #1f2937;
+  --pill-to: #334155;
+  --pill-border: #64748b;
+  --pill-fg: #e2e8f0;
+}
+
+[data-theme="dark"] .spec-status-pill--in-review {
+  --pill-from: #422006;
+  --pill-to: #78350f;
+  --pill-border: #d97706;
+  --pill-fg: #fde68a;
+}
+
+[data-theme="dark"] .spec-status-pill--approved {
+  --pill-from: #172554;
+  --pill-to: #1e40af;
+  --pill-border: #3b82f6;
+  --pill-fg: #dbeafe;
+}
+
+[data-theme="dark"] .spec-status-pill--implemented {
+  --pill-from: #052e16;
+  --pill-to: #14532d;
+  --pill-border: #22c55e;
+  --pill-fg: #bbf7d0;
+}
+
+[data-theme="dark"] .spec-status-pill--deprecated {
+  --pill-from: #450a0a;
+  --pill-to: #7f1d1d;
+  --pill-border: #ef4444;
+  --pill-fg: #fee2e2;
+}
+
+/*
+ * Help disclosure rendered after the pill. Compact summary; lifecycle table
+ * appears as a popover panel that also closes on Escape / outside click.
+ */
+.spec-status-help {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.spec-status-help > summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px dashed var(--line, #cbd5e1);
+  border-radius: 999px;
+  background: var(--badge-default-bg, #ffffff);
+  color: var(--muted, #475569);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  user-select: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.spec-status-help > summary::-webkit-details-marker {
+  display: none;
+}
+
+.spec-status-help > summary::marker {
+  content: "";
+}
+
+.spec-status-help > summary:hover {
+  border-color: var(--accent, #2563eb);
+  color: var(--accent, #2563eb);
+}
+
+.spec-status-help[open] > summary {
+  border-style: solid;
+  border-color: var(--accent, #2563eb);
+  color: var(--accent, #2563eb);
+}
+
+.spec-status-help__summary-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.spec-status-help__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  width: min(560px, 90vw);
+  padding: 14px 16px 12px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 12px;
+  background: var(--card, #ffffff);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+[data-theme="dark"] .spec-status-help__panel {
+  background: #0f172a;
+  border-color: #1e293b;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.spec-status-help__intro,
+.spec-status-help__example {
+  margin: 0 0 10px;
+  color: var(--text, #0f172a);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.spec-status-help__example {
+  margin: 10px 0 0;
+  color: var(--muted, #475569);
+}
+
+.spec-status-help__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.82rem;
+  table-layout: fixed;
+}
+
+.spec-status-help__table th,
+.spec-status-help__table td {
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+}
+
+.spec-status-help__table th {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #475569);
+  background: var(--badge-default-bg, #f8fafc);
+}
+
+[data-theme="dark"] .spec-status-help__table th {
+  background: #1e293b;
+}
+
+.spec-status-help__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.spec-status-help__row--current td {
+  background: color-mix(in srgb, var(--accent, #2563eb) 6%, transparent);
+}
+
+[data-theme="dark"] .spec-status-help__row--current td {
+  background: color-mix(in srgb, var(--accent, #3b82f6) 14%, transparent);
+}
+
+/* Right-align the popover when it would overflow the viewport. */
+@media (max-width: 720px) {
+  .spec-status-help__panel {
+    left: auto;
+    right: 0;
+  }
+}
+
+/*
+ * Code samples inside internal spec pages (request/response/envelope JSON).
+ * Smaller than the global pre to match the surrounding doc text density.
+ * The global pre defaults to 0.9rem; here we drop to 0.78rem matching the
+ * cue-sheet walkthrough convention used elsewhere in the docs.
+ */
+.internal-layout__main pre {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  padding: 12px 14px;
+}
+
+.internal-layout__main pre code {
+  font-size: inherit;
+}
+
+/*
+ * Field reference list — used in operation specs to describe path / header /
+ * query / body parameters and response fields without forcing readers through
+ * a too-wide table. Each field is one <dt>/<dd> pair: the name and a few
+ * inline badges on the dt, the meaning + structured attributes on the dd.
+ */
+.internal-field-list {
+  margin: 14px 0 18px;
+  padding: 0;
+}
+
+.internal-field-list>dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin: 14px 0 4px;
+  padding: 8px 12px 6px;
+  border-left: 3px solid var(--accent, #2563eb);
+  background: var(--badge-default-bg, #f8fafc);
+  border-radius: 0 8px 8px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.internal-field-list>dt>code {
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.internal-field-list>dt .badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  margin: 0;
+  font-weight: 500;
+  font-family: var(--font-sans, system-ui), sans-serif;
+  text-transform: lowercase;
+  letter-spacing: 0;
+}
+
+.internal-field-list>dd {
+  margin: 0 0 6px 14px;
+  padding: 4px 0 8px;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.internal-field-list>dd p {
+  margin: 4px 0;
+}
+
+.internal-field-list>dd .internal-field-list__attrs {
+  margin: 6px 0 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 12px;
+  font-size: 0.82rem;
+}
+
+.internal-field-list>dd .internal-field-list__attrs dt {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans, system-ui), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #475569);
+  align-self: center;
+}
+
+.internal-field-list>dd .internal-field-list__attrs dd {
+  margin: 0;
+  padding: 0;
+  font-size: 0.82rem;
+}
+
+.internal-field-list .badge--field-req {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4c1d95;
+}
+
+.internal-field-list .badge--field-opt {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.internal-field-list .badge--field-type {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0c4a6e;
+}
+
+/*
+ * Long-page reading aids (docs-resume.js):
+ *   .docs-resume-top    floating "Back to top" button (bottom-right, fades in after scroll)
+ *   .docs-resume-banner first-load offer to jump to the previously-saved scroll position
+ */
+.docs-resume-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line, #cbd5e1);
+  background: var(--badge-default-bg, #ffffff);
+  color: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 30;
+}
+
+.docs-resume-top.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.docs-resume-top:hover {
+  background: #f8fafc;
+}
+
+.docs-resume-top svg {
+  flex-shrink: 0;
+}
+
+.docs-resume-banner {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 16px 0 18px;
+  padding: 10px 14px;
+  border: 1px solid #7dd3fc;
+  background: #e0f2fe;
+  color: #0c4a6e;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  z-index: 25;
+  box-shadow: 0 6px 18px rgba(12, 74, 110, 0.08);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.docs-resume-banner.is-leaving {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.docs-resume-banner__text {
+  flex: 1 1 280px;
+  min-width: 220px;
+}
+
+.docs-resume-banner__actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.docs-resume-banner__btn {
+  appearance: none;
+  border: 1px solid #7dd3fc;
+  background: #ffffff;
+  color: #0c4a6e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.docs-resume-banner__btn--primary {
+  background: #0c4a6e;
+  color: #f0f9ff;
+  border-color: #0c4a6e;
+}
+
+.docs-resume-banner__btn:hover {
+  filter: brightness(0.96);
+}
+
+[data-theme="dark"] .docs-resume-top {
+  background: #1f2937;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .docs-resume-top:hover {
+  background: #273345;
+}
+
+[data-theme="dark"] .docs-resume-banner {
+  background: #0c2a3a;
+  color: #e0f2fe;
+  border-color: #0369a1;
+}
+
+[data-theme="dark"] .docs-resume-banner__btn {
+  background: #1e3a52;
+  color: #e0f2fe;
+  border-color: #0369a1;
+}
+
+[data-theme="dark"] .docs-resume-banner__btn--primary {
+  background: #38bdf8;
+  color: #0b1220;
+  border-color: #38bdf8;
+}
+
+/*
+ * Diagram fallback: when the rendered SVG is missing (e.g. Kroki was unavailable
+ * during the last `make docs-fix`), the inline `onerror` on the <img> tags the
+ * <figure> as `.is-missing` and auto-opens the sibling <details> with PlantUML
+ * source. We replace the broken-image canvas with a friendly placeholder so the
+ * page does not show the browser's default broken-image icon.
+ */
+.sys-diagram.is-missing .sys-diagram__canvas {
+  position: relative;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line, #cbd5e1);
+  background: var(--badge-default-bg, #f8fafc);
+  border-radius: 10px;
+  padding: 18px;
+  color: var(--muted, #475569);
+  font-size: 0.85rem;
+}
+
+.sys-diagram.is-missing .sys-diagram__canvas img {
+  display: none;
+}
+
+.sys-diagram.is-missing .sys-diagram__canvas::after {
+  content: "Diagram SVG not generated yet — run `make docs-fix`.";
+  text-align: center;
+  font-style: italic;
+}
+
+details.docs-uml-source {
+  margin: 8px 0 18px;
+  padding: 6px 12px;
+  border: 1px solid var(--line, #cbd5e1);
+  border-radius: 8px;
+  background: var(--badge-default-bg, #f8fafc);
+  font-size: 0.85rem;
+}
+
+details.docs-uml-source>summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 2px 0;
+  color: var(--muted, #475569);
+}
+
+details.docs-uml-source[open]>summary {
+  margin-bottom: 6px;
+}
+
+details.docs-uml-source pre {
+  margin: 4px 0 8px;
+}
+
+/*
  * Tables in .docs-table-scroll: global docs.css sets `width: max-content` on the inner
  * table, which stretches layout and breaks column balance. Inside internal pages, use
  * full width and fixed table layout so the four-column layer table formats predictably.
@@ -672,6 +1333,17 @@ h1.internal-doc-h1 {
 .internal-layout__main .card .docs-table-scroll td {
   overflow-wrap: anywhere;
   word-break: normal;
+}
+
+/* Keep internal-analysis table typography aligned with prose cards. */
+.internal-layout__main .card .docs-table-scroll td {
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.internal-layout__main .card .docs-table-scroll th {
+  font-size: 0.82rem;
+  line-height: 1.35;
 }
 
 .internal-layout__main .card .docs-table-scroll col.layers-col-layer {
@@ -757,14 +1429,15 @@ h1.internal-doc-h1 {
 
 .portal-people__item {
   margin: 0;
-  padding: 12px;
+  padding: var(--space-3, 12px);
   min-height: 82px;
   border: 1px solid var(--line, #dbe3ef);
+  border-radius: var(--radius-lg, 14px);
   background: var(--card, #fff);
   transition:
-    border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    border-color var(--motion-fast) var(--motion-ease-premium),
+    box-shadow var(--motion-fast) var(--motion-ease-premium),
+    transform var(--motion-fast) var(--motion-ease-premium);
 }
 
 .portal-people__link {
@@ -850,12 +1523,10 @@ h1.internal-doc-h1 {
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 180deg,
-    color-mix(in srgb, var(--accent, #2563eb) 32%, transparent),
-    transparent 40%,
-    color-mix(in srgb, var(--accent, #2563eb) 22%, transparent)
-  );
+  background: conic-gradient(from 180deg,
+      color-mix(in srgb, var(--accent, #2563eb) 32%, transparent),
+      transparent 40%,
+      color-mix(in srgb, var(--accent, #2563eb) 22%, transparent));
   opacity: 0;
   transform: scale(0.96);
   transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1), transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -890,7 +1561,7 @@ h1.internal-doc-h1 {
 }
 
 /* Site breadcrumbs + top nav sit above the profile card, not inside it */
-.internal-layout__main main.container > #docs-top-nav + .portal-profile {
+.internal-layout__main main.container>#docs-top-nav+.portal-profile {
   margin-top: 1rem;
 }
 

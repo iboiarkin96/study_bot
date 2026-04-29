@@ -57,7 +57,7 @@ When something looks wrong after render (checklist)
 ----------------------------------------------------------------------------
 
   1. Regenerate and compare bytes: ``python3 scripts/regenerate_docs.py --force``, then
-     ``make uml-check``. Commit ``rendered/*.svg`` and ``input-hashes.json`` when they change.
+     ``scripts/regenerate_docs.py --check``. Commit ``rendered/*.svg`` and ``input-hashes.json`` when they change.
   2. Open the SVG and check the root element: ``width="…px"`` / ``viewBox``. Compare with another
      diagram that looks correct. Large width differences explain different “block” size in HTML.
   3. If **text** looks larger on one diagram only: ensure HTML is not stretching that image
@@ -78,6 +78,6 @@ Regenerate SVGs (requires network when a diagram actually changes, HTTPS → kro
   .venv/bin/python scripts/regenerate_docs.py --force   # ignore cache, re-render all
 
 Verify committed SVGs match sources (no writes)
-  make uml-check
+  .venv/bin/python scripts/regenerate_docs.py --check
   # or:
   .venv/bin/python scripts/regenerate_docs.py --check

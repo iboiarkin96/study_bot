@@ -1,7 +1,6 @@
-# Quality gate: `make deps-audit` then `make verify` (lint, types, OpenAPI, contract tests,
-# pytest + coverage floor, docs-fix, docs-a11y-check). CI applies the docs pipeline on the runner instead
-# of `docs-check` (no git drift vs HEAD). Contributors should still run `make verify-ci`
-# (includes deps-audit + docs-check)
+# Quality gate: single canonical `make verify` (deps-audit, lint, types, OpenAPI,
+# contract tests, pytest + coverage floor, docs-check drift gate, docs-a11y-check).
+# Local and CI workflows intentionally use the same command.
 # locally before push. GitHub-hosted runners are free for public repos
 # and include a monthly allowance for private repos on free accounts.
 name: CI
@@ -58,14 +57,8 @@ jobs:
           .venv/bin/pip install --upgrade pip
           .venv/bin/pip install -r requirements.txt
 
-      - name: Dependency audit (pip-audit)
-        run: make deps-audit
-
       - name: Quality gate
         run: make verify
-
-      - name: Docs feedback smoke check
-        run: make docs-feedback-check
 
       - name: Pre-commit hooks
         run: .venv/bin/pre-commit run --all-files

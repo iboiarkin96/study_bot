@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,240 +16,240 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Local development (environment and run targets)</h1>
+    <h1 class="internal-h1--accent-tail">Local development (environment and run targets)</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section id="overview" class="card">
-      <h2>Overview</h2>
+
+    <section id="overview" class="docs-page-hero">
+      <h2 id="overview">Overview</h2>
       <p>How to run the API locally, with optional metrics and optional log search.</p>
     </section>
-    <p class="lead">
-      Run the API with <code>make run</code>. Add Prometheus and Grafana via Docker if you want dashboards. For searchable
-      logs, you can start Elasticsearch, Kibana, and Filebeat (see below). Shortcuts and probe URLs: root
-      <a href="../../README.md">README.md</a>. Full logging policy: <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
-    </p>
-    <section class="card">
 
+    <div class="docs-section-divider" aria-hidden="true">First-time setup</div>
+    <section class="card">
       <h2>First-time setup</h2>
       <ol>
         <li><code>make venv</code> then <code>make install</code> (activate <code>.venv</code> if you prefer).</li>
         <li>Create <code>.env</code>: <code>make env-init</code> (or copy <code>env/example</code>), then set
-          <code>APP_ENV</code> and secrets as needed.</li>
-          <li><code>make migrate</code> to apply Alembic migrations.</li>
-          <li>Optional: <code>make env-check</code> to verify config and database path.</li>
+          <code>APP_ENV</code> and secrets as needed.
+        </li>
+        <li><code>make migrate</code> to apply Alembic migrations.</li>
+        <li>Optional: <code>make env-check</code> to verify config and database path.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Run targets</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>What it does</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>make run</code></td>
+            <td>
+              Starts the FastAPI app with Uvicorn (reload). Reads <code>.env</code>. Use this when you only need the
+              API.
+            </td>
+          </tr>
+          <tr>
+            <td><code>make run</code> + <code>docker compose -f docker-compose.observability.yml up -d</code></td>
+            <td>
+              Runs observability via <code>docker compose -f docker-compose.observability.yml up -d</code> (after
+              rendering config), then starts API
+              <code>docker-compose.observability.yml</code>: Blackbox, Prometheus, Grafana), then the same Uvicorn
+              command as
+              <code>make run</code>. Requires Docker. The API process stays in the foreground; stop it with Ctrl+C.
+            </td>
+          </tr>
+          <tr>
+            <td><code>docker compose -f docker-compose.observability.yml up -d</code> /
+              <code>docker compose -f docker-compose.observability.yml down</code>
+            </td>
+            <td>
+              Start or stop the observability stack alone. Use when you already run <code>make run</code> in one
+              terminal
+              and want metrics dashboards without restarting the API.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="card">
+
+      <h2>Default local ports</h2>
+      <p>Override via <code>.env</code> where documented in <code>env/example</code>.</p>
+      <ul>
+        <li>API: <code>127.0.0.1:8000</code> (from <code>APP_HOST</code> / <code>APP_PORT</code>)</li>
+        <li>Prometheus: <code>127.0.0.1:9090</code></li>
+        <li>Grafana: <code>127.0.0.1:3001</code> (container maps host 3001 → Grafana 3000)</li>
+        <li>Blackbox exporter: <code>127.0.0.1:9115</code></li>
+      </ul>
+    </section>
+    <section class="card">
+
+      <h2>After you stop the API</h2>
+      <p>
+        Containers from Docker observability startup keep running until you run
+        <code>docker compose -f docker-compose.observability.yml down</code>.
+      </p>
+    </section>
+    <section class="card">
+
+      <h2>Optional logging stack (Elasticsearch, Kibana, Filebeat)</h2>
+      <p>
+        For searchable JSON logs, set NDJSON output (<code>LOG_FORMAT=json</code>, or leave unset — default is
+        <strong><code>json</code></strong>; see <code>env/example</code> and <code>app/core/config.py</code>). Logs go
+        under
+        <code>LOG_DIR</code> (default <code>logs/</code>).
+      </p>
+      <p>
+        Start the Elastic stack (Docker; reserve about <strong>2 GiB RAM</strong> for Elasticsearch and Kibana):
+      </p>
+      <pre><code>docker compose -f docker-compose.logging.yml up -d</code></pre>
+      <p>
+        Filebeat reads the mounted <code>./logs</code> folder and sends lines to Elasticsearch.
+      </p>
+      <p>
+        Open Kibana at <code>http://127.0.0.1:5601</code>. Create a <strong>data view</strong> with index pattern
+        <strong><code>*study-app-logs*</code></strong> (wildcards on both sides). On Elasticsearch 8, backing indices
+        look
+        like <code>.ds-study-app-logs-…</code>; a narrow pattern such as <code>study-app-logs-*</code> can miss them,
+        so
+        Discover would show no rows.
+      </p>
+      <p>
+        Use <strong>Discover</strong> to filter (e.g. <code>request_id</code>) or paste a UUID in the search bar.
+        Without
+        Kibana: <code>python scripts/check_es_request_id.py</code> or
+        <code>python scripts/check_es_request_id.py &lt;uuid&gt;</code>.
+        Smoke test: <code>python scripts/check_logging_links.py</code>. Stop:
+        <code>docker compose -f docker-compose.logging.yml down</code>. Policy: <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
+      </p>
+
+      <h3>Data path (why Discover can be empty)</h3>
+      <ol>
+        <li>
+          <strong>API on the host</strong> writes lines to <code>./logs/*.log</code> (e.g. <code>app.log</code>).
+          Nothing is sent to Elastic until step 3.
+        </li>
+        <li>
+          <strong>Filebeat</strong> (container) reads the same files via the bind mount <code>./logs</code> →
+          <code>/var/log/study-app</code> and publishes events to Elasticsearch. If the API is not running or writes
+          elsewhere,
+          Filebeat has nothing new to ship.
+        </li>
+        <li>
+          <strong>Elasticsearch</strong> stores documents in indices / data streams whose names contain
+          <code>study-app-logs</code> (e.g. <code>.ds-study-app-logs-…</code>).
+        </li>
+        <li>
+          <strong>Kibana Discover</strong> needs a <strong>data view</strong> that matches those indices — use
+          <strong><code>*study-app-logs*</code></strong>. After you send traffic, set the time range to include “now”
+          (e.g.
+          Last 15 minutes).
+        </li>
+      </ol>
+
+      <h3>Clean slate (reset logs + Elastic)</h3>
+      <p>
+        Reset logging manually: stop stack, remove Docker volume (indices and Kibana saved objects),
+        and delete <code>logs/*.log</code>. Then start logging stack again and recreate the data view in Kibana
+        (<strong>Stack Management → Data views → Create data view</strong>) with pattern
+        <strong><code>*study-app-logs*</code></strong> and timestamp <code>@timestamp</code>. Start the API
+        (<code>make run</code>), call <code>/ready</code> a few times, wait ~10–20 s, refresh Discover.
+      </p>
+    </section>
+    <section class="card">
+
+      <h2>Local docs search smoke test (index + telemetry)</h2>
+      <p>
+        Checklist to verify docs search and telemetry on your machine.
+      </p>
+      <ol>
+        <li>
+          Rebuild the search index:
+          <pre><code>python3 scripts/build_docs_search_index.py</code></pre>
+        </li>
+        <li>
+          Serve docs over HTTP (not <code>file://</code>):
+          <pre><code>cd docs
+            python3 -m http.server 8765</code></pre>
+          </li>
+          <li>
+            Start API locally (telemetry endpoint lives on API host):
+            <pre><code>make run</code></pre>
+          </li>
+          <li>
+            Open <code>http://127.0.0.1:8765/index.html</code>, type a few queries, and click at least one result.
+          </li>
+          <li>
+            In browser Network, verify index fetch:
+            <code>GET /assets/search-index.json</code> returns <code>200</code>.
+          </li>
+          <li>
+            Verify telemetry writes in SQLite:
+            <pre><code>sqlite3 study_app.db "select event, count(*) from docs_search_events group by event order by event;"</code></pre>
+          </li>
+          <li>
+            Verify KPI aggregation endpoint:
+            <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
+          </li>
         </ol>
-      </section>
-      <section class="card">
-
-        <h2>Run targets</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Command</th>
-              <th>What it does</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>make run</code></td>
-              <td>
-                Starts the FastAPI app with Uvicorn (reload). Reads <code>.env</code>. Use this when you only need the
-                API.
-              </td>
-            </tr>
-            <tr>
-              <td><code>make run-project</code></td>
-              <td>
-                Runs <code>make observability-up</code> first (renders Prometheus config, starts
-                <code>docker-compose.observability.yml</code>: Blackbox, Prometheus, Grafana), then the same Uvicorn
-                command as
-                <code>make run</code>. Requires Docker. The API process stays in the foreground; stop it with Ctrl+C.
-              </td>
-            </tr>
-            <tr>
-              <td><code>make observability-up</code> / <code>make observability-down</code></td>
-              <td>
-                Start or stop the observability stack alone. Use when you already run <code>make run</code> in one
-                terminal
-                and want metrics dashboards without restarting the API.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-      <section class="card">
-
-        <h2>Default local ports</h2>
-        <p>Override via <code>.env</code> where documented in <code>env/example</code>.</p>
+        <h3>Why Network can show only OPTIONS</h3>
         <ul>
-          <li>API: <code>127.0.0.1:8000</code> (from <code>APP_HOST</code> / <code>APP_PORT</code>)</li>
-          <li>Prometheus: <code>127.0.0.1:9090</code></li>
-          <li>Grafana: <code>127.0.0.1:3001</code> (container maps host 3001 → Grafana 3000)</li>
-          <li>Blackbox exporter: <code>127.0.0.1:9115</code></li>
+          <li>Telemetry may be sent with <code>navigator.sendBeacon</code>; in DevTools this is often shown as
+            <em>ping/other</em>, not as fetch/XHR.
+          </li>
+          <li>When fallback <code>fetch</code> is used, browser sends CORS preflight <code>OPTIONS</code> before
+            <code>POST</code>.
+          </li>
+          <li>If DevTools only shows <code>OPTIONS</code>, trust the SQLite/API checks above to confirm events arrived.
+          </li>
         </ul>
       </section>
       <section class="card">
 
-        <h2>After you stop the API</h2>
-        <p>
-          Containers from <code>make run-project</code> or <code>make observability-up</code> keep running until you run
-          <code>make observability-down</code> (or <code>docker compose -f docker-compose.observability.yml down</code>).
-        </p>
-      </section>
-      <section class="card">
-
-        <h2>Optional logging stack (Elasticsearch, Kibana, Filebeat)</h2>
-        <p>
-          For searchable JSON logs, set NDJSON output (<code>LOG_FORMAT=json</code>, or leave unset — default is
-          <strong><code>json</code></strong>; see <code>env/example</code> and <code>app/core/config.py</code>). Logs go under
-          <code>LOG_DIR</code> (default <code>logs/</code>).
-        </p>
-        <p>
-          Start the Elastic stack (Docker; reserve about <strong>2 GiB RAM</strong> for Elasticsearch and Kibana):
-        </p>
-        <pre><code>make logging-up</code></pre>
-        <p>
-          Filebeat reads the mounted <code>./logs</code> folder and sends lines to Elasticsearch.
-        </p>
-        <p>
-          Open Kibana at <code>http://127.0.0.1:5601</code>. Create a <strong>data view</strong> with index pattern
-          <strong><code>*study-app-logs*</code></strong> (wildcards on both sides). On Elasticsearch 8, backing indices look
-          like <code>.ds-study-app-logs-…</code>; a narrow pattern such as <code>study-app-logs-*</code> can miss them, so
-          Discover would show no rows.
-        </p>
-        <p>
-          Use <strong>Discover</strong> to filter (e.g. <code>request_id</code>) or paste a UUID in the search bar. Without
-          Kibana: <code>make logging-es-query</code> or <code>make logging-es-query QUERY=&lt;uuid&gt;</code> (same as
-          <code>python scripts/check_es_request_id.py &lt;uuid&gt;</code>). Smoke test: <code>make logging-smoke</code>. Stop:
-          <code>make logging-down</code>. Policy: <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.
-        </p>
-
-        <h3>Data path (why Discover can be empty)</h3>
-        <ol>
-          <li>
-            <strong>API on the host</strong> writes lines to <code>./logs/*.log</code> (e.g. <code>app.log</code>).
-            Nothing is sent to Elastic until step 3.
-          </li>
-          <li>
-            <strong>Filebeat</strong> (container) reads the same files via the bind mount <code>./logs</code> →
-            <code>/var/log/study-app</code> and publishes events to Elasticsearch. If the API is not running or writes
-            elsewhere,
-            Filebeat has nothing new to ship.
-          </li>
-          <li>
-            <strong>Elasticsearch</strong> stores documents in indices / data streams whose names contain
-            <code>study-app-logs</code> (e.g. <code>.ds-study-app-logs-…</code>).
-          </li>
-          <li>
-            <strong>Kibana Discover</strong> needs a <strong>data view</strong> that matches those indices — use
-            <strong><code>*study-app-logs*</code></strong>. After you send traffic, set the time range to include “now” (e.g.
-            Last 15 minutes).
-          </li>
-        </ol>
-
-        <h3>Clean slate (reset logs + Elastic)</h3>
-        <p>
-          <code>make logging-reset</code> stops the stack, removes the Docker volume (indices and Kibana saved objects),
-          and deletes <code>logs/*.log</code>. Then <code>make logging-up</code>, recreate the data view in Kibana
-          (<strong>Stack Management → Data views → Create data view</strong>) with pattern
-          <strong><code>*study-app-logs*</code></strong> and timestamp <code>@timestamp</code>. Start the API
-          (<code>make run</code>), call <code>/ready</code> a few times, wait ~10–20 s, refresh Discover.
-        </p>
-      </section>
-      <section class="card">
-
-        <h2>Local docs search smoke test (index + telemetry)</h2>
-        <p>
-          Checklist to verify docs search and telemetry on your machine.
-        </p>
-        <ol>
-          <li>
-            Rebuild the search index:
-            <pre><code>python3 scripts/build_docs_search_index.py</code></pre>
-          </li>
-          <li>
-            Serve docs over HTTP (not <code>file://</code>):
-            <pre><code>cd docs
-              python3 -m http.server 8765</code></pre>
-            </li>
-            <li>
-              Start API locally (telemetry endpoint lives on API host):
-              <pre><code>make run</code></pre>
-            </li>
-            <li>
-              Open <code>http://127.0.0.1:8765/index.html</code>, type a few queries, and click at least one result.
-            </li>
-            <li>
-              In browser Network, verify index fetch:
-              <code>GET /assets/search-index.json</code> returns <code>200</code>.
-            </li>
-            <li>
-              Verify telemetry writes in SQLite:
-              <pre><code>sqlite3 study_app.db "select event, count(*) from docs_search_events group by event order by event;"</code></pre>
-            </li>
-            <li>
-              Verify KPI aggregation endpoint:
-              <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
-            </li>
-          </ol>
-          <h3>Why Network can show only OPTIONS</h3>
-          <ul>
-            <li>Telemetry may be sent with <code>navigator.sendBeacon</code>; in DevTools this is often shown as <em>ping/other</em>, not as fetch/XHR.</li>
-            <li>When fallback <code>fetch</code> is used, browser sends CORS preflight <code>OPTIONS</code> before <code>POST</code>.</li>
-            <li>If DevTools only shows <code>OPTIONS</code>, trust the SQLite/API checks above to confirm events arrived.</li>
+        <h2>Sanity checks</h2>
+        <ul>
+          <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code>
+            (responses
+            include <code>X-Request-Id</code>)</li>
+            <li>Observability endpoints: <code>python scripts/check_observability_links.py</code></li>
+            <li>Logging stack (when running): <code>python scripts/check_logging_links.py</code></li>
           </ul>
         </section>
-        <section class="card">
 
-          <h2>Sanity checks</h2>
-          <ul>
-            <li>API: <code>curl -s http://127.0.0.1:8000/live</code>, <code>/ready</code>, <code>/metrics</code> (responses
-              include <code>X-Request-Id</code>)</li>
-              <li>Observability endpoints: <code>make observability-smoke</code></li>
-              <li>Logging stack (when running): <code>make logging-smoke</code></li>
-            </ul>
-          </section>
-          <section class="card">
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-            <h2>See also</h2>
-            <ul>
-              <li><a href="./0010-make-commands-and-workflows.html">Make commands and workflows</a> — all targets by theme,
-                PlantUML pipeline diagrams, if-then scenarios</li>
-                <li><a href="../howto/make-commands-inventory.html">Make commands inventory</a> — full <code>Makefile</code>
-                  list from <code>make help</code></li>
-                  <li><a href="./0009-docker-image-and-container.html">Docker image and container</a></li>
-                  <li><a href="../adr/0009-health-readiness-and-observability.html">ADR 0009 — health, readiness,
-                    observability</a></li>
-                    <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and
-                      local Elasticsearch</a></li>
-                      <li><a href="./0006-api-load-testing.html">API load testing (tools.load_testing.runner)</a></li>
-                      <li><a href="../runbooks/0008-observability-scrape-failing.html">Runbook: observability scrape failing</a></li>
-                      <li><a href="./README.html#developer-guides">Developer guides index</a></li>
-                    </ul>
-                  </section>
-                  <section id="page-history" class="card">
-                    <h2>Page history</h2>
-                    <div class="docs-table-scroll" role="region" aria-label="Page history">
-                      <table class="docs-page-history">
-                        <thead>
-                          <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Change</th>
-                            <th scope="col">Author</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><time datetime="2026-04-21">2026-04-21</time></td>
-                            <td>Added Page history section (repository baseline).</td>
-                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
 
-                  <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                </main>
-
-              </body></html>
+    </body></html>

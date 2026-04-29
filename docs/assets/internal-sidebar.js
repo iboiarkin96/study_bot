@@ -498,37 +498,309 @@
    * Paths are relative to the docs/ root (e.g. internal/README.html).
    */
   const INTERNAL_SIDEBAR_NAV = [
-    // { label: "Documentation home", path: "index.html" },
-    { label: "Welcome to internal docs!", path: "internal/README.html" },
+    { label: "⌂ ETR Study API home", path: "index.html" },
+    { label: "◉ Internal docs hub", path: "internal/README.html" },
+    { label: "🧭 Methodology", path: "internal/analysis/methodology.html" },
+    { label: "🏗 System design", path: "internal/analysis/system-design.html" },
+    { label: "🌐 OpenAPI / Swagger UI", path: "openapi/index.html" },
+
     {
-      label: "For managers",
-      children: [{ label: "SDLC RACI matrix", path: "internal/manager/sdlc-raci-matrix.html" }],
+      separator: true,
     },
-    { label: "Employee portal", path: "internal/portal/index.html" },
-    { label: "Methodology", path: "internal/analysis/methodology.html" },
-    { label: "System design", path: "internal/analysis/system-design.html" },
-    { label: "Developers Docs", path: "developer/README.html" },
-    { label: "How-to guides", path: "howto/README.html" },
-    { label: "How to change docs frontend safely", path: "howto/how-to-change-docs-frontend-safely.html" },
-    { label: "ADR", path: "adr/README.html" },
-    { label: "RFC", path: "rfc/README.html" },
-    { label: "OpenAPI / Swagger UI", path: "openapi/index.html" },
-    { label: "Python API (pdoc)", path: "pdoc/index.html" },
-    { label: "Runbooks", path: "runbooks/README.html" },
-    { label: "QA checklists", path: "qa/README.html" },
-    // { label: "Backlog", path: "backlog/README.html" },
-    // { label: "Architecture & quality assessments", path: "audit/README.html" },
+
     {
-      label: "API documentation",
+      label: "ADRs",
       children: [
-        { label: "Errors", path: "internal/api/errors.html" },
+        { label: "Hub — ADR index", path: "adr/README.html" },
+        {
+          label: "Shared (cross-cutting)", children: [
+            { label: "ADR template", path: "adr/0000-template.html" },
+          ]
+        },
+        {
+          label: "Process: how we record decisions",
+          children: [
+            { label: "ADR 0018 — lifecycle, ratification, badges", path: "adr/0018-adr-lifecycle-ratification-and-badges.html" },
+          ],
+        },
+        {
+          label: "Documentation and diagrams",
+          children: [
+            { label: "ADR 0027 — client-side docs search", path: "adr/0027-client-side-docs-search-index-and-ranking.html" },
+            { label: "ADR 0025 — external vs internal API documentation", path: "adr/0025-external-and-internal-api-documentation.html" },
+            { label: "ADR 0026 — internal service documentation (source of truth)", path: "adr/0026-internal-service-documentation-as-source-of-truth.html" },
+            { label: "ADR 0024 — architecture and quality assessment documents", path: "adr/0024-architecture-and-quality-assessment-documents.html" },
+            { label: "ADR 0001 — docs as code", path: "adr/0001-docs-as-code.html" },
+            { label: "ADR 0013 — changelog and release notes", path: "adr/0013-changelog-and-release-notes.html" },
+            { label: "ADR 0016 — Python docstrings and pdoc", path: "adr/0016-python-docstrings-google-style-and-pdoc.html" },
+            { label: "ADR 0020 — C4, PlantUML, diagram conventions", path: "adr/0020-c4-plantuml-diagram-style-and-conventions.html" },
+          ],
+        },
+        {
+          label: "API contract and integrators",
+          children: [
+            { label: "ADR 0007 — OpenAPI governance and usability", path: "adr/0007-openapi-governance-and-usability-standard.html" },
+            { label: "ADR 0003 — error contract governance", path: "adr/0003-error-contract-governance.html" },
+            { label: "ADR 0004 — API versioning policy", path: "adr/0004-api-versioning-policy.html" },
+            { label: "ADR 0006 — idempotency for write operations", path: "adr/0006-idempotency-write-operations.html" },
+            { label: "ADR 0022 — embedded Swagger UI (superseded)", path: "adr/0022-embedded-swagger-ui-openapi-sandbox.html" },
+          ],
+        },
+        {
+          label: "Security, config, and supply chain",
+          children: [
+            { label: "ADR 0005 — API security defaults", path: "adr/0005-api-security-defaults.html" },
+            { label: "ADR 0010 — env profiles and config governance", path: "adr/0010-env-profiles-and-config-governance.html" },
+            { label: "ADR 0019 — pip-audit and dependency pinning", path: "adr/0019-python-dependency-security-pip-audit-and-pinning-policy.html" },
+          ],
+        },
+        {
+          label: "Testing and code health",
+          children: [
+            { label: "ADR 0002 — testing policy", path: "adr/0002-testing-policy.html" },
+            { label: "ADR 0012 — testing strategy and load testing", path: "adr/0012-testing-strategy-and-load-testing.html" },
+            { label: "ADR 0014 — dead code analysis and repository hygiene", path: "adr/0014-dead-code-analysis-and-repository-hygiene.html" },
+          ],
+        },
+        {
+          label: "Running, observing, and SLOs",
+          children: [
+            { label: "ADR 0009 — health, readiness, and observability", path: "adr/0009-health-readiness-and-observability.html" },
+            { label: "ADR 0011 — SLO, SLA, and error budget", path: "adr/0011-slo-sla-error-budget.html" },
+            { label: "ADR 0023 — structured logging and local Elasticsearch", path: "adr/0023-structured-logging-and-local-elasticsearch.html" },
+          ],
+        },
+        {
+          label: "Day-to-day workflow and Git",
+          children: [
+            { label: "ADR 0008 — Make command taxonomy and workflow entrypoints", path: "adr/0008-make-command-taxonomy-and-workflow-entrypoints.html" },
+            { label: "ADR 0017 — branch naming and repository workflow", path: "adr/0017-branch-naming-and-repository-workflow.html" },
+          ],
+        },
+        {
+          label: "Containers and delivery",
+          children: [
+            { label: "ADR 0015 — container image", path: "adr/0015-container-image.html" },
+            { label: "ADR 0021 — continuous delivery (GitHub Actions and GHCR)", path: "adr/0021-continuous-delivery-github-actions-and-ghcr.html" },
+          ],
+        },
+      ]
+    },
+
+    {
+      label: "RFCs",
+      children: [
+        { label: "Hub — RFC index", path: "rfc/README.html" },
+        {
+          label: "Shared (cross-cutting)", children: [
+            { label: "RFC template", path: "rfc/0000-template.html" },
+          ]
+        },
+        {
+          label: "Docs search program",
+          children: [
+            { label: "RFC 0001 — docs search implementation", path: "rfc/0001-docs-search-implementation.html" },
+            { label: "RFC 0002 — docs search KPI policy and SLO", path: "rfc/0002-docs-search-kpi-policy-and-slo.html" },
+          ],
+        },
+      ],
+    },
+
+
+    {
+      label: "How-to guides",
+      children: [
+        { label: "Hub — how-to index", path: "howto/README.html" },
+        {
+          label: "Onboarding and implementation",
+          children: [
+            { label: "Onboarding from zero to endpoint and docs", path: "howto/0001-onboarding-from-zero-to-endpoint-docs.html" },
+            { label: "How to add POST /api/v1/contract", path: "howto/0004-how-to-add-post-contract.html" },
+          ],
+        },
+        {
+          label: "Documentation operations",
+          children: [
+            { label: "Internal service docs layout and how to add pages", path: "howto/0002-internal-service-docs-layout.html" },
+            { label: "How to change docs frontend safely", path: "howto/0005-how-to-change-docs-frontend-safely.html" },
+          ],
+        },
+        {
+          label: "Workflow and commands",
+          children: [{ label: "Make commands inventory", path: "howto/0003-make-commands-inventory.html" }],
+        },
+      ],
+    },
+
+    {
+      label: "Runbooks",
+      children: [
+        { label: "Hub — runbooks index", path: "runbooks/README.html" },
+        {
+          label: "Shared (cross-cutting)", children: [
+            { label: "Runbook template", path: "runbooks/0000-template.html" },
+          ]
+        },
+        {
+          label: "CI and local quality failures",
+          children: [
+            { label: "Tests failing", path: "runbooks/0001-tests-failing.html" },
+            { label: "Pre-commit failing", path: "runbooks/0004-pre-commit-failing.html" },
+            { label: "Quality check failing", path: "runbooks/0005-quality-check-failing.html" },
+            { label: "OpenAPI contract test failing", path: "runbooks/0007-openapi-contract-test-failing.html" },
+          ],
+        },
+        {
+          label: "Data and migration failures",
+          children: [{ label: "Migrations failing", path: "runbooks/0002-migrations-failing.html" }],
+        },
+        {
+          label: "Security and API guardrails",
+          children: [{ label: "API security failing", path: "runbooks/0006-api-security-failing.html" }],
+        },
+        {
+          label: "Observability and reliability incidents",
+          children: [
+            { label: "Logging failing", path: "runbooks/0003-logging-failing.html" },
+            { label: "Observability scrape failing", path: "runbooks/0008-observability-scrape-failing.html" },
+            { label: "Error budget exhaustion", path: "runbooks/0009-error-budget-exhaustion.html" },
+          ],
+        },
+        {
+          label: "Docs frontend incidents",
+          children: [{ label: "In-page TOC missing", path: "runbooks/0010-in-page-toc-missing.html" }],
+        },
+      ],
+    },
+
+
+
+    {
+      label: "Audit",
+      children: [
+        { label: "Hub — assessments index", path: "audit/README.html" },
+        {
+          label: "Shared (cross-cutting)", children: [
+            { label: "Assessment template", path: "audit/AUDIT_TEMPLATE.html" },
+          ]
+        },
+        { label: "Assessment template", path: "audit/AUDIT_TEMPLATE.html" },
+        {
+          label: "DX",
+          children: [
+            { label: "DX 2026-04-14", path: "audit/docs/2026-04-14-documentation-experience-assessment.html" },
+            { label: "DX 2026-04-18", path: "audit/docs/2026-04-18-documentation-experience-assessment.html" },
+            { label: "UI/UX DX 2026-04-23", path: "audit/docs/2026-04-23-ui-ux-assessment.html" },
+            { label: "UI/UX DX 2026-04-24", path: "audit/docs/2026-04-24-ui-ux-assessment.html" },
+          ],
+        },
+        {
+          label: "REST API",
+          children: [
+            { label: "REST API 2026-04-14", path: "audit/api/2026-04-14-rest-api-assessment.html" },
+          ],
+        },
+      ],
+    },
+
+    {
+      separator: true,
+    },
+
+    {
+      label: "Managers portal",
+
+      children: [
+        { label: "Hub — managers index", path: "internal/manager/README.html" },
+        { label: "⭐ Backlog", path: "backlog/README.html" },
+        { label: "SDLC RACI matrix", path: "internal/manager/sdlc-raci-matrix.html" },
+      ],
+    },
+
+    {
+      label: "Developers portal",
+      children: [
+        { label: "Python API (pdoc)", path: "pdoc/index.html" },
+        { label: "Hub — developer index", path: "developer/README.html" },
+        {
+          label: "Core architecture and contracts",
+          children: [
+            { label: "Requirements guide", path: "developer/0001-requirements.html" },
+            { label: "Schemas and contracts", path: "developer/0002-schemas-and-contracts.html" },
+            { label: "Business logic guide", path: "developer/0003-business-logic.html" },
+            { label: "Error matrix by status", path: "developer/0005-error-matrix-by-status.html" },
+          ],
+        },
+        {
+          label: "Delivery workflow and operations",
+          children: [
+            { label: "Make commands and workflows", path: "developer/0010-make-commands-and-workflows.html" },
+            { label: "Local development", path: "developer/0007-local-development.html" },
+            { label: "Docker image and container", path: "developer/0009-docker-image-and-container.html" },
+            { label: "API load testing", path: "developer/0006-api-load-testing.html" },
+            { label: "Documentation pipeline", path: "developer/0008-docs-pipeline.html" },
+          ],
+        },
+        {
+          label: "How-to and onboarding",
+          children: [
+            { label: "How to add POST contract", path: "howto/0004-how-to-add-post-contract.html" },
+            { label: "Onboarding from zero to endpoint and docs", path: "howto/0001-onboarding-from-zero-to-endpoint-docs.html" },
+            { label: "Make commands inventory", path: "howto/0003-make-commands-inventory.html" },
+          ],
+        },
+      ],
+    },
+
+    {
+      label: "QA portal",
+      children: [
+        { label: "Hub — QA portal index", path: "qa/README.html" },
+        {
+          label: "QA checklists",
+          children: [
+            {
+              label: "Documentation pages visual checklist",
+              path: "qa/0001-documentation-pages-visual-checklist.html",
+            },
+          ],
+        },
+      ],
+    },
+
+    {
+      separator: true,
+    },
+
+    {
+      label: "API endpoints documentation",
+      children: [
+        { label: "Hub — internal HTTP API", path: "internal/api/README.html" },
+
+        {
+          label: "Shared (cross-cutting)",
+          children: [
+            { label: "Specification template", path: "internal/api/_shared/spec-template.html" },
+            { label: "Definition of Done", path: "internal/api/_shared/spec-definition-of-done.html" },
+            { label: "Idempotency", path: "internal/api/_shared/idempotency.html" },
+            { label: "Error envelope", path: "internal/api/_shared/error-envelope.html" },
+            { label: "Error catalog", path: "internal/api/_shared/error-catalog.html" },
+            { label: "Authentication & authorization", path: "internal/api/_shared/auth.html" },
+            { label: "Pagination", path: "internal/api/_shared/pagination.html" },
+            { label: "Versioning", path: "internal/api/_shared/versioning.html" },
+            { label: "Observability conventions", path: "internal/api/_shared/observability-conventions.html" },
+            { label: "Field conventions", path: "internal/api/_shared/field-conventions.html" },
+            { label: "OpenAPI authoring guide", path: "internal/api/_shared/openapi-authoring-guide.html" },
+            { label: "Error matrix (auto-generated)", path: "internal/api/errors.html" },
+          ],
+        },
         {
           label: "User",
           expand: "after-api-hub",
           children: [
             { label: "Hub — business, contract & technical spec", path: "internal/api/user/index.html" },
-            { label: "POST /user", path: "internal/api/user/operations/post-api-v1-user.html" },
             { label: "GET /user/", path: "internal/api/user/operations/get-api-v1-user-system_uuid-system_user_id.html" },
+            { label: "POST /user", path: "internal/api/user/operations/post-api-v1-user.html" },
             { label: "PUT /user/", path: "internal/api/user/operations/put-api-v1-user-system_uuid-system_user_id.html" },
             { label: "PATCH /user/", path: "internal/api/user/operations/patch-api-v1-user-system_uuid-system_user_id.html" },
           ],
@@ -539,77 +811,81 @@
           children: [
             {
               labelHtml:
-                'Hub — entity, <span class="docs-tooltip docs-tooltip--etr">ETR</span> mapping &amp; methods',
+                'Hub — business, contract & technical spec',
               path: "internal/api/conspectus/index.html",
             },
-            { label: "POST /conspectuses", path: "internal/api/conspectus/operations/post-api-v1-conspectuses.html" },
-            { label: "PATCH /conspectuses/{id}", path: "internal/api/conspectus/operations/patch-api-v1-conspectuses-conspectus_uuid.html" },
-            { label: "POST …/actions/review", path: "internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html" },
             { label: "GET /conspectuses/due/", path: "internal/api/conspectus/operations/get-api-v1-conspectuses-due.html" },
             { label: "GET /schedule/summary/", path: "internal/api/conspectus/operations/get-api-v1-schedule-summary.html" },
+            { label: "POST …/actions/review", path: "internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html" },
+            { label: "POST /conspectuses", path: "internal/api/conspectus/operations/post-api-v1-conspectuses.html" },
+            { label: "PATCH /conspectuses/{id}", path: "internal/api/conspectus/operations/patch-api-v1-conspectuses-conspectus_uuid.html" },
           ],
         },
         {
           label: "Error log",
           expand: "after-api-hub",
           children: [
-            { label: "Hub — FR-4 & methods", path: "internal/api/error-log/index.html" },
+            { label: "Hub — business, contract & technical spec", path: "internal/api/error-log/index.html" },
             { label: "GET /errors/", path: "internal/api/error-log/operations/get-api-v1-errors.html" },
             { label: "POST /errors", path: "internal/api/error-log/operations/post-api-v1-errors.html" },
           ],
         },
       ],
     },
+
     {
-      label: "Docs documentation",
+      label: "Docs frontend documentation",
       children: [
         {
-          label: " Style guide",
-          path: "internal/front/documentation-style-guide.html",
+          label: "Foundations",
+          children: [
+            { label: "Style guide", path: "internal/front/documentation-style-guide.html" },
+            { label: "Maintenance process", path: "internal/front/documentation-process.html" },
+            { label: "Frontend glossary", path: "internal/front/docs-frontend-glossary.html" },
+            { label: "Quick entry by role", path: "internal/front/docs-frontend-fast-entry-by-role.html" },
+          ],
         },
         {
-          label: "Docs frontend architecture map",
-          path: "internal/front/docs-frontend-architecture-map.html",
+          label: "Architecture",
+          children: [
+            { label: "Architecture map", path: "internal/front/docs-frontend-architecture-map.html" },
+          ],
         },
         {
-          label: "Docs frontend quick entry by role",
-          path: "internal/front/docs-frontend-fast-entry-by-role.html",
+          label: "Screens",
+          children: [
+            { label: "Screen spec template", path: "internal/front/screens/docs-screen-template.html" },
+            { label: "Engineering hub home", path: "internal/front/screens/docs-screen-home-landing.html" },
+            { label: "Backlog cockpit", path: "internal/front/screens/docs-screen-backlog-cockpit.html" },
+          ],
         },
         {
-          label: "Docs frontend glossary",
-          path: "internal/front/docs-frontend-glossary.html",
+          label: "Components",
+          children: [
+            { label: "UI kit", path: "internal/front/docs-frontend-ui-kit.html" },
+            { label: "Tooltips and inline hints", path: "internal/front/docs-frontend-tooltips.html" },
+            { label: "Popup and overlay system", path: "internal/front/docs-frontend-popups-and-overlays.html" },
+            { label: "Diagrams and lightbox", path: "internal/front/docs-frontend-diagrams-and-lightbox.html" },
+            { label: "Resume reading and back-to-top", path: "internal/front/docs-frontend-resume-and-back-to-top.html" },
+            { label: "Hotkeys", path: "internal/front/docs-frontend-hotkeys.html" },
+          ],
         },
         {
-          label: "Docs frontend tooltips and inline hints",
-          path: "internal/front/docs-frontend-tooltips.html",
+          label: "Reference",
+          children: [
+            { label: "JavaScript modules", path: "internal/front/docs-frontend-js-modules-reference.html" },
+            { label: "CSS architecture", path: "internal/front/docs-frontend-css-architecture.html" },
+            { label: "Token gallery (auto-generated)", path: "internal/front/docs-frontend-token-gallery.html" },
+          ],
         },
         {
-          label: "Docs frontend navigation, search, and discovery",
-          path: "internal/front/docs-frontend-navigation-search-and-discovery.html",
-        },
-        {
-          label: "Docs frontend UI, motion, and adaptivity",
-          path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html",
-        },
-        {
-          label: "Docs frontend diagrams and lightbox",
-          path: "internal/front/docs-frontend-diagrams-and-lightbox.html",
-        },
-        {
-          label: "Docs frontend feedback and editorial workflow",
-          path: "internal/front/docs-frontend-feedback-and-editorial-workflow.html",
-        },
-        {
-          label: "Docs frontend navigation and theme controls",
-          path: "internal/front/docs-frontend-menu-and-theme-controls.html",
-        },
-        {
-          label: "Docs frontend hotkeys",
-          path: "internal/front/docs-frontend-hotkeys.html",
-        },
-        {
-          label: "Docs frontend UI kit",
-          path: "internal/front/docs-frontend-ui-kit.html",
+          label: "Cross-cutting systems",
+          children: [
+            { label: "Navigation and theme contract", path: "internal/front/docs-frontend-menu-and-theme-controls.html" },
+            { label: "Navigation, search, discovery", path: "internal/front/docs-frontend-navigation-search-and-discovery.html" },
+            { label: "UI, motion, adaptivity", path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html" },
+            { label: "Feedback and editorial workflow", path: "internal/front/docs-frontend-feedback-and-editorial-workflow.html" },
+          ],
         },
       ],
     },
@@ -621,7 +897,13 @@
     for (let i = 0; i < nodes.length; i += 1) {
       const node = nodes[i];
       const li = document.createElement("li");
-      if (node.children && node.children.length) {
+      if (node.separator) {
+        li.className = "internal-sidebar__separator";
+        li.setAttribute("role", "presentation");
+        const hr = document.createElement("hr");
+        hr.setAttribute("aria-hidden", "true");
+        li.appendChild(hr);
+      } else if (node.children && node.children.length) {
         const details = document.createElement("details");
         details.className = "internal-sidebar__group";
         if (shouldOpenGroup(node, currentPath)) {
@@ -652,6 +934,18 @@
     return ul;
   }
 
+  function scrollToActiveSidebarItem(host) {
+    if (!host) {
+      return;
+    }
+    const activeLink = host.querySelector("a.is-active");
+    if (!activeLink || typeof activeLink.scrollIntoView !== "function") {
+      return;
+    }
+    // Keep the current page link near center for quicker orientation in long trees.
+    activeLink.scrollIntoView({ block: "center", inline: "nearest", behavior: "auto" });
+  }
+
   function mount() {
     const host = document.getElementById("internal-sidebar-mount");
     if (!host) {
@@ -665,6 +959,9 @@
     nav.setAttribute("aria-label", "Internal documentation");
     nav.appendChild(renderTree(INTERNAL_SIDEBAR_NAV, fromDir, relPath));
     host.replaceChildren(nav);
+    requestAnimationFrame(() => {
+      scrollToActiveSidebarItem(host);
+    });
     ensureSidebarToggle(sidebar, host, shell);
     ensureDrawerInteractions(sidebar, shell, fromDir, relPath);
   }

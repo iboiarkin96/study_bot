@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Guide For Beginners: Add `POST /api/v1/contract`</title>
+  <title>Guide For Beginners: Add new endpoint and docs</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
@@ -16,7 +16,7 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Guide For Beginners: Add <code>POST /api/v1/contract</code></h1>
+    <h1 class="internal-h1--accent-tail">Guide For Beginners: Add new endpoint and docs</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <p class="lead">
@@ -25,317 +25,250 @@
     </p>
     <p>This guide explains <strong>what to add, where to add it, and in what order</strong>.</p>
     <p>The endpoint itself is not implemented here; this is an execution plan.</p>
-    <hr>
+
     <section class="card">
       <h2>Goal and scope</h2>
       <p>Target endpoint:</p>
       <ul>
-        <li><code>POST /api/v1/contract</code>
-        </li>
+        <li><code>POST /api/v1/contract</code></li>
       </ul>
       <p>Expected result:</p>
       <ul>
-        <li>API route exists,
-        </li>
-        <li>schemas and examples are defined,
-        </li>
-        <li>business logic is placed in service layer,
-        </li>
-        <li>validation and error contracts are aligned,
-        </li>
-        <li>tests/documentation/quality checks pass.
-        </li>
+        <li>API route exists,</li>
+        <li>schemas and examples are defined,</li>
+        <li>business logic is placed in service layer,</li>
+        <li>validation and error contracts are aligned,</li>
+        <li>tests/documentation/quality checks pass.</li>
       </ul>
-      <hr>
     </section>
+
     <section class="card">
       <h2>Prepare domain model and DB (if needed)</h2>
       <p>If <code>contract</code> requires new table/columns:</p>
       <ol>
-        <li>Add/adjust ORM model in <code>app/models/core/</code> (for example <code>contract.py</code>).
-        </li>
+        <li>Add/adjust ORM model in <code>app/models/core/</code> (for example <code>contract.py</code>).</li>
         <li>Project uses package-level imports for models (like <code>from app.models.core import *</code>), make
           sure to register your new model in <code>app/models/core/__init__.py</code>.</li>
           <li>Generate migration:
             <ul>
-              <li><code>make migration name=add_contract_table</code>
-              </li>
+              <li><code>.venv/bin/python -m alembic revision --autogenerate -m add_contract_table</code></li>
             </ul>
           </li>
           <li>Apply migration:
             <ul>
-              <li><code>make migrate</code>
-              </li>
+              <li><code>make migrate</code></li>
             </ul>
           </li>
         </ol>
         <p>If DB schema does not change, skip migration steps.</p>
-        <hr>
       </section>
+
       <section class="card">
         <h2>Add repository layer</h2>
         <p>Create repository for persistence operations:</p>
         <ul>
-          <li>File: <code>app/repositories/contract_repository.py</code>
-          </li>
+          <li>File: <code>app/repositories/contract_repository.py</code></li>
         </ul>
         <p>Typical methods:</p>
         <ul>
-          <li><code>create(...)</code>
-          </li>
-          <li><code>get_by_...(...)</code> (if dedup/business checks needed)
-          </li>
+          <li><code>create(...)</code></li>
+          <li><code>get_by_...(...)</code> (if dedup/business checks needed)</li>
         </ul>
         <p>Repository rules:</p>
         <ul>
-          <li>only data access,
-          </li>
-          <li>no HTTP exceptions,
-          </li>
-          <li>no FastAPI imports.
-          </li>
+          <li>only data access,</li>
+          <li>no HTTP exceptions,</li>
+          <li>no FastAPI imports.</li>
         </ul>
-        <hr>
       </section>
+
       <section class="card">
         <h2>Add service layer (business logic)</h2>
         <p>Create service:</p>
         <ul>
-          <li>File: <code>app/services/contract_service.py</code>
-          </li>
+          <li>File: <code>app/services/contract_service.py</code></li>
         </ul>
         <p>Service responsibilities:</p>
         <ul>
-          <li>apply business rules,
-          </li>
-          <li>call repository,
-          </li>
-          <li>raise business errors with stable <code>code</code>/<code>key</code> when needed.
-          </li>
+          <li>apply business rules,</li>
+          <li>call repository,</li>
+          <li>raise business errors with stable <code>code</code>/<code>key</code> when needed.</li>
         </ul>
         <p>Error key convention for this entity:</p>
         <ul>
-          <li>prefix with entity name, e.g. <code>CONTRACT_CREATE_*</code>
-          </li>
+          <li>prefix with entity name, e.g. <code>CONTRACT_CREATE_*</code></li>
           <li>code format should follow project convention for entity prefix: entity name + number, e.g.
-            <code>CONTRACT_101</code>.
-          </li>
-        </ul>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Add request/response schemas</h2>
-        <p>Create schemas:</p>
-        <ul>
-          <li>File: <code>app/schemas/contract.py</code>
-          </li>
-        </ul>
-        <p>Define:</p>
-        <ul>
-          <li><code>ContractCreateRequest</code>
-          </li>
-          <li><code>ContractCreateResponse</code>
-          </li>
-        </ul>
-        <p>Schema rules:</p>
-        <ul>
-          <li>validation at API boundary,
-          </li>
-          <li>clear field descriptions,
-          </li>
-          <li>stable names for OpenAPI.
-          </li>
-        </ul>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Add validation mapping for entity</h2>
-        <p>Create validation mapper:</p>
-        <ul>
-          <li>File: <code>app/validation/contract.py</code>
-          </li>
-        </ul>
-        <p>Include:</p>
-        <ul>
-          <li>field/type specific mapping to stable validation codes
-          </li>
-          <li>fallback rule for unmapped validation errors
-          </li>
-        </ul>
-        <p>Example naming:</p>
-        <ul>
-          <li><code>CONTRACT_001</code>, <code>CONTRACT_002</code>, ...
-          </li>
-          <li>keys like <code>CONTRACT_CREATE_FIELD_REQUIRED</code>
-          </li>
-        </ul>
-        <p>Then wire mapper in centralized validation entrypoint.</p>
-        <p>Current project can evolve with one of two options:</p>
-        <ul>
-          <li>route-based dispatch inside validation builder, or
-          </li>
-          <li>a small registry (<code>endpoint -&gt; mapper</code>) in <code>app/validation/__init__.py</code>.
-          </li>
-        </ul>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Add OpenAPI examples</h2>
-        <p>Add examples:</p>
-        <ul>
-          <li><code>app/openapi/examples/contracts.py</code> (new)
-          </li>
-          <li>update <code>app/openapi/examples/__init__.py</code> exports
-          </li>
-        </ul>
-        <p>Add:</p>
-        <ul>
-          <li>request body examples,
-          </li>
-          <li>business error examples,
-          </li>
-          <li>validation error examples.
-          </li>
-        </ul>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Add API router</h2>
-        <p>Create router:</p>
-        <ul>
-          <li>File: <code>app/api/v1/contract.py</code>
-          </li>
-        </ul>
-        <p>Router should:</p>
-        <ul>
-          <li>define <code>APIRouter(prefix="/contract", tags=["Contract"])</code>,
-          </li>
-          <li>add <code>@router.post("")</code>,
-          </li>
-          <li>use request/response schemas,
-          </li>
-          <li>reference OpenAPI examples,
-          </li>
-          <li>declare explicit error <code>responses</code>.
-          </li>
-          <li>for critical write endpoint, document and enforce <code>Idempotency-Key</code> behavior.
-          </li>
-        </ul>
-        <p>Then include router in app:</p>
-        <ul>
-          <li>update <code>app/main.py</code> with <code>app.include_router(..., prefix="/api/v1")</code>.
-          </li>
-        </ul>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Add tests</h2>
-        <p>Create tests:</p>
-        <ul>
-          <li>File: <code>tests/api/v1/test_contract_create.py</code>
-          </li>
-        </ul>
-        <p>Minimum scenarios:</p>
-        <ol>
-          <li>success (<code>201</code>)
-          </li>
-          <li>business failure (<code>400</code>)
-          </li>
-          <li>validation failure (<code>422</code>) with expected entity-prefixed code/key
-          </li>
-          <li>idempotent replay: same key + same payload returns same success result
-          </li>
-          <li>idempotency conflict: same key + different payload returns conflict
-          </li>
-        </ol>
-        <p>If DB changed, update test fixtures if needed:</p>
-        <ul>
-          <li><code>tests/conftest.py</code>
-          </li>
-        </ul>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Update docs</h2>
-        <p>Run docs sync:</p>
-        <ul>
-          <li><code>make docs-fix</code>
-          </li>
-        </ul>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Run quality gates</h2>
-        <p>Before commit:</p>
-        <ol>
-          <li><code>make format-fix</code>
-          </li>
-          <li><code>make lint-check</code>
-          </li>
-          <li><code>make type-check</code>
-          </li>
-          <li><code>make test</code>
-          </li>
-          <li><code>make pre-commit-check</code>
-          </li>
-        </ol>
-        <p>Before PR/deploy:</p>
-        <ol>
-          <li><code>make verify</code>
-          </li>
-          <li><code>make release-check</code>
-          </li>
-        </ol>
-        <hr>
-      </section>
-      <section class="card">
-        <h2>Final checklist</h2>
-        <ul>
-          <li>[ ] endpoint registered and visible in Swagger
-          </li>
-          <li>[ ] schemas and examples are complete
-          </li>
-          <li>[ ] business logic isolated in service
-          </li>
-          <li>[ ] repository handles persistence only
-          </li>
-          <li>[ ] validation mapping exists for <code>contract</code>
-          </li>
-          <li>[ ] error keys/codes use <code>CONTRACT_*</code> prefix
-          </li>
-          <li>[ ] tests for success + business + validation pass
-          </li>
-          <li>[ ] idempotency scenarios are covered for write endpoint
-          </li>
-          <li>[ ] docs synced
-          </li>
-          <li>[ ] quality gates pass
-          </li>
-        </ul>
-      </section>
-      <section id="page-history" class="card">
-        <h2>Page history</h2>
-        <div class="docs-table-scroll" role="region" aria-label="Page history">
-          <table class="docs-page-history">
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Change</th>
-                <th scope="col">Author</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><time datetime="2026-04-21">2026-04-21</time></td>
-                <td>Added Page history section (repository baseline).</td>
-                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+            <code>CONTRACT_101</code>.</li>
+          </ul>
+        </section>
 
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    </main>
+        <section class="card">
+          <h2>Add request/response schemas</h2>
+          <p>Create schemas:</p>
+          <ul>
+            <li>File: <code>app/schemas/contract.py</code></li>
+          </ul>
+          <p>Define:</p>
+          <ul>
+            <li><code>ContractCreateRequest</code></li>
+            <li><code>ContractCreateResponse</code></li>
+          </ul>
+          <p>Schema rules:</p>
+          <ul>
+            <li>validation at API boundary,</li>
+            <li>clear field descriptions,</li>
+            <li>stable names for OpenAPI.</li>
+          </ul>
+        </section>
 
-  </body></html>
+        <section class="card">
+          <h2>Add validation mapping for entity</h2>
+          <p>Create validation mapper:</p>
+          <ul>
+            <li>File: <code>app/validation/contract.py</code></li>
+          </ul>
+          <p>Include:</p>
+          <ul>
+            <li>field/type specific mapping to stable validation codes</li>
+            <li>fallback rule for unmapped validation errors</li>
+          </ul>
+          <p>Example naming:</p>
+          <ul>
+            <li><code>CONTRACT_001</code>, <code>CONTRACT_002</code>, ...</li>
+            <li>keys like <code>CONTRACT_CREATE_FIELD_REQUIRED</code></li>
+          </ul>
+          <p>Then wire mapper in centralized validation entrypoint.</p>
+          <p>Current project can evolve with one of two options:</p>
+          <ul>
+            <li>route-based dispatch inside validation builder, or</li>
+            <li>a small registry (<code>endpoint -&gt; mapper</code>) in <code>app/validation/__init__.py</code>.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Add OpenAPI examples</h2>
+          <p>Add examples:</p>
+          <ul>
+            <li><code>app/openapi/examples/contracts.py</code> (new)</li>
+            <li>update <code>app/openapi/examples/__init__.py</code> exports</li>
+          </ul>
+          <p>Add:</p>
+          <ul>
+            <li>request body examples,</li>
+            <li>business error examples,</li>
+            <li>validation error examples.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Add API router</h2>
+          <p>Create router:</p>
+          <ul>
+            <li>File: <code>app/api/v1/contract.py</code></li>
+          </ul>
+          <p>Router should:</p>
+          <ul>
+            <li>define <code>APIRouter(prefix="/contract", tags=["Contract"])</code>,</li>
+            <li>add <code>@router.post("")</code>,</li>
+            <li>use request/response schemas,</li>
+            <li>reference OpenAPI examples,</li>
+            <li>declare explicit error <code>responses</code>.</li>
+            <li>for critical write endpoint, document and enforce <code>Idempotency-Key</code> behavior.</li>
+          </ul>
+          <p>Then include router in app:</p>
+          <ul>
+            <li>update <code>app/main.py</code> with <code>app.include_router(..., prefix="/api/v1")</code>.</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Add tests</h2>
+          <p>Create tests:</p>
+          <ul>
+            <li>File: <code>tests/api/v1/test_contract_create.py</code></li>
+          </ul>
+          <p>Minimum scenarios:</p>
+          <ol>
+            <li>success (<code>201</code>)</li>
+            <li>business failure (<code>400</code>)</li>
+            <li>validation failure (<code>422</code>) with expected entity-prefixed code/key</li>
+            <li>idempotent replay: same key + same payload returns same success result</li>
+            <li>idempotency conflict: same key + different payload returns conflict</li>
+          </ol>
+          <p>If DB changed, update test fixtures if needed:</p>
+          <ul>
+            <li><code>tests/conftest.py</code></li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Update docs</h2>
+          <p>Run docs sync:</p>
+          <ul>
+            <li><code>make docs-fix</code></li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Run quality gates</h2>
+          <p>Before commit:</p>
+          <ol>
+            <li><code>make format-fix</code></li>
+            <li><code>make lint-check</code></li>
+            <li><code>make type-check</code></li>
+            <li><code>make test</code></li>
+            <li><code>make pre-commit-check</code></li>
+          </ol>
+          <p>Before PR/deploy:</p>
+          <ol>
+            <li><code>make verify</code></li>
+            <li><code>make release-check</code></li>
+          </ol>
+        </section>
+
+        <section class="card">
+          <h2>Final checklist</h2>
+          <ul>
+            <li>[ ] endpoint registered and visible in Swagger</li>
+            <li>[ ] schemas and examples are complete</li>
+            <li>[ ] business logic isolated in service</li>
+            <li>[ ] repository handles persistence only</li>
+            <li>[ ] validation mapping exists for <code>contract</code></li>
+            <li>[ ] error keys/codes use <code>CONTRACT_*</code> prefix</li>
+            <li>[ ] tests for success + business + validation pass</li>
+            <li>[ ] idempotency scenarios are covered for write endpoint</li>
+            <li>[ ] docs synced</li>
+            <li>[ ] quality gates pass</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+
+    </body></html>

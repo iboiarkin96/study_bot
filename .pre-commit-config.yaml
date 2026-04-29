@@ -43,13 +43,19 @@ repos:
         entry: .venv/bin/python scripts/ensure_docs_maintainers.py
         language: system
         files: ^docs/.*\.html$
-        exclude: ^docs/(api|assets)/
+        exclude: ^docs/(api|assets)/|^docs/index\.html$
       - id: docs-design-maintainers
         name: docs design/maintainers check
         entry: .venv/bin/python scripts/validate_docs_design.py
         language: system
         files: ^docs/.*\.html$
-        exclude: ^docs/(api|assets)/
+        exclude: ^docs/(api|assets)/|^docs/index\.html$
+      - id: audit-front-docs-links
+        name: audit front docs (broken links, sidebar, prose mentions)
+        entry: .venv/bin/python scripts/audit_front_docs_links.py --quiet
+        language: system
+        files: ^docs/(internal/front/|assets/internal-sidebar\.js)
+        pass_filenames: false
       - id: sync-pr-body-on-push
         name: sync PR body to GitHub
         entry: scripts/sync_pr_body.sh

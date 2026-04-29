@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenAPI authoring guide — internal → external — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">OpenAPI authoring guide</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            How to translate an internal analyst-spec page into the public OpenAPI document at
+            <code>docs/openapi/openapi-baseline.json</code>. Per-operation specs include a
+            <em>Section 16 — OpenAPI authoring hints</em> with the operation-specific instructions;
+            this page covers the cross-cutting rules that apply to every translation. Governing
+            ADRs:
+            <a href="../../../adr/0007-openapi-governance-and-usability-standard.html">0007</a>,
+            <a href="../../../adr/0025-external-and-internal-api-documentation.html">0025</a>,
+            <a href="../../../adr/0026-internal-service-documentation-as-source-of-truth.html">0026</a>.
+          </p>
+          <p class="small">
+            <strong>Audience.</strong> The developer who will write or update the OpenAPI JSON
+            after the spec is approved. The systems analyst writes the internal page; the
+            developer translates it. Drift between the two is a defect.
+          </p>
+        </section>
+
+        <section class="card" id="direction">
+          <h2>Direction of authority</h2>
+          <p>
+            <strong>Internal spec is the source of truth for requirements.</strong> The OpenAPI
+            file is the contract for external integrators — it must reflect what the internal spec
+            says, narrowed for an external audience. Ambiguity is resolved by consulting the
+            internal page; if the OpenAPI is unclear, fix it from the spec, not the other way
+            around (per
+            <a href="../../../adr/0026-internal-service-documentation-as-source-of-truth.html">
+              ADR 0026</a>).
+          </p>
+        </section>
+
+        <section class="card" id="mapping">
+          <h2>Section-by-section mapping</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Spec → OpenAPI mapping">
+            <table>
+              <thead>
+                <tr><th>Internal spec section</th><th>OpenAPI target</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Header (operationId, status, owner)</td>
+                  <td><code>paths.{path}.{method}.operationId</code>; <code>tags</code></td>
+                  <td><code>operationId</code> verbatim. <code>tags</code> = resource name
+                    (PascalCase: <code>Conspectus</code>).</td>
+                </tr>
+                <tr>
+                  <td>Business context, user stories</td>
+                  <td><code>summary</code>, <code>description</code></td>
+                  <td><em>Rewrite</em> for an external reader. Drop ADR refs, drop
+                    methodology references, keep the verb-and-purpose sentence.</td>
+                </tr>
+                <tr>
+                  <td>7. Request contract — path, headers, query, body</td>
+                  <td><code>parameters</code>, <code>requestBody.content.application/json.schema</code></td>
+                  <td>One <code>parameter</code> per row in the field table; reuse
+                    <code>$ref</code> components.</td>
+                </tr>
+                <tr>
+                  <td>8. Response contract</td>
+                  <td><code>responses.{status}.content.application/json.schema</code></td>
+                  <td>One sub-tree per success status. Examples attach as
+                    <code>examples.success.value</code>.</td>
+                </tr>
+                <tr>
+                  <td>11. Idempotency</td>
+                  <td>Header <code>parameter</code> + <code>description</code></td>
+                  <td>Document <code>Idempotency-Key</code> as a header; link to the public
+                    description of idempotency rules.</td>
+                </tr>
+                <tr>
+                  <td>12. Error catalog</td>
+                  <td><code>responses.4xx</code>, <code>5xx</code> with examples</td>
+                  <td>Reuse <code>ErrorEnvelope</code> schema; one example per declared
+                    <code>code/key</code> pair.</td>
+                </tr>
+                <tr>
+                  <td>14. Observability</td>
+                  <td>—</td>
+                  <td><strong>Hidden from external spec.</strong> Internal-only.</td>
+                </tr>
+                <tr>
+                  <td>15. Test plan</td>
+                  <td>—</td>
+                  <td><strong>Hidden.</strong> Internal QA artefact.</td>
+                </tr>
+                <tr>
+                  <td>17–18. Open questions, out of scope</td>
+                  <td>—</td>
+                  <td><strong>Hidden.</strong> Authoring-time concerns; not contractual.</td>
+                </tr>
+                <tr>
+                  <td>19. Traceability</td>
+                  <td>—</td>
+                  <td><strong>Hidden.</strong> Internal ADR/methodology cross-links.</td>
+                </tr>
+                <tr>
+                  <td>20. Spec changelog</td>
+                  <td><code>info.version</code>, public release notes</td>
+                  <td>Version bump per ADR 0004; public changelog separate from this internal
+                    log.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="naming">
+          <h2>Naming &amp; conventions</h2>
+          <ul>
+            <li><strong>operationId</strong>: <code>{verb}{Resource}</code> in camelCase
+              (<code>createUser</code>, <code>reviewConspectus</code>,
+              <code>listDueConspectuses</code>). Stable forever — clients use it as a method
+              name in generated SDKs.</li>
+            <li><strong>Tags</strong>: PascalCase resource (<code>Conspectus</code>,
+              <code>User</code>, <code>ErrorLog</code>). One tag per operation.</li>
+            <li><strong>Path templates</strong>: lower-snake-case identifiers in braces
+              (<code>{conspectus_uuid}</code>) — match the internal field names.</li>
+            <li><strong>Component schemas</strong> (under
+              <code>components.schemas</code>): PascalCase (<code>ConspectusResponse</code>,
+              <code>ReviewTag</code>, <code>ScheduleRevision</code>, <code>Uuid</code>,
+              <code>Timestamp</code>, <code>ErrorEnvelope</code>).</li>
+            <li><strong>Field names</strong> in JSON: <code>snake_case</code> verbatim from the
+              internal field tables (and
+              <a href="./field-conventions.html">field conventions</a>).</li>
+          </ul>
+        </section>
+
+        <section class="card" id="reuse">
+          <h2>Component reuse — the $ref policy</h2>
+          <p>
+            Always prefer <code>$ref</code> over inline schemas. Define each schema once under
+            <code>components.schemas</code>, then reference everywhere.
+          </p>
+          <ul>
+            <li><strong>Required components</strong> for every spec:
+              <code>ErrorEnvelope</code>, <code>Uuid</code>, <code>Timestamp</code>.</li>
+            <li><strong>Resource components</strong>: define the “view” objects
+              (<code>ConspectusResponse</code>, <code>UserResponse</code>) once and reuse for
+              <code>200</code> / <code>201</code> bodies across endpoints.</li>
+            <li><strong>Body components</strong>: define one per write endpoint
+              (<code>ReviewConspectusBody</code>, <code>CreateUserBody</code>); do not inline.</li>
+            <li><strong>Enum components</strong>: define once
+              (<code>ReviewTag</code>, <code>Slot</code>) and reference in both request and
+              response.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="examples">
+          <h2>Examples — what to attach where</h2>
+          <p>
+            Every <code>200</code> / <code>201</code> response gets at least one
+            <code>examples.success.value</code>. Every declared error
+            <code>code</code> gets its own example under
+            <code>responses.{status}.content.application/json.examples.{key}.value</code>.
+            Example bodies are copied <em>verbatim from the internal spec</em> (Section 7 / 8 / 12)
+            — minor edits like ellipses (<code>"…"</code>) only.
+          </p>
+          <p class="small">
+            <strong>Why verbatim:</strong> the example becomes the contract on Swagger UI; it
+            also doubles as the fixture for contract tests. Copy-paste, do not paraphrase.
+          </p>
+        </section>
+
+        <section class="card" id="hide-from-external">
+          <h2>What to hide from external integrators</h2>
+          <ul>
+            <li>Internal log-event names (<code>conspectus_reviewed</code>, …).</li>
+            <li>Internal metric / trace span names.</li>
+            <li>ADR references in <code>description</code>.</li>
+            <li>Internal IDs (<code>owner_client_uuid</code>) — clients only see
+              <code>system_user_id</code> / <code>system_uuid</code>.</li>
+            <li>Schedule-policy <em>internal</em> identifiers
+              (<code>etr_methodology_four_slot</code>) — these may leak as opaque strings in
+              responses, but their semantics are not part of the public contract.</li>
+            <li>Test-plan and observability sections (sections 14, 15) — internal-only.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="versioning-link">
+          <h2>Versioning</h2>
+          <p>
+            URL-based versioning at <code>/api/v1/**</code>. Breaking changes require a new major
+            version path. Additive changes go into the current version. See
+            <a href="./versioning.html">_shared/versioning.html</a> and
+            <a href="../../../adr/0004-api-versioning-policy.html">ADR 0004</a> for the full
+            policy and the breaking-vs-additive matrix.
+          </p>
+        </section>
+
+        <section class="card" id="lint">
+          <h2>Lint &amp; CI gates</h2>
+          <ul>
+            <li><code>spectral lint</code> on the OpenAPI document — strictness configured per
+              <a href="../../../adr/0007-openapi-governance-and-usability-standard.html">ADR
+                0007</a>.</li>
+            <li><code>schemathesis</code> contract tests run against the live API for every
+              <code>operationId</code>: no 5xx on schema-conforming input; response examples
+              match live shape.</li>
+            <li>Internal cross-check
+              (<code>scripts/spec_consistency.py</code>, Phase 4) — every internal spec maps to
+              one OpenAPI <code>operationId</code> and vice versa; every error
+              <code>code/key</code> in section 12 exists in
+              <a href="./error-catalog.html">error catalog</a>.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="traceability">
+          <h2>Traceability</h2>
+          <ul>
+            <li><strong>ADRs:</strong>
+              <a href="../../../adr/0007-openapi-governance-and-usability-standard.html">0007 —
+                OpenAPI governance</a>,
+              <a href="../../../adr/0004-api-versioning-policy.html">0004 — versioning</a>,
+              <a href="../../../adr/0025-external-and-internal-api-documentation.html">0025 —
+                external vs internal</a>,
+              <a href="../../../adr/0026-internal-service-documentation-as-source-of-truth.html">
+                0026 — internal source of truth</a>.</li>
+            <li><strong>Public spec:</strong>
+              <a href="../../../openapi/index.html">docs/openapi/ Swagger UI</a>;
+              <code>docs/openapi/openapi-baseline.json</code>.</li>
+            <li><strong>Related shared pages:</strong>
+              <a href="./error-envelope.html">error envelope</a>,
+              <a href="./error-catalog.html">error catalog</a>,
+              <a href="./field-conventions.html">field conventions</a>,
+              <a href="./versioning.html">versioning</a>.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 3: OpenAPI authoring guide — internal-spec → public-contract
+                    translation rules.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -2,7 +2,7 @@
 
 Strip unstable memory addresses from HTML and ``search.js`` (function reprs) so
 ``make api-docs`` output is diff-stable across machines and runs. Also ensure
-every pdoc HTML document links the shared docs favicon.
+every pdoc HTML document links the shared docs favicon and loads Inter.
 
 pdoc output is otherwise left unchanged — no site chrome or ``docs-nav.js``.
 """
@@ -35,6 +35,7 @@ def main() -> int:
         new = _AT_ADDR.sub("", text)
         if path.suffix == ".html":
             new = _inject_favicon(new, path)
+            new = _inject_inter_font(new)
         if new != text:
             path.write_text(new, encoding="utf-8")
             changed += 1
@@ -42,6 +43,27 @@ def main() -> int:
     if changed:
         print(f"Normalized unstable pdoc reprs in {changed} file(s) under docs/pdoc/")
     return 0
+
+
+_INTER_FONT_MARKER = "fonts.googleapis.com/css2?family=Inter"
+_INTER_FONT_LINKS = (
+    '    <link rel="preconnect" href="https://fonts.googleapis.com"/>\n'
+    '    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>\n'
+    '    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>\n'
+    "    <style>body,button,input{font-family:Inter,system-ui,-apple-system,sans-serif}</style>\n"
+)
+
+
+def _inject_inter_font(html: str) -> str:
+    """Inject Inter font into pdoc HTML pages that don't already have it.
+
+    pdoc ships with Bootstrap's system-font stack. This replaces it with Inter
+    to match the rest of the docs site — injected into the custom.css slot so
+    it loads after pdoc's own theme and wins the cascade.
+    """
+    if _INTER_FONT_MARKER in html or "</head>" not in html:
+        return html
+    return html.replace("</head>", f"{_INTER_FONT_LINKS}</head>", 1)
 
 
 def _inject_favicon(html: str, html_path: Path) -> str:

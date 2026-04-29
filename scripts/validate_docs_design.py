@@ -17,6 +17,8 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "docs"
 FROZEN_DOCS_REL_PATHS = {
     Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+    # Standalone week backlog calendar (custom layout, not portal doc skeleton).
+    Path("backlog/week-calendar-2026-04-25.html"),
 }
 
 

@@ -7,7 +7,6 @@
   <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
   <link rel="stylesheet" href="../../assets/docs.css" />
   <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
   <script defer src="../../assets/internal-sidebar.js"></script>
   <script defer src="../../assets/docs-nav.js"></script>
   <script defer src="../../assets/docs-portal-data.js"></script>
@@ -20,7 +19,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend: tooltips and inline hints</h1>
+        <h1>Docs frontend: tooltips and inline hints <span class="docs-page-type docs-page-type--component">Component</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -104,6 +103,69 @@
           </ol>
         </section>
 
+        <section id="component-states" class="card">
+          <h2>Per-component states and accessibility</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Per-component states and accessibility">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Component</th>
+                  <th scope="col">States</th>
+                  <th scope="col">Role / ARIA</th>
+                  <th scope="col">Keyboard</th>
+                  <th scope="col">Reduced motion</th>
+                  <th scope="col">Screen-reader announcement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Pattern A — <code>data-tooltip</code></td>
+                  <td>hidden, on-hover, on-focus, clipped (when ancestor has <code>overflow: hidden</code>)</td>
+                  <td><code>role="tooltip"</code> via <code>aria-describedby</code> on the trigger</td>
+                  <td><kbd>Tab</kbd> focus shows the tooltip; <kbd>Esc</kbd> dismisses while focused</td>
+                  <td>Show instantly (skip 120 ms fade)</td>
+                  <td>Tooltip text is read after the trigger label, e.g. "Apply review, tooltip: posts the user's tag"</td>
+                </tr>
+                <tr>
+                  <td>Pattern B — <code>.docs-tooltip</code></td>
+                  <td>underlined inactive, on-hover, on-focus, dismissed</td>
+                  <td>Term acts as <code>&lt;dfn&gt;</code> with paired tooltip</td>
+                  <td><kbd>Tab</kbd> to the underlined term reveals the definition; <kbd>Esc</kbd> dismisses</td>
+                  <td>Definition appears without animation</td>
+                  <td>"DFEAT-04, definition: docs frontend feature ledger entry…"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Use Pattern A (<code>data-tooltip</code>) for compact backlog-style hints — short labels under ~10 words.</td>
+                <td>Use it for paragraph-length explanations — use a <code>.callout</code> from the UI kit instead.</td>
+              </tr>
+              <tr>
+                <td>Use Pattern B (<code>.docs-tooltip</code>) only for glossary terms that need an in-place definition.</td>
+                <td>Sprinkle <code>&lt;dfn&gt;</code>-like markup across narrative text — readability drops fast.</td>
+              </tr>
+              <tr>
+                <td>Verify the tooltip appears on keyboard <kbd>Tab</kbd> focus, not only on mouse hover.</td>
+                <td>Ship a tooltip that disappears the moment focus moves to it — keyboard users get nothing.</td>
+              </tr>
+              <tr>
+                <td>Test inside scrollable tables and under sticky chrome — both clip tooltips by default.</td>
+                <td>Position a tooltip absolutely without checking that it escapes <code>overflow: hidden</code> ancestors.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
         <section id="page-history" class="card">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -116,6 +178,16 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Per-component states and accessibility section (Pattern A and Pattern B).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (Pattern A vs B, keyboard focus, clipping).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-24">2026-04-24</time></td>
                   <td>Registered in internal sidebar and portal search; cross-links from UI kit and glossary; code examples use inline <code>&lt;pre&gt;</code> styling; <code>docs.css</code> comment points here.</td>

@@ -504,6 +504,11 @@
       if (priorityTag) {
         priorityTag.remove();
       }
+      const newPriorityTag = document.createElement("span");
+      newPriorityTag.className = `priority-tag priority-tag--${priority.toLowerCase()}`;
+      newPriorityTag.dataset.priority = priority;
+      newPriorityTag.textContent = priority;
+      heading.insertBefore(newPriorityTag, heading.firstChild);
       const { minHours, maxHours } = estimateForItem(item);
       const etaMin = Number.parseFloat(item.dataset.etaMinDays || "");
       const etaMax = Number.parseFloat(item.dataset.etaMaxDays || "");
@@ -1575,7 +1580,15 @@
       if (!howtoPopover || !howtoToggle) {
         return;
       }
-      howtoPopover.hidden = !isOpen;
+      if (isOpen) {
+        howtoPopover.hidden = false;
+        howtoPopover.classList.remove("is-entering");
+        void howtoPopover.offsetWidth; // force reflow to restart animation
+        howtoPopover.classList.add("is-entering");
+      } else {
+        howtoPopover.hidden = true;
+        howtoPopover.classList.remove("is-entering");
+      }
       howtoToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     };
     if (howtoToggle && howtoPopover) {

@@ -2,15 +2,14 @@
 
 ## Quality gate
 
-- **`make verify`** — Local check: lint, types, OpenAPI, contract tests, tests, **`make docs-fix`**, then **`make docs-a11y-check`**.
-- **`make verify-ci`** — Runs **`make deps-audit`** first, then the same steps as **`make verify`**, but uses **`make docs-check`** instead of `docs-fix`, and includes **`make docs-a11y-check`**. **Run this before you push** (or before you merge).
-- **CI** (GitHub Actions on PR/push) runs **`make deps-audit`** then **`make verify`** (including docs a11y). The runner still uses **`docs-fix`**, not `docs-check`, so small differences from a fresh `docs-fix` do not fail the job.
+- **`make verify`** — Canonical strict gate for local and CI: `deps-audit`, lint, types, OpenAPI checks, contract tests, tests, **`make docs-check`**, then **`make docs-a11y-check`**. Run this before push/merge.
+- **CI** (GitHub Actions on PR/push) runs the same canonical command: **`make verify`**.
 - **CD** (same workflow): on push to **`main`** / **`master`** or a **`v*`** tag, after CI passes, **`publish-image`** pushes the API image to **GitHub Container Registry** (`ghcr.io/<owner>/<repo>`). No extra repo secrets are required; use **Packages** if the image should be public for anonymous pulls.
 
 ## Dead code and unused imports
 
 - **Ruff** (via **`make lint-check`** / pre-commit): unused imports (**F401**) and bad **`noqa`** markers (**RUF100**). Fix with **`make lint-fix`**.
-- **Vulture** (optional): **`make dead-code-check`** scans for unused code using **`[tool.vulture]`** in `pyproject.toml`. It is **not** part of `verify-ci` because it can report false positives for dynamic code. Review each finding; remove code only when tests or clear evidence support it. A **weekly** GitHub Actions job also runs this scan (see [ADR 0014](docs/adr/0014-dead-code-analysis-and-repository-hygiene.html)).
+- **Vulture** (optional): **`make dead-code-check`** scans for unused code using **`[tool.vulture]`** in `pyproject.toml`. It is **not** part of `verify` because it can report false positives for dynamic code. Review each finding; remove code only when tests or clear evidence support it. A **weekly** GitHub Actions job also runs this scan (see [ADR 0014](docs/adr/0014-dead-code-analysis-and-repository-hygiene.html)).
 
 ## Documentation
 
@@ -22,9 +21,9 @@
 
 ## Container image
 
-- **Optional for daily work** — features use **`make run`** and tests; Docker is for packaging and “like production” runs. See the root **README** (*Container image*) and [0009-docker-image-and-container.html](docs/developer/0009-docker-image-and-container.html) for build and `docker run` notes.
+- **Optional for daily work** — features use **`make run`** and tests; Docker is for packaging and “like production” runs. See the root **README** (*Container image*) and [0009-docker-image-and-container.html](docs/developer/0009-docker-image-and-container.html) for `docker build` and `docker run` notes.
 - For **`qa`** / **`prod`**-style runs, supply API keys and stricter settings via environment variables or your deployment platform’s secret mechanism — see **`env/example`** and **`app/core/config.py`**.
-- **`make container-start`** runs **`scripts/container_entrypoint.sh`** (migrate + Uvicorn, no `--reload`) — same as the Docker image. The image does not run **`make`**; there is no `.venv` inside the container.
+- **`scripts/container_entrypoint.sh`** is the container entrypoint logic (migrate + Uvicorn, no `--reload`). The image does not run **`make`**; there is no `.venv` inside the container.
 
 ## OpenAPI
 
@@ -42,13 +41,10 @@
     - Install GitHub CLI (`gh`) and verify: `gh --version` (for macOS/Homebrew: `brew install gh`).
     - Authenticate: `gh auth login`.
     - Install hooks: `pre-commit install --hook-type pre-commit --hook-type pre-push`.
-  - If `gh` is missing, `pre-push` prints guidance and skips sync; install and authenticate `gh`, then run `make pr-sync`.
+  - If `gh` is missing, `pre-push` prints guidance and skips sync; install and authenticate `gh`.
   - First push on a brand-new branch may happen before GitHub can resolve the PR head ref; in that case push once more and the hook will create/update PR body on the next push.
-  - Manual commands (recommended for deterministic workflow):
-    - `make pr-sync` — create/update PR description from `PR_BODY.md` without needing PR number (asks: "Did you update PR_BODY.md? [y/N]").
-    - `make pr-open` — open current branch PR in browser using explicit `--repo`; if PR does not exist, creates one for the same repo/base/head (uses `PR_BODY.md` when present).
-  - Repo auto-detection for `pr-sync` / `pr-open`: branch upstream remote (`@{upstream}`) → `origin` → `fork`; optional override: `PR_REPO=<owner/repo>`.
-  - Non-interactive `pr-sync` (skip confirmation prompt): `PR_SYNC_ASSUME_YES=1 make pr-sync`.
+  - Manual commands (recommended for deterministic workflow): use `bash scripts/sync_pr_body.sh` and `bash scripts/pr_open.sh`.
+  - Repo auto-detection for PR helpers: branch upstream remote (`@{upstream}`) → `origin` → `fork`; optional override: `PR_REPO=<owner/repo>`.
   - Temporary bypass for auto-sync on push: `SKIP_PR_SYNC=1 git push`.
 
 ## Architecture decisions (ADRs)
@@ -63,6 +59,6 @@
 - Add a new `[x.y.z]` section only when you ship a release.
 - Do not add several version sections for the same unreleased work, and do not update the changelog more than once per day.
 - For small or internal-only changes, you can skip the changelog by putting **`[skip changelog]`** or **`skip-changelog`** in the PR title or commit message. Details: [ADR 0013](docs/adr/0013-changelog-and-release-notes.html).
-- **LLM draft (optional):** `make changelog-draft` writes `changelog-llm-draft.md` (gitignored); copy bullets into `CHANGELOG.md` under `[Unreleased]`. `make llm-ping` checks the API key. Override branch: `make changelog-draft CHANGELOG_HEAD=feature/foo`. Commits only: `make changelog-draft CHANGELOG_DRAFT_FLAGS=`. Offline preview: `python scripts/changelog_draft.py --print-log`. More: [ADR 0013](docs/adr/0013-changelog-and-release-notes.html#llm-draft-workflow).
+- **LLM draft (optional):** run `python scripts/changelog_draft.py` to write `changelog-llm-draft.md` (gitignored), then copy bullets into `CHANGELOG.md` under `[Unreleased]`. Offline preview: `python scripts/changelog_draft.py --print-log`. More: [ADR 0013](docs/adr/0013-changelog-and-release-notes.html#llm-draft-workflow).
 
 ## Further reading

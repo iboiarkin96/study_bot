@@ -1,0 +1,223 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   screen-spec.css — shared styling for screen specification pages.
+   Loaded only by pages under docs/internal/front/screens/.
+   Designed to fit the docs/ design system (uses --accent, --line, --card,
+   --text, --muted, --bg from docs.css / docs-theme.css).
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── At-a-glance meta block ────────────────────────────────────────────── */
+.screen-meta {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 6px 18px;
+  margin: 0;
+  font-size: 0.92rem;
+  align-items: baseline;
+}
+.screen-meta dt {
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  padding-top: 4px;
+}
+.screen-meta dd { margin: 0; }
+
+@media (max-width: 640px) {
+  .screen-meta { grid-template-columns: 1fr; gap: 2px 0; }
+  .screen-meta dt { padding-top: 8px; }
+}
+
+/* ── Status badge (stable / in-progress / draft / deprecated) ──────────── */
+.screen-status {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: 0.04em;
+  border: 1px solid currentColor;
+}
+
+.screen-status--stable {
+  color: #16a34a;
+  background: color-mix(in srgb, #16a34a 12%, transparent);
+}
+
+.screen-status--in-progress {
+  color: #d97706;
+  background: color-mix(in srgb, #d97706 12%, transparent);
+}
+
+.screen-status--draft {
+  color: #6366f1;
+  background: color-mix(in srgb, #6366f1 12%, transparent);
+}
+
+.screen-status--deprecated {
+  color: #ef4444;
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+}
+
+/* ── Visual gallery ────────────────────────────────────────────────────── */
+.screen-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 8px 0 0;
+}
+
+.screen-gallery__item {
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen-gallery__item a {
+  display: block;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--bg) 80%, var(--card));
+}
+
+.screen-gallery__item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: color-mix(in srgb, var(--bg) 80%, var(--card));
+}
+
+.screen-gallery__item figcaption {
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.02em;
+  border-top: 1px solid var(--line);
+}
+
+/* ── Placeholder variant (template demo, no real image) ───────────────── */
+.screen-gallery__item--placeholder { border-style: dashed; }
+.screen-gallery__placeholder {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: color-mix(in srgb, var(--bg) 88%, var(--card));
+  background-image: linear-gradient(135deg,
+    color-mix(in srgb, var(--line) 35%, transparent) 0,
+    color-mix(in srgb, var(--line) 35%, transparent) 1px,
+    transparent 1px,
+    transparent 12px);
+  text-align: center;
+}
+.screen-gallery__placeholder code {
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.screen-gallery__placeholder-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+/* ── Anatomy diagram ───────────────────────────────────────────────────── */
+.anatomy-figure {
+  margin: 8px 0 0;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.anatomy-figure svg { display: block; width: 100%; height: auto; }
+.anatomy-figure figcaption {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.anatomy-legend {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 6px 18px;
+}
+.anatomy-legend li {
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.anatomy-legend .num {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  color: var(--accent);
+  margin-right: 8px;
+  vertical-align: -3px;
+}
+
+/* ── Behavior matrix table ─────────────────────────────────────────────── */
+.screen-behavior {
+  width: 100%;
+}
+.screen-behavior th,
+.screen-behavior td {
+  vertical-align: top;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.screen-behavior td:first-child {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ── Timing budget grid ────────────────────────────────────────────────── */
+.timing-grid {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 6px 14px;
+  font-size: 0.88rem;
+  align-items: baseline;
+  margin: 0;
+}
+.timing-grid dt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.timing-grid dd { margin: 0; }
+
+@media (max-width: 640px) {
+  .timing-grid { grid-template-columns: 1fr; gap: 1px 0; }
+  .timing-grid dt { padding-top: 6px; }
+}

@@ -135,57 +135,51 @@
     const relPath = currentDocsRelPath();
     const fromDir = relPath.includes("/") ? relPath.slice(0, relPath.lastIndexOf("/")) : "";
 
-    const knownEditors = ids
-      .map((pid) => personById(pid))
-      .filter(Boolean);
-    const stacked = knownEditors
-      .slice(0, 3)
-      .map((p) => {
+    const VISIBLE_MAX = 3;
+
+    function editorItem(pid, overflow) {
+      const p = personById(pid);
+      const overflowClass = overflow ? " docs-page-meta__editor--overflow" : "";
+      if (p) {
         const profileHref = relHref(fromDir, `internal/portal/people/${p.slug}/index.html`);
         const photoHref = `${docsRootPrefixFromPage()}${p.photo}`;
-        return `<a class="docs-page-meta__stack-item" href="${profileHref}" aria-label="${escapeHtml(p.displayName)}">
-  <img class="docs-page-meta__stack-avatar" src="${photoHref}" width="34" height="34" alt="" />
-</a>`;
-      })
-      .join("");
-    const extra = knownEditors.length > 3 ? `<span class="docs-page-meta__stack-extra">+${knownEditors.length - 3}</span>` : "";
-    const stackHtml =
-      knownEditors.length > 0
-        ? `<div class="docs-page-meta__stack" aria-label="Editors overview">${stacked}${extra}</div>`
-        : "";
-
-    const editorsHtml = ids
-      .map((pid) => {
-        const p = personById(pid);
-        if (p) {
-          const profileHref = relHref(fromDir, `internal/portal/people/${p.slug}/index.html`);
-          const photoHref = `${docsRootPrefixFromPage()}${p.photo}`;
-          const name = p.displayName;
-          return `<li class="docs-page-meta__editor">
+        const name = p.displayName;
+        return `<li class="docs-page-meta__editor${overflowClass}">
   <a class="docs-page-meta__avatar-link" href="${profileHref}">
     <img class="docs-page-meta__avatar" src="${photoHref}" width="38" height="38" alt="" />
   </a>
   <a class="docs-page-meta__editor-name-link" href="${profileHref}">${escapeHtml(name)}</a>
 </li>`;
-        }
-        return `<li class="docs-page-meta__editor" role="status">Unknown person id <code>${escapeHtml(pid)}</code> — add a profile under <code>docs/internal/portal/people/</code> with this <code>data-person-id</code> and run <code>make docs-fix</code>.</li>`;
-      })
-      .join("");
-
-    mount.innerHTML = `<section class="docs-page-meta docs-page-meta--premium" aria-labelledby="docs-page-meta-title">
-  <button type="button" class="docs-page-meta__title docs-page-meta__toggle" id="docs-page-meta-title" aria-expanded="false" aria-controls="docs-page-meta-list">Edited by</button>
-  ${stackHtml}
-  <ul class="docs-page-meta__editors" id="docs-page-meta-list" hidden>${editorsHtml}</ul>
-</section>`;
-    const toggle = mount.querySelector(".docs-page-meta__toggle");
-    const list = mount.querySelector("#docs-page-meta-list");
-    if (toggle && list) {
-      toggle.addEventListener("click", () => {
-        const isOpen = !list.hidden;
-        list.hidden = isOpen;
-        toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
-      });
+      }
+      return `<li class="docs-page-meta__editor${overflowClass}" role="status">Unknown person id <code>${escapeHtml(pid)}</code> — add a profile under <code>docs/internal/portal/people/</code> with this <code>data-person-id</code> and run <code>make docs-fix</code>.</li>`;
     }
+
+    const visibleIds = ids.slice(0, VISIBLE_MAX);
+    const overflowIds = ids.slice(VISIBLE_MAX);
+    const editorsHtml = visibleIds.map((pid) => editorItem(pid, false)).join("") +
+      overflowIds.map((pid) => editorItem(pid, true)).join("");
+
+    const moreHtml = overflowIds.length > 0
+      ? `<li class="docs-page-meta__more"><button type="button" class="docs-page-meta__more-btn">+${overflowIds.length} more</button></li>`
+      : "";
+
+    mount.innerHTML = `<section class="docs-page-meta docs-page-meta--premium" aria-label="Page maintainers">
+  <span class="docs-page-meta__title">Maintained by</span>
+  <ul class="docs-page-meta__editors">${editorsHtml}${moreHtml}</ul>
+</section>`;
+
+    if (overflowIds.length > 0) {
+      const moreBtn = mount.querySelector(".docs-page-meta__more-btn");
+      const moreItem = mount.querySelector(".docs-page-meta__more");
+      const list = mount.querySelector(".docs-page-meta__editors");
+      if (moreBtn && list) {
+        moreBtn.addEventListener("click", () => {
+          list.classList.add("docs-page-meta__editors--expanded");
+          moreItem.remove();
+        });
+      }
+    }
+
     mount.hidden = false;
   }
 
@@ -370,7 +364,7 @@
       return;
     }
     mount.innerHTML = `<div class="portal-skeleton-grid" aria-hidden="true"><span></span><span></span><span></span></div>`;
-    const fromDir = "internal/portal";
+    const fromDir = "portal";
     const people = getPortalPeople();
 
     const presentKeys = collectGroupKeysPresent(people);

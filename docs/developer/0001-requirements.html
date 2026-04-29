@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,16 +16,18 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Developer Requirements Guide</h1>
+    <h1 class="internal-h1--accent-tail">Developer Requirements Guide</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section id="overview" class="card">
+    <section class="docs-page-hero" id="overview" aria-labelledby="overview">
       <h2>Overview</h2>
       <p>How we map product requirements to code and tests.</p>
     </section>
     <section class="card">
       <h2>Functional requirements</h2>
-      <p>Product-level requirements: <a href="../internal/analysis/system-design.html">System design</a> → <strong>Functional Requirements</strong>.</p>
+      <p>Product-level requirements: <a href="../internal/analysis/system-design.html">System design</a> →
+        <strong>Functional Requirements</strong>.
+      </p>
       <p>When you implement an endpoint:</p>
       <ul>
         <li>Tie it to at least one stated functional requirement.</li>
@@ -35,14 +37,17 @@
     </section>
     <section class="card">
       <h2>Non-functional requirements (NFR)</h2>
-      <p>Non-functional requirements: <a href="../internal/analysis/system-design.html#dev-nfr"><code>docs/internal/analysis/system-design.html#dev-nfr</code></a>.</p>
+      <p>Non-functional requirements: <a href="../internal/analysis/system-design.html#dev-nfr"><code>docs/internal/analysis/system-design.html#dev-nfr</code></a>.
+      </p>
       <p>Engineering checklist:</p>
       <ul>
         <li><strong>Performance:</strong> avoid N+1 queries and needless serialization work.</li>
         <li><strong>Reliability:</strong> use transactions; roll back on failure.</li>
         <li><strong>Maintainability:</strong> keep layering strict (<code>api → service → repository</code>).</li>
         <li><strong>Observability:</strong> request and business logs are structured and useful for debugging.</li>
-        <li><strong>Environments:</strong> safe defaults differ by profile (<code>dev</code> / <code>qa</code> / <code>prod</code>).</li>
+        <li><strong>Environments:</strong> safe defaults differ by profile (<code>dev</code> / <code>qa</code> /
+          <code>prod</code>).
+        </li>
         <li><strong>Contracts:</strong> change APIs and errors in additive ways when possible.</li>
         <li><strong>Idempotent writes:</strong> retries must dedupe safely with clear rules.</li>
       </ul>
@@ -92,6 +97,10 @@
     </section>
 
     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+      Found a bug? Report issue
+    </button>
+    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
 </body></html>

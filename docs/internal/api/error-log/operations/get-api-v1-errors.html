@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+<html lang="en">
 
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GET /api/v1/errors — Error log — Study App</title>
@@ -11,102 +12,528 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation"
+  data-spec-status="draft" data-spec-owner="ivan-boyarkin" data-spec-operation-id="listErrorLogs">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>GET /api/v1/errors</h1>
+        <h1 class="internal-h1--accent-tail">GET /api/v1/errors</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">Error log</section>
-        <section class="card">
+        <p class="internal-doc-entity">Error log</p>
+
+        <div class="internal-http-tablet">
           <span class="badge badge--method-get">GET</span>
           <code class="internal-http-tablet__path">/api/v1/errors</code>
-        </section>
-        <p class="lead">
-          <strong>Specification.</strong> Intended: paginated list of error-log rows for a user, newest first. Response
-          items include optional <code>conspectus_uuid</code> when the entry was linked to a conspectus. Planned
-          <code>operationId</code>: <code>listErrorLogs</code>.
-        </p>
-        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>listErrorLogs</code></p>
+        </div>
 
-        <section class="card">
-          <h2>Query parameters</h2>
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+            <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">operationId</span>
+            <code>listErrorLogs</code></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-04-29">2026-04-29</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+            <code>v1</code></span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Required: <code>system_user_id</code>, <code>system_uuid</code>. Optional: <code>limit</code> (1–200, default
-            50), <code>offset</code> (≥ 0, default 0).
+            List the learner's <strong>learning errors</strong>, optionally filtered by
+            <code>conspectus_uuid</code>. Read-only; bare array, ≤ 100 items per call (per
+            <a href="../../_shared/pagination.html">shared pagination</a>).
           </p>
-          <p><strong>Success:</strong> <code>200 OK</code> — <code>ErrorLogListResponse</code> (<code>items</code>,
-            <code>total</code>, <code>limit</code>, <code>offset</code>). No idempotency.</p>
-          </section>
+        </section>
 
-          <section class="card">
-            <h2>Errors</h2>
-            <p><code>404</code> — <code>USER_404</code> if user missing. Middleware for <code>401</code> / <code>429</code>.</p>
-          </section>
-
-          <section class="card">
-            <h2>Related hub</h2>
-            <p><a href="../index.html#error-log-op-listErrorLogs">Error log hub — this operation</a></p>
-          </section>
-
-          <p class="small">
-            <a href="../index.html">← Error log hub</a>
+        <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+          <h2>1. Business context</h2>
+          <p>
+            Powers the “open loops” surface in the client UI: the queue of weak cues / mistakes
+            the learner promised to address. Filtering by
+            <code>conspectus_uuid</code> drives the in-note error sidebar so the next Transform
+            pass is targeted.
           </p>
+        </section>
 
-          <section id="page-history" class="card">
+        <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+          <h2>2. User stories</h2>
+          <ul>
+            <li><strong>US-ERR-LIST-1.</strong> As a <em>learner</em>, I want to see all
+              outstanding errors so I can plan the next Transform pass.</li>
+            <li><strong>US-ERR-LIST-2.</strong> As a <em>learner</em>, viewing a conspectus I
+              want to see only errors tied to that note.</li>
+          </ul>
+        </section>
 
-            <h2>Page history</h2>
+        <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria"
+          data-spec-required="true">
+          <h2>3. Acceptance criteria (Given / When / Then)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID &amp; scenario</th>
+                  <th>Given</th>
+                  <th>When</th>
+                  <th>Then</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>AC-ERR-LIST-001</code><br>
+                    <span class="small">All errors.</span>
+                  </td>
+                  <td>U has 4 errors (mixed standalone and linked).</td>
+                  <td>GET without filters.</td>
+                  <td><code>200 OK</code> with 4 items, ordered
+                    <code>created_at DESC, error_uuid DESC</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>AC-ERR-LIST-002</code><br>
+                    <span class="small">Filter by conspectus.</span>
+                  </td>
+                  <td>U has 4 errors, 2 tied to conspectus C.</td>
+                  <td>GET <code>?conspectus_uuid=C</code>.</td>
+                  <td><code>200 OK</code> with the 2 linked items.</td>
+                </tr>
+                <tr>
+                  <td><code>AC-ERR-LIST-003</code><br>
+                    <span class="small">Filter by another user's conspectus.</span>
+                  </td>
+                  <td>Conspectus C owned by U1; request resolves to U2.</td>
+                  <td>GET as U2 with
+                    <code>?conspectus_uuid=C</code>.
+                  </td>
+                  <td><code>200 OK</code> with <code>[]</code> (no leak; treat as “learner has
+                    no errors for that ID”).</td>
+                </tr>
+                <tr>
+                  <td><code>AC-ERR-LIST-004</code><br>
+                    <span class="small">User not found.</span>
+                  </td>
+                  <td>No user matches the query composite.</td>
+                  <td>GET.</td>
+                  <td><code>404 USER_404</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>AC-ERR-LIST-005</code><br>
+                    <span class="small">Cap at 100.</span>
+                  </td>
+                  <td>U has 250 errors.</td>
+                  <td>GET.</td>
+                  <td>Exactly 100 items (newest 100).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <section class="card" id="functional-requirements" data-spec-section="functional-requirements"
+          data-spec-required="true">
+          <h2>4. Functional requirements</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Short description</th>
+                  <th>Detailed characteristic</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>FR-ERR-LIST-001</code></td>
+                  <td>Resolve owner from query.</td>
+                  <td>Composite key resolution; <code>404 USER_404</code> when not
+                    found.</td>
+                </tr>
+                <tr>
+                  <td><code>FR-ERR-LIST-002</code></td>
+                  <td>Implicit owner scope.</td>
+                  <td><code>WHERE owner_client_uuid = ?</code>; cross-tenant rows are not
+                    visible.</td>
+                </tr>
+                <tr>
+                  <td><code>FR-ERR-LIST-003</code></td>
+                  <td>Optional <code>conspectus_uuid</code> filter.</td>
+                  <td><code>AND conspectus_uuid = ?</code>; if the conspectus belongs to
+                    another tenant the query naturally returns zero rows (no leak).</td>
+                </tr>
+                <tr>
+                  <td><code>FR-ERR-LIST-004</code></td>
+                  <td>Deterministic ordering.</td>
+                  <td><code>ORDER BY created_at DESC, error_uuid DESC</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>FR-ERR-LIST-005</code></td>
+                  <td>Cap at 100.</td>
+                  <td>Hard <code>LIMIT 100</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>FR-ERR-LIST-006</code></td>
+                  <td>Bare array response.</td>
+                  <td>JSON array of <code>ErrorLogResponse</code>; empty array allowed.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-              <table class="docs-page-history">
+        <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements"
+          data-spec-required="true">
+          <h2>5. Non-functional requirements</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Short description</th>
+                  <th>Detailed characteristic</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>NFR-ERR-LIST-001</code></td>
+                  <td>Latency.</td>
+                  <td>P95 ≤ 150 ms.</td>
+                </tr>
+                <tr>
+                  <td><code>NFR-ERR-LIST-002</code></td>
+                  <td>Index usage.</td>
+                  <td>Composite <code>(owner_client_uuid, created_at DESC)</code>; optional
+                    secondary <code>(conspectus_uuid, created_at DESC)</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>NFR-ERR-LIST-003</code></td>
+                  <td>Cap.</td>
+                  <td>Hard <code>LIMIT 100</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>NFR-ERR-LIST-004</code></td>
+                  <td>Read consistency.</td>
+                  <td>Default DB isolation.</td>
+                </tr>
+                <tr>
+                  <td><code>NFR-ERR-LIST-005</code></td>
+                  <td>Backwards compatibility.</td>
+                  <td>Adding query params is additive.</td>
+                </tr>
+                <tr>
+                  <td><code>NFR-ERR-LIST-006</code></td>
+                  <td>Observability.</td>
+                  <td>Standard <code>request_done</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>NFR-ERR-LIST-007</code></td>
+                  <td>Rate limit.</td>
+                  <td>Inherits global limit.</td>
+                </tr>
+                <tr>
+                  <td><code>NFR-ERR-LIST-008</code></td>
+                  <td>Cacheability.</td>
+                  <td>No caching in v1.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-                <thead>
+        <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+          <h2>6. Authorization &amp; permissions</h2>
+          <p>API key per <a href="../../_shared/auth.html">shared auth</a>; learner from query.
+            Result implicitly scoped to <code>owner_client_uuid</code>.</p>
+        </section>
 
-                  <tr>
+        <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+          <h2>7. Request contract</h2>
+          <h3>Headers</h3>
+          <dl class="internal-field-list">
+            <dt><code>X-API-Key</code>
+              <span class="badge badge--field-type">string</span>
+              <span class="badge badge--field-req">required</span>
+            </dt>
+            <dd>
+              <p>Tenant API key.</p>
+            </dd>
+          </dl>
 
-                    <th scope="col">Date</th>
+          <h3>Query parameters</h3>
+          <dl class="internal-field-list">
+            <dt><code>system_user_id</code>
+              <span class="badge badge--field-type">string</span>
+              <span class="badge badge--field-req">required</span>
+            </dt>
+            <dd>
+              <p>External user identifier.</p>
+            </dd>
+            <dt><code>system_uuid</code>
+              <span class="badge badge--field-type">string · uuid</span>
+              <span class="badge badge--field-req">required</span>
+            </dt>
+            <dd>
+              <p>External tenant UUID.</p>
+            </dd>
+            <dt><code>conspectus_uuid</code>
+              <span class="badge badge--field-type">string · uuid</span>
+              <span class="badge badge--field-opt">optional</span>
+            </dt>
+            <dd>
+              <p>Restrict to errors linked to this conspectus.</p>
+            </dd>
+          </dl>
 
-                    <th scope="col">Change</th>
+          <h3>Example request</h3>
+          <pre><code>GET /api/v1/errors?system_user_id=learner-01&amp;system_uuid=b2c3d4e5-0002-4000-8000-000000000002 HTTP/1.1
+X-API-Key: sk_live_***
+</code></pre>
+        </section>
 
-                    <th scope="col">Author</th>
+        <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+          <h2>8. Response contract</h2>
+          <h3>200 OK — array of <code>ErrorLogResponse</code></h3>
+          <p>Same shape as the
+            <a href="./post-api-v1-errors.html#response-contract">create response</a>; bare
+            array.
+          </p>
+          <pre><code>HTTP/1.1 200 OK
+Content-Type: application/json
 
-                  </tr>
+[
+  {
+    "error_uuid": "0a1b2c3d-4e5f-6789-abcd-0123456789ab",
+    "message": "Mixed up condensation and precipitation; need a clearer cue.",
+    "conspectus_uuid": "9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001",
+    "review_log_id": null,
+    "created_at": "2026-04-29T11:35:00Z"
+  }
+]
+</code></pre>
+        </section>
 
-                </thead>
+        <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+          <h2>10. Side effects</h2>
+          <p>None. Read-only.</p>
+        </section>
 
-                <tbody>
+        <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency"
+          data-spec-required="true">
+          <h2>11. Idempotency &amp; concurrency</h2>
+          <p>Not applicable — read-only.</p>
+        </section>
 
-                  <tr>
+        <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+          <h2>12. Error catalog</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+            <table>
+              <thead>
+                <tr>
+                  <th>HTTP</th>
+                  <th>Code</th>
+                  <th>Key</th>
+                  <th>When</th>
+                  <th>Log event (level)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>401</code></td>
+                  <td><code>COMMON_401</code></td>
+                  <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                  <td>Missing/invalid API key.</td>
+                  <td>middleware</td>
+                </tr>
+                <tr>
+                  <td><code>404</code></td>
+                  <td><code>USER_404</code></td>
+                  <td><code>USER_NOT_FOUND</code></td>
+                  <td>No user.</td>
+                  <td><code>error_log_list_user_not_found</code> (info)</td>
+                </tr>
+                <tr>
+                  <td><code>422</code></td>
+                  <td><code>COMMON_000</code></td>
+                  <td><code>COMMON_VALIDATION_ERROR</code></td>
+                  <td>Bad UUID, missing required query.</td>
+                  <td><code>validation_error</code> (warn)</td>
+                </tr>
+                <tr>
+                  <td><code>429</code></td>
+                  <td><code>COMMON_429</code></td>
+                  <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                  <td>Rate limit.</td>
+                  <td>middleware</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+        <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+          <h2>13. Edge cases checklist</h2>
+          <ul>
+            <li><strong>Filter by conspectus that belongs to another tenant.</strong>
+              <code>200 []</code> (no leak).
+            </li>
+            <li><strong>250 errors.</strong> Cap at 100; integrator polls again with
+              <code>created_at</code> filter (added later).
+            </li>
+            <li><strong>Conspectus deleted (FK SET NULL).</strong> Errors still appear in the
+              global list with
+              <code>conspectus_uuid=null</code>.
+            </li>
+            <li><strong>Idempotency-Key sent.</strong> Silently ignored.</li>
+          </ul>
+        </section>
 
-                    <td>Added Page history section (repository baseline).</td>
+        <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+          <h2>14. Observability requirements</h2>
+          <h3>Log events</h3>
+          <ul>
+            <li>Standard <code>request_done</code>.</li>
+            <li><code>error_log_list_user_not_found</code> (info) on
+              <code>404</code>.
+            </li>
+          </ul>
+          <h3>Metrics</h3>
+          <ul>
+            <li><code>error_log_list_total</code> (counter).</li>
+            <li><code>error_log_list_duration_seconds</code> (histogram).</li>
+            <li><code>error_log_list_returned_count</code> (histogram).</li>
+          </ul>
+          <h3>Alerts</h3>
+          <ul>
+            <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+          </ul>
+        </section>
 
-                    <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+        <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+          <h2>15. Test plan</h2>
+          <ul>
+            <li><strong>Unit:</strong> query builder.</li>
+            <li><strong>Integration:</strong> AC-001..AC-005.</li>
+            <li><strong>Contract:</strong> Schemathesis on <code>listErrorLogs</code>.</li>
+            <li><strong>End-to-end:</strong> seed errors → list returns expected order.</li>
+          </ul>
+        </section>
 
-                  </tr>
+        <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints"
+          data-spec-required="true">
+          <h2>16. OpenAPI authoring hints</h2>
+          <ul>
+            <li><strong>operationId:</strong> <code>listErrorLogs</code>.</li>
+            <li><strong>Tags:</strong> <code>ErrorLog</code>.</li>
+            <li><strong>Reused:</strong> <code>ErrorLogResponse</code>.</li>
+            <li><strong>Examples:</strong> empty list, with-FK list.</li>
+          </ul>
+        </section>
 
-                </tbody>
+        <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+          <h2>17. Open questions</h2>
+          <ul>
+            <li><strong>Q1.</strong> Cursor pagination — when needed? Trigger as for due-list:
+              real users hitting the cap.</li>
+            <li><strong>Q2.</strong> Resolved/unresolved flag? v1: errors are append-only;
+              "done" status is a future feature.</li>
+          </ul>
+        </section>
 
-              </table>
+        <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+          <h2>18. Out of scope</h2>
+          <ul>
+            <li>Full-text search inside <code>message</code>.</li>
+            <li>Cross-tenant admin queries.</li>
+            <li>Cursor pagination (Q1).</li>
+            <li>Resolved/unresolved filter (Q2).</li>
+          </ul>
+        </section>
 
-            </div>
+        <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+          <h2>19. Traceability</h2>
+          <ul>
+            <li><strong>System design:</strong>
+              <a href="../../../analysis/system-design.html#persistence-model">persistence —
+                learning_errors</a>.
+            </li>
+            <li><strong>ADRs:</strong>
+              <a href="../../../adr/0003-error-contract-governance.html">0003</a>,
+              <a href="../../../adr/0005-api-security-defaults.html">0005</a>.
+            </li>
+            <li><strong>OpenAPI:</strong> <code>listErrorLogs</code>.</li>
+          </ul>
+        </section>
 
-          </section>
+        <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+          <h2>20. Spec changelog</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Change</th>
+                  <th>Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>additive</td>
+                  <td>Phase 5 rollout: full analyst spec.</td>
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                      Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
+        <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Change</th>
+                  <th>Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 5: full rewrite.</td>
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                      Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
     </div>
+  </div>
 
-  </body></html>
+</body>
+
+</html>

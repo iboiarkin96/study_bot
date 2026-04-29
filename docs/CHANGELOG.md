@@ -183,7 +183,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - ADR **Status log**: one attribute on `<main>` — `data-adr-weight` (−1…7); **current status** and the linear 8-step log derive from that value. [ADR template](adr/0000-template.html), [ADR 0018](adr/0018-adr-lifecycle-ratification-and-badges.html), `docs/assets/docs-nav.js`, `docs/assets/docs.css`.
 
-- API reference generation: `scripts/normalize_pdoc_output.py` strips unstable `at 0x…` fragments from pdoc HTML so `make docs-check` stays reproducible; `make api-docs` runs with `PYTHONHASHSEED=0`.
+- API reference generation: `scripts/normalize_pdoc_output.py` strips unstable `at 0x…` fragments from pdoc HTML so `make docs-check` stays reproducible; pdoc generation in `make docs-fix` runs with `PYTHONHASHSEED=0`.
 
 - PlantUML under `docs/uml/`: architecture and sequence `.puml` sources include the shared style; rendered SVGs in `docs/uml/rendered/` updated to match ([ADR 0020](adr/0020-c4-plantuml-diagram-style-and-conventions.html)).
 

@@ -3,11 +3,12 @@
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Screen spec template</title>
+  <title>Screen spec template — international standard</title>
   <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
   <link rel="stylesheet" href="../../../assets/docs.css" />
   <link rel="stylesheet" href="../../../assets/docs-theme.css">
   <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <link rel="stylesheet" href="./screen-spec.css">
   <script defer src="../../../assets/internal-sidebar.js"></script>
   <script defer src="../../../assets/docs-nav.js"></script>
   <script defer src="../../../assets/docs-portal-data.js"></script>
@@ -21,110 +22,446 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Screen spec template</h1>
+
+        <!-- ============================================================
+        1. Title block.
+        Replace <screen name>. Use a clear, neutral noun phrase.
+        ============================================================ -->
+        <h1 class="internal-h1--accent-tail">Screen spec: &lt;screen name&gt; <span class="docs-page-type docs-page-type--screen">Screen</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
-        <section class="card" id="overview">
-          <h2>Overview</h2>
-          <p>
-            Use this template to document one critical frontend screen. Duplicate this file, rename it to
-            <code>docs-screen-*.html</code>, and replace all placeholder content.
+        <!-- ============================================================
+        2. At-a-glance.
+        Status, owner, audience, primary URL, last verified date,
+        tracked feature IDs. Modeled on Atlassian / GitHub Primer
+        "front matter" pattern: a reader who scans only this card
+        must know whether the spec applies to them.
+        ============================================================ -->
+        <section class="docs-page-hero" id="overview">
+          <h2>At a glance</h2>
+          <dl class="screen-meta">
+            <dt>Status</dt>
+            <dd>
+              <span class="screen-status screen-status--stable">stable</span>
+              <span class="small">— allowed values: <code>draft</code>, <code>in-progress</code>, <code>stable</code>, <code>deprecated</code>.</span>
+            </dd>
+            <dt>Primary URL</dt>
+            <dd><code>docs/&lt;path-to-screen&gt;.html</code> <span class="small">— replace with a live <code>&lt;a href&gt;</code> when you copy this template.</span></dd>
+            <dt>Owner</dt>
+            <dd><code>&lt;Name&gt;</code> <span class="small">— link to <code>../../portal/people/&lt;slug&gt;/index.html</code> in the real spec.</span></dd>
+            <dt>Audience</dt>
+            <dd>&lt;Who reads / uses this screen, plain-language.&gt;</dd>
+            <dt>Tracked features</dt>
+            <dd><code>DFEAT-xxx</code> — see <a href="../docs-frontend-architecture-map.html#feature-implementation-ledger">feature ledger</a>.</dd>
+            <dt>Last verified</dt>
+            <dd><time datetime="YYYY-MM-DD">YYYY-MM-DD</time></dd>
+          </dl>
+          <p class="small">
+            <strong>Glossary:</strong> any unfamiliar term in this spec is defined in the
+            <a href="../docs-frontend-glossary.html">docs frontend glossary</a>. Look it up there before guessing.
           </p>
-          <ul>
-            <li><strong>Screen:</strong> [screen name]</li>
-            <li><strong>Primary URL/path:</strong> [URL or file path]</li>
-            <li><strong>Primary owner:</strong> [team/person]</li>
-            <li><strong>Last verified behavior date:</strong> [YYYY-MM-DD]</li>
-          </ul>
         </section>
 
+        <!-- ============================================================
+        3. Visual gallery (REQUIRED).
+        Real screenshots, not mockups. Cover at minimum:
+        - Desktop default state, light theme
+        - Desktop default state, dark theme
+        - Tablet (≤1024px) breakpoint
+        - Mobile (≤640px) breakpoint
+        - Each transient state (intro, modal, loading, empty, error)
+        Images live in ./assets/ alongside this file.
+        Pixel-perfect alignment is not required; recency is.
+        Update images in the same PR that changes the screen.
+        ============================================================ -->
+        <section class="card" id="gallery">
+          <h2>Visual gallery</h2>
+          <p class="small">
+            Screenshots are the primary visual reference. Captured from the live page; replace whenever the screen
+            changes. Each image lives in <code>./assets/</code> next to this file. Image filenames follow
+            <code>&lt;screen-id&gt;-&lt;variant&gt;.png</code>.
+          </p>
+          <div class="screen-gallery">
+            <figure class="screen-gallery__item screen-gallery__item--placeholder" aria-label="Placeholder · desktop light">
+              <div class="screen-gallery__placeholder">
+                <span class="screen-gallery__placeholder-tag">Screenshot</span>
+                <code>&lt;screen-id&gt;-desktop-light.png</code>
+              </div>
+              <figcaption>Desktop · light · default</figcaption>
+            </figure>
+            <figure class="screen-gallery__item screen-gallery__item--placeholder" aria-label="Placeholder · desktop dark">
+              <div class="screen-gallery__placeholder">
+                <span class="screen-gallery__placeholder-tag">Screenshot</span>
+                <code>&lt;screen-id&gt;-desktop-dark.png</code>
+              </div>
+              <figcaption>Desktop · dark · default</figcaption>
+            </figure>
+            <figure class="screen-gallery__item screen-gallery__item--placeholder" aria-label="Placeholder · tablet">
+              <div class="screen-gallery__placeholder">
+                <span class="screen-gallery__placeholder-tag">Screenshot</span>
+                <code>&lt;screen-id&gt;-tablet.png</code>
+              </div>
+              <figcaption>Tablet · 1024×900</figcaption>
+            </figure>
+            <figure class="screen-gallery__item screen-gallery__item--placeholder" aria-label="Placeholder · mobile">
+              <div class="screen-gallery__placeholder">
+                <span class="screen-gallery__placeholder-tag">Screenshot</span>
+                <code>&lt;screen-id&gt;-mobile.png</code>
+              </div>
+              <figcaption>Mobile · 390×844</figcaption>
+            </figure>
+            <!-- In a real spec, replace each placeholder with a real <figure>:
+            <figure class="screen-gallery__item">
+              <a href="./assets/<screen-id>-desktop-light.png" target="_blank" rel="noopener">
+                <img src="./assets/<screen-id>-desktop-light.png" alt="..." loading="lazy" />
+              </a>
+              <figcaption>Desktop · light · default</figcaption>
+            </figure>
+            Repeat for each transient state: intro, modal, loading, empty, error, etc. -->
+          </div>
+        </section>
+
+        <!-- ============================================================
+        4. Anatomy diagram.
+        Annotated SVG with numbered callouts; legend below.
+        Anatomy describes structure (what's where), not state.
+        For multi-phase screens (intro + persistent), stack two
+        panels in one SVG.
+        ============================================================ -->
+        <section class="card" id="anatomy">
+          <h2>Anatomy</h2>
+          <p>
+            Numbered callouts are referenced throughout this spec. Edit the SVG in place — never replace it with a
+            raster image.
+          </p>
+          <figure class="anatomy-figure" aria-labelledby="anatomy-caption">
+            <svg viewBox="0 0 880 540" role="img" aria-labelledby="anatomy-svg-title anatomy-svg-desc" xmlns="http://www.w3.org/2000/svg">
+              <title id="anatomy-svg-title">&lt;screen name&gt; anatomy</title>
+              <desc id="anatomy-svg-desc">&lt;Plain-language description of the layout for screen readers.&gt;</desc>
+              <!-- Replace placeholder with real anatomy. Keep numbered circles in fbbf24 with 0b1220 text. -->
+              <rect x="20" y="20" width="840" height="500" rx="14" fill="#0b1220" stroke="#1b2a44"></rect>
+              <text x="40" y="48" font-family="ui-monospace, monospace" font-size="14" fill="#7dd3fc" font-weight="700">&lt;PHASE LABEL&gt;</text>
+              <g font-family="ui-monospace, monospace" font-size="13" fill="#fbbf24" font-weight="700">
+                <circle cx="80" cy="120" r="11" fill="#fbbf24"></circle><text x="80" y="125" text-anchor="middle" fill="#0b1220">1</text>
+                <circle cx="200" cy="200" r="11" fill="#fbbf24"></circle><text x="200" y="205" text-anchor="middle" fill="#0b1220">2</text>
+                <circle cx="400" cy="280" r="11" fill="#fbbf24"></circle><text x="400" y="285" text-anchor="middle" fill="#0b1220">3</text>
+              </g>
+            </svg>
+            <figcaption id="anatomy-caption">&lt;What the diagram shows in one sentence.&gt;</figcaption>
+          </figure>
+          <ol class="anatomy-legend">
+            <li><span class="num">1</span><strong>&lt;Region 1&gt;</strong> — &lt;what it contains and why.&gt;</li>
+            <li><span class="num">2</span><strong>&lt;Region 2&gt;</strong> — &lt;what it contains and why.&gt;</li>
+            <li><span class="num">3</span><strong>&lt;Region 3&gt;</strong> — &lt;what it contains and why.&gt;</li>
+          </ol>
+        </section>
+
+        <!-- ============================================================
+        5. Layout map.
+        Text walk-through of every region in reading order.
+        One bullet per region. CSS hook + purpose.
+        ============================================================ -->
         <section class="card" id="layout-map">
           <h2>Layout map</h2>
           <ol>
-            <li>[Region 1: what it contains and why]</li>
-            <li>[Region 2: what it contains and why]</li>
-            <li>[Region 3: what it contains and why]</li>
+            <li><strong>&lt;Region 1&gt;</strong> (<code>.&lt;css-hook&gt;</code>): &lt;what it does, primary content, behavior summary&gt;.</li>
+            <li><strong>&lt;Region 2&gt;</strong> (<code>.&lt;css-hook&gt;</code>): &lt;what it does&gt;.</li>
+            <li><strong>&lt;Region 3&gt;</strong> (<code>.&lt;css-hook&gt;</code>): &lt;what it does&gt;.</li>
           </ol>
         </section>
 
+        <!-- ============================================================
+        6. Behavior matrix.
+        States × triggers × outcomes. One row per state transition.
+        Every interactive element gets at least one row.
+        ============================================================ -->
+        <section class="card" id="behavior">
+          <h2>Behavior matrix</h2>
+          <table class="screen-behavior">
+            <thead>
+              <tr>
+                <th>Element</th>
+                <th>State</th>
+                <th>Trigger</th>
+                <th>Outcome</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&lt;Element&gt;</td>
+                <td>&lt;State A&gt;</td>
+                <td>&lt;What user / system does&gt;</td>
+                <td>&lt;What changes; class added; event dispatched&gt;</td>
+                <td>&lt;Edge cases / debounce / a11y&gt;</td>
+              </tr>
+              <tr>
+                <td>&lt;Element&gt;</td>
+                <td>&lt;State B&gt;</td>
+                <td>&lt;Trigger&gt;</td>
+                <td>&lt;Outcome&gt;</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ============================================================
+        7. Timing.
+        Required for any screen with multi-step animation, async
+        data loads, or transient overlays. List every milestone in
+        order with relative ms timestamps.
+        Skip this card if the screen is fully static.
+        ============================================================ -->
+        <section class="card" id="timing">
+          <h2>Timing budget</h2>
+          <dl class="timing-grid">
+            <dt>0 ms</dt><dd>&lt;What happens at first paint&gt;</dd>
+            <dt>+&lt;n&gt; ms</dt><dd>&lt;Next milestone&gt;</dd>
+            <dt>+&lt;n&gt; ms</dt><dd>&lt;Next milestone&gt;</dd>
+            <dt>+&lt;n&gt; ms (cap)</dt><dd>&lt;Hard upper-bound failsafe&gt;</dd>
+          </dl>
+        </section>
+
+        <!-- ============================================================
+        8. Data contract.
+        Every data-* attribute and class state used by the runtime.
+        Group by element / area. This is a CONTRACT — runtime code
+        relies on these names.
+        ============================================================ -->
         <section class="card" id="data-contract">
           <h2>Data contract</h2>
+          <h3>Markup hooks</h3>
           <ul>
-            <li><code>[data-attr or prop]</code> — [meaning, allowed values, constraints]</li>
-            <li><code>[data-attr or prop]</code> — [meaning, allowed values, constraints]</li>
+            <li><code>data-&lt;hook-name&gt;</code> — &lt;meaning, allowed values, who reads it&gt;.</li>
+            <li><code>data-&lt;hook-name&gt;</code> — &lt;meaning&gt;.</li>
+          </ul>
+          <h3>Class states</h3>
+          <ul>
+            <li><code>.&lt;module&gt;.is-&lt;state&gt;</code> — &lt;when applied, what it triggers&gt;.</li>
+          </ul>
+          <h3>Cross-module events</h3>
+          <ul>
+            <li><code>&lt;namespace:event-name&gt;</code> on <code>window</code> — &lt;when dispatched, who listens&gt;.</li>
           </ul>
         </section>
 
-        <section class="card" id="interaction-logic">
-          <h2>Interaction logic</h2>
-          <h3>Controls and behavior</h3>
+        <!-- ============================================================
+        9. Responsive behavior.
+        What changes at each breakpoint. List by descending width.
+        ============================================================ -->
+        <section class="card" id="responsive">
+          <h2>Responsive behavior</h2>
           <ul>
-            <li>[Control]: [what it changes, side effects, edge cases]</li>
-            <li>[Control]: [what it changes, side effects, edge cases]</li>
-          </ul>
-          <h3>State sync rules</h3>
-          <ul>
-            <li>[If A changes, B updates how?]</li>
-            <li>[How "custom" or non-preset states are represented]</li>
-          </ul>
-        </section>
-
-        <section class="card" id="sorting-ordering">
-          <h2>Sorting and ordering rules</h2>
-          <ul>
-            <li>[Primary order criterion]</li>
-            <li>[Secondary criterion]</li>
-            <li>[Final tie-break for deterministic output]</li>
+            <li><strong>≥1025 px (desktop)</strong>: &lt;layout description&gt;.</li>
+            <li><strong>641–1024 px (tablet)</strong>: &lt;what reflows, what hides&gt;.</li>
+            <li><strong>≤640 px (mobile)</strong>: &lt;what reflows, what hides&gt;.</li>
           </ul>
         </section>
 
-        <section class="card" id="view-modes">
-          <h2>View modes and responsiveness</h2>
-          <ul>
-            <li><strong>Desktop:</strong> [expected behavior]</li>
-            <li><strong>Tablet:</strong> [expected behavior]</li>
-            <li><strong>Mobile:</strong> [expected behavior]</li>
-          </ul>
+        <!-- ============================================================
+        10. Browser & device support matrix (REQUIRED).
+        Explicit minimum versions and device sizes the screen is
+        verified against. Mark fallbacks for unsupported features
+        (e.g., color-mix, view transitions, backdrop-filter).
+        Mirrors Atlassian, Polaris, and GitHub Primer per-component
+        support tables.
+        ============================================================ -->
+        <section class="card" id="browser-matrix">
+          <h2>Browser &amp; device support</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Engine / device</th>
+                <th scope="col">Minimum version</th>
+                <th scope="col">Verified state</th>
+                <th scope="col">Fallback</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Chromium (Chrome, Edge, Brave)</td>
+                <td>&lt;e.g. 110+&gt;</td>
+                <td>&lt;light + dark, all breakpoints&gt;</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>Firefox</td>
+                <td>&lt;e.g. 115+&gt;</td>
+                <td>&lt;states verified&gt;</td>
+                <td>&lt;e.g. no view-transitions API → instant swap&gt;</td>
+              </tr>
+              <tr>
+                <td>Safari (macOS)</td>
+                <td>&lt;e.g. 16.4+&gt;</td>
+                <td>&lt;states verified&gt;</td>
+                <td>&lt;e.g. backdrop-filter degrades to flat surface&gt;</td>
+              </tr>
+              <tr>
+                <td>Safari (iOS)</td>
+                <td>&lt;e.g. 16.4+ on 390×844&gt;</td>
+                <td>&lt;states verified&gt;</td>
+                <td>&lt;notes&gt;</td>
+              </tr>
+              <tr>
+                <td>Android Chrome</td>
+                <td>&lt;e.g. 120+ on 412×915&gt;</td>
+                <td>&lt;states verified&gt;</td>
+                <td>&lt;notes&gt;</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small">
+            "Verified state" — what was actually loaded and clicked, not what should theoretically work. Update the
+            row whenever the screen ships. Drop a row only when the engine is no longer supported portal-wide.
+          </p>
         </section>
 
-        <section class="card" id="validation-guardrails">
-          <h2>Validation and guardrails</h2>
+        <!-- ============================================================
+        11. Accessibility and motion policy (REQUIRED).
+        Reduced motion, ARIA, focus, contrast, theme handling, plus
+        per-component a11y notes. A screen-reader-only user must
+        still be able to use this screen.
+        ============================================================ -->
+        <section class="card" id="accessibility">
+          <h2>Accessibility and motion</h2>
+          <h3>Global policies</h3>
           <ul>
-            <li>[Validation rule, where implemented, and visual feedback]</li>
-            <li>[Error/fallback behavior]</li>
+            <li><strong><code>prefers-reduced-motion: reduce</code></strong> — &lt;what is disabled / simplified&gt;.</li>
+            <li><strong>Keyboard</strong> — &lt;tab order, key bindings, focus traps, skip-link target&gt;.</li>
+            <li><strong>ARIA</strong> — &lt;labels, roles, live regions, <code>aria-modal</code>, <code>aria-expanded</code>&gt;.</li>
+            <li><strong>Focus visibility</strong> — &lt;<code>:focus-visible</code> rule, outline color, contrast against surface&gt;.</li>
+            <li><strong>Contrast</strong> — &lt;WCAG AA verification notes; tools used (axe, Lighthouse)&gt;.</li>
+            <li><strong>Theme</strong> — &lt;light/dark behavior; pre-paint flicker mitigation&gt;.</li>
+            <li><strong>Screen-reader walkthrough</strong> — &lt;what NVDA/VoiceOver announces in reading order; any required overrides&gt;.</li>
           </ul>
+          <h3>Per-component accessibility notes</h3>
+          <p class="small">One row per interactive component on this screen. Skip purely decorative regions.</p>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Component</th>
+                <th scope="col">Role / ARIA</th>
+                <th scope="col">Keyboard</th>
+                <th scope="col">Reduced motion</th>
+                <th scope="col">Screen-reader announcement</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&lt;Component name (callout #N)&gt;</td>
+                <td>&lt;e.g. <code>role="dialog"</code>, <code>aria-modal="true"</code>&gt;</td>
+                <td>&lt;Tab/Shift-Tab loop, Esc closes, Enter activates&gt;</td>
+                <td>&lt;e.g. open instantly, no fade&gt;</td>
+                <td>&lt;e.g. "Search results, 12 items, item 1 of 12 highlighted"&gt;</td>
+              </tr>
+            </tbody>
+          </table>
         </section>
 
+        <!-- ============================================================
+        12. Do's and Don'ts (REQUIRED).
+        Anti-patterns and recommended patterns for THIS screen,
+        not general design advice. Each row is a concrete decision
+        a future contributor will face. Modeled on Material Design,
+        IBM Carbon, and Atlassian Design System guidance pages.
+        ============================================================ -->
+        <section class="card" id="dos-and-donts">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" style="width: 50%;">Do</th>
+                <th scope="col" style="width: 50%;">Don't</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&lt;Recommended pattern, with the user-facing reason. e.g. "Keep the CTA above the fold so first-paint reveals the next action."&gt;</td>
+                <td>&lt;Anti-pattern, with the failure mode it causes. e.g. "Don't push the CTA into a card below the hero — analytics show a 38% drop in click-through."&gt;</td>
+              </tr>
+              <tr>
+                <td>&lt;e.g. "Use the existing <code>.docs-callout--tip</code> for inline tips."&gt;</td>
+                <td>&lt;e.g. "Don't introduce a new tooltip variant; extend the inline-hints contract instead."&gt;</td>
+              </tr>
+              <tr>
+                <td>&lt;e.g. "Keep transient toasts dismissable via <kbd>Esc</kbd>."&gt;</td>
+                <td>&lt;e.g. "Don't auto-dismiss errors — users miss them and lose data."&gt;</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ============================================================
+        13. Where to change what.
+        File-by-file map of behavior to source. The whole point of a
+        screen spec is that a future engineer can land here and find
+        the right file in one read.
+        ============================================================ -->
         <section class="card" id="change-map">
           <h2>Where to change what</h2>
           <ul>
-            <li><code>[path/file-1]</code> — [markup/content]</li>
-            <li><code>[path/file-2]</code> — [logic/runtime behavior]</li>
-            <li><code>[path/file-3]</code> — [styling/responsive rules]</li>
+            <li><code>&lt;path/file.html&gt;</code> — markup, copy, mount placeholders.</li>
+            <li><code>&lt;path/file.css&gt;</code> — visual rules, breakpoints, motion policies.</li>
+            <li><code>&lt;path/file.js&gt;</code> — runtime logic, event wiring, state.</li>
+          </ul>
+          <h3>Tuning knobs</h3>
+          <ul>
+            <li><code>&lt;CONSTANT&gt;</code> in <code>&lt;file&gt;</code> — &lt;what it controls&gt;.</li>
           </ul>
         </section>
 
-        <section class="card" id="acceptance-checklist">
+        <!-- ============================================================
+        14. Acceptance checklist.
+        Items a reviewer ticks off after a change. Concrete
+        observations, not subjective ("the page looks good").
+        ============================================================ -->
+        <section class="card" id="acceptance">
           <h2>Acceptance checklist</h2>
           <ol>
-            <li>[Core interaction works in default state]</li>
-            <li>[Filter/sort/state sync works]</li>
-            <li>[No regressions in responsive breakpoints]</li>
-            <li>[Keyboard and basic accessibility checks pass]</li>
-            <li>[Linked documentation updated]</li>
+            <li>&lt;Concrete observable behavior 1&gt;.</li>
+            <li>&lt;Concrete observable behavior 2&gt;.</li>
+            <li>With <code>prefers-reduced-motion: reduce</code>: &lt;expected fallback&gt;.</li>
+            <li>Responsive: &lt;each breakpoint reflows correctly&gt;.</li>
+            <li>No console errors; no orphaned timers after navigation.</li>
+            <li>Glossary, architecture map, and other affected docs are updated in the same PR.</li>
+            <li>Screenshots in the gallery are up to date.</li>
           </ol>
         </section>
 
+        <!-- ============================================================
+        15. Known edges and design decisions.
+        Non-obvious choices, historical fixes, "why does it look
+        like that" explanations. The card every spec ends up
+        needing once it's been around for a while.
+        ============================================================ -->
+        <section class="card" id="known-edges">
+          <h2>Known edges and design decisions</h2>
+          <ul>
+            <li><strong>&lt;Decision title&gt;.</strong> &lt;What was tried, why it didn't work, what the current code does and why&gt;.</li>
+          </ul>
+        </section>
+
+        <!-- ============================================================
+        16. Related pages.
+        Cross-links to architecture map, glossary, sister specs.
+        ============================================================ -->
         <section class="card" id="related-pages">
           <h2>Related internal docs</h2>
           <ul>
             <li><a href="../docs-frontend-architecture-map.html">Docs frontend architecture map and feature inventory</a></li>
-            <li><a href="../docs-frontend-navigation-search-and-discovery.html">Docs frontend navigation, search, and discovery</a></li>
-            <li><a href="../documentation-style-guide.html">Documentation style guide and audit standard</a></li>
+            <li><a href="../docs-frontend-glossary.html">Docs frontend glossary</a></li>
+            <li><a href="../documentation-process.html">Documentation maintenance process</a></li>
+            <li><a href="../documentation-style-guide.html">Documentation style guide</a></li>
           </ul>
         </section>
 
+        <!-- ============================================================
+        17. Page history.
+        Required. Reverse chronological. Append on every meaningful
+        edit. Format enforced by the style guide.
+        ============================================================ -->
         <section class="card" id="page-history">
           <h2>Page history</h2>
           <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -138,9 +475,14 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><time datetime="2026-04-23">2026-04-23</time></td>
-                  <td>Created reusable screen-spec template for documenting high-value docs frontend screens.</td>
-                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added three required sections (Browser &amp; device support matrix, expanded Accessibility with per-component notes, Do's and Don'ts); replaced placeholder hrefs with <code>&lt;code&gt;</code> + SVG-styled gallery placeholders; added Screen badge to H1.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="YYYY-MM-DD">YYYY-MM-DD</time></td>
+                  <td>&lt;One-sentence summary of the change.&gt;</td>
+                  <td><code>&lt;Name&gt;</code> <span class="small">(link to <code>../../portal/people/&lt;slug&gt;/index.html</code>)</span></td>
                 </tr>
               </tbody>
             </table>

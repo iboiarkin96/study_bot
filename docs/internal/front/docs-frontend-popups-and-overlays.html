@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend: popup and overlay system</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1>Docs frontend: popup and overlay system <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page is the source of truth for all floating surfaces in docs frontend:
+            toasts, popups, overlays, and modal-like panels. The goal is one visual language
+            and consistent interaction rules across all such elements.
+          </p>
+          <ul>
+            <li><strong>Scope:</strong> visual contract, behavior contract, and implementation entry points.</li>
+            <li><strong>Related pages:</strong> <a href="./docs-frontend-ui-kit.html">UI kit</a>, <a href="./docs-frontend-navigation-search-and-discovery.html">navigation/search/discovery</a>, <a href="./docs-frontend-ui-motion-and-adaptivity.html">UI motion and adaptivity</a>.</li>
+          </ul>
+        </section>
+
+        <section id="inventory" class="card">
+          <h2>Popup inventory</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Popup inventory">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Component</th>
+                  <th scope="col">Purpose</th>
+                  <th scope="col">Primary selectors</th>
+                  <th scope="col">Behavior notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Theme status toast</td>
+                  <td>Theme mode switch feedback</td>
+                  <td><code>.docs-theme-toast--pillow</code></td>
+                  <td>Top centered, auto-dismiss.</td>
+                </tr>
+                <tr>
+                  <td>Sticky TOC promo toast</td>
+                  <td>Promote sticky in-page navigation</td>
+                  <td><code>.docs-inpage-toc-toast</code></td>
+                  <td>Desktop only, 3s timer, manual actions.</td>
+                </tr>
+                <tr>
+                  <td>Search results popup</td>
+                  <td>Inline search results dropdown</td>
+                  <td><code>.docs-search__results</code></td>
+                  <td>Anchored under search input.</td>
+                </tr>
+                <tr>
+                  <td>Quick actions panel</td>
+                  <td>Command palette / fast navigation</td>
+                  <td><code>.docs-quick-actions__panel</code></td>
+                  <td>Dialog semantics + backdrop.</td>
+                </tr>
+                <tr>
+                  <td>Hotkey tip and continue reading</td>
+                  <td>Contextual nudges</td>
+                  <td><code>.docs-hotkey-tip</code>, <code>.docs-continue-reading--toast</code></td>
+                  <td>Continue prompt now uses the same visual system as Sticky TOC toast and auto-dismisses in 3s.</td>
+                </tr>
+                <tr>
+                  <td>Feedback status toast</td>
+                  <td>Feedback workflow status</td>
+                  <td><code>.docs-feedback-card__toast</code></td>
+                  <td>Inline floating status near card header.</td>
+                </tr>
+                <tr>
+                  <td>Diagram lightbox surfaces</td>
+                  <td>Fullscreen diagram exploration</td>
+                  <td><code>.docs-diagram-lightbox__toolbar</code>, <code>.docs-diagram-lightbox__viewport</code></td>
+                  <td>Overlay backdrop + floating panel primitives.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="visual-contract" class="card">
+          <h2>Unified visual contract</h2>
+          <p>Floating elements share one premium surface style via common CSS tokens:</p>
+          <ul>
+            <li><code>--docs-overlay-border</code></li>
+            <li><code>--docs-overlay-bg</code></li>
+            <li><code>--docs-overlay-shadow</code></li>
+            <li><code>--docs-overlay-blur</code></li>
+          </ul>
+          <p>
+            Contract requirement: any new popup/overlay must use the same tokens unless there is a documented
+            product reason to diverge.
+          </p>
+        </section>
+
+        <section id="behavior-contract" class="card">
+          <h2>Behavior contract</h2>
+          <ul>
+            <li>Toasts are non-blocking and must not trap focus.</li>
+            <li>Auto-dismiss toasts should have clear timing and reduced-motion-safe transitions.</li>
+            <li>Dialog-like overlays require semantic roles (<code>role="dialog"</code>, <code>aria-modal</code>) and close affordances.</li>
+            <li>Desktop-only floating features (for example in-page TOC promo) must be disabled on tablet/phone where that UI is hidden.</li>
+            <li>Any action button in popup/toast must preserve existing page state and avoid destructive side effects.</li>
+          </ul>
+        </section>
+
+        <section id="implementation" class="card">
+          <h2>Implementation entry points</h2>
+          <ul>
+            <li><code>docs/assets/docs.css</code> — popup tokens and shared popup styling block.</li>
+            <li><code>docs/assets/docs-popups.js</code> — centralized popup/toast runtime helpers (Sticky TOC + Continue reading prompts).</li>
+            <li><code>docs/assets/docs-nav.js</code> — integration points, fallbacks, and page-level wiring.</li>
+            <li><code>docs/assets/docs-diagram-lightbox.js</code> — diagram overlay behavior.</li>
+            <li><code>docs/assets/internal-sidebar.js</code> — drawer overlay behavior for internal navigation.</li>
+          </ul>
+        </section>
+
+        <section id="qa-checklist" class="card">
+          <h2>QA checklist</h2>
+          <ul>
+            <li>All popup surfaces look visually consistent in light and dark themes.</li>
+            <li>No popup is clipped under sticky bars or under the internal drawer stack.</li>
+            <li>Desktop and tablet/phone policies are respected (including hidden desktop-only promos).</li>
+            <li>Keyboard navigation and focus-visible states are present and readable.</li>
+          </ul>
+        </section>
+
+        <section id="component-states" class="card">
+          <h2>Per-component states and accessibility</h2>
+          <p class="small">Every floating surface in the popup inventory must satisfy this matrix. Test each row with <kbd>Tab</kbd> + <kbd>Esc</kbd> and a screen-reader before merging.</p>
+          <div class="docs-table-scroll" role="region" aria-label="Per-popup states and accessibility">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Surface</th>
+                  <th scope="col">States</th>
+                  <th scope="col">Role / ARIA</th>
+                  <th scope="col">Keyboard</th>
+                  <th scope="col">Reduced motion</th>
+                  <th scope="col">Screen-reader announcement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Theme switch toast</td>
+                  <td>hidden, visible (auto-dismiss 3 s)</td>
+                  <td><code>role="status"</code> + <code>aria-live="polite"</code></td>
+                  <td>—</td>
+                  <td>Show flat, skip slide-in</td>
+                  <td>"Theme set to dark"</td>
+                </tr>
+                <tr>
+                  <td>TOC promo toast</td>
+                  <td>hidden, visible, dismissed (persisted)</td>
+                  <td><code>role="status"</code></td>
+                  <td><kbd>Esc</kbd> dismisses</td>
+                  <td>Skip slide-in</td>
+                  <td>"On this page navigation available"</td>
+                </tr>
+                <tr>
+                  <td>Search results panel</td>
+                  <td>empty, typing, loaded, no-results, navigating, error</td>
+                  <td><code>role="listbox"</code> bound to the input via <code>aria-controls</code></td>
+                  <td><kbd>↑</kbd>/<kbd>↓</kbd> navigate; <kbd>Enter</kbd> open; <kbd>Esc</kbd> close</td>
+                  <td>Show flat, no fade</td>
+                  <td>"N results, item 1 of N highlighted"</td>
+                </tr>
+                <tr>
+                  <td>Command palette</td>
+                  <td>closed, open, filtering, no-results, navigating</td>
+                  <td><code>role="dialog"</code> + <code>aria-modal="true"</code> with focus trap</td>
+                  <td><kbd>Cmd</kbd>+<kbd>K</kbd> / <kbd>/</kbd> opens; <kbd>Esc</kbd> closes; <kbd>↑</kbd>/<kbd>↓</kbd>/<kbd>Enter</kbd></td>
+                  <td>Skip slide-in; instant open</td>
+                  <td>"Quick actions palette open"</td>
+                </tr>
+                <tr>
+                  <td>Hotkey tip</td>
+                  <td>visible, hovered, dismissed (persisted)</td>
+                  <td><code>role="status"</code></td>
+                  <td><kbd>Esc</kbd> dismisses; question-mark toggles</td>
+                  <td>Skip fade-in</td>
+                  <td>"Press question mark for shortcuts"</td>
+                </tr>
+                <tr>
+                  <td>Feedback status toast</td>
+                  <td>hidden, sending, sent, error</td>
+                  <td><code>role="status"</code> for sent / <code>role="alert"</code> for error</td>
+                  <td><kbd>Esc</kbd> dismisses non-error toasts; errors stay until acknowledged</td>
+                  <td>Skip slide-in</td>
+                  <td>"Feedback sent" / "Feedback failed, please retry"</td>
+                </tr>
+                <tr>
+                  <td>Diagram lightbox</td>
+                  <td>closed, opening, open, zoomed, panning, closing</td>
+                  <td><code>role="dialog"</code> + <code>aria-modal="true"</code>; focus restored to launcher on close</td>
+                  <td><kbd>Esc</kbd> closes; <kbd>+</kbd>/<kbd>−</kbd> zoom; arrow keys pan; <kbd>Tab</kbd> trapped inside</td>
+                  <td>Skip zoom transitions; instant open / close</td>
+                  <td>"Diagram opened in fullscreen, press Escape to close"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <table>
+            <thead>
+              <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Reuse the unified surface tokens (<code>--docs-premium-surface-*</code>) when building a new floating surface.</td>
+                <td>Re-invent the surface visuals for "just this one toast" — drift between popups is the most-flagged audit issue.</td>
+              </tr>
+              <tr>
+                <td>Add <code>role="dialog"</code> + <code>aria-modal="true"</code> + a focus trap for any modal overlay.</td>
+                <td>Ship a modal that does not return focus to the launcher on close — keyboard and screen-reader users get stranded.</td>
+              </tr>
+              <tr>
+                <td>Auto-dismiss informational toasts after 3–5 s and animate respectfully under <code>prefers-reduced-motion: reduce</code>.</td>
+                <td>Auto-dismiss error toasts — users miss them and lose data. Errors stay until acknowledged.</td>
+              </tr>
+              <tr>
+                <td>Hide desktop-only promos at tablet/phone widths via the documented breakpoint policy.</td>
+                <td>Stack three popups on a 360 px screen — the screen becomes unusable.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Per-component states and accessibility section (7 floating surfaces).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (surface tokens, focus traps, error-toast policy).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-25">2026-04-25</time></td>
+                  <td>Continue reading prompt restyled to Sticky TOC visual language, with 3s lifetime and centralized runtime in <code>docs-popups.js</code>.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-25">2026-04-25</time></td>
+                  <td>Added unified popup and overlay contract with inventory and implementation rules.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+</body></html>

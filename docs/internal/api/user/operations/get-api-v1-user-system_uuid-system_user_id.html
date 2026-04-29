@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en"><head>
-  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+<html lang="en">
 
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GET /api/v1/user/{system_uuid}/{system_user_id} — User — Study App</title>
@@ -11,176 +12,399 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout"
+      data-maintainer-ids="16fc8b78537109162984a2fdbef6e142"
+      data-spec-page="operation"
+      data-spec-status="implemented"
+      data-spec-owner="ivan-boyarkin"
+      data-spec-operation-id="getUserBySystemUserId">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>GET /api/v1/user/{system_uuid}/{system_user_id}</h1>
+        <h1 class="internal-h1--accent-tail">GET /api/v1/user/{system_uuid}/{system_user_id}</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">User</section>
+        <p class="internal-doc-entity">User</p>
 
-        <section class="card">
+        <div class="internal-http-tablet">
           <span class="badge badge--method-get">GET</span>
           <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
-        </section>
+        </div>
 
-        <section class="card">
-          <h2>Business context</h2>
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+            <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">operationId</span>
+            <code>getUserBySystemUserId</code></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-04-29">2026-04-29</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+            <code>v1</code></span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            A <strong>User</strong> represents a learner identity in Study App: keyed by
-            <code>(system_user_id, system_uuid)</code> for partner integrations, with profile attributes (display
-            name, locale, notification preferences, invalidation metadata). Creating and updating users is on the
-            critical path for onboarding; reads power dashboards and entitlement checks.
+            Look up one user by the composite natural key
+            <code>(system_uuid, system_user_id)</code>. Read-only.
           </p>
         </section>
 
-        <section class="card">
-          <h2>Data contract (summary)</h2>
-          <p class="small">
-            Full JSON Schemas live in OpenAPI; this table is the engineering shorthand for reviews and runbooks.
+        <section class="card" id="business-context"
+                 data-spec-section="business-context" data-spec-required="true">
+          <h2>1. Business context</h2>
+          <p>
+            Used by integrators to verify that a learner is enrolled and to fetch the current
+            profile (display name, timezone) before composing UI. Returns a single
+            <code>UserResponse</code>.
           </p>
-          <section class="card">
-            <h2>Request path and behavior</h2>
-            <p>
-              Same middleware stack as other protected routes (ADR 0005). Route template
-              <code>/api/v1/user/{system_uuid}/{system_user_id}</code>; path parameters validated, then
-              <code>UserService.get_or_404</code> → repository read. <strong>No idempotency</strong> — read-only.
-            </p>
-            <p><strong>Success:</strong> <code>200 OK</code> with user body. ETag / caching semantics (if enabled) are
-              described in the unified spec.</p>
-            </section><section class="card">
-            <h2>Errors</h2>
-            <p class="small">Envelope per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>.
-            </p>
-          </section><table>
-          <thead>
-            <tr>
-              <th>Field / group</th>
-              <th>Role</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
+        </section>
 
-        </table><table>
-        <thead>
-          <tr>
-            <th>HTTP</th>
-            <th>Code / key</th>
-            <th>When</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>404</code></td>
-            <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
-            <td>No row for <code>(system_uuid, system_user_id)</code> — <code>get_user_not_found</code> at
-              <strong>warning</strong> in <code>UserService.get_or_404</code>.
-            </td>
-          </tr>
-          <tr>
-            <td><code>422</code></td>
-            <td>Validation</td>
-            <td>Invalid path parameter shapes — logged as validation errors at <strong>warning</strong>.</td>
-          </tr>
-          <tr>
-            <td><code>401</code> / <code>429</code></td>
-            <td>—</td>
-            <td>Middleware (ADR 0005).</td>
-          </tr>
-          <tr>
-            <td><code>500</code></td>
-            <td>—</td>
-            <td>Uncaught: <code>request_failed</code> with stack.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+        <section class="card" id="user-stories"
+                 data-spec-section="user-stories" data-spec-required="true">
+          <h2>2. User stories</h2>
+          <ul>
+            <li><strong>US-USER-GET-1.</strong> As an <em>integrator</em>, I want to confirm
+              an enrolment exists so I can avoid duplicate calls to
+              <code>POST /user</code>.</li>
+            <li><strong>US-USER-GET-2.</strong> As an <em>integrator</em>, I want a fresh
+              read of the user's <code>timezone</code> after a profile edit.</li>
+          </ul>
+        </section>
 
-    <section class="card">
-      <h2>Logging</h2>
-      <p>
-        <code>request_done … path=…</code> on every completed request (info). <code>request_id</code> in context
-        per
-        ADR 0023. UserService emits <code>get_user_not_found</code> at <strong>warning</strong> before
-        <code>404</code>. No idempotency replay logs on GET.
-      </p>
-    </section>
+        <section class="card" id="acceptance-criteria"
+                 data-spec-section="acceptance-criteria" data-spec-required="true">
+          <h2>3. Acceptance criteria (Given / When / Then)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+            <table>
+              <thead><tr><th>ID &amp; scenario</th><th>Given</th><th>When</th><th>Then</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><code>AC-USER-GET-001</code><br>
+                    <span class="small">Happy path.</span></td>
+                  <td>User exists for path key.</td>
+                  <td>GET.</td>
+                  <td><code>200 OK</code> with full <code>UserResponse</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>AC-USER-GET-002</code><br>
+                    <span class="small">Not found.</span></td>
+                  <td>No user matches.</td>
+                  <td>GET.</td>
+                  <td><code>404 USER_404</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>AC-USER-GET-003</code><br>
+                    <span class="small">Bad UUID format.</span></td>
+                  <td>—.</td>
+                  <td>GET with malformed
+                    <code>system_uuid</code>.</td>
+                  <td><code>422 COMMON_000</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <section class="card">
-      <h2>Metrics</h2>
-      <p>
-        <code>http_requests_total</code> / duration with
-        <code>path_template=/api/v1/user/{system_uuid}/{system_user_id}</code>,
-        <code>method=GET</code>, status label. See
-        <a href="../index.html#observability">Unified spec — Metrics</a>.
-      </p>
-    </section>
+        <section class="card" id="functional-requirements"
+                 data-spec-section="functional-requirements" data-spec-required="true">
+          <h2>4. Functional requirements</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+            <table>
+              <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+              <tbody>
+                <tr><td><code>FR-USER-GET-001</code></td>
+                  <td>Lookup by composite key.</td>
+                  <td>Index hit on
+                    <code>(system_user_id, system_uuid)</code> unique constraint.</td></tr>
+                <tr><td><code>FR-USER-GET-002</code></td>
+                  <td>Return <code>UserResponse</code>.</td>
+                  <td>Full row including <code>client_uuid</code>, timestamps.</td></tr>
+                <tr><td><code>FR-USER-GET-003</code></td>
+                  <td>404 on miss.</td>
+                  <td><code>USER_404 USER_NOT_FOUND</code>; never echo lookup
+                    fields back.</td></tr>
+                <tr><td><code>FR-USER-GET-004</code></td>
+                  <td>Read-only.</td>
+                  <td>No DB writes; idempotency header silently ignored.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <section class="card">
-      <h2>Single-file deep spec</h2>
-      <p>
-        <a href="../index.html#user-op-getUserBySystemUserId">Unified internal spec — this operation</a>.
-      </p>
-    </section>
+        <section class="card" id="non-functional-requirements"
+                 data-spec-section="non-functional-requirements" data-spec-required="true">
+          <h2>5. Non-functional requirements</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+            <table>
+              <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+              <tbody>
+                <tr><td><code>NFR-USER-GET-001</code></td><td>Latency.</td>
+                  <td>P95 ≤ 80 ms.</td></tr>
+                <tr><td><code>NFR-USER-GET-002</code></td><td>Index usage.</td>
+                  <td>Unique index on composite key.</td></tr>
+                <tr><td><code>NFR-USER-GET-003</code></td><td>Read consistency.</td>
+                  <td>Default DB isolation.</td></tr>
+                <tr><td><code>NFR-USER-GET-004</code></td><td>Backwards compatibility.</td>
+                  <td>Adding response fields is additive.</td></tr>
+                <tr><td><code>NFR-USER-GET-005</code></td><td>Observability.</td>
+                  <td>Standard <code>request_done</code>.</td></tr>
+                <tr><td><code>NFR-USER-GET-006</code></td><td>Rate limit.</td>
+                  <td>Inherits global limit.</td></tr>
+                <tr><td><code>NFR-USER-GET-007</code></td><td>Cacheability.</td>
+                  <td>No HTTP caching in v1.</td></tr>
+                <tr><td><code>NFR-USER-GET-008</code></td><td>PII.</td>
+                  <td>Response includes PII medium fields; mask in logs.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <p class="small">
-      <a href="../index.html">← User resource hub</a>
-    </p>
+        <section class="card" id="authorization"
+                 data-spec-section="authorization" data-spec-required="true">
+          <h2>6. Authorization &amp; permissions</h2>
+          <p>API key per <a href="../../_shared/auth.html">shared auth</a>. Tenant scoping is
+            implicit via the path key being unique within
+            <code>system_uuid</code>.</p>
+        </section>
 
-    <section id="page-history" class="card">
+        <section class="card" id="request-contract"
+                 data-spec-section="request-contract" data-spec-required="true">
+          <h2>7. Request contract</h2>
+          <h3>Path parameters</h3>
+          <dl class="internal-field-list">
+            <dt><code>system_uuid</code>
+              <span class="badge badge--field-type">string · uuid</span>
+              <span class="badge badge--field-req">required</span></dt>
+            <dd><p>External tenant UUID (RFC 4122).</p></dd>
+            <dt><code>system_user_id</code>
+              <span class="badge badge--field-type">string</span>
+              <span class="badge badge--field-req">required</span></dt>
+            <dd><p>External user identifier (1–128 chars; URL-encoded if needed).</p></dd>
+          </dl>
 
-      <h2>Page history</h2>
+          <h3>Headers</h3>
+          <dl class="internal-field-list">
+            <dt><code>X-API-Key</code>
+              <span class="badge badge--field-type">string</span>
+              <span class="badge badge--field-req">required</span></dt>
+            <dd><p>Tenant API key.</p></dd>
+          </dl>
 
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
+          <h3>Example request</h3>
+<pre><code>GET /api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/learner-01 HTTP/1.1
+X-API-Key: sk_live_***
+</code></pre>
+        </section>
 
-        <table class="docs-page-history">
+        <section class="card" id="response-contract"
+                 data-spec-section="response-contract" data-spec-required="true">
+          <h2>8. Response contract</h2>
+          <h3>200 OK — single user</h3>
+          <p>Body matches <code>UserResponse</code> (same shape as
+            <a href="./post-api-v1-user.html#response-contract">create response</a>).</p>
+<pre><code>HTTP/1.1 200 OK
+Content-Type: application/json
 
-          <thead>
+{
+  "client_uuid": "c1c1c1c1-1111-4111-8111-111111111111",
+  "system_user_id": "learner-01",
+  "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+  "full_name": "Alex Learner",
+  "username": null,
+  "timezone": "Europe/Berlin",
+  "invalidation_reason_uuid": null,
+  "is_row_invalid": 0,
+  "created_at": "2026-04-29T09:00:00Z",
+  "updated_at": "2026-04-29T09:00:00Z"
+}
+</code></pre>
+        </section>
 
-            <tr>
+        <section class="card" id="side-effects"
+                 data-spec-section="side-effects" data-spec-required="true">
+          <h2>10. Side effects</h2>
+          <p>None. Read-only.</p>
+        </section>
 
-              <th scope="col">Date</th>
+        <section class="card" id="idempotency-concurrency"
+                 data-spec-section="idempotency-concurrency" data-spec-required="true">
+          <h2>11. Idempotency &amp; concurrency</h2>
+          <p>Not applicable — read-only.</p>
+        </section>
 
-              <th scope="col">Change</th>
+        <section class="card" id="error-catalog"
+                 data-spec-section="error-catalog" data-spec-required="true">
+          <h2>12. Error catalog</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+            <table>
+              <thead><tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th>
+                  <th>Log event (level)</th></tr></thead>
+              <tbody>
+                <tr><td><code>401</code></td><td><code>COMMON_401</code></td>
+                  <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                  <td>Missing/invalid API key.</td><td>middleware</td></tr>
+                <tr><td><code>404</code></td><td><code>USER_404</code></td>
+                  <td><code>USER_NOT_FOUND</code></td>
+                  <td>No user for path key.</td>
+                  <td><code>get_user_not_found</code> (info)</td></tr>
+                <tr><td><code>422</code></td><td><code>COMMON_000</code></td>
+                  <td><code>COMMON_VALIDATION_ERROR</code></td>
+                  <td>Bad UUID, missing path component.</td>
+                  <td><code>validation_error</code> (warn)</td></tr>
+                <tr><td><code>429</code></td><td><code>COMMON_429</code></td>
+                  <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                  <td>Rate limit.</td><td>middleware</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-              <th scope="col">Author</th>
+        <section class="card" id="edge-cases"
+                 data-spec-section="edge-cases" data-spec-required="true">
+          <h2>13. Edge cases checklist</h2>
+          <ul>
+            <li><strong><code>system_user_id</code> with URL-special chars.</strong> Must
+              be URL-encoded by the integrator.</li>
+            <li><strong>Soft-invalidated user (<code>is_row_invalid=1</code>).</strong>
+              Returned as-is; the integrator decides whether to act on the flag.</li>
+            <li><strong>Idempotency-Key sent.</strong> Silently ignored.</li>
+          </ul>
+        </section>
 
-            </tr>
+        <section class="card" id="observability"
+                 data-spec-section="observability" data-spec-required="true">
+          <h2>14. Observability requirements</h2>
+          <h3>Log events</h3>
+          <ul>
+            <li>Standard <code>request_done</code>.</li>
+            <li><code>get_user_not_found</code> (info) on
+              <code>404</code>.</li>
+          </ul>
+          <h3>Metrics</h3>
+          <ul>
+            <li><code>http_requests_total</code>
+              <code>{path_template="/api/v1/user/{system_uuid}/{system_user_id}",
+                method="GET"}</code>.</li>
+            <li><code>http_request_duration_seconds</code>.</li>
+          </ul>
+          <h3>Alerts</h3>
+          <ul>
+            <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+          </ul>
+        </section>
 
-          </thead>
+        <section class="card" id="test-plan"
+                 data-spec-section="test-plan" data-spec-required="true">
+          <h2>15. Test plan</h2>
+          <ul>
+            <li><strong>Integration:</strong> AC-001..AC-003.</li>
+            <li><strong>Contract:</strong> Schemathesis on
+              <code>getUserBySystemUserId</code>.</li>
+            <li><strong>End-to-end:</strong> create → get returns the same row.</li>
+          </ul>
+        </section>
 
-          <tbody>
+        <section class="card" id="openapi-authoring-hints"
+                 data-spec-section="openapi-authoring-hints" data-spec-required="true">
+          <h2>16. OpenAPI authoring hints</h2>
+          <ul>
+            <li><strong>operationId:</strong>
+              <code>getUserBySystemUserId</code> (already in OpenAPI).</li>
+            <li><strong>Tags:</strong> <code>User</code>.</li>
+            <li><strong>Reused:</strong> <code>UserResponse</code>.</li>
+          </ul>
+        </section>
 
-            <tr>
+        <section class="card" id="open-questions"
+                 data-spec-section="open-questions" data-spec-required="true">
+          <h2>17. Open questions</h2>
+          <ul><li><strong>None.</strong></li></ul>
+        </section>
 
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
+        <section class="card" id="out-of-scope"
+                 data-spec-section="out-of-scope" data-spec-required="true">
+          <h2>18. Out of scope</h2>
+          <ul>
+            <li>Listing users — out of scope (single-tenant integrator already knows its
+              learners).</li>
+            <li>Search by display name.</li>
+            <li>Cross-tenant lookups.</li>
+          </ul>
+        </section>
 
-              <td>Added Page history section (repository baseline).</td>
+        <section class="card" id="traceability"
+                 data-spec-section="traceability" data-spec-required="true">
+          <h2>19. Traceability</h2>
+          <ul>
+            <li><strong>System design:</strong>
+              <a href="../../../analysis/system-design.html#scope">scope &amp; identity</a>.</li>
+            <li><strong>ADRs:</strong>
+              <a href="../../../adr/0003-error-contract-governance.html">0003</a>,
+              <a href="../../../adr/0005-api-security-defaults.html">0005</a>.</li>
+            <li><strong>OpenAPI:</strong>
+              <code>getUserBySystemUserId</code>.</li>
+          </ul>
+        </section>
 
-              <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+        <section class="card" id="changelog"
+                 data-spec-section="changelog" data-spec-required="true">
+          <h2>20. Spec changelog</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+            <table>
+              <thead><tr><th>Date</th><th>Type</th><th>Change</th><th>Author</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>doc-only</td>
+                  <td>Phase 5 rollout: full analyst spec; status=implemented.</td>
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                      Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-            </tr>
+        <section id="page-history" class="card"
+                 data-spec-section="page-history" data-spec-required="true">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 5: full rewrite; status=implemented.</td>
+                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                      Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-          </tbody>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+    </div>
+  </div>
 
-        </table>
+</body>
 
-      </div>
-
-    </section>
-
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
-</div>
-</div>
-
-</body></html>
+</html>

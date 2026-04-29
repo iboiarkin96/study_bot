@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Internal service docs — layout and how to add pages</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <main class="container">
+    <h1 class="internal-h1--accent-tail">Internal service docs — layout and how to add pages</h1>
+    <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
+
+    <section class="docs-page-hero" aria-labelledby="overview">
+      <h2 id="overview">Overview</h2>
+      <p>
+        How internal pages are structured, which assets wire the sidebar and navigation, and how to add a new
+        API resource to <code>docs/internal/</code>.
+      </p>
+    </section>
+
+    <section id="shared-chrome" class="card">
+      <h2>Shared assets</h2>
+      <p>
+        Every page under <code>docs/internal/</code> that shows the sidebar must load these three assets and
+        include the mount point <code>#internal-sidebar-mount</code> inside the sidebar shell.
+      </p>
+      <div class="docs-table-scroll" role="region" aria-label="Shared assets">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Asset</th>
+              <th scope="col">Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>docs/assets/internal-layout.css</code></td>
+              <td>Two-column layout, sidebar chrome, and HTTP method "tablet" styling on operation pages.</td>
+            </tr>
+            <tr>
+              <td><code>docs/assets/internal-sidebar.js</code></td>
+              <td><strong>Single source of truth</strong> for the left nav tree. Edit
+                <code>INTERNAL_SIDEBAR_NAV</code> here when adding or renaming pages.
+              </td>
+            </tr>
+            <tr>
+              <td><code>docs/assets/docs-nav.js</code></td>
+              <td>Top pill navigation shared across all docs sections.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-anatomy" class="card">
+      <h2>Page anatomy</h2>
+      <p>
+        Internal pages with a sidebar use <code>class="internal-layout"</code> on <code>&lt;body&gt;</code>
+        and a two-div shell. For hub and index pages, keep this order inside <code>.container</code>:
+      </p>
+      <ol>
+        <li>
+          <code>&lt;h1 class="internal-h1--accent-tail"&gt;</code> — page title with gradient accent.
+        </li>
+        <li>
+          <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> — top pill nav (injected by
+          <code>docs-nav.js</code>).
+        </li>
+        <li>
+          <code>&lt;div id="docs-page-meta-mount" hidden=""&gt;&lt;/div&gt;</code> — maintainer meta block.
+        </li>
+        <li>
+          <code>&lt;section class="docs-page-hero" aria-labelledby="overview"&gt;</code> — hero block with
+          <code>&lt;h2 id="overview"&gt;</code> and optional chip nav.
+        </li>
+        <li>
+          Additional <code>&lt;section id="..." class="card"&gt;</code> blocks — one topic per card.
+        </li>
+        <li>
+          <code>&lt;section id="page-history" class="card"&gt;</code> — page history table.
+        </li>
+        <li>
+          <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> —
+          last child of <code>&lt;main&gt;</code>; generates the <strong>On this page</strong> outline.
+        </li>
+        <li>
+          FAB button + feedback anchor before <code>&lt;/main&gt;</code>.
+        </li>
+      </ol>
+      <p>
+        Canonical example:
+        <a href="../internal/README.html"><code>docs/internal/README.html</code></a>.
+      </p>
+    </section>
+
+    <section id="add-resource" class="card">
+      <h2>How to add a new API resource</h2>
+      <p>Example: adding <code>Order</code>.</p>
+      <ol>
+        <li>
+          Create the resource folder and files:
+          <ul>
+            <li><code>docs/internal/api/order/index.html</code> — hub page with business context, contract
+              summary, and method index.</li>
+              <li><code>docs/internal/api/order/operations/</code> — one HTML file per HTTP endpoint,
+                named from method + path template (e.g. <code>post-api-v1-order.html</code>,
+                <code>get-api-v1-order--order_id.html</code>). Do not use Python <code>operationId</code>
+                as the filename.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Register in the sidebar — open <code>docs/assets/internal-sidebar.js</code> and extend
+            <code>INTERNAL_SIDEBAR_NAV</code> with the new paths (relative to <code>docs/</code> root).
+          </li>
+          <li>
+            Link from the API hub — add a card and link on
+            <a href="../internal/api/README.html"><code>docs/internal/api/README.html</code></a>.
+          </li>
+          <li>
+            Write the content — put business rules, field contracts, and technical notes on the resource
+            <code>index.html</code>. Add operation pages for each endpoint.
+            See <a href="../internal/api/user/index.html"><code>internal/api/user/index.html</code></a>
+            as a reference.
+          </li>
+          <li>
+            Run <code>make docs-fix</code> to normalize HTML and rebuild the search index.
+          </li>
+        </ol>
+      </section>
+
+      <section id="edit-pages" class="card">
+        <h2>How to edit existing pages</h2>
+        <ul>
+          <li>
+            <strong>Sidebar labels or order</strong> — edit <code>INTERNAL_SIDEBAR_NAV</code> in
+            <code>docs/assets/internal-sidebar.js</code>.
+          </li>
+          <li>
+            <strong>Top navigation</strong> (Home, Internal, …) — edit <code>renderTopNav</code> in
+            <code>docs/assets/docs-nav.js</code>.
+          </li>
+          <li>
+            <strong>Page body</strong> — edit the HTML file directly; run <code>make docs-fix</code> after to
+            normalize and rebuild the search index.
+          </li>
+          <li>
+            <strong>Renaming a page</strong> — update the file path in <code>internal-sidebar.js</code> and
+            <code>docs-portal-data.js</code>, then add a redirect stub at the old URL if bookmarks exist.
+          </li>
+        </ul>
+      </section>
+
+      <section id="page-history" class="card">
+        <h2>Page history</h2>
+        <div class="docs-table-scroll" role="region" aria-label="Page history">
+          <table class="docs-page-history">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Change</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><time datetime="2026-04-28">2026-04-28</time></td>
+                <td>Redesigned: removed directory tree, added hero, condensed into focused sections.</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+              <tr>
+                <td><time datetime="2026-04-21">2026-04-21</time></td>
+                <td>Added Page history section (repository baseline).</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+      <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+        Found a bug? Report issue
+      </button>
+      <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+    </main>
+
+  </body></html>

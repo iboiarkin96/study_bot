@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +11,6 @@
   <script defer src="../../assets/docs-nav.js"></script>
   <script defer src="../../assets/docs-portal-data.js"></script>
   <script defer src="../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../assets/internal-sidebar.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 </head>
@@ -19,89 +18,199 @@
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>HTTP API (internal)</h1>
+        <h1 class="internal-h1--accent-tail">HTTP API (internal)</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <p class="lead">
-          Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page (business
-          context, data contract, links to methods), and each <code>operationId</code> has its own page so readers are
-          not overloaded with a single endless scroll.
-        </p>
-
-        <section class="card">
-          <h2>Resources</h2>
-          <ul>
-            <li>
-              <a href="./user/index.html">User</a> — identity under <code>/api/v1/user</code>; the
-              <a href="./user/index.html">resource hub</a> is the single entry point (business context, contract summary,
-              technical depth); per-method pages link back to anchors on that page.
-            </li>
-            <li>
-              <a href="./conspectus/index.html">Conspectus</a> — <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> study note under <code>/api/v1/conspectuses</code>
-              (plus related <code>/schedule/summary</code> and <code>/errors</code>); the
-              <a href="./conspectus/index.html">resource hub</a> explains the entity, field mapping, API surface, and links
-              to <strong>per-method pages</strong> under <code>conspectus/operations/</code> (same pattern as User).
-            </li>
-          </ul>
-          <p class="small">Add a new list entry here when another router gains an internal hub.</p>
+        <section class="docs-page-hero" id="overview">
+          <h2>Overview</h2>
+          <p>
+            Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page
+            (business context, data contract, links to methods), and each <code>operationId</code> has its own page so
+            readers are not overloaded with a single endless scroll.
+          </p>
         </section>
 
-        <section class="card">
-          <h2>External contract</h2>
+        <section class="card" id="documentation-layers">
+          <h2>Documentation layers (read this first)</h2>
           <p>
-            Paths, schemas, and declared errors: <code>docs/openapi/openapi-baseline.json</code> and
-            <a href="../../openapi/index.html">OpenAPI / Swagger UI</a>. Internal pages add narrative and operational
-            semantics per <a href="../../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>.
+            <strong>This space is the source of truth for requirements.</strong> Pages under
+            <code>docs/internal/api/</code> are written by the systems analyst <em>for</em> the developer: they
+            describe what to build, what business rules apply, what to validate, what to log, what to test,
+            and — explicitly — what the developer must put into the public OpenAPI contract.
+          </p>
+          <p>The two layers and their audiences:</p>
+          <ul>
+            <li>
+              <strong><a href="../../openapi/index.html">docs/openapi/</a> — external contract.</strong>
+              OpenAPI 3.x + Swagger UI. Audience: integrators (external partners, mobile apps, third-party
+              clients). Output artefact: authored by developers <em>after</em> implementing the spec on this side.
+            </li>
+            <li>
+              <strong>docs/internal/api/ — internal technical specification.</strong> Audience: developers and
+              QA inside the team. Holds business context, acceptance criteria, functional and non-functional
+              requirements, validation rules, state transitions, side effects, observability requirements,
+              test plan, and OpenAPI authoring hints. The OpenAPI file is generated from the decisions made here.
+            </li>
+          </ul>
+          <p>
+            Per-operation pages follow the analyst-spec template in
+            <a href="./_shared/spec-template.html"><code>_shared/spec-template.html</code></a>. Cross-cutting
+            concerns (idempotency, error envelope, auth, pagination, versioning, observability conventions,
+            OpenAPI authoring guide) live once under <code>_shared/</code> and are linked from each operation —
+            never duplicated.
+          </p>
+        </section>
+
+        <section id="resources" class="card">
+          <h2>Resources</h2>
+          <p>
+            Each resource has a <strong>hub page</strong> with business context, domain model,
+            lifecycle, an operations table (with status pills + idempotency + spec links) and a
+            <em>Cross-cutting concerns</em> section pointing at <code>_shared/</code>. Per-method
+            pages live under <code>{resource}/operations/</code>.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Internal API resources">
+            <table>
+              <thead>
+                <tr>
+                  <th>Resource</th>
+                  <th>Mount</th>
+                  <th>Hub</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>User</strong></td>
+                  <td><code>/api/v1/user</code></td>
+                  <td><a href="./user/index.html">user/index.html</a></td>
+                  <td><span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 4 ops live</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Conspectus</strong></td>
+                  <td><code>/api/v1/conspectuses</code> &middot;
+                    <code>/api/v1/schedule/summary</code></td>
+                  <td><a href="./conspectus/index.html">conspectus/index.html</a></td>
+                  <td><span class="spec-status-pill spec-status-pill--draft">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">📝</span>
+                      <span class="spec-status-pill__label">Draft</span></span>
+                    <span class="small">— 5 specs awaiting impl</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Error log</strong></td>
+                  <td><code>/api/v1/errors</code></td>
+                  <td><a href="./error-log/index.html">error-log/index.html</a></td>
+                  <td><span class="spec-status-pill spec-status-pill--draft">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">📝</span>
+                      <span class="spec-status-pill__label">Draft</span></span>
+                    <span class="small">— 2 specs awaiting impl</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">Add a new row when another router gains an internal hub.</p>
+        </section>
+
+        <section id="shared" class="card">
+          <h2>Shared (cross-cutting concerns)</h2>
+          <p>
+            The <code>_shared/</code> folder is the single source of truth for rules that span
+            every operation. Per-operation specs link to anchors here instead of duplicating
+            text — when the rule changes, one page changes.
+          </p>
+          <ul>
+            <li><a href="./_shared/spec-template.html">Specification template</a> — golden
+              skeleton for new operation pages.</li>
+            <li><a href="./_shared/spec-definition-of-done.html">Definition of Done</a> — DoD
+              checklist + status badge meanings + lint CLI.</li>
+            <li><a href="./_shared/idempotency.html">Idempotency</a> — <code>Idempotency-Key</code>
+              header, replay rules, behaviour matrix.</li>
+            <li><a href="./_shared/error-envelope.html">Error envelope</a> +
+              <a href="./_shared/error-catalog.html">error catalog</a> — envelope shape and
+              global registry of every <code>code/key</code>.</li>
+            <li><a href="./_shared/auth.html">Authentication &amp; authorization</a> — API key,
+              ownership, why we collapse cross-tenant to 404.</li>
+            <li><a href="./_shared/pagination.html">Pagination</a> — bounded list default,
+              cursor on demand.</li>
+            <li><a href="./_shared/versioning.html">Versioning</a> — URL-based, breaking-vs-
+              additive matrix.</li>
+            <li><a href="./_shared/observability-conventions.html">Observability conventions</a>
+              — log events, metrics, traces, alerts naming.</li>
+            <li><a href="./_shared/field-conventions.html">Field conventions</a> — naming,
+              types, timezones, PII classification.</li>
+            <li><a href="./_shared/openapi-authoring-guide.html">OpenAPI authoring guide</a>
+              — translating internal spec into the public contract.</li>
+          </ul>
+        </section>
+
+        <section id="quality-gates" class="card">
+          <h2>Quality gates</h2>
+          <ul>
+            <li><strong><code>scripts/spec_lint.py</code></strong> — structural lint per
+              operation page (required sections, mount points, examples, page history).</li>
+            <li><strong><code>scripts/spec_consistency.py</code></strong> — cross-document
+              checks: <code>operationId</code> ↔ spec page; error
+              <code>code/key</code> ↔ shared catalog.</li>
+            <li><strong><code>make docs-spec-check</code></strong> — runs both; wired into
+              <code>make docs-check</code> and CI.</li>
+          </ul>
+        </section>
+
+        <section id="external" class="card">
+          <h2>External contract (separate audience)</h2>
+          <p>
+            Paths, schemas, and declared errors: <code>docs/openapi/openapi-baseline.json</code>
+            and <a href="../../openapi/index.html">OpenAPI / Swagger UI</a>. Internal pages
+            here are the source of truth for <em>requirements</em>; OpenAPI is the output
+            artefact authored by developers per
+            <a href="../../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>
+            and
+            <a href="../../adr/0026-internal-service-documentation-as-source-of-truth.html">
+              ADR 0026</a>.
           </p>
         </section>
 
         <section id="page-history" class="card">
-
           <h2>Page history</h2>
-
           <div class="docs-table-scroll" role="region" aria-label="Page history">
-
             <table class="docs-page-history">
-
               <thead>
-
                 <tr>
-
                   <th scope="col">Date</th>
-
                   <th scope="col">Change</th>
-
                   <th scope="col">Author</th>
-
                 </tr>
-
               </thead>
-
               <tbody>
-
                 <tr>
-
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-
-                  <td>Added Page history section (repository baseline).</td>
-
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 6: resource map redesigned — status pills per resource, dedicated
+                    Shared / Quality gates / External contract sections.</td>
                   <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-
                 </tr>
-
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
               </tbody>
-
             </table>
-
           </div>
-
         </section>
 
         <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
       </main>
     </div>
   </div>

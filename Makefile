@@ -2,12 +2,6 @@ PYTHON := .venv/bin/python
 PIP    := .venv/bin/pip
 ENV    := .env
 DEPLOY_CMD ?=
-# changelog-draft: override refs or output path if needed (defaults: main..HEAD, include working tree)
-CHANGELOG_SINCE ?= main
-CHANGELOG_HEAD ?= HEAD
-CHANGELOG_DRAFT ?= changelog-llm-draft.md
-# Empty to draft from commits only (no staged/unstaged diff stat)
-CHANGELOG_DRAFT_FLAGS ?= --include-working-tree
 PYTEST_FLAGS ?= -q --disable-warnings
 NO_COLOR ?= 0
 MAKEFLAGS += --no-print-directory
@@ -29,7 +23,7 @@ ICON_ERR  := $(COLOR_RED)✗$(COLOR_RESET)
 ICON_STEP := $(COLOR_CYAN)→$(COLOR_RESET)
 ICON_INFO := $(COLOR_CYAN)i$(COLOR_RESET)
 
-.PHONY: help venv install requirements deps-audit env-init run run-loadtest-api run-loadtest-api-serve run-project container-start migrate migration format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify verify-ci release-check release pre-commit-install pre-commit-check test test-one test-warnings env-check docs-fix docs-check docs-html-check docs-design-check docs-a11y-check docs-feedback-check uml-check api-docs changelog-draft llm-ping pr-sync pr-open observability-up observability-down observability-smoke logging-up logging-down logging-reset logging-smoke logging-es-query docker-build
+.PHONY: help setup dev check ci docs ship venv install deps-audit env-init run migrate format-fix format-check lint-check lint-fix dead-code-check type-check openapi-check contract-test openapi-accept-changes fix verify release-check release pre-commit-install pre-commit-check test test-one env-check docs-fix docs-check docs-html-check docs-design-check docs-a11y-check docs-feedback-check docs-spec-check
 
 # ──────────────────────────────────────────────
 # Help
@@ -39,31 +33,31 @@ help:
 	@echo "  Study App — available commands"
 	@echo "  ------------------------------------------------"
 	@echo ""
-	@echo "  Scenario flows (recommended entry points)"
-	@echo "  make fix                    # apply auto-fixes before local run"
-	@echo "  make verify                 # run local quality gate (docs auto-sync)"
-	@echo "  make verify-ci              # deps-audit + like verify but docs-check (pre-push); CI runs deps-audit then verify"
-	@echo "  make release-check          # run full release gate"
-	@echo "  make release DEPLOY_CMD='…' # release gate + deploy command"
+	@echo "  Common commands (recommended)"
+	@echo "  make setup                  # first-time local setup (.venv + install deps + .env)"
+	@echo "  make dev                    # run local API (migrate + uvicorn)"
+	@echo "  make fix                    # auto-fix code + docs"
+	@echo "  make check                  # fast checks (lint/types/openapi/contract/tests)"
+	@echo "  make ci                     # strict full gate (same as make verify)"
+	@echo "  make docs                   # regenerate docs artifacts"
+	@echo "  make ship                   # full pre-release gate (same as make release-check)"
 	@echo ""
-	@echo "  Atomic commands"
+	@echo "  Production commands"
+	@echo "  make release-check        Run env-check + deps-audit + verify before deploy"
+	@echo "  make release DEPLOY_CMD='…' Run release-check then deploy command"
+	@echo ""
+	@echo "  Core commands"
 	@echo ""
 	@echo "  # Environment"
 	@echo "  make venv                 Create virtual environment"
 	@echo "  make install              Install dependencies"
-	@echo "  make requirements         Auto-generate requirements.txt from .venv"
 	@echo "  make env-init             Create .env from env/example (once per machine)"
 	@echo ""
 	@echo "  # Application"
 	@echo "  make run                  Start FastAPI dev server"
-	@echo "  make container-start      Same migrate + uvicorn as Docker (scripts/container_entrypoint.sh; reads .env)"
-	@echo "  make run-loadtest-api     Start API (high rate limit) → run tools.load_testing.runner → stop"
-	@echo "  make run-loadtest-api-serve  Like run, but high API rate limit (foreground; use in 2nd terminal with runner)"
-	@echo "  make run-project          Start observability stack (Prometheus/Grafana/…) + FastAPI"
 	@echo ""
 	@echo "  # Database / Migrations"
 	@echo "  make migrate              Apply all Alembic migrations"
-	@echo "  make migration name=…     Auto-generate new Alembic migration"
 	@echo ""
 	@echo "  # Code Formatting"
 	@echo "  make format-fix           Auto-format Python code"
@@ -72,7 +66,7 @@ help:
 	@echo "  # Linting"
 	@echo "  make lint-fix             Run Ruff with auto-fixes"
 	@echo "  make lint-check           Run Ruff lint checks"
-	@echo "  make dead-code-check      Run Vulture (unused code; see ADR 0014; not in verify-ci)"
+	@echo "  make dead-code-check      Run Vulture"
 	@echo ""
 	@echo "  # Type Checking"
 	@echo "  make type-check           Run mypy type checks"
@@ -90,8 +84,8 @@ help:
 	@echo ""
 	@echo "  # Quality Gates"
 	@echo "  make fix                  Run auto-fixes (format-fix + lint-fix + docs-fix)"
-	@echo "  make verify               Run lint-check + type-check + openapi-check + contract-test + test + docs-fix"
-	@echo "  make verify-ci            Run deps-audit + lint-check + type-check + openapi-check + contract-test + test + docs-check"
+	@echo "  make check                Run lint-check + type-check + openapi-check + contract-test + test"
+	@echo "  make verify               Run deps-audit + lint-check + type-check + openapi-check + contract-test + test + docs-check + docs-a11y-check"
 	@echo ""
 	@echo "  # Supply chain (ADR 0019)"
 	@echo "  make deps-audit           Scan requirements.txt with pip-audit (OSV); fails on known CVEs"
@@ -99,7 +93,6 @@ help:
 	@echo "  # Tests"
 	@echo "  make test                 Run full test suite (pytest + coverage per pyproject.toml)"
 	@echo "  make test-one path=…      Run one test file or node"
-	@echo "  make test-warnings        Run tests with full warning details"
 	@echo ""
 	@echo "  # Documentation"
 	@echo "  make docs-fix             Auto-update docs (UML + markers + md→html + HTML repair + format + maintainers + portal data JS + pdoc API + search index)"
@@ -107,32 +100,7 @@ help:
 	@echo "  make docs-design-check    Baseline docs design consistency checks (page skeleton, cards, mounts)"
 	@echo "  make docs-a11y-check      Baseline accessibility checks (headings, landmarks, contrast, keyboard)"
 	@echo "  make docs-feedback-check  Smoke-check page-level feedback wiring for key docs pages"
-	@echo "  make uml-check            Verify docs/uml/rendered/*.svg match docs/uml/**/*.puml (no writes)"
 	@echo "  make docs-check           Verify docs are already in sync (fails on drift)"
-	@echo "  make api-docs             Regenerate Python API HTML only (pdoc → docs/pdoc/; included in docs-fix)"
-	@echo ""
-	@echo "  # Changelog — optional LLM draft (OPENROUTER_API_KEY or OPENAI_API_KEY in .env; see env/example)"
-	@echo "  make changelog-draft      Draft from $(CHANGELOG_SINCE)..$(CHANGELOG_HEAD) → $(CHANGELOG_DRAFT) (merge into CHANGELOG.md by hand)"
-	@echo "  make llm-ping             Smoke-test LLM API (same env as changelog-draft)"
-	@echo ""
-	@echo "  # Pull Requests (GitHub CLI)"
-	@echo "  make pr-sync              Create or update PR body from PR_BODY.md for current branch"
-	@echo "  make pr-open              Open PR for current branch in browser"
-	@echo ""
-	@echo "  # Observability (Prometheus + Grafana)"
-	@echo "  make observability-up     Start Prometheus/Grafana stack with Docker Compose"
-	@echo "  make observability-down   Stop Prometheus/Grafana stack"
-	@echo "  make observability-smoke  Check observability links return HTTP 200"
-	@echo ""
-	@echo "  # Logging stack (Elasticsearch + Kibana + Filebeat; optional, heavy)"
-	@echo "  make logging-up           Start ES/Kibana/Filebeat (use LOG_FORMAT=json, ./logs)"
-	@echo "  make logging-down         Stop logging stack"
-	@echo "  make logging-reset        Stop stack, delete ES volume + ./logs/*.log (clean slate)"
-	@echo "  make logging-smoke        Check Elasticsearch and Kibana URLs"
-	@echo "  make logging-es-query     Query ES for study-app logs (optional QUERY=<uuid>)"
-	@echo ""
-	@echo "  # Container image (see docs/developer/0009-docker-image-and-container.html)"
-	@echo "  make docker-build         Build image study-app-api:local (requires Docker)"
 	@echo ""
 	@echo "  # Pre-commit Hooks"
 	@echo "  make pre-commit-install   Install git pre-commit hooks"
@@ -142,6 +110,32 @@ help:
 	@echo "  make release-check        Run env-check + deps-audit + verify before deploy"
 	@echo "  make release DEPLOY_CMD='…' Run release-check then deploy command"
 	@echo ""
+
+setup: venv install
+	@if [ ! -f ".env" ]; then \
+		$(MAKE) env-init; \
+	else \
+		printf "$(ICON_OK) %s\n" ".env already exists"; \
+	fi
+
+dev: run
+check:
+	@printf "$(COLOR_CYAN)== CHECK: START ==$(COLOR_RESET)\n"
+	@printf "$(ICON_INFO) %s\n" "[1/5] lint-check"
+	@$(MAKE) lint-check
+	@printf "$(ICON_INFO) %s\n" "[2/5] type-check"
+	@$(MAKE) type-check
+	@printf "$(ICON_INFO) %s\n" "[3/5] openapi-check"
+	@$(MAKE) openapi-check
+	@printf "$(ICON_INFO) %s\n" "[4/5] contract-test"
+	@$(MAKE) contract-test
+	@printf "$(ICON_INFO) %s\n" "[5/5] test"
+	@$(MAKE) test
+	@printf "$(COLOR_GREEN)== CHECK: SUCCESS ==$(COLOR_RESET)\n"
+
+ci: verify
+docs: docs-fix
+ship: release-check
 
 # ──────────────────────────────────────────────
 # Environment
@@ -165,15 +159,6 @@ install:
 	@printf "$(ICON_STEP) %s\n" "Installing requirements…"
 	@$(PIP) install -r requirements.txt -q
 	@printf "$(ICON_OK) %s\n" "Dependencies installed"
-
-# Freeze current .venv dependencies to requirements.txt.
-requirements:
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Generating requirements.txt from current .venv…"
-	@$(PIP) freeze | LC_ALL=C sort > requirements.txt
-	@printf "$(ICON_OK) %s\n" "requirements.txt updated"
 
 # OSV-backed vulnerability scan of pinned dependencies (ADR 0019). Uses a repo-local cache (see .gitignore).
 deps-audit:
@@ -210,57 +195,6 @@ run:
 	$(PYTHON) -m alembic upgrade head && \
 	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload --no-access-log
 
-# Same sequence as the Docker image ENTRYPOINT: Alembic upgrade then Uvicorn (no --reload).
-# Uses scripts/container_entrypoint.sh; does not invoke Make inside the container.
-container-start:
-	@if [ ! -f "$(ENV)" ]; then \
-		printf "$(ICON_ERR) %s\n" "$(ENV) not found. Run 'make env-init' (or cp env/example .env)."; exit 1; \
-	fi
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Starting API (scripts/container_entrypoint.sh — same as Docker)…"
-	@set -a; . ./$(ENV); set +a; \
-	export PYTHON="$(CURDIR)/$(PYTHON)"; \
-	exec sh "$(CURDIR)/scripts/container_entrypoint.sh"
-
-# Start API with high rate limits, wait for /ready, run tools.load_testing.runner, stop API.
-# Asks for confirmation (server is temporary; port must be free). CI: LOADTEST_SKIP_CONFIRM=1
-# Optional: LOADTEST_TOTAL_REQUESTS=200 LOADTEST_DELAY_MS=0 LOADTEST_RUNNER_EXTRA='--verbose'
-# Defaults in .env: LOADTEST_DEFAULT_TOTAL_REQUESTS, LOADTEST_DEFAULT_DELAY_MS (see env/example)
-# Script: tools/load_testing/run_with_local_api.sh
-run-loadtest-api:
-	@if [ ! -f "$(ENV)" ]; then \
-		printf "$(ICON_ERR) %s\n" "$(ENV) not found. Run 'make env-init' (or cp env/example .env)."; exit 1; \
-	fi
-	@if [ ! -f ".venv/bin/python" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "run-loadtest-api: start API → runner → stop (see tools/load_testing/run_with_local_api.sh)"
-	@ENV_FILE="$(ENV)" bash "$(CURDIR)/tools/load_testing/run_with_local_api.sh"
-
-# Start API like `run`, but override rate limits for local load testing (long-running; run runner in another shell).
-# Defaults: API_RATE_LIMIT_REQUESTS_LOADTEST=1000000000 API_RATE_LIMIT_WINDOW_SECONDS_LOADTEST=60
-run-loadtest-api-serve:
-	@if [ ! -f "$(ENV)" ]; then \
-		printf "$(ICON_ERR) %s\n" "$(ENV) not found. Run 'make env-init' (or cp env/example .env)."; exit 1; \
-	fi
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Applying migrations then starting server (loadtest rate limits; dev machine only)…"
-	@set -a; . ./$(ENV); set +a; \
-	export API_RATE_LIMIT_REQUESTS="$${API_RATE_LIMIT_REQUESTS_LOADTEST:-1000000000}"; \
-	export API_RATE_LIMIT_WINDOW_SECONDS="$${API_RATE_LIMIT_WINDOW_SECONDS_LOADTEST:-60}"; \
-	printf "$(ICON_INFO) %s\n" "API_RATE_LIMIT_REQUESTS=$$API_RATE_LIMIT_REQUESTS API_RATE_LIMIT_WINDOW_SECONDS=$$API_RATE_LIMIT_WINDOW_SECONDS"; \
-	APP_HOST=$${APP_HOST:-127.0.0.1}; \
-	APP_PORT=$${APP_PORT:-8000}; \
-	$(PYTHON) -m alembic upgrade head && \
-	$(PYTHON) -m uvicorn app.main:app --host "$$APP_HOST" --port "$$APP_PORT" --reload --no-access-log
-
-# Start Docker observability stack, then FastAPI (foreground). Requires Docker.
-run-project: observability-up run
-
 # ──────────────────────────────────────────────
 # Database / Migrations
 # ──────────────────────────────────────────────
@@ -271,20 +205,6 @@ migrate:
 	fi
 	@printf "$(ICON_STEP) %s\n" "Applying migrations…"
 	@$(PYTHON) -m alembic upgrade head && printf "$(ICON_OK) %s\n" "Migrations applied"
-
-# Generate a new Alembic migration from model diff.
-migration:
-	@if [ -z "$(name)" ]; then \
-		echo ""; \
-		printf "$(ICON_ERR) %s\n" "Missing migration name."; \
-		echo ""; \
-		echo "  Usage:"; \
-		echo "    make migration name=full_name_of_migration"; \
-		echo ""; \
-		exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Generating migration '$(name)'…"
-	@$(PYTHON) -m alembic revision --autogenerate -m "$(name)" && printf "$(ICON_OK) %s\n" "Migration created"
 
 # ──────────────────────────────────────────────
 # Docs
@@ -394,50 +314,26 @@ fix:
 	@$(MAKE) docs-fix
 	@printf "$(COLOR_GREEN)== FIX: SUCCESS ==$(COLOR_RESET)\n"
 
-# Run full local quality gate (lint, types, openapi, contract, tests, docs sync).
+# Run strict quality gate (deps, lint, types, openapi, contract, tests, docs drift + a11y).
 verify:
 	@printf "$(COLOR_CYAN)== VERIFY: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/6] lint-check"
+	@printf "$(ICON_INFO) %s\n" "[1/8] deps-audit"
+	@$(MAKE) deps-audit
+	@printf "$(ICON_INFO) %s\n" "[2/8] lint-check"
 	@$(MAKE) lint-check
-	@printf "$(ICON_INFO) %s\n" "[2/6] type-check"
+	@printf "$(ICON_INFO) %s\n" "[3/8] type-check"
 	@$(MAKE) type-check
-	@printf "$(ICON_INFO) %s\n" "[3/6] openapi-check"
+	@printf "$(ICON_INFO) %s\n" "[4/8] openapi-check"
 	@$(MAKE) openapi-check
-	@printf "$(ICON_INFO) %s\n" "[4/6] contract-test"
+	@printf "$(ICON_INFO) %s\n" "[5/8] contract-test"
 	@$(MAKE) contract-test
-	@printf "$(ICON_INFO) %s\n" "[5/6] test"
+	@printf "$(ICON_INFO) %s\n" "[6/8] test"
 	@$(MAKE) test
-	@printf "$(ICON_INFO) %s\n" "[6/8] docs-fix"
-	@$(MAKE) docs-fix
-	@printf "$(ICON_INFO) %s\n" "[7/8] docs-design-check"
-	@$(MAKE) docs-design-check
+	@printf "$(ICON_INFO) %s\n" "[7/8] docs-check"
+	@$(MAKE) docs-check
 	@printf "$(ICON_INFO) %s\n" "[8/8] docs-a11y-check"
 	@$(MAKE) docs-a11y-check
 	@printf "$(COLOR_GREEN)== VERIFY: SUCCESS ==$(COLOR_RESET)\n"
-
-# Same as verify but fails if docs are out of sync (for CI; does not write docs).
-# Includes deps-audit first so local pre-push matches the quality job (CI: deps-audit then verify).
-verify-ci:
-	@printf "$(COLOR_CYAN)== VERIFY-CI: START ==$(COLOR_RESET)\n"
-	@printf "$(ICON_INFO) %s\n" "[1/7] deps-audit"
-	@$(MAKE) deps-audit
-	@printf "$(ICON_INFO) %s\n" "[2/7] lint-check"
-	@$(MAKE) lint-check
-	@printf "$(ICON_INFO) %s\n" "[3/7] type-check"
-	@$(MAKE) type-check
-	@printf "$(ICON_INFO) %s\n" "[4/7] openapi-check"
-	@$(MAKE) openapi-check
-	@printf "$(ICON_INFO) %s\n" "[5/7] contract-test"
-	@$(MAKE) contract-test
-	@printf "$(ICON_INFO) %s\n" "[6/7] test"
-	@$(MAKE) test
-	@printf "$(ICON_INFO) %s\n" "[7/9] docs-check"
-	@$(MAKE) docs-check
-	@printf "$(ICON_INFO) %s\n" "[8/9] docs-design-check"
-	@$(MAKE) docs-design-check
-	@printf "$(ICON_INFO) %s\n" "[9/9] docs-a11y-check"
-	@$(MAKE) docs-a11y-check
-	@printf "$(COLOR_GREEN)== VERIFY-CI: SUCCESS ==$(COLOR_RESET)\n"
 
 # Install git pre-commit hooks for local checks.
 pre-commit-install:
@@ -489,16 +385,6 @@ test-one:
 	@$(PYTHON) -m pytest $(PYTEST_FLAGS) $(path)
 	@printf "$(ICON_OK) %s\n" "Selected tests passed"
 
-# Run pytest with warning details enabled (for warning investigation).
-test-warnings:
-	@printf "$(COLOR_CYAN)== TEST-WARNINGS: START ==$(COLOR_RESET)\n"
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Running tests with warning details..."
-	@$(PYTHON) -m pytest -q -rA
-	@printf "$(COLOR_GREEN)== TEST-WARNINGS: SUCCESS ==$(COLOR_RESET)\n"
-
 # Run mandatory release gate (env-check + verify).
 release-check:
 	@if [ ! -d ".venv" ]; then \
@@ -507,9 +393,7 @@ release-check:
 	@printf "$(COLOR_CYAN)== RELEASE-CHECK: START ==$(COLOR_RESET)\n"
 	@printf "$(ICON_INFO) %s\n" "[1/3] env-check"
 	@$(MAKE) env-check
-	@printf "$(ICON_INFO) %s\n" "[2/3] deps-audit"
-	@$(MAKE) deps-audit
-	@printf "$(ICON_INFO) %s\n" "[3/3] verify"
+	@printf "$(ICON_INFO) %s\n" "[2/2] verify"
 	@$(MAKE) verify
 	@printf "$(COLOR_GREEN)== RELEASE-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
@@ -557,7 +441,9 @@ docs-fix:
 	@printf "$(ICON_INFO) %s\n" "[7/9] collect docs maintainer pages index"
 	@$(PYTHON) scripts/collect_docs_portal_data.py
 	@printf "$(ICON_INFO) %s\n" "[8/9] Python API reference (pdoc)"
-	@$(MAKE) api-docs
+	@rm -rf docs/pdoc
+	@PYTHONHASHSEED=0 $(PYTHON) -m pdoc app -o docs/pdoc
+	@$(PYTHON) scripts/normalize_pdoc_output.py
 	@printf "$(ICON_INFO) %s\n" "[9/9] build docs search index"
 	@$(PYTHON) scripts/build_docs_search_index.py
 	@printf "$(COLOR_GREEN)== DOCS-FIX: SUCCESS ==$(COLOR_RESET)\n"
@@ -598,6 +484,18 @@ docs-feedback-check:
 	@$(PYTHON) scripts/validate_docs_feedback.py
 	@printf "$(COLOR_GREEN)== DOCS-FEEDBACK-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
+# Lint internal analyst-spec pages (structure + cross-doc consistency).
+# spec_lint.py    — per-page structure (required sections, metadata, examples, page history).
+# spec_consistency.py — operationId ↔ spec page; error code/key ↔ shared error catalog.
+docs-spec-check:
+	@if [ ! -d ".venv" ]; then \
+		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
+	fi
+	@printf "$(COLOR_CYAN)== DOCS-SPEC-CHECK: START ==$(COLOR_RESET)\n"
+	@$(PYTHON) scripts/spec_lint.py
+	@$(PYTHON) scripts/spec_consistency.py
+	@printf "$(COLOR_GREEN)== DOCS-SPEC-CHECK: SUCCESS ==$(COLOR_RESET)\n"
+
 # Verify docs are already synchronized (no drift allowed).
 # Compare the full working tree diff vs HEAD before and after docs-fix. If identical,
 # docs-fix did not change any file—so committed generated artifacts match the pipeline.
@@ -609,6 +507,7 @@ docs-check:
 	@$(MAKE) docs-html-check
 	@$(MAKE) docs-design-check
 	@$(MAKE) docs-feedback-check
+	@$(MAKE) docs-spec-check
 	@tmp_before=$$(mktemp); tmp_after=$$(mktemp); \
 	git diff HEAD > "$$tmp_before"; \
 	$(MAKE) docs-fix; \
@@ -621,134 +520,6 @@ docs-check:
 		rm -f "$$tmp_before" "$$tmp_after"; \
 		exit 1; \
 	fi
-
-# Fast check: PlantUML sources vs committed PNGs (same logic as first step of docs-fix).
-uml-check:
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@if [ ! -f "scripts/regenerate_docs.py" ]; then \
-		printf "$(ICON_ERR) %s\n" "scripts/regenerate_docs.py not found."; exit 1; \
-	fi
-	@printf "$(COLOR_CYAN)== UML-CHECK: START ==$(COLOR_RESET)\n"
-	@$(PYTHON) scripts/regenerate_docs.py --check
-	@printf "$(COLOR_GREEN)== UML-CHECK: SUCCESS ==$(COLOR_RESET)\n"
-
-# Generate Python API reference from docstrings (pdoc). Output under docs/pdoc/ (also invoked from docs-fix).
-api-docs:
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(COLOR_CYAN)== API-DOCS: START ==$(COLOR_RESET)\n"
-	@rm -rf docs/pdoc
-	@PYTHONHASHSEED=0 $(PYTHON) -m pdoc app -o docs/pdoc
-	@$(PYTHON) scripts/normalize_pdoc_output.py
-	@printf "$(ICON_OK) %s\n" "Open docs/pdoc/index.html in a browser (Python package: app); linked from docs/index.html for GitHub Pages"
-	@printf "$(COLOR_GREEN)== API-DOCS: SUCCESS ==$(COLOR_RESET)\n"
-
-# LLM-assisted Keep a Changelog draft (scripts/changelog_draft.py). Writes local file; edit CHANGELOG.md yourself.
-changelog-draft:
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "changelog_draft.py ($(CHANGELOG_SINCE)..$(CHANGELOG_HEAD))…"
-	@$(PYTHON) scripts/changelog_draft.py \
-		--since "$(CHANGELOG_SINCE)" \
-		--head "$(CHANGELOG_HEAD)" \
-		$(CHANGELOG_DRAFT_FLAGS) \
-		-o "$(CHANGELOG_DRAFT)"
-	@printf "$(ICON_OK) %s\n" "Draft in $(CHANGELOG_DRAFT) — copy bullets under [Unreleased] in CHANGELOG.md (ADR 0013)"
-
-# Quick check that OPENROUTER_API_KEY / OPENAI_API_KEY works (scripts/llm_ping.py).
-llm-ping:
-	@if [ ! -d ".venv" ]; then \
-		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
-	fi
-	@$(PYTHON) scripts/llm_ping.py
-
-# Create/update pull request body from PR_BODY.md using GitHub CLI.
-pr-sync:
-	@if [ "$${PR_SYNC_ASSUME_YES:-0}" != "1" ]; then \
-		printf "$(COLOR_CYAN)? %s$(COLOR_RESET)\n" "Did you update PR_BODY.md? [y/N]"; \
-		read -r answer; \
-		case "$$answer" in \
-			y|Y|yes|YES) ;; \
-			*) printf "$(ICON_ERR) %s\n" "PR sync cancelled by user"; exit 1 ;; \
-		esac; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Syncing pull request body from PR_BODY.md…"
-	@bash scripts/sync_pr_body.sh
-	@printf "$(ICON_OK) %s\n" "PR sync command completed"
-
-# Open pull request for current branch in browser.
-pr-open:
-	@printf "$(ICON_STEP) %s\n" "Opening pull request in browser…"
-	@bash scripts/pr_open.sh
-
-# Start local Prometheus + Grafana observability stack.
-observability-up:
-	@printf "$(ICON_STEP) %s\n" "Starting observability stack..."
-	@$(PYTHON) scripts/render_prometheus_config.py
-	@docker compose -f docker-compose.observability.yml up -d
-	@printf "$(ICON_OK) %s\n" "Observability stack is up (Prometheus:9090, Grafana:3001, Blackbox:9115)"
-
-# Stop local Prometheus + Grafana observability stack.
-observability-down:
-	@printf "$(ICON_STEP) %s\n" "Stopping observability stack..."
-	@docker compose -f docker-compose.observability.yml down
-	@printf "$(ICON_OK) %s\n" "Observability stack stopped"
-
-# Smoke-check that key observability links are reachable locally.
-observability-smoke:
-	@printf "$(ICON_STEP) %s\n" "Checking observability links..."
-	@$(PYTHON) scripts/check_observability_links.py
-	@printf "$(ICON_OK) %s\n" "Observability links are reachable"
-
-# Elasticsearch + Kibana + Filebeat (structured logs → Elasticsearch). Requires Docker; ~2 GiB RAM.
-logging-up:
-	@printf "$(ICON_STEP) %s\n" "Starting logging stack (Elasticsearch, Kibana, Filebeat)..."
-	@docker compose -f docker-compose.logging.yml up -d
-	@printf "$(ICON_OK) %s\n" "Logging stack is up (Elasticsearch:9200, Kibana:5601). Set LOG_FORMAT=json; logs in ./logs"
-
-logging-down:
-	@printf "$(ICON_STEP) %s\n" "Stopping logging stack..."
-	@docker compose -f docker-compose.logging.yml down
-	@printf "$(ICON_OK) %s\n" "Logging stack stopped"
-
-# Wipes Elasticsearch indices (docker volume) and local log files. Filebeat registry is reset on next up.
-# Kibana saved objects (data views) live in ES — recreate data view *study-app-logs* after reset.
-logging-reset:
-	@if ! command -v docker >/dev/null 2>&1; then \
-		printf "$(ICON_ERR) %s\n" "docker not found"; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Stopping logging stack and removing elasticsearch_data volume..."
-	@docker compose -f docker-compose.logging.yml down -v
-	@printf "$(ICON_STEP) %s\n" "Removing logs/*.log under ./logs..."
-	@rm -f logs/*.log
-	@printf "$(ICON_OK) %s\n" "Reset done. Run: make logging-up — then recreate Kibana data view *study-app-logs* if needed"
-
-logging-smoke:
-	@printf "$(ICON_STEP) %s\n" "Checking logging stack links..."
-	@$(PYTHON) scripts/check_logging_links.py
-	@printf "$(ICON_OK) %s\n" "Logging stack links are reachable"
-
-# Query Elasticsearch for study-app logs (no Kibana). Optional: QUERY=<uuid> to search request_id / message.
-# Requires: make logging-up and API writing JSON to ./logs. Env: OBS_ES_HOST, OBS_ES_PORT.
-logging-es-query:
-	@printf "$(ICON_STEP) %s\n" "Querying Elasticsearch (*study-app-logs*)..."
-	@$(PYTHON) scripts/check_es_request_id.py $(QUERY)
-	@printf "$(ICON_OK) %s\n" "Done (see output above)"
-
-# ──────────────────────────────────────────────
-# Container image
-# ──────────────────────────────────────────────
-docker-build:
-	@if ! command -v docker >/dev/null 2>&1; then \
-		printf "$(ICON_ERR) %s\n" "docker not found"; exit 1; \
-	fi
-	@printf "$(ICON_STEP) %s\n" "Building image study-app-api:local…"
-	@docker build -t study-app-api:local .
-	@printf "$(ICON_OK) %s\n" "Image study-app-api:local ready"
 
 # ──────────────────────────────────────────────
 # Health check

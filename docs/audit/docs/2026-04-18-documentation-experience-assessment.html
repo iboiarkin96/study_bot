@@ -16,7 +16,7 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Documentation Experience (DX) Assessment — Study App (formed 18 Apr 2026)</h1>
+    <h1 class="internal-h1--accent-tail">Documentation Experience (DX) Assessment — Study App (formed 18 Apr 2026)</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <section id="overview" class="card">
@@ -76,8 +76,8 @@
         <li>Makefile targets: <code>make docs-fix</code> (regenerates artifacts incl. <code>scripts/build_docs_search_index.py</code>),
           <code>make docs-check</code> (drift gate + <code>docs-html-check</code>, <code>docs-design-check</code>,
           <code>docs-feedback-check</code>), <code>make docs-a11y-check</code>; <code>make verify</code> runs
-          <code>docs-fix</code> then <code>docs-design-check</code> and <code>docs-a11y-check</code>;
-          <code>make verify-ci</code> runs <code>docs-check</code> (drift) then design + a11y — intended as pre-push gate per
+          deps-audit, code/API/test checks, then <code>docs-check</code> (drift) and <code>docs-a11y-check</code> as the
+          canonical pre-push gate per
           <code>.github/PULL_REQUEST_TEMPLATE.md</code>.</li>
           <li>CI: <code>.github/workflows/ci.yml</code> runs <code>make verify</code> (not <code>docs-check</code> drift gate) and
             <code>make docs-feedback-check</code>; scheduled docs feedback triage:
@@ -498,9 +498,9 @@
                           <td>CI for docs</td>
                           <td>
                             <code>make docs-check</code> fails on drift between generated and committed artifacts and includes
-                            <code>docs-feedback-check</code>; OpenAPI checks run in <code>make verify</code> / <code>verify-ci</code>.
-                            GitHub Actions quality job runs <code>make verify</code> (regenerates docs via <code>docs-fix</code>) without
-                            the <code>docs-check</code> git-diff drift gate — drift is caught by contributor <code>verify-ci</code> /
+                            <code>docs-feedback-check</code>; OpenAPI checks run in <code>make verify</code>.
+                            GitHub Actions quality job runs <code>make verify</code> and includes
+                            the <code>docs-check</code> git-diff drift gate — drift is caught by the same canonical command /
                             pre-commit. Spelling or Vale-style prose lint for all hand-written HTML is not universal.
                           </td>
                           <td class="audit-table-justification">Strong local/PR gates; CI omits <code>docs-check</code> drift (by design).</td>
@@ -901,6 +901,10 @@
                     </section>
 
                     <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+                      Found a bug? Report issue
+                    </button>
+                    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
                   </main>
 
                 </body></html>

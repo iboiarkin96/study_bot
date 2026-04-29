@@ -7,12 +7,11 @@
   <title>How-to guides — Study App</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
-  <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
-
   <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
@@ -24,187 +23,191 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>How-to guides</h1>
+        <h1 class="internal-h1--accent-tail">How-to guides</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <p class="lead">
-          Hands-on guides for contributors: from a first local run to shipping an endpoint and updating docs. Use this page
-          as the main entry for the recommended onboarding path and for the doc authoring checklist.
-        </p>
-        <section id="overview" class="card">
-          <h2>Overview</h2>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Use this index when you want steps for a task, not only policy text. For decisions, see
-            <a href="../adr/README.html">ADRs</a>. For detailed specs, see <a href="../rfc/README.html">RFCs</a>. For
-            writing
-            rules and audits, see
-            <a href="../internal/front/documentation-style-guide.html">Documentation style guide and audit standard</a>.
+            Hands-on guides for contributors: from a first local run to shipping an endpoint and updating docs.
+            Use this page as the main entry for the recommended onboarding path and for the doc authoring checklist.
+            For decisions, see <a href="../adr/README.html">ADRs</a>. For detailed specs, see
+            <a href="../rfc/README.html">RFCs</a>. For writing rules and audits, see the
+            <a href="../internal/front/documentation-style-guide.html">Documentation style guide</a>.
           </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#onboarding">Onboarding</a>
+            <a class="docs-page-hero__chip" href="#documentation">Documentation</a>
+            <a class="docs-page-hero__chip" href="#workflow">Workflow</a>
+            <a class="docs-page-hero__chip" href="#full-index">Full index</a>
+          </nav>
         </section>
 
-        <section id="golden-onboarding-path" class="card">
-          <h2>Golden onboarding path (recommended sequence)</h2>
+        <div class="docs-section-divider" aria-hidden="true">Onboarding</div>
+
+        <section id="onboarding" class="card">
+          <h2>Onboarding and implementation</h2>
           <p>
-            If you are new here, follow this order. It takes you from setup to a PR that is ready for review.
+            Golden path for new contributors: from a clean machine to a working local API, through all service layers,
+            to a PR ready for review.
           </p>
           <ol>
             <li>
               Run full onboarding guide:
-              <a href="./onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
+              <a href="./0001-onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
             </li>
             <li>
               Use the concrete endpoint implementation example:
-              <a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code> (beginner
-                walkthrough)</a>.
-              </li>
-              <li>
-                Update internal service docs structure and navigation:
-                <a href="./internal-service-docs-layout.html">Internal service docs layout and how to add pages</a>.
-              </li>
-              <li>
-                Validate writing style and structure against:
-                <a href="../internal/front/documentation-style-guide.html">Documentation style guide and audit standard</a>.
-              </li>
-            </ol>
-          </section>
+              <a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code> (beginner walkthrough)</a>.
+            </li>
+          </ol>
+        </section>
 
-          <section id="documentation-authoring-path" class="card">
-            <h2>Documentation authoring path (create and format docs)</h2>
-            <p>
-              Use this list when you change behavior and need to update the docs to match.
-            </p>
-            <ol>
-              <li>
-                Define document type and target location (internal API page, how-to, runbook, ADR, RFC).
-              </li>
-              <li>
-                Create or update page content using the required section structure from
-                <a href="../internal/front/documentation-style-guide.html#document-type-matrix">document-type matrix</a>.
-              </li>
-              <li>
-                For internal service pages, keep navigation and shell consistent with
-                <a href="./internal-service-docs-layout.html">internal docs layout guide</a>.
-              </li>
-              <li>
-                Update links on hub pages (this index, internal indexes, ADR/RFC/runbook lists) when a new page is part of the
-                official flow.
-              </li>
-              <li>
-                Run documentation build and normalization:
-                <pre><code>make docs-fix</code></pre>
-              </li>
-              <li>
-                Run checks and drift validation before push:
-                <pre><code>make docs-check</code></pre>
-              </li>
-            </ol>
-          </section>
+        <div class="docs-section-divider" aria-hidden="true">Documentation</div>
 
-          <section id="guides-catalog" class="card">
-            <h2>Guides catalog</h2>
+        <section id="documentation" class="card">
+          <h2>Documentation operations</h2>
+          <p>
+            Use these guides when you change behavior and need to update the docs to match, or when you need to add or
+            restructure pages in the internal documentation.
+          </p>
+          <ol>
+            <li>
+              Update internal service docs structure and navigation:
+              <a href="./0002-internal-service-docs-layout.html">Internal service docs layout and how to add pages</a>.
+            </li>
+            <li>
+              Validate writing style and structure against:
+              <a href="../internal/front/documentation-style-guide.html">Documentation style guide and audit standard</a>.
+            </li>
+            <li>
+              For operational steps when changing docs frontend (Command Palette, feedback, breakpoints, maintainers):
+              <a href="./0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely (playbooks)</a>.
+            </li>
+            <li>
+              Sync generated fragments and docs artifacts:
+              <pre><code>make docs-fix</code></pre>
+            </li>
+            <li>
+              Run checks and drift validation before push:
+              <pre><code>make docs-check</code></pre>
+            </li>
+          </ol>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Workflow</div>
+
+        <section id="workflow" class="card">
+          <h2>Workflow and commands</h2>
+          <p>
+            Canonical <code>make</code> workflows and the full <code>Makefile</code> command reference.
+          </p>
+          <ul>
+            <li>
+              <a href="./0003-make-commands-inventory.html">Make commands inventory</a> — full <code>Makefile</code>
+              command list from <code>make help</code>, canonical workflows, and release gates.
+            </li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Full index</div>
+
+        <section id="full-index" class="card">
+          <h2>All guides</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Full how-to index">
             <table>
               <thead>
                 <tr>
-                  <th>Guide</th>
-                  <th>When to use it</th>
+                  <th scope="col">Guide</th>
+                  <th scope="col">Summary</th>
+                  <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><a href="./onboarding-from-zero-to-endpoint-docs.html">Onboarding: from zero to endpoint and docs</a>
-                  </td>
-                  <td>First-time path from setup to quality gates.</td>
+                  <td><a href="./0001-onboarding-from-zero-to-endpoint-docs.html">Onboarding</a></td>
+                  <td>End-to-end path from a clean machine to a working local API, endpoint implementation across all layers, and a PR-ready quality gate.</td>
+                  <td>Active</td>
                 </tr>
                 <tr>
-                  <td><a href="./internal-service-docs-layout.html">Internal service docs layout and how to add pages</a></td>
-                  <td>Add or change pages under <code>docs/internal/</code>, sidebar, and layout.</td>
+                  <td><a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code></a></td>
+                  <td>Beginner walkthrough: domain model, repository, service, schemas, validation mapping, OpenAPI examples, router, tests, and docs.</td>
+                  <td>Active</td>
                 </tr>
                 <tr>
-                  <td><a href="./0004-how-to-add-post-contract.html">Beginner walkthrough: add
-                    <code>POST /api/v1/contract</code></a></td>
-                    <td>Example endpoint wired through all service layers.</td>
-                  </tr>
-                  <tr>
-                    <td><a href="./how-to-change-docs-frontend-safely.html">How to change docs frontend safely (playbooks)</a></td>
-                    <td>Operational steps for frontend docs changes (Command Palette, feedback, breakpoints, maintainers).</td>
-                  </tr>
-                  <tr>
-                    <td><a href="./make-commands-inventory.html">Make commands inventory</a></td>
-                    <td>Canonical workflows and full <code>Makefile</code> command list from <code>make help</code>.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </section>
+                  <td><a href="./0002-internal-service-docs-layout.html">Internal service docs layout</a></td>
+                  <td>Directory tree, shared chrome, page skeleton, and step-by-step guide for adding a new API resource to <code>docs/internal/</code>.</td>
+                  <td>Active</td>
+                </tr>
+                <tr>
+                  <td><a href="./0005-how-to-change-docs-frontend-safely.html">Change docs frontend safely</a></td>
+                  <td>Playbooks for page actions, feedback types, breakpoint policy, maintainers, diagram lightbox, and search telemetry changes.</td>
+                  <td>Active</td>
+                </tr>
+                <tr>
+                  <td><a href="./0003-make-commands-inventory.html">Make commands inventory</a></td>
+                  <td>Canonical workflows (fix, verify, release-check) and full <code>Makefile</code> command list auto-generated from <code>make help</code>.</td>
+                  <td>Active</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-            <section id="related" class="card">
-              <h2>Related references</h2>
-              <p>
-                More context and policies around the tasks above.
-              </p>
-              <ul>
-                <li><a href="../developer/README.html">Developers Docs hub</a></li>
-                <li><a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a></li>
-                <li><a href="./make-commands-inventory.html">Make commands inventory</a> (<code>make help</code> catalog)</li>
-                <li><a href="../internal/front/documentation-style-guide.html">Documentation style guide and audit standard</a></li>
-                <li><a href="../runbooks/README.html">Runbooks index</a> (incident and recovery procedures)</li>
-              </ul>
-            </section>
+        <nav class="docs-next-steps" aria-label="Next steps">
+          <p class="docs-next-steps__heading">See also</p>
+          <ul class="docs-next-steps__list">
+            <li><a class="docs-next-steps__item" href="../developer/README.html">Developer docs</a></li>
+            <li><a class="docs-next-steps__item" href="../adr/README.html">Architecture Decision Records</a></li>
+            <li><a class="docs-next-steps__item" href="../runbooks/README.html">Runbooks</a></li>
+          </ul>
+        </nav>
 
-            <section id="page-history" class="card">
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Wired <code>docs-syntax.js</code> for code-block syntax highlighting.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-27">2026-04-27</time></td>
+                  <td>Restructured: hero + section dividers by program, aligned with ADR and RFC index design.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Added frontend playbooks guide to the how-to catalog.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-              <h2>Page history</h2>
+        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
+          Found a bug? Report issue
+        </button>
+        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
+      </main>
+    </div>
+  </div>
 
-              <div class="docs-table-scroll" role="region" aria-label="Page history">
-
-                <table class="docs-page-history">
-
-                  <thead>
-
-                    <tr>
-
-                      <th scope="col">Date</th>
-
-                      <th scope="col">Change</th>
-
-                      <th scope="col">Author</th>
-
-                    </tr>
-
-                  </thead>
-
-                  <tbody>
-
-                    <tr>
-
-                      <td><time datetime="2026-04-23">2026-04-23</time></td>
-
-                      <td>Added frontend playbooks guide to the how-to catalog.</td>
-
-                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-
-                    </tr>
-
-                    <tr>
-
-                      <td><time datetime="2026-04-21">2026-04-21</time></td>
-
-                      <td>Added Page history section (repository baseline).</td>
-
-                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-
-                    </tr>
-
-                  </tbody>
-
-                </table>
-
-              </div>
-
-            </section>
-
-            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-          </main>
-        </div>
-      </div>
-
-    </body></html>
+</body></html>

@@ -7,7 +7,6 @@
   <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
   <link rel="stylesheet" href="../../assets/docs.css" />
   <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
   <script defer src="../../assets/internal-sidebar.js"></script>
   <script defer src="../../assets/docs-nav.js"></script>
   <script defer src="../../assets/docs-portal-data.js"></script>
@@ -21,7 +20,7 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Docs frontend navigation, search, and discovery</h1>
+        <h1>Docs frontend navigation, search, and discovery <span class="docs-page-type docs-page-type--component">Component</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
@@ -94,7 +93,7 @@
                                           <li><strong>When to regenerate:</strong> after material content additions, heading changes, or IA rewrites that impact discoverability.</li>
                                           <li><strong>Validation pass:</strong> run a query smoke set (entity names, API terms, internal page titles) and confirm ranking and highlights.</li>
                                           <li><strong>Failure behavior:</strong> if index fails to load, runtime shows explicit fallback guidance (including <code>file://</code> constraints).</li>
-                                          <li><strong>Documentation sync:</strong> update this page and <a href="../../howto/how-to-change-docs-frontend-safely.html">frontend playbooks</a> when index generation process changes.</li>
+                                          <li><strong>Documentation sync:</strong> update this page and <a href="../../howto/0005-how-to-change-docs-frontend-safely.html">frontend playbooks</a> when index generation process changes.</li>
                                         </ol>
                                       </section>
 
@@ -260,6 +259,110 @@
                                                                                     </ol>
                                                                                   </section>
 
+                                                                                  <section id="component-states" class="card">
+                                                                                    <h2>Per-component states and accessibility</h2>
+                                                                                    <p class="small">Every navigation surface on the page satisfies this matrix. Verify with <kbd>Tab</kbd> traversal and a screen reader on every release of <code>docs-nav.js</code> or <code>internal-sidebar.js</code>.</p>
+                                                                                    <div class="docs-table-scroll" role="region" aria-label="Navigation surfaces — states and accessibility">
+                                                                                      <table>
+                                                                                        <thead>
+                                                                                          <tr>
+                                                                                            <th scope="col">Surface</th>
+                                                                                            <th scope="col">States</th>
+                                                                                            <th scope="col">Role / ARIA</th>
+                                                                                            <th scope="col">Keyboard</th>
+                                                                                            <th scope="col">Reduced motion</th>
+                                                                                            <th scope="col">Screen-reader announcement</th>
+                                                                                          </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                          <tr>
+                                                                                            <td>Top navigation bar</td>
+                                                                                            <td>default, scrolled (sticky), drawer-mode, theme-changing</td>
+                                                                                            <td><code>role="banner"</code> wrapping <code>role="navigation"</code></td>
+                                                                                            <td><kbd>Tab</kbd> through links; theme toggle activatable with <kbd>Enter</kbd></td>
+                                                                                            <td>Skip backdrop-blur fade on scroll</td>
+                                                                                            <td>"Site navigation"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Internal sidebar (tree)</td>
+                                                                                            <td>collapsed, expanded, active-page-highlighted, drawer-mode, sidebar-collapsed (icon rail)</td>
+                                                                                            <td><code>role="navigation"</code> with nested <code>&lt;details&gt;</code> for groups</td>
+                                                                                            <td><kbd>Tab</kbd> to summary; <kbd>Enter</kbd> expands; arrow keys traverse children</td>
+                                                                                            <td>Skip details-expand animation</td>
+                                                                                            <td>"Documentation navigation, N groups"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Drawer (tablet/phone)</td>
+                                                                                            <td>closed, opening, open, closing</td>
+                                                                                            <td><code>role="dialog"</code> + <code>aria-modal="true"</code>; focus trap; backdrop dismissable</td>
+                                                                                            <td>Menu launcher opens; <kbd>Esc</kbd> or backdrop click closes</td>
+                                                                                            <td>Skip slide-in; show flat</td>
+                                                                                            <td>"Internal docs menu opened"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Search input + results</td>
+                                                                                            <td>empty, typing, loaded, no-results, navigating, error</td>
+                                                                                            <td><code>role="combobox"</code> on input + <code>role="listbox"</code> on panel</td>
+                                                                                            <td><kbd>/</kbd> focuses input; <kbd>↑</kbd>/<kbd>↓</kbd> navigates; <kbd>Enter</kbd> activates; <kbd>Esc</kbd> closes</td>
+                                                                                            <td>Skip results fade-in</td>
+                                                                                            <td>"N search results, item 1 of N"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Command palette (quick actions)</td>
+                                                                                            <td>closed, open, filtering, navigating</td>
+                                                                                            <td><code>role="dialog"</code> + <code>aria-modal="true"</code> with focus trap</td>
+                                                                                            <td><kbd>Cmd</kbd>+<kbd>K</kbd> / <kbd>/</kbd> opens; <kbd>Esc</kbd> closes; <kbd>↑</kbd>/<kbd>↓</kbd>/<kbd>Enter</kbd></td>
+                                                                                            <td>Open instantly</td>
+                                                                                            <td>"Quick actions palette open, type to search"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>In-page TOC ("On this page")</td>
+                                                                                            <td>desktop-aside, collapsed, expanded, active-section-highlighted</td>
+                                                                                            <td><code>role="navigation"</code> with <code>aria-label="On this page"</code></td>
+                                                                                            <td><kbd>Tab</kbd> traverses; <kbd>Enter</kbd> jumps; <kbd>&lt;</kbd>/<kbd>&gt;</kbd> collapse on desktop</td>
+                                                                                            <td>Skip smooth scroll on jump</td>
+                                                                                            <td>"On this page, N sections"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Continue reading prompt</td>
+                                                                                            <td>hidden, visible, dismissed, expired</td>
+                                                                                            <td><code>role="status"</code></td>
+                                                                                            <td><kbd>Esc</kbd> dismisses; <kbd>Enter</kbd> on jump button</td>
+                                                                                            <td>Skip slide-in</td>
+                                                                                            <td>"Resume from section X"</td>
+                                                                                          </tr>
+                                                                                        </tbody>
+                                                                                      </table>
+                                                                                    </div>
+                                                                                  </section>
+
+                                                                                  <section id="dos-and-donts" class="card">
+                                                                                    <h2>Do's and Don'ts</h2>
+                                                                                    <table>
+                                                                                      <thead>
+                                                                                        <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+                                                                                      </thead>
+                                                                                      <tbody>
+                                                                                        <tr>
+                                                                                          <td>Add new sidebar entries to <code>INTERNAL_SIDEBAR_NAV</code> in <code>internal-sidebar.js</code> — the single source of truth.</td>
+                                                                                          <td>Duplicate links into the drawer top-nav config — both surfaces derive from the same array.</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                          <td>Verify the command palette opens with both <kbd>Cmd</kbd>+<kbd>K</kbd> and <kbd>/</kbd> after any keyboard-shortcut change.</td>
+                                                                                          <td>Repurpose either shortcut — both are documented contracts users rely on (see <a href="./docs-frontend-hotkeys.html">hotkeys</a>).</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                          <td>Update <code>assets/search-index.json</code> when adding a new top-level page so search results stay complete.</td>
+                                                                                          <td>Expect the index to auto-regenerate — it is currently committed by hand.</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                          <td>Group related sub-sections under <code>&lt;details&gt;</code> so the in-page TOC stays scannable on long pages.</td>
+                                                                                          <td>Flatten a page into 30 sibling <code>&lt;h2&gt;</code> headings — the TOC becomes a wall of links and orientation collapses.</td>
+                                                                                        </tr>
+                                                                                      </tbody>
+                                                                                    </table>
+                                                                                  </section>
+
                                                                                   <section id="page-history" class="card">
                                                                                     <h2>Page history</h2>
                                                                                     <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -272,6 +375,16 @@
                                                                                           </tr>
                                                                                         </thead>
                                                                                         <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Per-component states and accessibility section (7 navigation surfaces).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (single source of truth, hotkey contracts, search-index hand-edit, TOC density).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
                                                                                           <tr>
                                                                                             <td><time datetime="2026-04-23">2026-04-23</time></td>
                                                                                             <td>Added search-index lifecycle workflow and validation guidance for discoverability changes.</td>
