@@ -14,11 +14,7 @@
   <script defer src="../../assets/docs-internal-meta.js"></script>
   <script defer src="../../assets/docs-spec-status.js"></script>
 </head>
-<body class="internal-layout"
-      data-maintainer-ids="16fc8b78537109162984a2fdbef6e142"
-      data-spec-page="foundation"
-      data-spec-status="implemented"
-      data-spec-owner="ivan-boyarkin">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="foundation" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <div id="internal-sidebar-mount"></div>
@@ -56,7 +52,7 @@
         <section id="page-feedback-card" class="card">
           <h2>Page feedback form workflow</h2>
           <ul>
-            <li><strong>Injection point:</strong> <code>injectDocsFeedbackCard()</code> inserts a card before <code>.docs-inpage-toc-mount</code>.</li>
+            <li><strong>Injection point:</strong> <code>injectDocsFeedbackCard()</code> appends the FAB and modal to <code>document.body</code> at runtime; no HTML mount required on the page.</li>
             <li><strong>Input model:</strong> feedback type select + required textarea with minimum length validation.</li>
             <li><strong>Status UX:</strong> live status text and non-blocking toast while redirecting to GitHub issue creation.</li>
             <li><strong>Issue target:</strong> prefilled URL from <code>docsFeedbackIssueUrl()</code> to <code>iboiarkin96/study_bot</code>.</li>
@@ -76,32 +72,34 @@
 
         <section id="github-feedback-contract" class="card">
           <h2>GitHub feedback contract</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Artifact</th>
-                <th>Purpose</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>.github/ISSUE_TEMPLATE/docs_feedback.md</code></td>
-                <td>Template fields: page path, URL, feedback type, improvement request, additional context.</td>
-              </tr>
-              <tr>
-                <td><code>DOCS_FEEDBACK_TEMPLATE</code> in <code>docs/assets/docs-nav.js</code></td>
-                <td>Ensures card opens GitHub issue with the expected template name.</td>
-              </tr>
-              <tr>
-                <td><code>DOCS_FEEDBACK_LABELS</code> in <code>docs/assets/docs-nav.js</code></td>
-                <td>Applies <code>docs-feedback</code> label to all page feedback issues.</td>
-              </tr>
-              <tr>
-                <td><code>.github/workflows/docs-feedback-cadence.yml</code></td>
-                <td>Weekly scheduled cadence issue that aggregates and drives docs-feedback triage workflow.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Artifact</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>.github/ISSUE_TEMPLATE/docs_feedback.md</code></td>
+                  <td>Template fields: page path, URL, feedback type, improvement request, additional context.</td>
+                </tr>
+                <tr>
+                  <td><code>DOCS_FEEDBACK_TEMPLATE</code> in <code>docs/assets/docs-nav.js</code></td>
+                  <td>Ensures card opens GitHub issue with the expected template name.</td>
+                </tr>
+                <tr>
+                  <td><code>DOCS_FEEDBACK_LABELS</code> in <code>docs/assets/docs-nav.js</code></td>
+                  <td>Applies <code>docs-feedback</code> label to all page feedback issues.</td>
+                </tr>
+                <tr>
+                  <td><code>.github/workflows/docs-feedback-cadence.yml</code></td>
+                  <td>Weekly scheduled cadence issue that aggregates and drives docs-feedback triage workflow.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="edited-by-widget" class="card">
@@ -139,36 +137,38 @@
           <p>
             This contract defines the minimum event surface expected by analytics consumers and QA checks.
           </p>
-          <table>
-            <thead>
-              <tr>
-                <th>Channel</th>
-                <th>Events</th>
-                <th>Required payload context</th>
-                <th>Implementation owner</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Search</td>
-                <td><code>search_query</code>, <code>search_result_click</code>, <code>search_success</code>, load/error events</td>
-                <td>page path, query, result metadata, status/error context</td>
-                <td><code>emitDocsSearchTelemetry()</code> in <code>docs/assets/docs-nav.js</code></td>
-              </tr>
-              <tr>
-                <td>Command palette</td>
-                <td><code>palette_open</code>, <code>palette_close</code>, <code>palette_filter</code>, <code>palette_execute</code></td>
-                <td>page path, trigger type, action id/group, query length</td>
-                <td><code>emitDocsPaletteTelemetry()</code> in <code>docs/assets/docs-nav.js</code></td>
-              </tr>
-              <tr>
-                <td>Feedback workflow</td>
-                <td>Issue creation is observable in GitHub issues stream and cadence workflow artifacts</td>
-                <td>page URL/path, feedback type, issue template alignment</td>
-                <td><code>injectDocsFeedbackCard()</code> + GitHub template/workflow artifacts</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Channel</th>
+                  <th>Events</th>
+                  <th>Required payload context</th>
+                  <th>Implementation owner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Search</td>
+                  <td><code>search_query</code>, <code>search_result_click</code>, <code>search_success</code>, load/error events</td>
+                  <td>page path, query, result metadata, status/error context</td>
+                  <td><code>emitDocsSearchTelemetry()</code> in <code>docs/assets/docs-nav.js</code></td>
+                </tr>
+                <tr>
+                  <td>Command palette</td>
+                  <td><code>palette_open</code>, <code>palette_close</code>, <code>palette_filter</code>, <code>palette_execute</code></td>
+                  <td>page path, trigger type, action id/group, query length</td>
+                  <td><code>emitDocsPaletteTelemetry()</code> in <code>docs/assets/docs-nav.js</code></td>
+                </tr>
+                <tr>
+                  <td>Feedback workflow</td>
+                  <td>Issue creation is observable in GitHub issues stream and cadence workflow artifacts</td>
+                  <td>page URL/path, feedback type, issue template alignment</td>
+                  <td><code>injectDocsFeedbackCard()</code> + GitHub template/workflow artifacts</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p class="small">
             Endpoint configuration for search telemetry can be provided via page metadata; if unset, runtime uses safe defaults.
           </p>
@@ -178,7 +178,6 @@
           <h2>Practical checklist for analysts and frontend contributors</h2>
           <ol>
             <li>When adding a new page, include <code>data-maintainer-ids</code> and <code>docs-page-meta-mount</code> so ownership is visible.</li>
-            <li>Keep <code>docs-inpage-toc-mount</code> so feedback card and TOC can be injected.</li>
             <li>For feedback-related changes, validate issue template and cadence workflow together.</li>
             <li>After profile or maintainer updates, regenerate portal data and verify Edited by rendering.</li>
             <li>Document material frontend behavior changes in <code>docs/CHANGELOG.md</code>.</li>
@@ -217,7 +216,6 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
       </main>
     </div>
   </div>

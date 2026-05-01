@@ -15,11 +15,7 @@
   <script defer src="../../assets/docs-internal-meta.js"></script>
   <script defer src="../../assets/docs-spec-status.js"></script>
 </head>
-<body class="internal-layout"
-      data-maintainer-ids="16fc8b78537109162984a2fdbef6e142"
-      data-spec-page="reference"
-      data-spec-status="implemented"
-      data-spec-owner="ivan-boyarkin">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="reference" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <div id="internal-sidebar-mount"></div>
@@ -190,7 +186,8 @@
             <dt>DOM mount points</dt>
             <dd>
               <code>#docs-top-nav</code>, <code>#internal-sidebar-mount</code>, <code>#docs-page-meta-mount</code>,
-              <code>.docs-inpage-toc-mount</code>, <code>#docs-feedback-anchor</code>, <code>#docs-search-results</code>
+              <code>#docs-search-results</code>. The in-page TOC mount and the report-bug FAB are
+              created at runtime and need no HTML hooks.
             </dd>
           </dl>
           <p class="small">Renames or removals here propagate to nearly every page. Touch with the change-management
@@ -259,7 +256,7 @@
                 <dd><code>window.__DOCS_PORTAL_DATA__</code> — JSON object with two top-level keys: <code>maintainerPages</code> (page → maintainer-id mapping) and <code>people</code> (employee profile array).</dd>
                 <dt>Consumed by</dt><dd><code>docs-internal-meta.js</code> (renders maintainer panels and people profiles).</dd>
                 <dt>Generation</dt>
-                <dd>This file is hand-edited today. Long-term ambition is to generate it from a YAML or JSON source — see <a href="./docs-frontend-feedback-and-editorial-workflow.html#portal-data-model">portal data model</a>.</dd>
+                <dd>This file is hand-edited today. Long-term ambition is to generate it from a YAML or JSON source — see <a href="./docs-frontend-feedback-and-editorial-workflow.html#portal-editorial-data-model">portal data model</a>.</dd>
               </dl>
             </section>
 
@@ -429,7 +426,6 @@
                               </div>
                             </section>
 
-                            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
                           </main>
                         </div>
                       </div>

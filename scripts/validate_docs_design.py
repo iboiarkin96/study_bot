@@ -18,7 +18,7 @@ DOCS_ROOT = ROOT / "docs"
 FROZEN_DOCS_REL_PATHS = {
     Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
     # Standalone week backlog calendar (custom layout, not portal doc skeleton).
-    Path("backlog/week-calendar-2026-04-25.html"),
+    Path("internal/portal/people/ivan-boyarkin/week-calendar-2026-04-25.html"),
 }
 
 
@@ -117,18 +117,6 @@ def _has_top_nav_mount(root_el) -> bool:
     return False
 
 
-def _has_auto_toc_mount(root_el) -> bool:
-    for node in root_el.iter():
-        if not isinstance(node.tag, str) or _local_name(node.tag) != "div":
-            continue
-        classes = set((node.attrib.get("class") or "").split())
-        if "docs-inpage-toc-mount" not in classes:
-            continue
-        if (node.attrib.get("data-inpage-toc") or "").strip() == "auto":
-            return True
-    return False
-
-
 def _count_tag(root_el, tag_name: str) -> int:
     count = 0
     for node in root_el.iter():
@@ -195,10 +183,6 @@ def main() -> None:
                 failures.append(f"{rel}: expected exactly one <h1>")
             if not _has_top_nav_mount(doc):
                 failures.append(f'{rel}: missing <div id="docs-top-nav"></div>')
-            if not _has_auto_toc_mount(doc):
-                failures.append(
-                    f'{rel}: missing <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>'
-                )
             if not swagger_layout and not _has_section_card(doc):
                 failures.append(f'{rel}: expected at least one <section class="card">')
             if not swagger_layout and not _has_page_history_section(doc):

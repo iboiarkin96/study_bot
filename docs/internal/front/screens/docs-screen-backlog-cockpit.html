@@ -12,6 +12,7 @@
   <script defer src="../../../assets/docs-nav.js"></script>
   <script defer src="../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-diagram-lightbox.js"></script>
 </head>
 
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
@@ -43,6 +44,132 @@
             <li><strong>Main task stream:</strong> PM-style task cards rendered from source HTML sections.</li>
             <li><strong>Operational helpers:</strong> new-task template and page history.</li>
           </ol>
+
+          <figure class="sys-diagram" aria-label="Backlog cockpit screen anatomy">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Mock · Spatial anatomy</span>
+              <div class="sys-diagram__titles">
+                <h3>Cockpit regions A–E on a desktop viewport</h3>
+                <p class="sys-diagram__sub">Five fixed regions stacked top-to-bottom; intelligence panel sits to the right of the grouped blocks and main stream on desktop only.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#fafbfd;">
+              <svg viewBox="0 0 760 480" role="img" aria-labelledby="cockpit-anatomy-title cockpit-anatomy-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;">
+                <title id="cockpit-anatomy-title">Backlog cockpit screen layout</title>
+                <desc id="cockpit-anatomy-desc">A wireframe of the backlog cockpit: hero/control bar at top with KPI tiles, intelligence panel docked to the right, grouped orientation blocks above the main task stream of PM-style cards, and operational helpers at the bottom.</desc>
+
+                <rect x="4" y="4" width="752" height="472" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                <!-- A: Hero / control bar -->
+                <rect x="32" y="28" width="696" height="92" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.6" rx="8"></rect>
+                <text x="48" y="50" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">A · Hero / control bar</text>
+                <rect x="48" y="60" width="220" height="20" fill="#ffffff" stroke="#93c5fd" rx="4"></rect>
+                <text x="58" y="74" font-size="10" fill="#64748b">search…</text>
+                <g font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#1e3a8a">
+                  <rect x="276" y="60" width="46" height="20" fill="#ffffff" stroke="#93c5fd" rx="10"></rect>
+                  <text x="299" y="74" text-anchor="middle">All</text>
+                  <rect x="328" y="60" width="64" height="20" fill="#1e3a8a" rx="10"></rect>
+                  <text x="360" y="74" text-anchor="middle" fill="#ffffff">My focus</text>
+                  <rect x="398" y="60" width="56" height="20" fill="#ffffff" stroke="#93c5fd" rx="10"></rect>
+                  <text x="426" y="74" text-anchor="middle">Open</text>
+                  <rect x="460" y="60" width="64" height="20" fill="#ffffff" stroke="#93c5fd" rx="10"></rect>
+                  <text x="492" y="74" text-anchor="middle">Blocked</text>
+                </g>
+                <!-- KPI tiles inside hero -->
+                <g font-family="ui-sans-serif,sans-serif" font-size="9" fill="#0f172a">
+                  <rect x="48" y="90" width="74" height="22" fill="#ecfdf5" stroke="#10b981" rx="4"></rect>
+                  <text x="56" y="104" font-weight="700">Open · 12</text>
+                  <rect x="128" y="90" width="84" height="22" fill="#fefce8" stroke="#eab308" rx="4"></rect>
+                  <text x="136" y="104" font-weight="700">In progress · 4</text>
+                  <rect x="218" y="90" width="80" height="22" fill="#fee2e2" stroke="#ef4444" rx="4"></rect>
+                  <text x="226" y="104" font-weight="700">Blocked · 3</text>
+                  <rect x="304" y="90" width="74" height="22" fill="#eff6ff" stroke="#3b82f6" rx="4"></rect>
+                  <text x="312" y="104" font-weight="700">Done · 58%</text>
+                  <rect x="384" y="90" width="84" height="22" fill="#fff7ed" stroke="#f97316" rx="4"></rect>
+                  <text x="392" y="104" font-weight="700">SLA risk · 2</text>
+                  <rect x="474" y="90" width="92" height="22" fill="#fff7ed" stroke="#f97316" rx="4"></rect>
+                  <text x="482" y="104" font-weight="700">ETA pressure · 5</text>
+                  <rect x="572" y="90" width="92" height="22" fill="#ecfeff" stroke="#06b6d4" rx="4"></rect>
+                  <text x="580" y="104" font-weight="700">Flow · 6/wk</text>
+                </g>
+
+                <!-- C: Grouped orientation blocks -->
+                <rect x="32" y="132" width="500" height="56" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.6" rx="8"></rect>
+                <text x="48" y="154" font-family="ui-sans-serif,sans-serif" font-size="12" font-weight="700" fill="#3730a3">C · Grouped orientation blocks</text>
+                <g font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#3730a3">
+                  <rect x="48" y="162" width="78" height="18" fill="#ffffff" stroke="#a5b4fc" rx="9"></rect>
+                  <text x="87" y="174" text-anchor="middle">frontend · 7</text>
+                  <rect x="132" y="162" width="74" height="18" fill="#ffffff" stroke="#a5b4fc" rx="9"></rect>
+                  <text x="169" y="174" text-anchor="middle">backend · 5</text>
+                  <rect x="212" y="162" width="68" height="18" fill="#ffffff" stroke="#a5b4fc" rx="9"></rect>
+                  <text x="246" y="174" text-anchor="middle">devops · 3</text>
+                  <rect x="286" y="162" width="60" height="18" fill="#ffffff" stroke="#a5b4fc" rx="9"></rect>
+                  <text x="316" y="174" text-anchor="middle">docs · 4</text>
+                </g>
+
+                <!-- B: Intelligence panel -->
+                <rect x="544" y="132" width="184" height="232" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.6" rx="8"></rect>
+                <text x="556" y="154" font-family="ui-sans-serif,sans-serif" font-size="12" font-weight="700" fill="#92400e">B · Intelligence panel</text>
+                <g font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#451a03">
+                  <text x="556" y="174" font-weight="700">Today attention</text>
+                  <text x="556" y="187" fill="#78350f">item-12 · P0 · blocked 6d</text>
+                  <text x="556" y="200" fill="#78350f">item-19 · P0 · ETA 1d</text>
+                  <text x="556" y="222" font-weight="700">Top 3 bottlenecks</text>
+                  <text x="556" y="235" fill="#78350f">backend · 3 blocked</text>
+                  <text x="556" y="248" fill="#78350f">devops · 2 high-risk</text>
+                  <text x="556" y="261" fill="#78350f">docs · 1 SLA breach</text>
+                  <text x="556" y="284" font-weight="700">Reprioritization</text>
+                  <text x="556" y="297" fill="#78350f">→ promote item-22</text>
+                  <text x="556" y="310" fill="#78350f">→ defer item-31</text>
+                </g>
+                <text x="556" y="346" font-family="ui-sans-serif,sans-serif" font-size="9" font-style="italic" fill="#92400e">desktop-only · hidden ≤ 1024 px</text>
+
+                <!-- D: Main task stream -->
+                <rect x="32" y="200" width="500" height="208" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6" rx="8"></rect>
+                <text x="48" y="222" font-family="ui-sans-serif,sans-serif" font-size="12" font-weight="700" fill="#0f172a">D · Main task stream</text>
+                <!-- card 1 -->
+                <g transform="translate(48 232)">
+                  <rect x="0" y="0" width="468" height="50" fill="#f8fafc" stroke="#e2e8f0" rx="6"></rect>
+                  <rect x="0" y="0" width="3" height="50" fill="#ef4444"></rect>
+                  <text x="14" y="16" font-family="ui-sans-serif,sans-serif" font-size="10" font-weight="700" fill="#0f172a">item-12 · API rate-limit broken on bursts</text>
+                  <rect x="392" y="6" width="68" height="14" fill="#fee2e2" stroke="#ef4444" rx="3"></rect>
+                  <text x="426" y="16" font-family="ui-sans-serif,sans-serif" font-size="9" text-anchor="middle" fill="#991b1b">blocked</text>
+                  <text x="14" y="32" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#475569">P0 · backend · bug · risk:high · age 14d</text>
+                  <text x="14" y="44" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#1d4ed8">ETA: 1.0–1.5 d @ 3h/day</text>
+                </g>
+                <!-- card 2 -->
+                <g transform="translate(48 290)">
+                  <rect x="0" y="0" width="468" height="50" fill="#f8fafc" stroke="#e2e8f0" rx="6"></rect>
+                  <rect x="0" y="0" width="3" height="50" fill="#f59e0b"></rect>
+                  <text x="14" y="16" font-family="ui-sans-serif,sans-serif" font-size="10" font-weight="700" fill="#0f172a">item-19 · Cockpit KPI tile severity coding</text>
+                  <rect x="384" y="6" width="76" height="14" fill="#fefce8" stroke="#eab308" rx="3"></rect>
+                  <text x="422" y="16" font-family="ui-sans-serif,sans-serif" font-size="9" text-anchor="middle" fill="#854d0e">in progress</text>
+                  <text x="14" y="32" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#475569">P1 · frontend · feature · risk:medium · age 5d</text>
+                  <text x="14" y="44" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#1d4ed8">ETA: 0.5–1.0 d @ 3h/day</text>
+                </g>
+                <!-- card 3 -->
+                <g transform="translate(48 348)">
+                  <rect x="0" y="0" width="468" height="50" fill="#f8fafc" stroke="#e2e8f0" rx="6"></rect>
+                  <rect x="0" y="0" width="3" height="50" fill="#10b981"></rect>
+                  <text x="14" y="16" font-family="ui-sans-serif,sans-serif" font-size="10" font-weight="700" fill="#0f172a">item-22 · Backlog taxonomy validator</text>
+                  <rect x="396" y="6" width="64" height="14" fill="#dcfce7" stroke="#10b981" rx="3"></rect>
+                  <text x="428" y="16" font-family="ui-sans-serif,sans-serif" font-size="9" text-anchor="middle" fill="#14532d">todo</text>
+                  <text x="14" y="32" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#475569">P2 · docs · tech-debt · risk:low · age 3d</text>
+                  <text x="14" y="44" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#1d4ed8">ETA: 1.5–2.0 d @ 3h/day</text>
+                </g>
+
+                <!-- E: Operational helpers -->
+                <rect x="32" y="420" width="696" height="44" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" rx="8"></rect>
+                <text x="48" y="438" font-family="ui-sans-serif,sans-serif" font-size="12" font-weight="700" fill="#0f172a">E · Operational helpers</text>
+                <text x="48" y="454" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#475569">new-task template · page history</text>
+
+                <!-- Annotations / leader lines -->
+                <line x1="544" y1="368" x2="566" y2="380" stroke="#92400e" stroke-width="0.8"></line>
+                <text x="572" y="384" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#92400e">renderIntelligencePanel()</text>
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">Inline SVG · Regions A–E correspond to the numbered list above. Markup lives in <code>docs/backlog/README.html</code>; layout rules in <code>docs/backlog/backlog.css</code>.</figcaption>
+          </figure>
         </section>
 
         <section class="card" id="data-contract">
@@ -91,6 +218,90 @@
             <li>Clicking quick presets updates detailed filters.</li>
             <li>Changing detailed filters recalculates quick preset state; non-matching combinations become internal <code>custom</code> state.</li>
           </ul>
+
+          <figure class="sys-diagram" aria-label="Quick preset and detailed filter sync">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Diagram · State sync</span>
+              <div class="sys-diagram__titles">
+                <h3>Quick presets ⇄ detailed filters</h3>
+                <p class="sys-diagram__sub">Bidirectional projection. Combinations that do not match any preset collapse to the internal <code>custom</code> state.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#fafbfd;">
+              <svg viewBox="0 0 760 360" role="img" aria-labelledby="filter-sync-title filter-sync-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;">
+                <title id="filter-sync-title">Filter and quick-preset sync</title>
+                <desc id="filter-sync-desc">Two columns: quick presets on the left, detailed filter dimensions on the right, with arrows showing bidirectional projection and a fall-through to the custom state.</desc>
+                <defs>
+                  <marker id="cockpit-arrow-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <path d="M0,0 L10,5 L0,10 z" fill="#3b82f6"></path>
+                  </marker>
+                  <marker id="cockpit-arrow-l" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <path d="M10,0 L0,5 L10,10 z" fill="#7c3aed"></path>
+                  </marker>
+                </defs>
+
+                <rect x="4" y="4" width="752" height="352" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                <!-- Quick presets column -->
+                <text x="160" y="36" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Quick presets</text>
+                <text x="160" y="52" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#64748b">applyDetailedFromQuickPreset()</text>
+                <g font-family="ui-sans-serif,sans-serif" font-size="11" fill="#1e3a8a">
+                  <rect x="60" y="68" width="200" height="28" fill="#ffffff" stroke="#93c5fd" rx="14"></rect>
+                  <text x="160" y="86" text-anchor="middle">All</text>
+                  <rect x="60" y="104" width="200" height="28" fill="#1e3a8a" rx="14"></rect>
+                  <text x="160" y="122" text-anchor="middle" fill="#ffffff" font-weight="700">My focus</text>
+                  <rect x="60" y="140" width="200" height="28" fill="#ffffff" stroke="#93c5fd" rx="14"></rect>
+                  <text x="160" y="158" text-anchor="middle">Open</text>
+                  <rect x="60" y="176" width="200" height="28" fill="#ffffff" stroke="#93c5fd" rx="14"></rect>
+                  <text x="160" y="194" text-anchor="middle">Blocked</text>
+                  <rect x="60" y="212" width="200" height="28" fill="#ffffff" stroke="#93c5fd" rx="14"></rect>
+                  <text x="160" y="230" text-anchor="middle">High risk</text>
+                </g>
+                <text x="160" y="262" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="11" font-weight="700" fill="#7c3aed">+ custom</text>
+                <text x="160" y="278" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#6b7280">internal state for non-matching combos</text>
+
+                <!-- Arrows -->
+                <path d="M 268 122 C 340 122, 380 152, 480 152" fill="none" stroke="#3b82f6" stroke-width="2" marker-end="url(#cockpit-arrow-r)"></path>
+                <text x="376" y="118" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="10" font-weight="600" fill="#1d4ed8">project →</text>
+                <path d="M 480 200 C 380 200, 340 230, 268 230" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#cockpit-arrow-l)"></path>
+                <text x="376" y="246" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="10" font-weight="600" fill="#6d28d9">← syncQuickPresetFromDetailed()</text>
+
+                <!-- Detailed filters column -->
+                <text x="600" y="36" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Detailed filters</text>
+                <text x="600" y="52" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#64748b">AND across dimensions</text>
+                <g font-family="ui-sans-serif,sans-serif" font-size="10.5" fill="#0f172a">
+                  <rect x="490" y="68" width="220" height="32" fill="#ffffff" stroke="#cbd5e1" rx="6"></rect>
+                  <text x="500" y="82" font-weight="700" fill="#1e3a8a">Group</text>
+                  <text x="500" y="95" fill="#475569" font-size="9.5">single · frontend / backend / devops / docs</text>
+
+                  <rect x="490" y="106" width="220" height="32" fill="#ffffff" stroke="#cbd5e1" rx="6"></rect>
+                  <text x="500" y="120" font-weight="700" fill="#1e3a8a">Priority</text>
+                  <text x="500" y="133" fill="#475569" font-size="9.5">multi · P0 P1 P2 P3</text>
+
+                  <rect x="490" y="144" width="220" height="32" fill="#ffffff" stroke="#cbd5e1" rx="6"></rect>
+                  <text x="500" y="158" font-weight="700" fill="#1e3a8a">Task type</text>
+                  <text x="500" y="171" fill="#475569" font-size="9.5">multi · bug feature research tech-debt</text>
+
+                  <rect x="490" y="182" width="220" height="32" fill="#ffffff" stroke="#cbd5e1" rx="6"></rect>
+                  <text x="500" y="196" font-weight="700" fill="#1e3a8a">Risk</text>
+                  <text x="500" y="209" fill="#475569" font-size="9.5">multi · high medium low</text>
+
+                  <rect x="490" y="220" width="220" height="32" fill="#ffffff" stroke="#cbd5e1" rx="6"></rect>
+                  <text x="500" y="234" font-weight="700" fill="#1e3a8a">Confidence</text>
+                  <text x="500" y="247" fill="#475569" font-size="9.5">multi · high medium low</text>
+
+                  <rect x="490" y="258" width="220" height="32" fill="#ffffff" stroke="#cbd5e1" rx="6"></rect>
+                  <text x="500" y="272" font-weight="700" fill="#1e3a8a">Status</text>
+                  <text x="500" y="285" fill="#475569" font-size="9.5">multi · todo in-progress done blocked rejected</text>
+                </g>
+
+                <!-- Bottom predicate -->
+                <rect x="60" y="304" width="650" height="36" fill="#1e293b" rx="8"></rect>
+                <text x="385" y="328" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11.5" fill="#f1f5f9">matches(item) = AND(group, priority, taskType, risk, confidence, status, search)</text>
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">Inline SVG · Quick preset is a one-shot projection onto the detailed dimensions; detailed-filter edits feed back through <code>syncQuickPresetFromDetailed()</code>.</figcaption>
+          </figure>
           <h3>Implementation map (filters)</h3>
           <ul>
             <li><strong>Main filter predicate:</strong> <code>matches(item)</code> in <code>docs/backlog/backlog.js</code>.</li>
@@ -118,11 +329,186 @@
             <li><strong>Final deterministic tie-break:</strong> <code>itemNumber(item)</code> parsing <code>id="item-XX"</code>.</li>
           </ul>
 
+          <figure class="sys-diagram" aria-label="Stable sort pipeline">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Diagram · Sort pipeline</span>
+              <div class="sys-diagram__titles">
+                <h3>Open-first → priority bucket → numeric tie-break</h3>
+                <p class="sys-diagram__sub">Three deterministic passes. Each tile shows the comparator stage and the function in <code>backlog.js</code> that emits its rank.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#fafbfd;">
+              <svg viewBox="0 0 760 280" role="img" aria-labelledby="sort-pipe-title sort-pipe-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;">
+                <title id="sort-pipe-title">Backlog sort pipeline</title>
+                <desc id="sort-pipe-desc">Three sort stages from left to right: open-vs-closed bucket, then priority bucket inside open with P0 then bug then P1 P2 P3, then numeric item id as the final tie-breaker.</desc>
+                <defs>
+                  <marker id="sort-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <path d="M0,0 L10,5 L0,10 z" fill="#1e3a8a"></path>
+                  </marker>
+                </defs>
+
+                <rect x="4" y="4" width="752" height="272" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                <!-- Stage 1 -->
+                <rect x="32" y="60" width="200" height="120" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.6" rx="8"></rect>
+                <text x="132" y="86" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">1 · Open vs Closed</text>
+                <text x="132" y="106" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="11" fill="#1e3a8a">isOpenStatus(status)</text>
+                <g font-family="ui-sans-serif,sans-serif" font-size="10.5">
+                  <rect x="48" y="118" width="80" height="22" fill="#ecfdf5" stroke="#10b981" rx="4"></rect>
+                  <text x="88" y="133" text-anchor="middle" fill="#065f46">open · 0</text>
+                  <rect x="136" y="118" width="80" height="22" fill="#f1f5f9" stroke="#94a3b8" rx="4"></rect>
+                  <text x="176" y="133" text-anchor="middle" fill="#334155">closed · 1</text>
+                </g>
+                <text x="132" y="160" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#475569">openRank from comparator</text>
+
+                <!-- Stage 2 -->
+                <rect x="262" y="40" width="240" height="200" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.6" rx="8"></rect>
+                <text x="382" y="66" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="13" font-weight="700" fill="#92400e">2 · Priority bucket (open only)</text>
+                <text x="382" y="84" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="11" fill="#92400e">priorityBucketRank()</text>
+                <g font-family="ui-sans-serif,sans-serif" font-size="10.5">
+                  <rect x="282" y="98" width="200" height="22" fill="#fee2e2" stroke="#ef4444" rx="4"></rect>
+                  <text x="382" y="113" text-anchor="middle" fill="#991b1b" font-weight="700">P0 · open · 0</text>
+                  <rect x="282" y="124" width="200" height="22" fill="#fed7aa" stroke="#f97316" rx="4"></rect>
+                  <text x="382" y="139" text-anchor="middle" fill="#9a3412" font-weight="700">bug (any P) · 1</text>
+                  <rect x="282" y="150" width="200" height="22" fill="#fef9c3" stroke="#eab308" rx="4"></rect>
+                  <text x="382" y="165" text-anchor="middle" fill="#854d0e">P1 · 2</text>
+                  <rect x="282" y="176" width="200" height="22" fill="#dbeafe" stroke="#3b82f6" rx="4"></rect>
+                  <text x="382" y="191" text-anchor="middle" fill="#1e3a8a">P2 · 3</text>
+                  <rect x="282" y="202" width="200" height="22" fill="#e2e8f0" stroke="#94a3b8" rx="4"></rect>
+                  <text x="382" y="217" text-anchor="middle" fill="#334155">P3 · 4</text>
+                </g>
+
+                <!-- Stage 3 -->
+                <rect x="532" y="60" width="200" height="120" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.6" rx="8"></rect>
+                <text x="632" y="86" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="13" font-weight="700" fill="#3730a3">3 · Numeric tie-break</text>
+                <text x="632" y="106" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="11" fill="#3730a3">itemNumber(item)</text>
+                <text x="632" y="130" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11" fill="#312e81">id="item-12"</text>
+                <text x="632" y="148" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11" fill="#312e81">→ 12</text>
+                <text x="632" y="166" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#475569">deterministic, stable</text>
+
+                <!-- Arrows -->
+                <line x1="232" y1="120" x2="262" y2="120" stroke="#1e3a8a" stroke-width="2" marker-end="url(#sort-arrow)"></line>
+                <line x1="502" y1="120" x2="532" y2="120" stroke="#1e3a8a" stroke-width="2" marker-end="url(#sort-arrow)"></line>
+
+                <!-- Footer expression -->
+                <rect x="32" y="240" width="700" height="28" fill="#1e293b" rx="6"></rect>
+                <text x="382" y="259" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11" fill="#f1f5f9">sortItemsInPlace()  →  [openRank, priorityBucketRank, statusSortRank, itemNumber]</text>
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">Inline SVG · Numbers shown are rank values used by the comparator (lower = earlier). Source: <code>sortItemsInPlace()</code> in <code>docs/backlog/backlog.js</code>.</figcaption>
+          </figure>
+
           <h3>View switch</h3>
           <ul>
             <li><code>Board</code>, <code>List</code>, <code>Timeline</code> are visual modes controlled by <code>data-backlog-view</code>.</li>
             <li><code>Timeline</code> currently changes presentation only (vertical line + markers), without schedule logic.</li>
           </ul>
+
+          <figure class="sys-diagram" aria-label="View modes mock">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Mock · View modes</span>
+              <div class="sys-diagram__titles">
+                <h3>Board · List · Timeline</h3>
+                <p class="sys-diagram__sub">Three CSS presentations of the same task set. The data layer never changes — only <code>data-backlog-view</code> on <code>body</code> swaps.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#fafbfd;">
+              <svg viewBox="0 0 760 320" role="img" aria-labelledby="view-modes-title view-modes-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;">
+                <title id="view-modes-title">View mode mocks for board, list, and timeline</title>
+                <desc id="view-modes-desc">Three side-by-side mocks showing the same backlog rendered as kanban-style columns, a flat list with status pills, and a vertical timeline with date markers.</desc>
+
+                <rect x="4" y="4" width="752" height="312" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                <line x1="252" y1="32" x2="252" y2="296" stroke="#e2e8f0" stroke-dasharray="2 4"></line>
+                <line x1="508" y1="32" x2="508" y2="296" stroke="#e2e8f0" stroke-dasharray="2 4"></line>
+
+                <!-- Board -->
+                <text x="128" y="48" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">Board</text>
+                <text x="128" y="64" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#475569">data-backlog-view="board"</text>
+                <g transform="translate(28 80)">
+                  <rect x="0" y="0" width="65" height="180" fill="#ffffff" stroke="#cbd5e1" rx="4"></rect>
+                  <text x="32" y="14" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9" font-weight="700" fill="#0f172a">todo</text>
+                  <rect x="6" y="22" width="53" height="22" fill="#dcfce7" stroke="#10b981" rx="3"></rect>
+                  <rect x="6" y="48" width="53" height="22" fill="#dcfce7" stroke="#10b981" rx="3"></rect>
+                  <rect x="6" y="74" width="53" height="22" fill="#dcfce7" stroke="#10b981" rx="3"></rect>
+                </g>
+                <g transform="translate(98 80)">
+                  <rect x="0" y="0" width="65" height="180" fill="#ffffff" stroke="#cbd5e1" rx="4"></rect>
+                  <text x="32" y="14" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9" font-weight="700" fill="#0f172a">in progress</text>
+                  <rect x="6" y="22" width="53" height="22" fill="#fefce8" stroke="#eab308" rx="3"></rect>
+                  <rect x="6" y="48" width="53" height="22" fill="#fefce8" stroke="#eab308" rx="3"></rect>
+                </g>
+                <g transform="translate(168 80)">
+                  <rect x="0" y="0" width="65" height="180" fill="#ffffff" stroke="#cbd5e1" rx="4"></rect>
+                  <text x="32" y="14" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9" font-weight="700" fill="#0f172a">blocked</text>
+                  <rect x="6" y="22" width="53" height="22" fill="#fee2e2" stroke="#ef4444" rx="3"></rect>
+                </g>
+
+                <!-- List -->
+                <text x="380" y="48" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">List</text>
+                <text x="380" y="64" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#475569">data-backlog-view="list"</text>
+                <g transform="translate(272 80)" font-family="ui-sans-serif,sans-serif" font-size="9.5">
+                  <rect x="0" y="0" width="216" height="22" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <rect x="0" y="0" width="3" height="22" fill="#ef4444"></rect>
+                  <text x="14" y="14" font-weight="700" fill="#0f172a">item-12 · API rate-limit</text>
+                  <rect x="160" y="4" width="50" height="14" fill="#fee2e2" stroke="#ef4444" rx="3"></rect>
+                  <text x="185" y="14" text-anchor="middle" fill="#991b1b">blocked</text>
+
+                  <rect x="0" y="22" width="216" height="22" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <rect x="0" y="22" width="3" height="22" fill="#f59e0b"></rect>
+                  <text x="14" y="36" font-weight="700" fill="#0f172a">item-19 · KPI severity</text>
+                  <rect x="160" y="26" width="50" height="14" fill="#fefce8" stroke="#eab308" rx="3"></rect>
+                  <text x="185" y="36" text-anchor="middle" fill="#854d0e">in prog</text>
+
+                  <rect x="0" y="44" width="216" height="22" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <rect x="0" y="44" width="3" height="22" fill="#10b981"></rect>
+                  <text x="14" y="58" font-weight="700" fill="#0f172a">item-22 · Validator</text>
+                  <rect x="160" y="48" width="50" height="14" fill="#dcfce7" stroke="#10b981" rx="3"></rect>
+                  <text x="185" y="58" text-anchor="middle" fill="#14532d">todo</text>
+
+                  <rect x="0" y="66" width="216" height="22" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <rect x="0" y="66" width="3" height="22" fill="#3b82f6"></rect>
+                  <text x="14" y="80" font-weight="700" fill="#0f172a">item-31 · Search index</text>
+                  <rect x="160" y="70" width="50" height="14" fill="#dbeafe" stroke="#3b82f6" rx="3"></rect>
+                  <text x="185" y="80" text-anchor="middle" fill="#1e3a8a">done</text>
+
+                  <rect x="0" y="88" width="216" height="22" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <rect x="0" y="88" width="3" height="22" fill="#10b981"></rect>
+                  <text x="14" y="102" font-weight="700" fill="#0f172a">item-44 · Audit doc</text>
+                  <rect x="160" y="92" width="50" height="14" fill="#dcfce7" stroke="#10b981" rx="3"></rect>
+                  <text x="185" y="102" text-anchor="middle" fill="#14532d">todo</text>
+
+                  <rect x="0" y="110" width="216" height="22" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <rect x="0" y="110" width="3" height="22" fill="#94a3b8"></rect>
+                  <text x="14" y="124" font-weight="700" fill="#475569" font-style="italic">item-50 · Rejected RFC</text>
+                  <rect x="160" y="114" width="50" height="14" fill="#f1f5f9" stroke="#94a3b8" rx="3"></rect>
+                  <text x="185" y="124" text-anchor="middle" fill="#475569">rejected</text>
+                </g>
+
+                <!-- Timeline -->
+                <text x="630" y="48" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">Timeline</text>
+                <text x="630" y="64" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#475569">data-backlog-view="timeline"</text>
+                <g transform="translate(528 80)">
+                  <line x1="20" y1="0" x2="20" y2="180" stroke="#3b82f6" stroke-width="2"></line>
+                  <g font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#0f172a">
+                    <circle cx="20" cy="18" r="6" fill="#ef4444"></circle>
+                    <text x="34" y="22" font-weight="700">item-12 · today</text>
+                    <circle cx="20" cy="58" r="6" fill="#f59e0b"></circle>
+                    <text x="34" y="62" font-weight="700">item-19 · +1d</text>
+                    <circle cx="20" cy="98" r="6" fill="#10b981"></circle>
+                    <text x="34" y="102" font-weight="700">item-22 · +3d</text>
+                    <circle cx="20" cy="138" r="6" fill="#3b82f6"></circle>
+                    <text x="34" y="142" font-weight="700">item-31 · +5d</text>
+                  </g>
+                  <text x="20" y="174" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9" fill="#94a3b8">presentation only</text>
+                </g>
+
+                <!-- Annotation -->
+                <text x="380" y="296" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#94a3b8">Same data, three CSS presentations · selectors live in <tspan font-family="ui-monospace,Menlo,monospace">backlog.css</tspan>.</text>
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">Inline SVG · Visual switch only — no schedule, no DnD. Mode is set on <code>body</code> by <code>applyViewMode()</code>.</figcaption>
+          </figure>
           <h3>Implementation map (view modes)</h3>
           <ul>
             <li><strong>State setter:</strong> <code>applyViewMode()</code> sets <code>data-backlog-view</code> on <code>body</code>.</li>
@@ -142,6 +528,124 @@
             <li><strong>Expanded view:</strong> single block <code>Full task description</code> (with auto-injected 4/5 sections when missing).</li>
             <li><strong>TOC safeguard:</strong> expanded title uses <code>h4</code> so it does not appear in On this page.</li>
           </ul>
+
+          <figure class="sys-diagram" aria-label="Task card anatomy">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Mock · Card anatomy</span>
+              <div class="sys-diagram__titles">
+                <h3>PM-style task card · annotated parts</h3>
+                <p class="sys-diagram__sub">Six labelled regions A–F. Same DOM is rendered collapsed (default) or expanded; the expanded title uses <code>h4</code> so it stays out of On this page.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#fafbfd;">
+              <svg viewBox="0 0 760 420" role="img" aria-labelledby="card-anatomy-title card-anatomy-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;">
+                <title id="card-anatomy-title">PM-style task card anatomy</title>
+                <desc id="card-anatomy-desc">A blown-up mock of a single PM-style backlog card with six labelled regions: header with title and status pill, meta row of priority/owner/age, group and tag badges, risk and confidence badges, ETA line, and quick actions row. Annotations point to each region.</desc>
+                <defs>
+                  <filter id="card-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <fedropshadow dx="0" dy="3" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.12"></fedropshadow>
+                  </filter>
+                </defs>
+
+                <rect x="4" y="4" width="752" height="412" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                <!-- Card -->
+                <g transform="translate(220 56)">
+                  <rect x="0" y="0" width="320" height="304" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4" rx="10" filter="url(#card-shadow)"></rect>
+                  <rect x="0" y="0" width="4" height="304" fill="#ef4444" rx="2"></rect>
+
+                  <!-- A: Header -->
+                  <text x="20" y="32" font-family="ui-sans-serif,sans-serif" font-size="14" font-weight="700" fill="#0f172a">item-12</text>
+                  <text x="20" y="52" font-family="ui-sans-serif,sans-serif" font-size="12.5" font-weight="600" fill="#0f172a">API rate-limit broken on bursts</text>
+                  <rect x="232" y="20" width="74" height="20" fill="#fee2e2" stroke="#ef4444" rx="10"></rect>
+                  <text x="269" y="34" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="10" font-weight="600" fill="#991b1b">blocked</text>
+
+                  <line x1="20" y1="68" x2="300" y2="68" stroke="#e2e8f0"></line>
+
+                  <!-- B: Meta row -->
+                  <g font-family="ui-sans-serif,sans-serif" font-size="10.5" fill="#475569">
+                    <text x="20" y="88"><tspan fill="#94a3b8">Priority</tspan> <tspan font-weight="700" fill="#991b1b">P0</tspan></text>
+                    <text x="120" y="88"><tspan fill="#94a3b8">Owner</tspan> <tspan font-weight="700" fill="#0f172a">@ivan</tspan></text>
+                    <text x="220" y="88"><tspan fill="#94a3b8">Age</tspan> <tspan font-weight="700" fill="#0f172a">14d</tspan></text>
+                  </g>
+
+                  <!-- C: Group + tag badges -->
+                  <g font-family="ui-sans-serif,sans-serif" font-size="9.5">
+                    <rect x="20" y="104" width="68" height="20" fill="#dbeafe" stroke="#3b82f6" rx="10"></rect>
+                    <text x="54" y="118" text-anchor="middle" fill="#1e3a8a" font-weight="600">backend</text>
+                    <rect x="94" y="104" width="40" height="20" fill="#fee2e2" stroke="#ef4444" rx="10"></rect>
+                    <text x="114" y="118" text-anchor="middle" fill="#991b1b" font-weight="600">bug</text>
+                  </g>
+
+                  <!-- D: Risk + confidence badges -->
+                  <g font-family="ui-sans-serif,sans-serif" font-size="9.5">
+                    <rect x="20" y="132" width="80" height="20" fill="#fef3c7" stroke="#f59e0b" rx="10"></rect>
+                    <text x="60" y="146" text-anchor="middle" fill="#92400e" font-weight="600">risk · high</text>
+                    <rect x="106" y="132" width="106" height="20" fill="#e0e7ff" stroke="#6366f1" rx="10"></rect>
+                    <text x="159" y="146" text-anchor="middle" fill="#3730a3" font-weight="600">confidence · medium</text>
+                  </g>
+
+                  <!-- E: ETA line -->
+                  <line x1="20" y1="166" x2="300" y2="166" stroke="#e2e8f0"></line>
+                  <g font-family="ui-sans-serif,sans-serif" font-size="11">
+                    <text x="20" y="186" font-weight="700" fill="#1d4ed8">ETA · 1.0–1.5 d</text>
+                    <text x="20" y="202" font-size="9.5" fill="#64748b">@ 3 h/day · explicit override</text>
+                  </g>
+
+                  <!-- F: Quick actions -->
+                  <line x1="20" y1="220" x2="300" y2="220" stroke="#e2e8f0"></line>
+                  <g font-family="ui-sans-serif,sans-serif" font-size="10.5">
+                    <rect x="20" y="234" width="120" height="28" fill="#1e3a8a" rx="6"></rect>
+                    <text x="80" y="252" text-anchor="middle" fill="#ffffff" font-weight="600">Open details ↗</text>
+                    <rect x="148" y="234" width="100" height="28" fill="#ffffff" stroke="#cbd5e1" rx="6"></rect>
+                    <text x="198" y="252" text-anchor="middle" fill="#0f172a" font-weight="600">Copy link</text>
+                  </g>
+
+                  <!-- Expanded hint footer -->
+                  <text x="160" y="288" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-style="italic" fill="#94a3b8">▾ click anywhere to reveal Full task description (h4)</text>
+                </g>
+
+                <!-- Annotations -->
+                <g font-family="ui-sans-serif,sans-serif" font-size="11" fill="#0f172a">
+                  <line x1="216" y1="92" x2="180" y2="92" stroke="#0f172a" stroke-width="0.8"></line>
+                  <text x="174" y="86" text-anchor="end" font-weight="700">A · Header</text>
+                  <text x="174" y="100" text-anchor="end" font-size="10" fill="#475569">title + status pill</text>
+
+                  <line x1="216" y1="144" x2="180" y2="144" stroke="#0f172a" stroke-width="0.8"></line>
+                  <text x="174" y="138" text-anchor="end" font-weight="700">B · Meta row</text>
+                  <text x="174" y="152" text-anchor="end" font-size="10" fill="#475569">priority · owner · age</text>
+
+                  <line x1="216" y1="216" x2="180" y2="216" stroke="#0f172a" stroke-width="0.8"></line>
+                  <text x="174" y="210" text-anchor="end" font-weight="700">D · Risk + confidence</text>
+                  <text x="174" y="224" text-anchor="end" font-size="10" fill="#475569">separate row</text>
+
+                  <line x1="544" y1="160" x2="588" y2="160" stroke="#0f172a" stroke-width="0.8"></line>
+                  <text x="592" y="154" font-weight="700">C · Group + tags</text>
+                  <text x="592" y="168" font-size="10" fill="#475569">domain + task type</text>
+
+                  <line x1="544" y1="240" x2="588" y2="240" stroke="#0f172a" stroke-width="0.8"></line>
+                  <text x="592" y="234" font-weight="700">E · ETA line</text>
+                  <text x="592" y="248" font-size="10" fill="#475569">3h/day default · override OK</text>
+
+                  <line x1="544" y1="304" x2="588" y2="304" stroke="#0f172a" stroke-width="0.8"></line>
+                  <text x="592" y="298" font-weight="700">F · Quick actions</text>
+                  <text x="592" y="312" font-size="10" fill="#475569">Open details · Copy link</text>
+                </g>
+
+                <!-- Status accent stripe legend -->
+                <g transform="translate(28 372)" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#475569">
+                  <text x="0" y="0" font-weight="700" fill="#0f172a">Status accent stripe (left edge):</text>
+                  <rect x="200" y="-9" width="10" height="10" fill="#10b981"></rect><text x="216" y="0">todo</text>
+                  <rect x="252" y="-9" width="10" height="10" fill="#f59e0b"></rect><text x="268" y="0">in progress</text>
+                  <rect x="338" y="-9" width="10" height="10" fill="#ef4444"></rect><text x="354" y="0">blocked</text>
+                  <rect x="404" y="-9" width="10" height="10" fill="#3b82f6"></rect><text x="420" y="0">done</text>
+                  <rect x="460" y="-9" width="10" height="10" fill="#94a3b8"></rect><text x="476" y="0">rejected</text>
+                  <text x="544" y="0" font-style="italic" fill="#94a3b8">rendered from data-status</text>
+                </g>
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">Inline SVG · Card chrome rendered from data-attributes; status pill text/colour come from <code>data-status</code> via CSS, not duplicated in markup.</figcaption>
+          </figure>
         </section>
 
         <section class="card" id="kpi-strip">
@@ -150,6 +654,115 @@
             KPI tiles are computed from the currently visible set (after all filters/search are applied), so numbers always
             reflect the exact manager view on screen.
           </p>
+
+          <figure class="sys-diagram" aria-label="KPI strip mock with severity coding">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Mock · KPI strip</span>
+              <div class="sys-diagram__titles">
+                <h3>Seven tiles · severity coding</h3>
+                <p class="sys-diagram__sub">All values are computed from the visible set after filters. Tile background and border encode <code>healthy</code>, <code>watch</code>, <code>risk</code>.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#fafbfd;">
+              <svg viewBox="0 0 760 240" role="img" aria-labelledby="kpi-strip-title kpi-strip-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;">
+                <title id="kpi-strip-title">KPI strip mock with seven tiles</title>
+                <desc id="kpi-strip-desc">A horizontal strip of seven KPI tiles: Open, In progress, Blocked, Done percent, SLA breach risk, ETA pressure, and Flow health. Each tile shows the count or percent and a severity colour band.</desc>
+                <defs>
+                  <filter id="kpi-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <fedropshadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.10"></fedropshadow>
+                  </filter>
+                </defs>
+
+                <rect x="4" y="4" width="752" height="232" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                <!-- Tile 1 · Open · healthy -->
+                <g transform="translate(20 28)">
+                  <rect x="0" y="0" width="100" height="92" fill="#ecfdf5" stroke="#10b981" stroke-width="1.6" rx="8" filter="url(#kpi-shadow)"></rect>
+                  <rect x="0" y="0" width="100" height="4" fill="#10b981"></rect>
+                  <text x="12" y="22" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-weight="700" fill="#065f46">OPEN</text>
+                  <text x="12" y="56" font-family="ui-sans-serif,sans-serif" font-size="22" font-weight="800" fill="#0f172a">12</text>
+                  <text x="12" y="76" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#475569">63% of visible</text>
+                  <text x="88" y="86" text-anchor="end" font-family="ui-sans-serif,sans-serif" font-size="8.5" fill="#10b981" font-weight="700">healthy</text>
+                </g>
+
+                <!-- Tile 2 · In progress · watch -->
+                <g transform="translate(128 28)">
+                  <rect x="0" y="0" width="100" height="92" fill="#fefce8" stroke="#eab308" stroke-width="1.6" rx="8" filter="url(#kpi-shadow)"></rect>
+                  <rect x="0" y="0" width="100" height="4" fill="#eab308"></rect>
+                  <text x="12" y="22" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-weight="700" fill="#854d0e">IN PROGRESS</text>
+                  <text x="12" y="56" font-family="ui-sans-serif,sans-serif" font-size="22" font-weight="800" fill="#0f172a">4</text>
+                  <text x="12" y="76" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#475569">21% of visible</text>
+                  <text x="88" y="86" text-anchor="end" font-family="ui-sans-serif,sans-serif" font-size="8.5" fill="#eab308" font-weight="700">watch</text>
+                </g>
+
+                <!-- Tile 3 · Blocked · risk -->
+                <g transform="translate(236 28)">
+                  <rect x="0" y="0" width="100" height="92" fill="#fee2e2" stroke="#ef4444" stroke-width="1.6" rx="8" filter="url(#kpi-shadow)"></rect>
+                  <rect x="0" y="0" width="100" height="4" fill="#ef4444"></rect>
+                  <text x="12" y="22" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-weight="700" fill="#991b1b">BLOCKED</text>
+                  <text x="12" y="56" font-family="ui-sans-serif,sans-serif" font-size="22" font-weight="800" fill="#0f172a">3</text>
+                  <text x="12" y="76" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#475569">16% of visible</text>
+                  <text x="88" y="86" text-anchor="end" font-family="ui-sans-serif,sans-serif" font-size="8.5" fill="#ef4444" font-weight="700">risk</text>
+                </g>
+
+                <!-- Tile 4 · Done % · healthy -->
+                <g transform="translate(344 28)">
+                  <rect x="0" y="0" width="100" height="92" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.6" rx="8" filter="url(#kpi-shadow)"></rect>
+                  <rect x="0" y="0" width="100" height="4" fill="#3b82f6"></rect>
+                  <text x="12" y="22" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-weight="700" fill="#1e3a8a">DONE</text>
+                  <text x="12" y="56" font-family="ui-sans-serif,sans-serif" font-size="22" font-weight="800" fill="#0f172a">58%</text>
+                  <text x="12" y="76" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#475569">of visible scope</text>
+                  <text x="88" y="86" text-anchor="end" font-family="ui-sans-serif,sans-serif" font-size="8.5" fill="#3b82f6" font-weight="700">healthy</text>
+                </g>
+
+                <!-- Tile 5 · SLA breach risk · risk -->
+                <g transform="translate(452 28)">
+                  <rect x="0" y="0" width="100" height="92" fill="#fff7ed" stroke="#f97316" stroke-width="1.6" rx="8" filter="url(#kpi-shadow)"></rect>
+                  <rect x="0" y="0" width="100" height="4" fill="#f97316"></rect>
+                  <text x="12" y="22" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-weight="700" fill="#9a3412">SLA BREACH</text>
+                  <text x="12" y="56" font-family="ui-sans-serif,sans-serif" font-size="22" font-weight="800" fill="#0f172a">2</text>
+                  <text x="12" y="76" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#475569">P0/P1 &gt; 5d blocked</text>
+                  <text x="88" y="86" text-anchor="end" font-family="ui-sans-serif,sans-serif" font-size="8.5" fill="#f97316" font-weight="700">risk</text>
+                </g>
+
+                <!-- Tile 6 · ETA pressure · watch -->
+                <g transform="translate(560 28)">
+                  <rect x="0" y="0" width="100" height="92" fill="#fff7ed" stroke="#f97316" stroke-width="1.6" rx="8" filter="url(#kpi-shadow)"></rect>
+                  <rect x="0" y="0" width="100" height="4" fill="#f97316"></rect>
+                  <text x="12" y="22" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-weight="700" fill="#9a3412">ETA PRESSURE</text>
+                  <text x="12" y="56" font-family="ui-sans-serif,sans-serif" font-size="22" font-weight="800" fill="#0f172a">5</text>
+                  <text x="12" y="76" font-family="ui-sans-serif,sans-serif" font-size="10" fill="#475569">max ETA ≤ 3 d</text>
+                  <text x="88" y="86" text-anchor="end" font-family="ui-sans-serif,sans-serif" font-size="8.5" fill="#f97316" font-weight="700">watch</text>
+                </g>
+
+                <!-- Tile 7 · Flow health · healthy -->
+                <g transform="translate(668 28)">
+                  <rect x="0" y="0" width="80" height="92" fill="#ecfeff" stroke="#06b6d4" stroke-width="1.6" rx="8" filter="url(#kpi-shadow)"></rect>
+                  <rect x="0" y="0" width="80" height="4" fill="#06b6d4"></rect>
+                  <text x="10" y="22" font-family="ui-sans-serif,sans-serif" font-size="9.5" font-weight="700" fill="#155e75">FLOW</text>
+                  <text x="10" y="56" font-family="ui-sans-serif,sans-serif" font-size="20" font-weight="800" fill="#0f172a">6</text>
+                  <text x="40" y="56" font-family="ui-sans-serif,sans-serif" font-size="11" fill="#475569">/wk</text>
+                  <text x="10" y="76" font-family="ui-sans-serif,sans-serif" font-size="9.5" fill="#475569">14d window</text>
+                  <text x="70" y="86" text-anchor="end" font-family="ui-sans-serif,sans-serif" font-size="8.5" fill="#06b6d4" font-weight="700">ok</text>
+                </g>
+
+                <!-- Formula band -->
+                <rect x="20" y="140" width="720" height="60" fill="#1e293b" rx="8"></rect>
+                <text x="380" y="160" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="11" font-weight="700" fill="#cbd5e1">Calculation source · all tiles read from the same visible-after-filter set</text>
+                <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#f1f5f9">
+                  <text x="36" y="180">Open % = count(open) / visible_count</text>
+                  <text x="280" y="180">SLA = blocked ∧ P0|P1 ∧ blocked_days &gt; 5</text>
+                  <text x="556" y="180">Flow = (done_in_14d / 14) × 7</text>
+                  <text x="36" y="194" fill="#94a3b8">renderCockpitStats() · backlog.js</text>
+                  <text x="280" y="194" fill="#94a3b8">SLA_BLOCKED_THRESHOLD_DAYS = 5</text>
+                  <text x="556" y="194" fill="#94a3b8">FLOW_HEALTH_PERIOD_DAYS = 14</text>
+                </g>
+
+                <text x="380" y="222" text-anchor="middle" font-family="ui-sans-serif,sans-serif" font-size="10" font-style="italic" fill="#94a3b8">Severity classes <tspan font-weight="700" fill="#10b981">healthy</tspan> · <tspan font-weight="700" fill="#eab308">watch</tspan> · <tspan font-weight="700" fill="#ef4444">risk</tspan> are applied per-tile by <tspan font-family="ui-monospace,Menlo,monospace">renderCockpitStats()</tspan>.</text>
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">Inline SVG · Sample numbers; production tiles are computed live from the filtered visible set in <code>renderCockpitStats()</code>.</figcaption>
+          </figure>
           <h3>Core metrics</h3>
           <ul>
             <li><strong>Open</strong>, <strong>In progress</strong>, <strong>Blocked</strong> — count plus percentage of visible scope.</li>
@@ -249,6 +862,11 @@
               </thead>
               <tbody>
                 <tr>
+                  <td><time datetime="2026-05-01">2026-05-01</time></td>
+                  <td>Added inline-SVG visual diagrams in the style of <a href="../docs-frontend-rocket-launch-animation.html">the rocket launch animation spec</a>: screen anatomy (regions A–E with sample task cards), filter sync (quick presets ⇄ detailed dimensions), sort pipeline (open vs closed → priority bucket → numeric tie-break), view modes (board / list / timeline mocks), task card anatomy (six annotated regions plus status accent legend), and KPI strip (seven severity-coded tiles with calculation band). Reason: page was text-heavy with no visual scaffolding; the rocket spec demonstrated how inline SVG mocks accelerate review.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
                   <td><time datetime="2026-04-29">2026-04-29</time></td>
                   <td>Added Screen page-type badge to H1.</td>
                   <td>Ivan Boyarkin</td>
@@ -263,7 +881,6 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
       </main>
     </div>
   </div>

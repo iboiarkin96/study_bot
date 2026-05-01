@@ -15,11 +15,7 @@
   <script defer src="../../assets/docs-internal-meta.js"></script>
   <script defer src="../../assets/docs-spec-status.js"></script>
 </head>
-<body class="internal-layout"
-      data-maintainer-ids="16fc8b78537109162984a2fdbef6e142"
-      data-spec-page="reference"
-      data-spec-status="implemented"
-      data-spec-owner="ivan-boyarkin">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="reference" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <div id="internal-sidebar-mount"></div>
@@ -290,7 +286,7 @@
               cut-offs because the wide rail no longer fits — these numbers are <em>not</em> the canonical
               device tiers. Whenever you describe a device class (mobile / tablet / desktop) in any other doc,
               use the <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical
-                viewport breakpoints</a> (≥1025 / 761–1024 / ≤760).
+              viewport breakpoints</a> (≥1025 / 761–1024 / ≤760).
             </p>
             <div class="docs-table-scroll" role="region" aria-label="Sidebar component breakpoints">
               <table>
@@ -315,111 +311,110 @@
               For author-facing rules on mobile readability (typography ladder, table wrapping, what is
               disabled, acceptance checklist), see
               <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">UI motion &amp;
-                adaptivity &sect; Mobile contract</a>.
-            </p>
+                adaptivity § Mobile contract</a>.
+              </p>
 
-            <h3>Sticky chrome and z-index stack</h3>
-            <div class="docs-table-scroll" role="region" aria-label="Sticky chrome">
-              <table>
-                <thead>
-                  <tr>
-                    <th scope="col">Element</th>
-                    <th scope="col">Position</th>
-                    <th scope="col"><code>top</code></th>
-                    <th scope="col"><code>z-index</code></th>
-                    <th scope="col">Purpose</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td><code>.internal-layout__sidebar</code></td><td>sticky</td><td>0</td><td>2</td><td>Left nav stays visible while main scrolls.</td></tr>
-                  <tr><td><code>.internal-layout__page-title-row</code></td><td>sticky (≤1024 px only)</td><td><code>max(10px, env(safe-area-inset-top))</code></td><td>5</td><td>Page heading remains above scrolling content on narrow widths.</td></tr>
-                  <tr><td><code>.internal-layout__drawer</code></td><td>fixed</td><td>—</td><td>1000</td><td>Overlay menu always on top.</td></tr>
-                </tbody>
-              </table>
-            </div>
+              <h3>Sticky chrome and z-index stack</h3>
+              <div class="docs-table-scroll" role="region" aria-label="Sticky chrome">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Element</th>
+                      <th scope="col">Position</th>
+                      <th scope="col"><code>top</code></th>
+                      <th scope="col"><code>z-index</code></th>
+                      <th scope="col">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>.internal-layout__sidebar</code></td><td>sticky</td><td>0</td><td>2</td><td>Left nav stays visible while main scrolls.</td></tr>
+                    <tr><td><code>.internal-layout__page-title-row</code></td><td>sticky (≤1024 px only)</td><td><code>max(10px, env(safe-area-inset-top))</code></td><td>5</td><td>Page heading remains above scrolling content on narrow widths.</td></tr>
+                    <tr><td><code>.internal-layout__drawer</code></td><td>fixed</td><td>—</td><td>1000</td><td>Overlay menu always on top.</td></tr>
+                  </tbody>
+                </table>
+              </div>
 
-            <h3>Drawer state machine</h3>
-            <ul>
-              <li><strong>Trigger</strong>: viewport ≤1024 px <em>and</em> shell carries <code>.is-drawer-mode</code>.</li>
-              <li><strong>Open class</strong>: <code>.internal-layout__drawer.is-open</code> → <code>display: block</code>.</li>
-              <li><strong>Closed</strong>: <code>.internal-layout__drawer[hidden]</code> → <code>display: none !important</code> (HTML attribute, set by <code>internal-sidebar.js</code>).</li>
-              <li><strong>Body lock</strong>: <code>body.internal-sidebar-drawer-open</code> → <code>overflow: hidden</code> (prevents page scroll while drawer is open).</li>
-              <li><strong>Drawer-only cut-off (&lt;900 px)</strong>: sidebar moves below page title row in document order (no longer sticky). Component-level cut-off; spans the bottom of the tablet tier and the entire mobile tier per the <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical viewport breakpoints</a>.</li>
-            </ul>
+              <h3>Drawer state machine</h3>
+              <ul>
+                <li><strong>Trigger</strong>: viewport ≤1024 px <em>and</em> shell carries <code>.is-drawer-mode</code>.</li>
+                <li><strong>Open class</strong>: <code>.internal-layout__drawer.is-open</code> → <code>display: block</code>.</li>
+                <li><strong>Closed</strong>: <code>.internal-layout__drawer[hidden]</code> → <code>display: none !important</code> (HTML attribute, set by <code>internal-sidebar.js</code>).</li>
+                <li><strong>Body lock</strong>: <code>body.internal-sidebar-drawer-open</code> → <code>overflow: hidden</code> (prevents page scroll while drawer is open).</li>
+                <li><strong>Drawer-only cut-off (&lt;900 px)</strong>: sidebar moves below page title row in document order (no longer sticky). Component-level cut-off; spans the bottom of the tablet tier and the entire mobile tier per the <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical viewport breakpoints</a>.</li>
+              </ul>
 
-            <h3>Collapsed sidebar</h3>
-            <ul>
-              <li>Toggle: button rendered by <code>internal-sidebar.js</code> with <code>data-internal-sidebar-toggle</code>; only visible on desktop.</li>
-              <li>Class added: <code>.internal-layout__shell.is-sidebar-collapsed</code> → <code>grid-template-columns: 56px 1fr</code>.</li>
-              <li>Sidebar title rotates (CSS transform); toggle button shrinks to icon-only.</li>
-              <li>Persisted via <code>localStorage</code> key <code>docs.internal.sidebar.collapsed</code>.</li>
-            </ul>
-          </section>
+              <h3>Collapsed sidebar</h3>
+              <ul>
+                <li>Toggle: button rendered by <code>internal-sidebar.js</code> with <code>data-internal-sidebar-toggle</code>; only visible on desktop.</li>
+                <li>Class added: <code>.internal-layout__shell.is-sidebar-collapsed</code> → <code>grid-template-columns: 56px 1fr</code>.</li>
+                <li>Sidebar title rotates (CSS transform); toggle button shrinks to icon-only.</li>
+                <li>Persisted via <code>localStorage</code> key <code>docs.internal.sidebar.collapsed</code>.</li>
+              </ul>
+            </section>
 
-          <section id="conventions" class="card">
-            <h2>Stylesheet conventions</h2>
-            <h3>Where does a new style belong?</h3>
-            <ul>
-              <li><strong>Brand-new visual variable</strong> (color, radius, spacing, motion) → <code>:root</code> block in <code>docs.css</code>, then a matching dark override in <code>docs-theme.css</code>.</li>
-              <li><strong>New component class</strong> shared across page types → <code>docs-premium.css</code>. Keeps <code>docs.css</code> focused on tokens and globals.</li>
-              <li><strong>New layout primitive for internal pages</strong> (shell modifier, sticky region, drawer behavior) → <code>internal-layout.css</code>. Update the deep dive in this page in the same PR.</li>
-              <li><strong>Top-nav widget</strong> → <code>docs-site-nav.css</code>. Do not stash nav rules in <code>docs.css</code>.</li>
-              <li><strong>Landing-page-only styles</strong> → <code>home.css</code>. Anything that shows up only on <code>docs/index.html</code> must live here, not in <code>docs.css</code>.</li>
-              <li><strong>Code-syntax token</strong> → <code>docs-syntax-theme.css</code>. Pair with a token-emitting rule in <code>docs-syntax.js</code> (currently dormant).</li>
-            </ul>
+            <section id="conventions" class="card">
+              <h2>Stylesheet conventions</h2>
+              <h3>Where does a new style belong?</h3>
+              <ul>
+                <li><strong>Brand-new visual variable</strong> (color, radius, spacing, motion) → <code>:root</code> block in <code>docs.css</code>, then a matching dark override in <code>docs-theme.css</code>.</li>
+                <li><strong>New component class</strong> shared across page types → <code>docs-premium.css</code>. Keeps <code>docs.css</code> focused on tokens and globals.</li>
+                <li><strong>New layout primitive for internal pages</strong> (shell modifier, sticky region, drawer behavior) → <code>internal-layout.css</code>. Update the deep dive in this page in the same PR.</li>
+                <li><strong>Top-nav widget</strong> → <code>docs-site-nav.css</code>. Do not stash nav rules in <code>docs.css</code>.</li>
+                <li><strong>Landing-page-only styles</strong> → <code>home.css</code>. Anything that shows up only on <code>docs/index.html</code> must live here, not in <code>docs.css</code>.</li>
+                <li><strong>Code-syntax token</strong> → <code>docs-syntax-theme.css</code>. Pair with a token-emitting rule in <code>docs-syntax.js</code> (currently dormant).</li>
+              </ul>
 
-            <h3>Dark-mode override pattern</h3>
-            <p>Two mechanisms work together:</p>
-            <ol>
-              <li><strong>Variable redefinition</strong>: <code>docs-theme.css</code> redefines tokens at <code>:root</code> under <code>@media (prefers-color-scheme: dark)</code>. Most components inherit the new palette automatically because they read <code>var(--bg)</code>, <code>var(--card)</code>, etc.</li>
-              <li><strong>Explicit selector overrides</strong>: where a component needs a different look in dark (not just different colors), <code>docs.css</code> ships <code>:root[data-theme="dark"] .my-component { … }</code> blocks colocated with the light rules.</li>
-            </ol>
-            <p class="small">The explicit toggle path is required because the theme switcher writes <code>data-theme="dark"</code> on <code>&lt;html&gt;</code> independently of OS preference. Both code paths must visually agree.</p>
+              <h3>Dark-mode override pattern</h3>
+              <p>Two mechanisms work together:</p>
+              <ol>
+                <li><strong>Variable redefinition</strong>: <code>docs-theme.css</code> redefines tokens at <code>:root</code> under <code>@media (prefers-color-scheme: dark)</code>. Most components inherit the new palette automatically because they read <code>var(--bg)</code>, <code>var(--card)</code>, etc.</li>
+                <li><strong>Explicit selector overrides</strong>: where a component needs a different look in dark (not just different colors), <code>docs.css</code> ships <code>:root[data-theme="dark"] .my-component { … }</code> blocks colocated with the light rules.</li>
+              </ol>
+              <p class="small">The explicit toggle path is required because the theme switcher writes <code>data-theme="dark"</code> on <code>&lt;html&gt;</code> independently of OS preference. Both code paths must visually agree.</p>
 
-            <h3>Naming</h3>
-            <ul>
-              <li>Use kebab-case BEM for layout/component classes: <code>.docs-callout</code>, <code>.docs-callout--warn</code>, <code>.internal-layout__sidebar</code>.</li>
-              <li>Prefix all global tokens with <code>--</code> and a domain word: <code>--docs-premium-*</code>, <code>--internal-*</code>, <code>--st-*</code>. Generic tokens (<code>--bg</code>, <code>--accent</code>, <code>--line</code>) stay un-prefixed but are scarce by design.</li>
-              <li>Avoid one-off ID selectors. The mount points listed in the JS reference are the only DOM IDs styled.</li>
-            </ul>
-          </section>
+              <h3>Naming</h3>
+              <ul>
+                <li>Use kebab-case BEM for layout/component classes: <code>.docs-callout</code>, <code>.docs-callout--warn</code>, <code>.internal-layout__sidebar</code>.</li>
+                <li>Prefix all global tokens with <code>--</code> and a domain word: <code>--docs-premium-*</code>, <code>--internal-*</code>, <code>--st-*</code>. Generic tokens (<code>--bg</code>, <code>--accent</code>, <code>--line</code>) stay un-prefixed but are scarce by design.</li>
+                <li>Avoid one-off ID selectors. The mount points listed in the JS reference are the only DOM IDs styled.</li>
+              </ul>
+            </section>
 
-          <section id="related" class="card">
-            <h2>Related internal docs</h2>
-            <ul>
-              <li><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a> — sister page for runtime modules.</li>
-              <li><a href="./docs-frontend-architecture-map.html">Architecture map</a> — block model and runtime ownership.</li>
-              <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — motion tokens, density, theme switching rationale.</li>
-              <li><a href="./docs-frontend-ui-kit.html">UI kit</a> — visual principles and design-token narrative.</li>
-              <li><a href="./documentation-process.html">Maintenance process</a> — change management for layout-impacting CSS edits.</li>
-            </ul>
-          </section>
+            <section id="related" class="card">
+              <h2>Related internal docs</h2>
+              <ul>
+                <li><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a> — sister page for runtime modules.</li>
+                <li><a href="./docs-frontend-architecture-map.html">Architecture map</a> — block model and runtime ownership.</li>
+                <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — motion tokens, density, theme switching rationale.</li>
+                <li><a href="./docs-frontend-ui-kit.html">UI kit</a> — visual principles and design-token narrative.</li>
+                <li><a href="./documentation-process.html">Maintenance process</a> — change management for layout-impacting CSS edits.</li>
+              </ul>
+            </section>
 
-          <section id="page-history" class="card">
-            <h2>Page history</h2>
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
-              <table class="docs-page-history">
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Change</th>
-                    <th scope="col">Author</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><time datetime="2026-04-29">2026-04-29</time></td>
-                    <td>Page created — first CSS architecture reference; documents 7 stylesheets, the <code>@import</code> chain, and includes a deep dive for <code>internal-layout.css</code>.</td>
-                    <td>Ivan Boyarkin</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+            <section id="page-history" class="card">
+              <h2>Page history</h2>
+              <div class="docs-table-scroll" role="region" aria-label="Page history">
+                <table class="docs-page-history">
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Change</th>
+                      <th scope="col">Author</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><time datetime="2026-04-29">2026-04-29</time></td>
+                      <td>Page created — first CSS architecture reference; documents 7 stylesheets, the <code>@import</code> chain, and includes a deep dive for <code>internal-layout.css</code>.</td>
+                      <td>Ivan Boyarkin</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
 
-  </body></html>
+    </body></html>

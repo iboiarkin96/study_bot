@@ -77,33 +77,35 @@
           <p class="small">
             Full JSON Schemas live in OpenAPI; this table is the engineering shorthand for reviews and runbooks.
           </p>
-          <table>
-            <thead>
-              <tr>
-                <th>Field / group</th>
-                <th>Role</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>system_user_id</code>, <code>system_uuid</code></td>
-                <td>Composite key</td>
-                <td>Path parameters for instance-scoped reads and writes.</td>
-              </tr>
-              <tr>
-                <td>Profile block</td>
-                <td>Mutable projection</td>
-                <td>PUT/PATCH semantics documented per method; optimistic concurrency where applicable.</td>
-              </tr>
-              <tr>
-                <td>Audit / invalidation</td>
-                <td>System metadata</td>
-                <td>Not always exposed in external integrator docs; internal spec describes logging and metrics hooks.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field / group</th>
+                  <th>Role</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>system_user_id</code>, <code>system_uuid</code></td>
+                  <td>Composite key</td>
+                  <td>Path parameters for instance-scoped reads and writes.</td>
+                </tr>
+                <tr>
+                  <td>Profile block</td>
+                  <td>Mutable projection</td>
+                  <td>PUT/PATCH semantics documented per method; optimistic concurrency where applicable.</td>
+                </tr>
+                <tr>
+                  <td>Audit / invalidation</td>
+                  <td>System metadata</td>
+                  <td>Not always exposed in external integrator docs; internal spec describes logging and metrics hooks.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="operations" class="card">
@@ -488,31 +490,33 @@
 
                                 <section id="dependencies" class="card">
                                   <h2>External and in-process dependencies</h2>
-                                  <table>
-                                    <thead>
-                                      <tr>
-                                        <th>Dependency</th>
-                                        <th>Role for User API</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr>
-                                        <td><strong>PostgreSQL</strong></td>
-                                        <td>Authoritative storage for <code>users</code> and <code>idempotency_keys</code> (via SQLAlchemy).
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td><strong>In-memory rate limiter</strong></td>
-                                        <td>Per-client sliding window on protected paths (<code>app/core/security.py</code>); not a separate
-                                          network
-                                          service.</td>
+                                  <div class="docs-table-scroll" role="region" aria-label="Table">
+                                    <table>
+                                      <thead>
+                                        <tr>
+                                          <th>Dependency</th>
+                                          <th>Role for User API</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td><strong>PostgreSQL</strong></td>
+                                          <td>Authoritative storage for <code>users</code> and <code>idempotency_keys</code> (via SQLAlchemy).
+                                          </td>
                                         </tr>
                                         <tr>
-                                          <td><strong>Configured API keys</strong></td>
-                                          <td>Validated in middleware against settings — no call to an external IdP in this flow.</td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
+                                          <td><strong>In-memory rate limiter</strong></td>
+                                          <td>Per-client sliding window on protected paths (<code>app/core/security.py</code>); not a separate
+                                            network
+                                            service.</td>
+                                          </tr>
+                                          <tr>
+                                            <td><strong>Configured API keys</strong></td>
+                                            <td>Validated in middleware against settings — no call to an external IdP in this flow.</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
                                   </section>
 
                                   <section id="page-history" class="card">
@@ -557,11 +561,6 @@
                                       </div>
                                     </section>
 
-                                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                                    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-                                      Found a bug? Report issue
-                                    </button>
-                                    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
                                   </main>
                                 </div>
                               </div>

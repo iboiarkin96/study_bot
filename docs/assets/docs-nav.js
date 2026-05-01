@@ -2505,18 +2505,18 @@ function injectDocsFeedbackCard() {
 
   const REPORT_BUG_FAB_HTML =
     '<svg class="docs-report-bug-fab__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
-      '<path class="bug-antenna bug-antenna--l" d="M9 7 Q8 4 6 3"/>' +
-      '<path class="bug-antenna bug-antenna--r" d="M15 7 Q16 4 18 3"/>' +
-      '<g class="bug-body">' +
-        '<ellipse cx="12" cy="14" rx="4.6" ry="5.6"/>' +
-        '<line x1="12" y1="9" x2="12" y2="19.5"/>' +
-        '<path d="M7.5 12 L4.5 11"/>' +
-        '<path d="M7.5 14.5 L4 14.5"/>' +
-        '<path d="M7.5 17 L4.5 18.5"/>' +
-        '<path d="M16.5 12 L19.5 11"/>' +
-        '<path d="M16.5 14.5 L20 14.5"/>' +
-        '<path d="M16.5 17 L19.5 18.5"/>' +
-      '</g>' +
+    '<path class="bug-antenna bug-antenna--l" d="M9 7 Q8 4 6 3"/>' +
+    '<path class="bug-antenna bug-antenna--r" d="M15 7 Q16 4 18 3"/>' +
+    '<g class="bug-body">' +
+    '<ellipse cx="12" cy="14" rx="4.6" ry="5.6"/>' +
+    '<line x1="12" y1="9" x2="12" y2="19.5"/>' +
+    '<path d="M7.5 12 L4.5 11"/>' +
+    '<path d="M7.5 14.5 L4 14.5"/>' +
+    '<path d="M7.5 17 L4.5 18.5"/>' +
+    '<path d="M16.5 12 L19.5 11"/>' +
+    '<path d="M16.5 14.5 L20 14.5"/>' +
+    '<path d="M16.5 17 L19.5 18.5"/>' +
+    '</g>' +
     '</svg>' +
     '<span class="docs-report-bug-fab__label">Found a bug? Report issue</span>';
 
@@ -3419,15 +3419,19 @@ function initBackToTopButton() {
         + "    float a = density * (life * life) * 0.95;\n"
         + "    fragColor = vec4(col * a, a);\n"
         + "  } else {\n"
-        // Smoke — лавандово-серый палитрой docs-портала.
-        + "    vec3 cInner = vec3(0.965, 0.957, 0.985);\n"
-        + "    vec3 cMid   = vec3(0.835, 0.825, 0.875);\n"
-        + "    vec3 cOuter = vec3(0.745, 0.733, 0.795);\n"
+        // Smoke — единая светло-серая палитра для всех тем. Лёгкая
+        // лавандовая подкладка сохраняет согласие с docs-портал темой.
+        // На светлой теме контраст обеспечивает альфа (1.6) + чуть более
+        // тёмный outer-rim; на тёмной теме это читается как обычный
+        // светлый дым. Альфа без буста.
+        + "    vec3 cInner = vec3(0.88, 0.87, 0.91);\n"
+        + "    vec3 cMid   = vec3(0.78, 0.77, 0.82);\n"
+        + "    vec3 cOuter = vec3(0.68, 0.66, 0.72);\n"
         + "    float t = clamp(density * 1.35, 0.0, 1.0);\n"
         + "    vec3 col = mix(cOuter, mix(cMid, cInner, smoothstep(0.45, 1.0, t)), smoothstep(0.0, 0.7, t));\n"
         + "    col *= mix(1.0, 0.9, vAge * 0.5);\n"
         + "    float clump = 0.72 + 0.5 * sin(vSeed * 8.7 + vAge * 9.5);\n"
-        + "    float a = density * (life * life * 1.8 * clump);\n"
+        + "    float a = density * (life * life * 1.6 * clump);\n"
         + "    fragColor = vec4(col * a, a);\n"
         + "  }\n"
         + "}\n";
@@ -3601,10 +3605,11 @@ function initBackToTopButton() {
           const a = Math.max(0, p.life * p.life * 0.62 * clump);
           const r = p.size * (0.95 + age * 2.4);
           const g = ctx.createRadialGradient(p.x, p.y, r * 0.02, p.x, p.y, r);
-          g.addColorStop(0, "rgba(246,244,250," + (a * 1.0).toFixed(3) + ")");
-          g.addColorStop(0.28, "rgba(232,229,239," + (a * 0.84).toFixed(3) + ")");
-          g.addColorStop(0.6, "rgba(214,211,224," + (a * 0.42).toFixed(3) + ")");
-          g.addColorStop(1, "rgba(190,187,202,0)");
+          // Единая светло-серая палитра вне зависимости от темы.
+          g.addColorStop(0, "rgba(224,222,232," + (a * 0.95).toFixed(3) + ")");
+          g.addColorStop(0.28, "rgba(199,196,209," + (a * 0.78).toFixed(3) + ")");
+          g.addColorStop(0.6, "rgba(173,168,184," + (a * 0.4).toFixed(3) + ")");
+          g.addColorStop(1, "rgba(153,148,167,0)");
           ctx.fillStyle = g;
           ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
         }

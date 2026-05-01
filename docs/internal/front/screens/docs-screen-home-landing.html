@@ -489,131 +489,133 @@
 
         <section class="card" id="behavior">
           <h2>Behavior matrix</h2>
-          <table class="screen-behavior">
-            <thead>
-              <tr>
-                <th>Element</th>
-                <th>State</th>
-                <th>Trigger</th>
-                <th>Outcome</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>.home-intro</td>
-                <td>active</td>
-                <td>Page load (motion-allowed)</td>
-                <td>Overlay fades in; <code>body.home-intro-lock</code> locks scroll</td>
-                <td>Skipped under <code>prefers-reduced-motion: reduce</code></td>
-              </tr>
-              <tr>
-                <td>.home-intro__skip</td>
-                <td>click / Esc</td>
-                <td>User input</td>
-                <td><code>closeIntro()</code> → iris shutter</td>
-                <td>Both Esc and click bound</td>
-              </tr>
-              <tr>
-                <td>.home-intro__wordmark</td>
-                <td>scrambling</td>
-                <td>+600ms after intro start</td>
-                <td>Per-char glyph cycling</td>
-                <td>Glyph pool: Katakana + ASCII</td>
-              </tr>
-              <tr>
-                <td>.home-intro__wordmark</td>
-                <td>per-char lock</td>
-                <td>Time reaches char's localEnd</td>
-                <td><code>.ig-char--locked</code>; <code>burst(0.55)</code> on rain; progress bar +n%</td>
-                <td>Auto-clears <code>--locked</code> after 420ms</td>
-              </tr>
-              <tr>
-                <td>.home-intro</td>
-                <td>is-locked</td>
-                <td>All chars locked</td>
-                <td>Bracket snap, radar speed-up, status "ready", scan beam, <code>burst(1)</code></td>
-                <td>One-shot</td>
-              </tr>
-              <tr>
-                <td>.home-intro</td>
-                <td>exit</td>
-                <td>~+2400ms after start (or skip)</td>
-                <td>Iris shutter 720ms; <code>markIntroDone()</code> fires at start</td>
-                <td>Hard cap at 3000ms; failsafe at 3600ms</td>
-              </tr>
-              <tr>
-                <td>.home-hero__title</td>
-                <td>decrypt</td>
-                <td><code>home:intro-done</code> event</td>
-                <td>Per-line per-char scramble-resolve</td>
-                <td>Begins mid-shutter</td>
-              </tr>
-              <tr>
-                <td>.home-hero__title</td>
-                <td>variable-weight</td>
-                <td>Page scroll</td>
-                <td><code>--home-h1-wght</code> updated 500→760</td>
-                <td>rAF-throttled</td>
-              </tr>
-              <tr>
-                <td>.home-hero__terminal</td>
-                <td>typing</td>
-                <td>intro-done AND visible (≥35%)</td>
-                <td>Char-by-char render of <code>TERMINAL_SCRIPT</code></td>
-                <td>420ms grace pause; static fallback under reduced-motion</td>
-              </tr>
-              <tr>
-                <td>.home-hero__cta--primary</td>
-                <td>magnetic</td>
-                <td>pointermove within element</td>
-                <td>Damped translate (±9/±7 clamp)</td>
-                <td>Primary only; secondaries don't move</td>
-              </tr>
-              <tr>
-                <td>a[data-home-vt]</td>
-                <td>navigate</td>
-                <td>Click (no modifier keys)</td>
-                <td><code>document.startViewTransition</code> wraps navigation</td>
-                <td>Chromium 127+ only; native nav fallback</td>
-              </tr>
-              <tr>
-                <td>.home-ticker__num</td>
-                <td>count-up</td>
-                <td>First intersection (≥50%)</td>
-                <td>Animate 0 → target over 900ms cubic-out</td>
-                <td>One-shot per ticker; 80ms stagger</td>
-              </tr>
-              <tr>
-                <td>canvas[data-home-dotgrid]</td>
-                <td>cursor-react</td>
-                <td>pointermove in hero bounds</td>
-                <td>Dots within 140px scale and brighten</td>
-                <td>Disabled under reduced-motion</td>
-              </tr>
-              <tr>
-                <td>[data-section-tint]</td>
-                <td>tinted</td>
-                <td>First intersection (10%)</td>
-                <td><code>.is-tinted</code> → backdrop fades in 700ms</td>
-                <td>Cool / teal / mono variants</td>
-              </tr>
-              <tr>
-                <td>.home-card</td>
-                <td>hover</td>
-                <td>pointerenter</td>
-                <td>Lift, tilt, shimmer, accent stripe</td>
-                <td>Tilt suppressed under reduced-motion</td>
-              </tr>
-              <tr>
-                <td>.home-card</td>
-                <td>reveal</td>
-                <td>Section intersection</td>
-                <td>Stagger fade-up (65ms × index)</td>
-                <td>Per <code>data-home-reveal</code></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table class="screen-behavior">
+              <thead>
+                <tr>
+                  <th>Element</th>
+                  <th>State</th>
+                  <th>Trigger</th>
+                  <th>Outcome</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>.home-intro</td>
+                  <td>active</td>
+                  <td>Page load (motion-allowed)</td>
+                  <td>Overlay fades in; <code>body.home-intro-lock</code> locks scroll</td>
+                  <td>Skipped under <code>prefers-reduced-motion: reduce</code></td>
+                </tr>
+                <tr>
+                  <td>.home-intro__skip</td>
+                  <td>click / Esc</td>
+                  <td>User input</td>
+                  <td><code>closeIntro()</code> → iris shutter</td>
+                  <td>Both Esc and click bound</td>
+                </tr>
+                <tr>
+                  <td>.home-intro__wordmark</td>
+                  <td>scrambling</td>
+                  <td>+600ms after intro start</td>
+                  <td>Per-char glyph cycling</td>
+                  <td>Glyph pool: Katakana + ASCII</td>
+                </tr>
+                <tr>
+                  <td>.home-intro__wordmark</td>
+                  <td>per-char lock</td>
+                  <td>Time reaches char's localEnd</td>
+                  <td><code>.ig-char--locked</code>; <code>burst(0.55)</code> on rain; progress bar +n%</td>
+                  <td>Auto-clears <code>--locked</code> after 420ms</td>
+                </tr>
+                <tr>
+                  <td>.home-intro</td>
+                  <td>is-locked</td>
+                  <td>All chars locked</td>
+                  <td>Bracket snap, radar speed-up, status "ready", scan beam, <code>burst(1)</code></td>
+                  <td>One-shot</td>
+                </tr>
+                <tr>
+                  <td>.home-intro</td>
+                  <td>exit</td>
+                  <td>~+2400ms after start (or skip)</td>
+                  <td>Iris shutter 720ms; <code>markIntroDone()</code> fires at start</td>
+                  <td>Hard cap at 3000ms; failsafe at 3600ms</td>
+                </tr>
+                <tr>
+                  <td>.home-hero__title</td>
+                  <td>decrypt</td>
+                  <td><code>home:intro-done</code> event</td>
+                  <td>Per-line per-char scramble-resolve</td>
+                  <td>Begins mid-shutter</td>
+                </tr>
+                <tr>
+                  <td>.home-hero__title</td>
+                  <td>variable-weight</td>
+                  <td>Page scroll</td>
+                  <td><code>--home-h1-wght</code> updated 500→760</td>
+                  <td>rAF-throttled</td>
+                </tr>
+                <tr>
+                  <td>.home-hero__terminal</td>
+                  <td>typing</td>
+                  <td>intro-done AND visible (≥35%)</td>
+                  <td>Char-by-char render of <code>TERMINAL_SCRIPT</code></td>
+                  <td>420ms grace pause; static fallback under reduced-motion</td>
+                </tr>
+                <tr>
+                  <td>.home-hero__cta--primary</td>
+                  <td>magnetic</td>
+                  <td>pointermove within element</td>
+                  <td>Damped translate (±9/±7 clamp)</td>
+                  <td>Primary only; secondaries don't move</td>
+                </tr>
+                <tr>
+                  <td>a[data-home-vt]</td>
+                  <td>navigate</td>
+                  <td>Click (no modifier keys)</td>
+                  <td><code>document.startViewTransition</code> wraps navigation</td>
+                  <td>Chromium 127+ only; native nav fallback</td>
+                </tr>
+                <tr>
+                  <td>.home-ticker__num</td>
+                  <td>count-up</td>
+                  <td>First intersection (≥50%)</td>
+                  <td>Animate 0 → target over 900ms cubic-out</td>
+                  <td>One-shot per ticker; 80ms stagger</td>
+                </tr>
+                <tr>
+                  <td>canvas[data-home-dotgrid]</td>
+                  <td>cursor-react</td>
+                  <td>pointermove in hero bounds</td>
+                  <td>Dots within 140px scale and brighten</td>
+                  <td>Disabled under reduced-motion</td>
+                </tr>
+                <tr>
+                  <td>[data-section-tint]</td>
+                  <td>tinted</td>
+                  <td>First intersection (10%)</td>
+                  <td><code>.is-tinted</code> → backdrop fades in 700ms</td>
+                  <td>Cool / teal / mono variants</td>
+                </tr>
+                <tr>
+                  <td>.home-card</td>
+                  <td>hover</td>
+                  <td>pointerenter</td>
+                  <td>Lift, tilt, shimmer, accent stripe</td>
+                  <td>Tilt suppressed under reduced-motion</td>
+                </tr>
+                <tr>
+                  <td>.home-card</td>
+                  <td>reveal</td>
+                  <td>Section intersection</td>
+                  <td>Stagger fade-up (65ms × index)</td>
+                  <td>Per <code>data-home-reveal</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section class="card" id="timing">
@@ -673,7 +675,7 @@
           <h2>Responsive behavior</h2>
           <p class="small">
             Tier names follow the <a href="../docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical
-              viewport breakpoints</a>. The 640&nbsp;px and 720&nbsp;px cut-offs below are
+            viewport breakpoints</a>. The 640 px and 720 px cut-offs below are
             component-level reflow thresholds inside the <em>mobile</em> tier and the bottom of <em>tablet</em>;
             they are not separate device tiers.
           </p>
@@ -808,7 +810,6 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
       </main>
     </div>
   </div>

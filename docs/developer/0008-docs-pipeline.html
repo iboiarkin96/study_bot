@@ -156,14 +156,14 @@
         <section id="inpage-toc" class="card">
           <h2>In-page "On this page" sidebar</h2>
           <p>
-            Pages that load <code>docs-nav.js</code> show a sticky outline beside the article. Place this mount
-            as the <strong>last child</strong> of <code>&lt;main&gt;</code>:
+            Pages that load <code>docs-nav.js</code> automatically render a sticky outline beside the article —
+            no HTML mount is required. The script builds anchor links from all <code>h2</code> / <code>h3</code>
+            headings (generating an <code>id</code> where missing). Headings inside <code>figure.sys-diagram</code>
+            and <code>p.lead</code> are excluded.
           </p>
-          <pre><code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code></pre>
           <p>
-            The script builds anchor links from all <code>h2</code> / <code>h3</code> headings
-            (generating an <code>id</code> where missing). Headings inside <code>figure.sys-diagram</code> and
-            <code>p.lead</code> are excluded. If the mount element is absent, the script adds it automatically.
+            To opt a single page out of the auto-TOC, mark its <code>&lt;main&gt;</code> with
+            <code>data-inpage-toc="off"</code>.
           </p>
           <p>
             Do not write a manual "Contents" block on pages that use this script — it will duplicate the generated
@@ -219,11 +219,6 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
       </main>
 
     </body></html>

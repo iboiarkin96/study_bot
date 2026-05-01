@@ -15,11 +15,7 @@
   <script defer src="../../assets/docs-spec-status.js"></script>
 </head>
 
-<body class="internal-layout"
-      data-maintainer-ids="16fc8b78537109162984a2fdbef6e142"
-      data-spec-page="foundation"
-      data-spec-status="implemented"
-      data-spec-owner="ivan-boyarkin">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="foundation" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <div id="internal-sidebar-mount"></div>
@@ -85,77 +81,79 @@
             Each principle below comes from a documentation program known for high quality. None of them is copied
             verbatim — but every pattern we use traces back to one of these.
           </p>
-          <table>
-            <thead>
-              <tr>
-                <th>Pattern</th>
-                <th>Where it comes from</th>
-                <th>Our adaptation</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Anatomy diagrams as the canonical visual reference</td>
-                <td>Atlassian Design System, GitHub Primer, Material Design</td>
-                <td>Annotated SVG embedded inline in screen specs (<code>docs/internal/front/screens/</code>); numbered callouts referenced throughout the spec.</td>
-              </tr>
-              <tr>
-                <td>Component anatomy with named parts (header / body / footer / icon / etc.)</td>
-                <td>Stripe Elements docs, Adobe Spectrum, Carbon Design System</td>
-                <td>Layout map section in every screen spec lists each region with its CSS hook and purpose.</td>
-              </tr>
-              <tr>
-                <td>One topic per page; cards within a page for sub-topics</td>
-                <td>Stripe API reference structure, Vercel docs</td>
-                <td><code>&lt;section class="card"&gt;</code> per topic, enforced by the <a href="./documentation-style-guide.html#required-page-skeleton">style guide skeleton</a>.</td>
-              </tr>
-              <tr>
-                <td>Page history / changelog at the bottom of every page</td>
-                <td>Wikipedia "View history", MDN "Page history", Notion "Page updates"</td>
-                <td>Required <code>#page-history</code> table; one row per meaningful change, signed by author.</td>
-              </tr>
-              <tr>
-                <td>Stable identifiers for capabilities</td>
-                <td>Linear's <code>FEAT-</code> issue prefixes, GitHub's <code>actions/checkout@v4</code> versioning</td>
-                <td><a href="./docs-frontend-architecture-map.html#feature-id-governance"><code>DFEAT-xxx</code> feature IDs</a> referenced from every change.</td>
-              </tr>
-              <tr>
-                <td>Maintainer ownership recorded in metadata</td>
-                <td>Kubernetes <code>OWNERS</code> files, Sentry <code>CODEOWNERS</code></td>
-                <td><code>data-maintainer-ids</code> attribute on <code>&lt;body&gt;</code>; consumed by the "Edited by" widget.</td>
-              </tr>
-              <tr>
-                <td>Plain-language editorial guidelines</td>
-                <td>Mailchimp Voice &amp; Tone, GOV.UK Service Manual, Stripe writing principles</td>
-                <td><a href="./documentation-style-guide.html#plain-language">Style guide — Plain language</a> section.</td>
-              </tr>
-              <tr>
-                <td>Glossary as a contract</td>
-                <td>Stripe API glossary, IBM Carbon "Concepts"</td>
-                <td><a href="./docs-frontend-glossary.html">Frontend glossary</a>; new terms are added in the same PR that introduces them.</td>
-              </tr>
-              <tr>
-                <td>Definition of "done" includes docs</td>
-                <td>Atlassian DoD, Spotify "Engineering Excellence", GitLab Handbook</td>
-                <td><a href="#definition-of-done">DoD checklist below</a>; included in PR template.</td>
-              </tr>
-              <tr>
-                <td>Living docs alongside source code</td>
-                <td>Storybook stories, Astro docs, Vercel <code>docs.vercel.com</code></td>
-                <td>Static <code>docs/</code> folder shipped with code; no separate CMS.</td>
-              </tr>
-              <tr>
-                <td>Co-locating runtime contract with reference (data attributes named in spec)</td>
-                <td>Web Components docs, Salesforce Lightning docs</td>
-                <td>Every screen spec has a <em>Data contract</em> section listing every <code>data-*</code> attribute used by markup hooks.</td>
-              </tr>
-              <tr>
-                <td>"Where to change what" implementation map</td>
-                <td>Linear engineering blog architecture posts, Notion's eng playbook</td>
-                <td>Every screen spec ends with a <em>Where to change what</em> card mapping behavior to file paths.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pattern</th>
+                  <th>Where it comes from</th>
+                  <th>Our adaptation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Anatomy diagrams as the canonical visual reference</td>
+                  <td>Atlassian Design System, GitHub Primer, Material Design</td>
+                  <td>Annotated SVG embedded inline in screen specs (<code>docs/internal/front/screens/</code>); numbered callouts referenced throughout the spec.</td>
+                </tr>
+                <tr>
+                  <td>Component anatomy with named parts (header / body / footer / icon / etc.)</td>
+                  <td>Stripe Elements docs, Adobe Spectrum, Carbon Design System</td>
+                  <td>Layout map section in every screen spec lists each region with its CSS hook and purpose.</td>
+                </tr>
+                <tr>
+                  <td>One topic per page; cards within a page for sub-topics</td>
+                  <td>Stripe API reference structure, Vercel docs</td>
+                  <td><code>&lt;section class="card"&gt;</code> per topic, enforced by the <a href="./documentation-style-guide.html#required-page-skeleton">style guide skeleton</a>.</td>
+                </tr>
+                <tr>
+                  <td>Page history / changelog at the bottom of every page</td>
+                  <td>Wikipedia "View history", MDN "Page history", Notion "Page updates"</td>
+                  <td>Required <code>#page-history</code> table; one row per meaningful change, signed by author.</td>
+                </tr>
+                <tr>
+                  <td>Stable identifiers for capabilities</td>
+                  <td>Linear's <code>FEAT-</code> issue prefixes, GitHub's <code>actions/checkout@v4</code> versioning</td>
+                  <td><a href="./docs-frontend-architecture-map.html#feature-id-governance"><code>DFEAT-xxx</code> feature IDs</a> referenced from every change.</td>
+                </tr>
+                <tr>
+                  <td>Maintainer ownership recorded in metadata</td>
+                  <td>Kubernetes <code>OWNERS</code> files, Sentry <code>CODEOWNERS</code></td>
+                  <td><code>data-maintainer-ids</code> attribute on <code>&lt;body&gt;</code>; consumed by the "Edited by" widget.</td>
+                </tr>
+                <tr>
+                  <td>Plain-language editorial guidelines</td>
+                  <td>Mailchimp Voice &amp; Tone, GOV.UK Service Manual, Stripe writing principles</td>
+                  <td><a href="./documentation-style-guide.html#plain-language">Style guide — Plain language</a> section.</td>
+                </tr>
+                <tr>
+                  <td>Glossary as a contract</td>
+                  <td>Stripe API glossary, IBM Carbon "Concepts"</td>
+                  <td><a href="./docs-frontend-glossary.html">Frontend glossary</a>; new terms are added in the same PR that introduces them.</td>
+                </tr>
+                <tr>
+                  <td>Definition of "done" includes docs</td>
+                  <td>Atlassian DoD, Spotify "Engineering Excellence", GitLab Handbook</td>
+                  <td><a href="#definition-of-done">DoD checklist below</a>; included in PR template.</td>
+                </tr>
+                <tr>
+                  <td>Living docs alongside source code</td>
+                  <td>Storybook stories, Astro docs, Vercel <code>docs.vercel.com</code></td>
+                  <td>Static <code>docs/</code> folder shipped with code; no separate CMS.</td>
+                </tr>
+                <tr>
+                  <td>Co-locating runtime contract with reference (data attributes named in spec)</td>
+                  <td>Web Components docs, Salesforce Lightning docs</td>
+                  <td>Every screen spec has a <em>Data contract</em> section listing every <code>data-*</code> attribute used by markup hooks.</td>
+                </tr>
+                <tr>
+                  <td>"Where to change what" implementation map</td>
+                  <td>Linear engineering blog architecture posts, Notion's eng playbook</td>
+                  <td>Every screen spec ends with a <em>Where to change what</em> card mapping behavior to file paths.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="information-architecture" class="card">
@@ -185,52 +183,54 @@
             Each document type has a fixed shape so readers know where to look. Use the linked template when creating a
             new page; do not invent a new structure.
           </p>
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Purpose</th>
-                <th>Template / location</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Screen spec</td>
-                <td>Canonical specification for one critical user-facing screen: layout, behavior, hooks, edge cases.</td>
-                <td><a href="./screens/docs-screen-template.html">docs-screen-template.html</a> in <code>docs/internal/front/screens/</code></td>
-              </tr>
-              <tr>
-                <td>ADR (Architecture Decision Record)</td>
-                <td>Records one architectural decision: context, options considered, choice, consequences.</td>
-                <td><code>docs/adr/0000-template.html</code></td>
-              </tr>
-              <tr>
-                <td>How-to</td>
-                <td>Step-by-step procedure for a specific task ("how to change docs frontend safely").</td>
-                <td><code>docs/howto/</code></td>
-              </tr>
-              <tr>
-                <td>Runbook</td>
-                <td>Operational procedure for an incident or recurring task ("tests failing", "release rollback").</td>
-                <td><code>docs/runbooks/</code></td>
-              </tr>
-              <tr>
-                <td>Internal service doc</td>
-                <td>Authoritative behavior spec for a backend service: business rules, request/response, errors.</td>
-                <td><code>docs/internal/api/</code> (often co-generated with the OpenAPI source)</td>
-              </tr>
-              <tr>
-                <td>Frontend reference</td>
-                <td>Cross-cutting reference for a frontend system (navigation, tooltips, motion policy).</td>
-                <td><code>docs/internal/front/</code></td>
-              </tr>
-              <tr>
-                <td>Glossary</td>
-                <td>Single-table-per-section page defining all terminology used elsewhere.</td>
-                <td><a href="./docs-frontend-glossary.html">docs-frontend-glossary.html</a></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Purpose</th>
+                  <th>Template / location</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Screen spec</td>
+                  <td>Canonical specification for one critical user-facing screen: layout, behavior, hooks, edge cases.</td>
+                  <td><a href="./screens/docs-screen-template.html">docs-screen-template.html</a> in <code>docs/internal/front/screens/</code></td>
+                </tr>
+                <tr>
+                  <td>ADR (Architecture Decision Record)</td>
+                  <td>Records one architectural decision: context, options considered, choice, consequences.</td>
+                  <td><code>docs/adr/0000-template.html</code></td>
+                </tr>
+                <tr>
+                  <td>How-to</td>
+                  <td>Step-by-step procedure for a specific task ("how to change docs frontend safely").</td>
+                  <td><code>docs/howto/</code></td>
+                </tr>
+                <tr>
+                  <td>Runbook</td>
+                  <td>Operational procedure for an incident or recurring task ("tests failing", "release rollback").</td>
+                  <td><code>docs/runbooks/</code></td>
+                </tr>
+                <tr>
+                  <td>Internal service doc</td>
+                  <td>Authoritative behavior spec for a backend service: business rules, request/response, errors.</td>
+                  <td><code>docs/internal/api/</code> (often co-generated with the OpenAPI source)</td>
+                </tr>
+                <tr>
+                  <td>Frontend reference</td>
+                  <td>Cross-cutting reference for a frontend system (navigation, tooltips, motion policy).</td>
+                  <td><code>docs/internal/front/</code></td>
+                </tr>
+                <tr>
+                  <td>Glossary</td>
+                  <td>Single-table-per-section page defining all terminology used elsewhere.</td>
+                  <td><a href="./docs-frontend-glossary.html">docs-frontend-glossary.html</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="lifecycle" class="card">
@@ -490,7 +490,6 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
       </main>
     </div>
   </div>

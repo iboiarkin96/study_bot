@@ -155,6 +155,9 @@ study_app/
 │   ├── pdoc/
 │   │   └── app/
 │   ├── qa/
+│   │   ├── playbooks/
+│   │   ├── reference/
+│   │   └── templates/
 │   ├── rfc/
 │   ├── runbooks/  # Operational troubleshooting guides
 │   └── uml/  # PlantUML diagrams

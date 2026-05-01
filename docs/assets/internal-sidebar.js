@@ -646,7 +646,6 @@
             { label: "Assessment template", path: "audit/AUDIT_TEMPLATE.html" },
           ]
         },
-        { label: "Assessment template", path: "audit/AUDIT_TEMPLATE.html" },
         {
           label: "DX",
           children: [
@@ -682,7 +681,7 @@
     {
       label: "Developers portal",
       children: [
-        { label: "Python API (pdoc)", path: "pdoc/index.html" },
+        // { label: "Python API (pdoc)", path: "pdoc/index.html" },
         { label: "Hub — developer index", path: "developer/README.html" },
         {
           label: "Core architecture and contracts",
@@ -866,6 +865,8 @@
             { label: "Popup and overlay system", path: "internal/front/docs-frontend-popups-and-overlays.html" },
             { label: "Diagrams and lightbox", path: "internal/front/docs-frontend-diagrams-and-lightbox.html" },
             { label: "Resume reading and back-to-top", path: "internal/front/docs-frontend-resume-and-back-to-top.html" },
+            { label: "Rocket launch animation", path: "internal/front/docs-frontend-rocket-launch-animation.html" },
+            { label: "Report-bug FAB", path: "internal/front/docs-frontend-report-bug-fab.html" },
             { label: "Hotkeys", path: "internal/front/docs-frontend-hotkeys.html" },
           ],
         },

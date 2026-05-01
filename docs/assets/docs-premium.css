@@ -587,6 +587,14 @@ pre:focus-within .docs-copy-btn,
   box-shadow: var(--card-shadow), 0 1px 0 rgba(255, 255, 255, 0.55) inset;
 }
 
+/* Mobile: tighten side padding so the hero gives back ~20 px to the reading
+   column on a 360–440 px viewport. Vertical breathing room is reduced too. */
+@media (max-width: 760px) {
+  .docs-page-hero {
+    padding: 16px 14px 14px;
+  }
+}
+
 .docs-page-hero__desc {
   margin: 0 0 16px;
   font-size: var(--fs-body);
@@ -1061,7 +1069,7 @@ pre:focus-within .docs-copy-btn,
   margin-left: 10px;
   padding: 2px 10px;
   border-radius: 999px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-eyebrow);
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1115,4 +1123,21 @@ pre:focus-within .docs-copy-btn,
 @media (max-width: 760px) {
   .docs-module-meta { grid-template-columns: 1fr; gap: 2px 0; }
   .docs-module-meta dt { padding-top: 8px; }
+}
+
+/*
+ * Inline-style replacements (added 2026-05-01 — replaces 5 hardcoded
+ * `style="font-size:..."` attributes with token-driven classes).
+ */
+.docs-summary-meta {
+  font-size: var(--fs-meta);
+}
+
+.docs-tooltip-snippet {
+  margin: 0.6rem 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: var(--fs-meta);
 }

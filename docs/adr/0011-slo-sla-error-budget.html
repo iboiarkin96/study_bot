@@ -70,32 +70,34 @@
 
       <h3>Service level objectives (SLOs)</h3>
       <p>Targets are evaluated over a <strong>rolling 30-day</strong> window unless stated otherwise.</p>
-      <table>
-        <thead>
-          <tr>
-            <th><span tabindex="0" data-tooltip="Service level indicator: measurable signal (e.g. success ratio, latency percentile, probe health).">SLI</span></th>
-            <th><span tabindex="0" data-tooltip="SLO target for this SLI over the rolling evaluation window.">Objective</span></th>
-            <th><span tabindex="0" data-tooltip="Measurement nuance, scope exclusions, or how to read this row.">Notes</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>HTTP availability (non-5xx)</td>
-            <td>99.9% of requests succeed without 5xx</td>
-            <td>Complementary view: 5xx ratio must stay within 0.1% of traffic over the window.</td>
-          </tr>
-          <tr>
-            <td>API latency (p95)</td>
-            <td>95% of in-scope requests complete in under 500 ms</td>
-            <td>Measured as histogram p95 over 5 min rate windows for alerting; SLO is a monthly/rolling intent.</td>
-          </tr>
-          <tr>
-            <td>Readiness probe</td>
-            <td><code>/ready</code> returns HTTP 200 at least 99.9% of probe intervals</td>
-            <td>Blackbox-based; indicates DB and dependency health from outside the process.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <thead>
+            <tr>
+              <th><span tabindex="0" data-tooltip="Service level indicator: measurable signal (e.g. success ratio, latency percentile, probe health).">SLI</span></th>
+              <th><span tabindex="0" data-tooltip="SLO target for this SLI over the rolling evaluation window.">Objective</span></th>
+              <th><span tabindex="0" data-tooltip="Measurement nuance, scope exclusions, or how to read this row.">Notes</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>HTTP availability (non-5xx)</td>
+              <td>99.9% of requests succeed without 5xx</td>
+              <td>Complementary view: 5xx ratio must stay within 0.1% of traffic over the window.</td>
+            </tr>
+            <tr>
+              <td>API latency (p95)</td>
+              <td>95% of in-scope requests complete in under 500 ms</td>
+              <td>Measured as histogram p95 over 5 min rate windows for alerting; SLO is a monthly/rolling intent.</td>
+            </tr>
+            <tr>
+              <td>Readiness probe</td>
+              <td><code>/ready</code> returns HTTP 200 at least 99.9% of probe intervals</td>
+              <td>Blackbox-based; indicates DB and dependency health from outside the process.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h3>Error budget</h3>
       <p>
@@ -176,11 +178,6 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
 </body></html>

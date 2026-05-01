@@ -55,42 +55,44 @@
       </p>
 
       <h3>Relationship to other doc types (summary)</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Artifact</th>
-            <th>Primary question</th>
-            <th>Typical owner</th>
-            <th>Update cadence</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>ADR</strong></td>
-            <td>What did we decide, and what do we trade off?</td>
-            <td>Engineering (with stakeholders as needed)</td>
-            <td>When the decision changes or is superseded</td>
-          </tr>
-          <tr>
-            <td><strong>Runbook</strong></td>
-            <td>What steps fix or mitigate an operational failure?</td>
-            <td>On-call / platform</td>
-            <td>When procedures or dependencies change</td>
-          </tr>
-          <tr>
-            <td><strong>Assessment (audit)</strong></td>
-            <td>How mature is area X vs reference practices, and what should we do next?</td>
-            <td>Tech lead, security, or docs/API owner (named in the document)</td>
-            <td>Periodic (e.g. yearly) or after major milestones</td>
-          </tr>
-          <tr>
-            <td><strong>Developer guide</strong></td>
-            <td>How do I work in this repo day to day?</td>
-            <td>Contributors</td>
-            <td>When workflows change</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <thead>
+            <tr>
+              <th>Artifact</th>
+              <th>Primary question</th>
+              <th>Typical owner</th>
+              <th>Update cadence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ADR</strong></td>
+              <td>What did we decide, and what do we trade off?</td>
+              <td>Engineering (with stakeholders as needed)</td>
+              <td>When the decision changes or is superseded</td>
+            </tr>
+            <tr>
+              <td><strong>Runbook</strong></td>
+              <td>What steps fix or mitigate an operational failure?</td>
+              <td>On-call / platform</td>
+              <td>When procedures or dependencies change</td>
+            </tr>
+            <tr>
+              <td><strong>Assessment (audit)</strong></td>
+              <td>How mature is area X vs reference practices, and what should we do next?</td>
+              <td>Tech lead, security, or docs/API owner (named in the document)</td>
+              <td>Periodic (e.g. yearly) or after major milestones</td>
+            </tr>
+            <tr>
+              <td><strong>Developer guide</strong></td>
+              <td>How do I work in this repo day to day?</td>
+              <td>Contributors</td>
+              <td>When workflows change</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     </section>
     <section class="card">
@@ -247,34 +249,36 @@
           <p><strong>Score column CSS classes</strong> (apply to <code>&lt;td&gt;</code> in
             <code>table.audit-score-table</code>):
           </p>
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Class</th>
-                <th scope="col">Numeric band</th>
-                <th scope="col">Meaning (summary)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>score-excellent</code></td>
-                <td>9–10</td>
-                <td>Excellent — strong fit for scope.</td>
-              </tr>
-              <tr>
-                <td><code>score-good</code></td>
-                <td>7–8</td>
-                <td>Good — solid, clear improvements possible.</td>
-              </tr>
-              <tr>
-                <td><code>score-needs-attention</code></td>
-                <td>1–6</td>
-                <td>Needs attention — gaps vs reference bar. (<code>score-neutral</code> is a legacy alias; prefer
-                  <code>score-needs-attention</code>.)
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Class</th>
+                  <th scope="col">Numeric band</th>
+                  <th scope="col">Meaning (summary)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>score-excellent</code></td>
+                  <td>9–10</td>
+                  <td>Excellent — strong fit for scope.</td>
+                </tr>
+                <tr>
+                  <td><code>score-good</code></td>
+                  <td>7–8</td>
+                  <td>Good — solid, clear improvements possible.</td>
+                </tr>
+                <tr>
+                  <td><code>score-needs-attention</code></td>
+                  <td>1–6</td>
+                  <td>Needs attention — gaps vs reference bar. (<code>score-neutral</code> is a legacy alias; prefer
+                    <code>score-needs-attention</code>.)
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
         </section>
         <section class="card">
@@ -299,10 +303,9 @@
               <code>class="lead"</code> paragraph (metadata belongs in Overview only).
             </li>
             <li>
-              <strong>Navigation.</strong> Rely on
-              <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code>
-              (injected sidebar TOC) and section <code>id</code>s — do <strong>not</strong> add a separate “Table of
-              contents” block after Overview unless there is a documented exception.
+              <strong>Navigation.</strong> Rely on the auto-injected sidebar TOC (rendered by
+              <code>docs-nav.js</code>) and section <code>id</code>s — do <strong>not</strong> add a separate
+              “Table of contents” block after Overview unless there is a documented exception.
             </li>
             <li>
               <strong>Scope and methodology</strong> — what was examined, method (often a short numbered list), what the
@@ -478,11 +481,6 @@
               </div>
             </section>
 
-            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-            <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-              Found a bug? Report issue
-            </button>
-            <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
           </main>
 
         </body></html>

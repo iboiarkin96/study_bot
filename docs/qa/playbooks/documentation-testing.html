@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -70,127 +68,120 @@
           <ul>
             <li>Statements about endpoints, schemas, or behavior match the spec page in
               <code>docs/internal/api/&lt;resource&gt;/</code> and the OpenAPI baseline.</li>
-            <li>Code samples compile / run as written. Copy them out and try.</li>
-            <li>Numbers and dates make sense (no <em>"as of 2024"</em> on a 2026 page).</li>
-            <li>Diagrams are PlantUML (per ADR 0020) and render in the lightbox without overflow.</li>
-          </ul>
-        </section>
+              <li>Code samples compile / run as written. Copy them out and try.</li>
+              <li>Numbers and dates make sense (no <em>"as of 2024"</em> on a 2026 page).</li>
+              <li>Diagrams are PlantUML (per ADR 0020) and render in the lightbox without overflow.</li>
+            </ul>
+          </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Structure</div>
+          <div class="docs-section-divider" aria-hidden="true">Structure</div>
 
-        <section class="card" id="structure">
-          <h2>Structural contract</h2>
-          <p>Each page should have:</p>
-          <ul>
-            <li>Hero section (<code>.docs-page-hero</code>) with overview paragraph and jump-to chips.</li>
-            <li>Section dividers (<code>.docs-section-divider</code>) between top-level groupings.</li>
-            <li>Cards (<code>section.card</code>) for each major block, each with a heading.</li>
-            <li>"See also" navigation (<code>.docs-next-steps</code>) before page history.</li>
-            <li>Page history table — at least one row.</li>
-            <li>Bug-report FAB and TOC mount in the footer area.</li>
-          </ul>
-          <p class="small">
-            For API spec pages, see also the
-            <a href="../../internal/api/_shared/spec-definition-of-done.html">spec DoD</a> for the
-            full required-section list.
-          </p>
-        </section>
+          <section class="card" id="structure">
+            <h2>Structural contract</h2>
+            <p>Each page should have:</p>
+            <ul>
+              <li>Hero section (<code>.docs-page-hero</code>) with overview paragraph and jump-to chips.</li>
+              <li>Section dividers (<code>.docs-section-divider</code>) between top-level groupings.</li>
+              <li>Cards (<code>section.card</code>) for each major block, each with a heading.</li>
+              <li>"See also" navigation (<code>.docs-next-steps</code>) before page history.</li>
+              <li>Page history table — at least one row.</li>
+              <li>Bug-report FAB and TOC mount in the footer area.</li>
+            </ul>
+            <p class="small">
+              For API spec pages, see also the
+              <a href="../../internal/api/_shared/spec-definition-of-done.html">spec DoD</a> for the
+              full required-section list.
+            </p>
+          </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Navigation</div>
+          <div class="docs-section-divider" aria-hidden="true">Navigation</div>
 
-        <section class="card" id="navigation">
-          <h2>Navigation checks</h2>
-          <ul>
-            <li>Internal sidebar shows the active page highlighted; surrounding group is open.</li>
-            <li>Breadcrumbs match the page's path in the docs tree.</li>
-            <li>Top navigation chips and "On this page" anchors all scroll to live targets.</li>
-            <li>Drawer mode (mobile / narrow) opens, traps focus while open, closes on Escape.</li>
-            <li>Back-to-top (rocket) appears after scrolling, returns to top on click.</li>
-            <li>External links use <code>rel="noopener"</code> and don't break navigation.</li>
-          </ul>
-        </section>
+          <section class="card" id="navigation">
+            <h2>Navigation checks</h2>
+            <ul>
+              <li>Internal sidebar shows the active page highlighted; surrounding group is open.</li>
+              <li>Breadcrumbs match the page's path in the docs tree.</li>
+              <li>Top navigation chips and "On this page" anchors all scroll to live targets.</li>
+              <li>Drawer mode (mobile / narrow) opens, traps focus while open, closes on Escape.</li>
+              <li>Back-to-top (rocket) appears after scrolling, returns to top on click.</li>
+              <li>External links use <code>rel="noopener"</code> and don't break navigation.</li>
+            </ul>
+          </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Search</div>
+          <div class="docs-section-divider" aria-hidden="true">Search</div>
 
-        <section class="card" id="search">
-          <h2>Search</h2>
-          <ul>
-            <li>Search-index entry for the new page exists (rebuild the index if needed).</li>
-            <li>Searching for the page title returns it within the first 5 results.</li>
-            <li>Search results panel opens, navigates with arrow keys, closes on Escape, opens result on Enter.</li>
-            <li>Empty query state and no-results state both render without console errors.</li>
-          </ul>
-        </section>
+          <section class="card" id="search">
+            <h2>Search</h2>
+            <ul>
+              <li>Search-index entry for the new page exists (rebuild the index if needed).</li>
+              <li>Searching for the page title returns it within the first 5 results.</li>
+              <li>Search results panel opens, navigates with arrow keys, closes on Escape, opens result on Enter.</li>
+              <li>Empty query state and no-results state both render without console errors.</li>
+            </ul>
+          </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Themes</div>
+          <div class="docs-section-divider" aria-hidden="true">Themes</div>
 
-        <section class="card" id="themes">
-          <h2>Theme &amp; responsiveness</h2>
-          <ul>
-            <li>Page renders correctly in light, dark, and system-default modes.</li>
-            <li>Theme toggle cycles system → light → dark with a tooltip and aria-label that match.</li>
-            <li>No element relies on a hard-coded color; tokens come through. Spot-check critical text contrast.</li>
-            <li>At 360px (small phone), 768px (tablet), 1280px (desktop): no horizontal scroll, no clipped text, tables
-              scroll their own region.</li>
-          </ul>
-        </section>
+          <section class="card" id="themes">
+            <h2>Theme &amp; responsiveness</h2>
+            <ul>
+              <li>Page renders correctly in light, dark, and system-default modes.</li>
+              <li>Theme toggle cycles system → light → dark with a tooltip and aria-label that match.</li>
+              <li>No element relies on a hard-coded color; tokens come through. Spot-check critical text contrast.</li>
+              <li>At 360px (small phone), 768px (tablet), 1280px (desktop): no horizontal scroll, no clipped text, tables
+                scroll their own region.</li>
+              </ul>
+            </section>
 
-        <div class="docs-section-divider" aria-hidden="true">A11y</div>
+            <div class="docs-section-divider" aria-hidden="true">A11y</div>
 
-        <section class="card" id="a11y">
-          <h2>Accessibility (quick pass)</h2>
-          <ul>
-            <li>Tab through the page — focus order matches reading order; focus rings are visible.</li>
-            <li>Headings are hierarchical (one h1, h2 below it, h3 inside h2).</li>
-            <li>Images have meaningful alt text or empty alt for decorative.</li>
-            <li>Diagram lightbox is reachable by keyboard and closable with Escape.</li>
-            <li>Use <a href="../0005-accessibility-checklist.html">checklist 0005</a> for a deeper pass.</li>
-          </ul>
-        </section>
+            <section class="card" id="a11y">
+              <h2>Accessibility (quick pass)</h2>
+              <ul>
+                <li>Tab through the page — focus order matches reading order; focus rings are visible.</li>
+                <li>Headings are hierarchical (one h1, h2 below it, h3 inside h2).</li>
+                <li>Images have meaningful alt text or empty alt for decorative.</li>
+                <li>Diagram lightbox is reachable by keyboard and closable with Escape.</li>
+                <li>Use <a href="../0005-accessibility-checklist.html">checklist 0005</a> for a deeper pass.</li>
+              </ul>
+            </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Assets</div>
+            <div class="docs-section-divider" aria-hidden="true">Assets</div>
 
-        <section class="card" id="assets">
-          <h2>Assets &amp; links</h2>
-          <ul>
-            <li>All <code>href</code>s resolve (no 404). Run a link checker if available.</li>
-            <li>Relative paths are correct for the page's depth (one level deeper = <code>../</code>).</li>
-            <li>JS/CSS asset paths match — nothing in the console.</li>
-            <li>Inline scripts (theme bootstrap) are present and not blocked by CSP.</li>
-          </ul>
-        </section>
+            <section class="card" id="assets">
+              <h2>Assets &amp; links</h2>
+              <ul>
+                <li>All <code>href</code>s resolve (no 404). Run a link checker if available.</li>
+                <li>Relative paths are correct for the page's depth (one level deeper = <code>../</code>).</li>
+                <li>JS/CSS asset paths match — nothing in the console.</li>
+                <li>Inline scripts (theme bootstrap) are present and not blocked by CSP.</li>
+              </ul>
+            </section>
 
-        <section class="card" id="page-history">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Change</th>
-                  <th>Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-30">2026-04-30</time></td>
-                  <td>Initial documentation testing playbook.</td>
-                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+            <section class="card" id="page-history">
+              <h2>Page history</h2>
+              <div class="docs-table-scroll" role="region" aria-label="Page history">
+                <table class="docs-page-history">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Change</th>
+                      <th>Author</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><time datetime="2026-04-30">2026-04-30</time></td>
+                      <td>Initial documentation testing playbook.</td>
+                      <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-      </main>
-    </div>
-  </div>
+          </main>
+        </div>
+      </div>
 
-</body>
-
-</html>
+    </body></html>

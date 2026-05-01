@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -152,50 +150,50 @@
         <section class="card" id="template">
           <h2>Template — copy this block</h2>
           <pre><code class="language-markdown">### Title
-[&lt;area&gt;] &lt;observed behavior&gt; — &lt;condition&gt;
+            [&lt;area&gt;] &lt;observed behavior&gt; — &lt;condition&gt;
 
-### Severity / Priority
-- Severity: S1 | S2 | S3 | S4
-- Priority: P1 | P2 | P3 | P4 (suggested)
+            ### Severity / Priority
+            - Severity: S1 | S2 | S3 | S4
+            - Priority: P1 | P2 | P3 | P4 (suggested)
 
-### Environment
-- Build / commit: &lt;sha or release&gt;
-- Environment: local | staging | …
-- Browser / OS / device: &lt;name + version&gt;
-- Date observed: &lt;ISO date&gt;
+            ### Environment
+            - Build / commit: &lt;sha or release&gt;
+            - Environment: local | staging | …
+            - Browser / OS / device: &lt;name + version&gt;
+            - Date observed: &lt;ISO date&gt;
 
-### Steps to reproduce
-1. &lt;step 1&gt;
-2. &lt;step 2&gt;
-3. &lt;step 3&gt;
+            ### Steps to reproduce
+            1. &lt;step 1&gt;
+            2. &lt;step 2&gt;
+            3. &lt;step 3&gt;
 
-Reproduction rate: &lt;always | 3/10 | …&gt;
+            Reproduction rate: &lt;always | 3/10 | …&gt;
 
-### Expected
-&lt;What should happen, with link to spec anchor.&gt;
+            ### Expected
+            &lt;What should happen, with link to spec anchor.&gt;
 
-### Actual
-&lt;What did happen. Quote + paste of the response body, screenshot, or log line.&gt;
+            ### Actual
+            &lt;What did happen. Quote + paste of the response body, screenshot, or log line.&gt;
 
-### Evidence
-- &lt;link to screenshot 1, annotated&gt;
-- &lt;X-Request-ID: &lt;uuid&gt;, log excerpt&gt;
-- &lt;HAR or response capture&gt;
+            ### Evidence
+            - &lt;link to screenshot 1, annotated&gt;
+            - &lt;X-Request-ID: &lt;uuid&gt;, log excerpt&gt;
+            - &lt;HAR or response capture&gt;
 
-### Impact
-&lt;Who is affected and on what flow. One sentence.&gt;
+            ### Impact
+            &lt;Who is affected and on what flow. One sentence.&gt;
 
-### Workaround
-&lt;Optional&gt;
+            ### Workaround
+            &lt;Optional&gt;
 
-### Suspect cause
-&lt;Optional hypothesis&gt;
+            ### Suspect cause
+            &lt;Optional hypothesis&gt;
 
-### Linked
-- Spec: &lt;anchor&gt;
-- Test case: &lt;TC-…&gt;
-- Related defects: &lt;ids&gt;
-</code></pre>
+            ### Linked
+            - Spec: &lt;anchor&gt;
+            - Test case: &lt;TC-…&gt;
+            - Related defects: &lt;ids&gt;
+          </code></pre>
         </section>
 
         <div class="docs-section-divider" aria-hidden="true">Worked example</div>
@@ -203,53 +201,53 @@ Reproduction rate: &lt;always | 3/10 | …&gt;
         <section class="card" id="worked-example">
           <h2>Worked example</h2>
           <pre><code class="language-markdown">### Title
-[API/user] POST /api/v1/user accepts empty "email" — should return 422
+            [API/user] POST /api/v1/user accepts empty "email" — should return 422
 
-### Severity / Priority
-- Severity: S2 (data integrity — invalid users persist)
-- Priority: P2 (suggested)
+            ### Severity / Priority
+            - Severity: S2 (data integrity — invalid users persist)
+            - Priority: P2 (suggested)
 
-### Environment
-- Build: 2026-04-30 main @ ab5d00b
-- Environment: local
-- Client: httpie 3.2 / curl 8.4 — same result
-- Date observed: 2026-04-30
+            ### Environment
+            - Build: 2026-04-30 main @ ab5d00b
+            - Environment: local
+            - Client: httpie 3.2 / curl 8.4 — same result
+            - Date observed: 2026-04-30
 
-### Steps to reproduce
-1. Start API locally (`make run`).
-2. POST /api/v1/user with body {"first_name": "I", "last_name": "B", "email": ""}.
-3. Observe HTTP 201 and a new row in `users` table.
+            ### Steps to reproduce
+            1. Start API locally (`make run`).
+            2. POST /api/v1/user with body {"first_name": "I", "last_name": "B", "email": ""}.
+            3. Observe HTTP 201 and a new row in `users` table.
 
-Reproduction rate: 10/10.
+            Reproduction rate: 10/10.
 
-### Expected
-Per internal/api/user/operations/post-api-v1-user.html#request-body, the email field
-must be a non-empty RFC 5322 address. Empty must yield 422 with envelope code
-"validation_error".
+            ### Expected
+            Per internal/api/user/operations/post-api-v1-user.html#request-body, the email field
+            must be a non-empty RFC 5322 address. Empty must yield 422 with envelope code
+            "validation_error".
 
-### Actual
-HTTP 201; response body returns a user_id; DB row exists with email = "".
+            ### Actual
+            HTTP 201; response body returns a user_id; DB row exists with email = "".
 
-### Evidence
-- screenshot-1.png — request and response in httpie.
-- X-Request-ID: 7c1a6f12-… — log shows `users.created`, no validation error.
-- HAR: post-user-empty-email.har
+            ### Evidence
+            - screenshot-1.png — request and response in httpie.
+            - X-Request-ID: 7c1a6f12-… — log shows `users.created`, no validation error.
+            - HAR: post-user-empty-email.har
 
-### Impact
-Any caller (CLI, integration partners) can persist invalid users. Downstream consumers
-will fail when they try to send mail to an empty address.
+            ### Impact
+            Any caller (CLI, integration partners) can persist invalid users. Downstream consumers
+            will fail when they try to send mail to an empty address.
 
-### Workaround
-Reject empty strings client-side until fixed.
+            ### Workaround
+            Reject empty strings client-side until fixed.
 
-### Suspect cause
-Pydantic field has min_length default of 0; needs `min_length=1` and an EmailStr type.
+            ### Suspect cause
+            Pydantic field has min_length default of 0; needs `min_length=1` and an EmailStr type.
 
-### Linked
-- Spec: internal/api/user/operations/post-api-v1-user.html#request-body
-- Test case: TC-API-USER-014
-- Related defects: none yet.
-</code></pre>
+            ### Linked
+            - Spec: internal/api/user/operations/post-api-v1-user.html#request-body
+            - Test case: TC-API-USER-014
+            - Related defects: none yet.
+          </code></pre>
         </section>
 
         <div class="docs-section-divider" aria-hidden="true">Do / don't</div>
@@ -262,43 +260,36 @@ Pydantic field has min_length default of 0; needs `min_length=1` and an EmailStr
             <li><strong>Do</strong> attach annotated screenshots — arrows / boxes around the element under test.</li>
             <li><strong>Don't</strong> file the same defect twice. Search first; if a near-duplicate exists, comment
               with new evidence rather than open a new ticket.</li>
-            <li><strong>Don't</strong> mix two defects in one report. Split.</li>
-            <li><strong>Don't</strong> describe the fix. The defect is the observation; the fix is engineering's call.
-            </li>
-          </ul>
-        </section>
+              <li><strong>Don't</strong> mix two defects in one report. Split.</li>
+              <li><strong>Don't</strong> describe the fix. The defect is the observation; the fix is engineering's call.
+              </li>
+            </ul>
+          </section>
 
-        <section class="card" id="page-history">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Change</th>
-                  <th>Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-30">2026-04-30</time></td>
-                  <td>Initial bug report template.</td>
-                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+          <section class="card" id="page-history">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Change</th>
+                    <th>Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-30">2026-04-30</time></td>
+                    <td>Initial bug report template.</td>
+                    <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-      </main>
+        </main>
+      </div>
     </div>
-  </div>
 
-</body>
-
-</html>
+  </body></html>

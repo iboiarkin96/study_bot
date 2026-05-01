@@ -132,6 +132,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "REST API Assessment — Study App — formed 14 Apr 2026"
       },
       {
+        "path": "audit/api/README.html",
+        "title": "REST API assessments — index"
+      },
+      {
         "path": "audit/docs/2026-04-14-documentation-experience-assessment.html",
         "title": "Documentation Experience (DX) Assessment — Study App — formed 14 Apr 2026"
       },
@@ -146,6 +150,14 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "audit/docs/2026-04-24-ui-ux-assessment.html",
         "title": "UI/UX Assessment (premium benchmark) — Study App product and docs experience — formed 2026-04-23"
+      },
+      {
+        "path": "audit/docs/2026-05-01-documentation-experience-assessment.html",
+        "title": "Documentation Experience (DX) Assessment — Study App — formed 1 May 2026"
+      },
+      {
+        "path": "audit/docs/README.html",
+        "title": "Documentation experience assessments — index"
       },
       {
         "path": "backlog/README.html",
@@ -256,6 +268,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Idempotency — shared internal rules — Study App"
       },
       {
+        "path": "internal/api/_shared/index.html",
+        "title": "Shared API standards — Internal API — Study App"
+      },
+      {
         "path": "internal/api/_shared/observability-conventions.html",
         "title": "Observability conventions — shared rules — Study App"
       },
@@ -322,10 +338,6 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/api/user/index.html",
         "title": "User resource — internal specification — Study App"
-      },
-      {
-        "path": "internal/api/user/operations/get-api-v1-user-system_uuid-system_user_id copy.html",
-        "title": "GET /api/v1/user/{system_uuid}/{system_user_id} — User — Study App"
       },
       {
         "path": "internal/api/user/operations/get-api-v1-user-system_uuid-system_user_id.html",
@@ -424,6 +436,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Documentation style guide and audit standard"
       },
       {
+        "path": "internal/front/screens/components/README.html",
+        "title": "Component screenshots — convention &amp; viewport canon"
+      },
+      {
         "path": "internal/front/screens/docs-screen-backlog-cockpit.html",
         "title": "Screen spec: Backlog cockpit"
       },
@@ -476,8 +492,88 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "QA checklist 0001: Documentation pages visual verification"
       },
       {
+        "path": "qa/0002-api-endpoint-acceptance-checklist.html",
+        "title": "QA checklist 0002 — API endpoint acceptance"
+      },
+      {
+        "path": "qa/0003-release-smoke-checklist.html",
+        "title": "QA checklist 0003 — Release smoke"
+      },
+      {
+        "path": "qa/0004-regression-checklist.html",
+        "title": "QA checklist 0004 — Regression"
+      },
+      {
+        "path": "qa/0005-accessibility-checklist.html",
+        "title": "QA checklist 0005 — Accessibility (WCAG 2.1 AA)"
+      },
+      {
         "path": "qa/README.html",
-        "title": "QA checklists — Documentation testing hub"
+        "title": "QA portal — testing strategy, playbooks, templates, checklists"
+      },
+      {
+        "path": "qa/glossary.html",
+        "title": "QA glossary — Study App"
+      },
+      {
+        "path": "qa/playbooks/accessibility-testing.html",
+        "title": "Playbook: accessibility testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/api-endpoint-testing.html",
+        "title": "Playbook: API endpoint testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/documentation-testing.html",
+        "title": "Playbook: documentation testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/exploratory-testing.html",
+        "title": "Playbook: exploratory testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/release-smoke.html",
+        "title": "Playbook: release smoke testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/qa-process.html",
+        "title": "QA process &amp; SDLC integration — QA portal — Study App"
+      },
+      {
+        "path": "qa/reference/bug-severity-and-priority.html",
+        "title": "Severity &amp; priority matrix — QA portal — Study App"
+      },
+      {
+        "path": "qa/reference/defect-lifecycle.html",
+        "title": "Defect lifecycle — QA portal — Study App"
+      },
+      {
+        "path": "qa/reference/test-environments.html",
+        "title": "Test environments — QA portal — Study App"
+      },
+      {
+        "path": "qa/templates/bug-report-template.html",
+        "title": "Bug report template — QA portal — Study App"
+      },
+      {
+        "path": "qa/templates/test-case-template.html",
+        "title": "Test case template — QA portal — Study App"
+      },
+      {
+        "path": "qa/templates/test-plan-template.html",
+        "title": "Test plan template — QA portal — Study App"
+      },
+      {
+        "path": "qa/test-pyramid.html",
+        "title": "Test pyramid — QA portal — Study App"
+      },
+      {
+        "path": "qa/test-strategy.html",
+        "title": "Test strategy — QA portal — Study App"
+      },
+      {
+        "path": "qa/tester-onboarding.html",
+        "title": "Tester onboarding — QA portal — Study App"
       },
       {
         "path": "rfc/0000-template.html",
@@ -490,6 +586,10 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "rfc/0002-docs-search-kpi-policy-and-slo.html",
         "title": "RFC 0002: Docs Search KPI Policy and SLO Thresholds"
+      },
+      {
+        "path": "rfc/0003-documentation-authoring-model.html",
+        "title": "RFC 0003: Documentation authoring model — API specs, screen specs, and templates"
       },
       {
         "path": "rfc/README.html",

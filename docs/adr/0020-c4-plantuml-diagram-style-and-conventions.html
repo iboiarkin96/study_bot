@@ -171,42 +171,44 @@
       <p>
         Follow C4 naming for titles and intent; map elements as below so colors from the shared skin apply predictably.
       </p>
-      <table>
-        <caption>C4 level → suggested PlantUML shapes</caption>
-        <thead>
-          <tr>
-            <th>C4 level</th>
-            <th>Intent</th>
-            <th>PlantUML</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>L1 System context</td>
-            <td>People and external systems around the product</td>
-            <td>
-              <code>actor</code> for people; <code>package</code> to group external apps; <code>rectangle</code> for the
-              system under design; <code>database</code> when a store is iconic at this zoom level
-            </td>
-          </tr>
-          <tr>
-            <td>L2 Containers</td>
-            <td>Deployable apps, data stores, major technical building blocks</td>
-            <td>
-              <code>node</code> for a process or host boundary; <code>[Container]</code> rectangles inside;
-              <code>database</code> for stores; <code>package</code> for ancillary stacks (for example observability)
-            </td>
-          </tr>
-          <tr>
-            <td>L3 Components</td>
-            <td>Major parts inside a container (layers, modules)</td>
-            <td>
-              <code>package</code> per layer or bounded context; <code>[Name]</code> components inside; data access via
-              <code>database</code> / repositories as in existing examples
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <caption>C4 level → suggested PlantUML shapes</caption>
+          <thead>
+            <tr>
+              <th>C4 level</th>
+              <th>Intent</th>
+              <th>PlantUML</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>L1 System context</td>
+              <td>People and external systems around the product</td>
+              <td>
+                <code>actor</code> for people; <code>package</code> to group external apps; <code>rectangle</code> for the
+                system under design; <code>database</code> when a store is iconic at this zoom level
+              </td>
+            </tr>
+            <tr>
+              <td>L2 Containers</td>
+              <td>Deployable apps, data stores, major technical building blocks</td>
+              <td>
+                <code>node</code> for a process or host boundary; <code>[Container]</code> rectangles inside;
+                <code>database</code> for stores; <code>package</code> for ancillary stacks (for example observability)
+              </td>
+            </tr>
+            <tr>
+              <td>L3 Components</td>
+              <td>Major parts inside a container (layers, modules)</td>
+              <td>
+                <code>package</code> per layer or bounded context; <code>[Name]</code> components inside; data access via
+                <code>database</code> / repositories as in existing examples
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p class="small">
         Reference implementations: <code>docs/uml/architecture/system_context_view.puml</code>,
         <code>container_view.puml</code>, <code>system_component_view.puml</code>.
@@ -289,48 +291,50 @@
         each
         diagram.
       </p>
-      <table>
-        <caption>Palette and typography (must stay aligned with <code>style.puml</code>)</caption>
-        <thead>
-          <tr>
-            <th>Role</th>
-            <th>Setting</th>
-            <th>Values (hex)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Page / packages</td>
-            <td>Package background and border</td>
-            <td>Background <code>#F1F5F9</code>, border <code>#CBD5E1</code></td>
-          </tr>
-          <tr>
-            <td>Software / API / components</td>
-            <td>Rectangle (default component)</td>
-            <td>Fill <code>#F8FAFC</code>, border <code>#2563EB</code></td>
-          </tr>
-          <tr>
-            <td>Data stores</td>
-            <td>Database</td>
-            <td>Fill <code>#FFF7ED</code>, border <code>#C2410C</code></td>
-          </tr>
-          <tr>
-            <td>Infrastructure / deployment</td>
-            <td>Node</td>
-            <td>Fill <code>#F8FAFC</code>, border <code>#64748B</code></td>
-          </tr>
-          <tr>
-            <td>People</td>
-            <td>Actor</td>
-            <td>Fill <code>#ECFDF5</code>, border <code>#047857</code></td>
-          </tr>
-          <tr>
-            <td>Arrows</td>
-            <td>Generalization / dependency lines</td>
-            <td>Color <code>#64748B</code>, thickness <code>1.1</code></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <caption>Palette and typography (must stay aligned with <code>style.puml</code>)</caption>
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Setting</th>
+              <th>Values (hex)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Page / packages</td>
+              <td>Package background and border</td>
+              <td>Background <code>#F1F5F9</code>, border <code>#CBD5E1</code></td>
+            </tr>
+            <tr>
+              <td>Software / API / components</td>
+              <td>Rectangle (default component)</td>
+              <td>Fill <code>#F8FAFC</code>, border <code>#2563EB</code></td>
+            </tr>
+            <tr>
+              <td>Data stores</td>
+              <td>Database</td>
+              <td>Fill <code>#FFF7ED</code>, border <code>#C2410C</code></td>
+            </tr>
+            <tr>
+              <td>Infrastructure / deployment</td>
+              <td>Node</td>
+              <td>Fill <code>#F8FAFC</code>, border <code>#64748B</code></td>
+            </tr>
+            <tr>
+              <td>People</td>
+              <td>Actor</td>
+              <td>Fill <code>#ECFDF5</code>, border <code>#047857</code></td>
+            </tr>
+            <tr>
+              <td>Arrows</td>
+              <td>Generalization / dependency lines</td>
+              <td>Color <code>#64748B</code>, thickness <code>1.1</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <ul>
         <li><strong>Font:</strong> <code>Arial</code> (available on typical Kroki/Linux renderers), size <code>10</code>
           for elements; arrow labels use <code>ArrowFontSize 9</code> (change only via shared style).</li>
@@ -496,11 +500,6 @@
                           </div>
                         </section>
 
-                        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-                          Found a bug? Report issue
-                        </button>
-                        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
                       </main>
 
                     </body></html>

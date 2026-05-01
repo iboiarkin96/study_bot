@@ -46,7 +46,6 @@
           <code>v1</code></span>
         </div>
 
-
         <section class="docs-page-hero" aria-labelledby="overview">
           <h2 id="overview">Overview</h2>
           <p>
@@ -149,35 +148,37 @@
           <div class="cue-sheet-walkthrough" role="region" aria-label="Paper cue sheet and matching cue_sheet JSON">
             <div class="cue-sheet-walkthrough__col">
               <p class="cue-sheet-walkthrough__label">On paper (three columns)</p>
-              <table class="cue-sheet-walkthrough__paper">
-                <caption class="cue-sheet-walkthrough__cap">Topic on paper (optional): “Water cycle” — also fits
-                  <code>cue_sheet.topic</code> below
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Keywords</th>
-                    <th scope="col">Questions</th>
-                    <th scope="col">Hints</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>evaporation</td>
-                    <td>What drives water into vapor?</td>
-                    <td>Sun heats surface</td>
-                  </tr>
-                  <tr>
-                    <td>condensation</td>
-                    <td>Where do clouds form?</td>
-                    <td>Cooling air</td>
-                  </tr>
-                  <tr>
-                    <td>precipitation</td>
-                    <td>Rain vs snow depends on?</td>
-                    <td>Temperature aloft</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="docs-table-scroll" role="region" aria-label="Table">
+                <table class="cue-sheet-walkthrough__paper">
+                  <caption class="cue-sheet-walkthrough__cap">Topic on paper (optional): “Water cycle” — also fits
+                    <code>cue_sheet.topic</code> below
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Keywords</th>
+                      <th scope="col">Questions</th>
+                      <th scope="col">Hints</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>evaporation</td>
+                      <td>What drives water into vapor?</td>
+                      <td>Sun heats surface</td>
+                    </tr>
+                    <tr>
+                      <td>condensation</td>
+                      <td>Where do clouds form?</td>
+                      <td>Cooling air</td>
+                    </tr>
+                    <tr>
+                      <td>precipitation</td>
+                      <td>Rain vs snow depends on?</td>
+                      <td>Temperature aloft</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div class="cue-sheet-walkthrough__col">
               <p class="cue-sheet-walkthrough__label">In JSON (<code>cue_sheet</code> only)</p>
@@ -251,47 +252,49 @@
                 <p class="small">
                   Full schemas are in OpenAPI; this table is the shorthand for reviews and client onboarding.
                 </p>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Field</th>
-                      <th>What the learner meant</th>
-                      <th>API notes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>system_user_id</code>, <code>system_uuid</code></td>
-                      <td>Which account this note belongs to (from your integration).</td>
-                      <td>Required on create / due / patch / review / errors; must match an existing user.</td>
-                    </tr>
-                    <tr>
-                      <td><code>title</code></td>
-                      <td>Optional short label (chapter, topic).</td>
-                      <td>Omit or string; max length per OpenAPI.</td>
-                    </tr>
-                    <tr>
-                      <td><code>cue_sheet</code></td>
-                      <td>The lean capture from Extract (e.g. rows with keyword / question / hint).</td>
-                      <td>Arbitrary JSON <strong>object</strong> (not an array at the top level). Must be valid JSON.</td>
-                    </tr>
-                    <tr>
-                      <td><code>dense_paragraph</code></td>
-                      <td>Transform: one paragraph in their own words, sources closed.</td>
-                      <td>Required non-empty string.</td>
-                    </tr>
-                    <tr>
-                      <td><code>bullets</code></td>
-                      <td>Transform: bullet list explaining the idea simply.</td>
-                      <td>Array of non-empty strings; typical length 5–7 in methodology docs.</td>
-                    </tr>
-                    <tr>
-                      <td><code>slot</code>, <code>next_review_at</code>, …</td>
-                      <td>Scheduling — usually not typed by the user on create.</td>
-                      <td>Set by server from <code>SchedulePolicy</code>; updated on review.</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="docs-table-scroll" role="region" aria-label="Table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Field</th>
+                        <th>What the learner meant</th>
+                        <th>API notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>system_user_id</code>, <code>system_uuid</code></td>
+                        <td>Which account this note belongs to (from your integration).</td>
+                        <td>Required on create / due / patch / review / errors; must match an existing user.</td>
+                      </tr>
+                      <tr>
+                        <td><code>title</code></td>
+                        <td>Optional short label (chapter, topic).</td>
+                        <td>Omit or string; max length per OpenAPI.</td>
+                      </tr>
+                      <tr>
+                        <td><code>cue_sheet</code></td>
+                        <td>The lean capture from Extract (e.g. rows with keyword / question / hint).</td>
+                        <td>Arbitrary JSON <strong>object</strong> (not an array at the top level). Must be valid JSON.</td>
+                      </tr>
+                      <tr>
+                        <td><code>dense_paragraph</code></td>
+                        <td>Transform: one paragraph in their own words, sources closed.</td>
+                        <td>Required non-empty string.</td>
+                      </tr>
+                      <tr>
+                        <td><code>bullets</code></td>
+                        <td>Transform: bullet list explaining the idea simply.</td>
+                        <td>Array of non-empty strings; typical length 5–7 in methodology docs.</td>
+                      </tr>
+                      <tr>
+                        <td><code>slot</code>, <code>next_review_at</code>, …</td>
+                        <td>Scheduling — usually not typed by the user on create.</td>
+                        <td>Set by server from <code>SchedulePolicy</code>; updated on review.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </section>
 
               <section id="worked-example" class="card">
@@ -512,11 +515,6 @@
                                                   </div>
                                                 </section>
 
-                                                <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                                                <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-                                                  Found a bug? Report issue
-                                                </button>
-                                                <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
                                               </main>
                                             </div>
                                           </div>

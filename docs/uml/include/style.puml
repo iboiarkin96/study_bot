@@ -1,43 +1,273 @@
-' Shared PlantUML skin (injected after @startuml by scripts/regenerate_docs.py for Kroki single-file render)
-' Typography: Arial/Helvetica stack matches typical Linux server fonts (Kroki) — avoids Segoe-only drift.
-skinparam shadowing false
-skinparam linetype ortho
-skinparam componentStyle rectangle
-skinparam packageStyle rectangle
-skinparam defaultFontName "Arial"
-skinparam defaultFontSize 10
-' Balance: tight enough to avoid huge gaps, loose enough to limit label/arrow overlap. Split diagrams if still crowded.
-skinparam nodesep 20
-skinparam ranksep 17
-skinparam Padding 4
-skinparam dpi 96
-' Cap export width only — do **not** use ``scale 960 width`` without ``max``: that forces
-' every diagram to the same pixel width and upscales narrow exports (blows up text).
-' HTML must **not** stretch SVGs with ``width: 100%`` — use intrinsic size + expand/lightbox.
-' Regenerate outputs after changing this (``make docs-fix`` / ``regenerate_docs.py``).
+' ============================================================================
+' Shared PlantUML skin — single source of truth for diagram visuals.
+'
+' This file is **injected immediately after `@startuml`** by
+' `scripts/regenerate_docs.py` before sending the diagram to Kroki, so every
+' `*.puml` under `docs/uml/` (except `include/`) inherits the same palette,
+' typography, layout, and helper macros. To opt out for a one-off diagram,
+' put `!NO_STYLE` on the line directly after `@startuml`.
+'
+' Conventions:
+'   - Colour tokens (`!$NAME`) are the only place hex values are declared.
+'     Per-element skinparams reference them, and individual diagrams should
+'     too — never paste a fresh `#XXXXXX` literal into a diagram.
+'   - Borders carry meaning: blue = application, orange = persistence,
+'     emerald = human / actor, violet = queue / message bus, slate = neutral
+'     infra. Add a colour only when the role is genuinely new.
+'   - Macros (`$Footer`, `$Subtitle`, `$LegendStandard`, `$Hint`) are opt-in
+'     and never modify diagram semantics — they only render extra chrome.
+'
+' Policy: ADR-0020 (C4 + PlantUML conventions). Update both this file and
+' the ADR table together; regenerate SVGs with `make docs-fix` afterwards.
+' ============================================================================
+
+' ---------------------------------------------------------------------------
+' 1. Colour tokens
+' ---------------------------------------------------------------------------
+' Surface fills — calm, near-white, gain meaning from the border.
+!$BG_PAGE       = "#FFFFFF"
+!$BG_SURFACE    = "#F8FAFC"
+!$BG_PACKAGE    = "#F1F5F9"
+!$BG_NOTE       = "#FFFBEB"
+!$BG_DB         = "#FFF7ED"
+!$BG_ACTOR      = "#ECFDF5"
+!$BG_QUEUE      = "#FAF5FF"
+!$BG_CLOUD      = "#F0F9FF"
+!$BG_ENTITY     = "#EFF6FF"
+!$BG_HIGHLIGHT  = "#DBEAFE"
+!$BG_GROUP      = "#EEF2FF"
+
+' Borders — load-bearing for semantics; thicker = more important.
+!$BORDER_NEUTRAL    = "#94A3B8"
+!$BORDER_PACKAGE    = "#CBD5E1"
+!$BORDER_PRIMARY    = "#2563EB"
+!$BORDER_HIGHLIGHT  = "#1D4ED8"
+!$BORDER_DB         = "#C2410C"
+!$BORDER_ACTOR      = "#047857"
+!$BORDER_QUEUE      = "#7C3AED"
+!$BORDER_NOTE       = "#D97706"
+
+' Ink — typography hierarchy.
+!$INK_PRIMARY = "#0F172A"
+!$INK_MUTED   = "#475569"
+!$INK_ARROW   = "#64748B"
+
+' ---------------------------------------------------------------------------
+' 2. Typography
+' ---------------------------------------------------------------------------
+' Stick with "Helvetica" for Kroki/Linux text-width safety. The browser
+' renders SVG text using this exact family; on macOS this resolves to true
+' Helvetica, on Linux to Liberation Sans (metric-compatible with Arial).
+skinparam defaultFontName  "Helvetica"
+skinparam defaultFontSize  11
+skinparam defaultFontColor $INK_PRIMARY
+skinparam TitleFontName    "Helvetica"
+skinparam TitleFontSize    15
+skinparam TitleFontStyle   bold
+skinparam TitleFontColor   $INK_PRIMARY
+skinparam ArrowFontColor   $INK_MUTED
+skinparam ArrowFontSize    10
+skinparam NoteFontSize     10
+skinparam NoteFontColor    $INK_PRIMARY
+skinparam LegendFontSize   10
+skinparam FooterFontSize   9
+skinparam FooterFontColor  $INK_MUTED
+
+' ---------------------------------------------------------------------------
+' 3. Layout
+' ---------------------------------------------------------------------------
+skinparam shadowing       false
+skinparam linetype        ortho
+skinparam componentStyle  rectangle
+skinparam packageStyle    rectangle
+skinparam roundCorner     8
+skinparam Padding         6
+skinparam nodesep         28
+skinparam ranksep         22
+skinparam dpi             96
+skinparam BackgroundColor $BG_PAGE
+' Cap export width — never use `scale <N> width` without `max`, that would
+' force narrow diagrams to upscale and break font consistency across pages.
 scale max 960 width
-' Slightly tighter corners on alt/opt frames (less empty margin inside fragments).
-skinparam roundcorner 6
-' Restrained palette: neutrals + one blue accent (application path); warm tint for persistence.
-skinparam ArrowColor #64748B
-skinparam ArrowThickness 1.1
-skinparam ArrowFontSize 9
-skinparam PackageBorderColor #CBD5E1
-skinparam PackageBackgroundColor #F1F5F9
-skinparam RectangleBorderColor #2563EB
-skinparam RectangleBackgroundColor #F8FAFC
-skinparam DatabaseBorderColor #C2410C
-skinparam DatabaseBackgroundColor #FFF7ED
-skinparam NodeBorderColor #64748B
-skinparam NodeBackgroundColor #F8FAFC
-skinparam ActorBorderColor #047857
-skinparam ActorBackgroundColor #ECFDF5
-skinparam ParticipantBorderColor #2563EB
-skinparam ParticipantBackgroundColor #F8FAFC
-skinparam SequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-skinparam maxMessageSize 85
-' Sequence diagrams: distance between lifelines + inner padding of alt/else/opt/group.
-' Top-level skinparams (not only inside ``sequence {}``) so Kroki/PlantUML always apply them.
-skinparam ParticipantPadding 5
-skinparam BoxPadding 3
+
+' ---------------------------------------------------------------------------
+' 4. Arrows
+' ---------------------------------------------------------------------------
+skinparam ArrowColor     $INK_ARROW
+skinparam ArrowThickness 1.2
+
+' ---------------------------------------------------------------------------
+' 5. Notes (calm amber — never the default flashy yellow)
+' ---------------------------------------------------------------------------
+skinparam NoteBackgroundColor $BG_NOTE
+skinparam NoteBorderColor     $BORDER_NOTE
+skinparam NoteBorderThickness 1
+skinparam NoteTextAlignment   left
+
+' ---------------------------------------------------------------------------
+' 6. Container shapes
+' ---------------------------------------------------------------------------
+skinparam PackageBackgroundColor   $BG_PACKAGE
+skinparam PackageBorderColor       $BORDER_PACKAGE
+skinparam PackageFontStyle         bold
+skinparam PackageFontColor         $INK_PRIMARY
+
+skinparam RectangleBackgroundColor $BG_SURFACE
+skinparam RectangleBorderColor     $BORDER_PRIMARY
+skinparam RectangleBorderThickness 1.2
+skinparam RectangleFontColor       $INK_PRIMARY
+
+skinparam ComponentBackgroundColor $BG_SURFACE
+skinparam ComponentBorderColor     $BORDER_PRIMARY
+skinparam ComponentBorderThickness 1.2
+
+skinparam NodeBackgroundColor      $BG_SURFACE
+skinparam NodeBorderColor          $BORDER_NEUTRAL
+
+skinparam FrameBackgroundColor     $BG_SURFACE
+skinparam FrameBorderColor         $BORDER_NEUTRAL
+
+skinparam FolderBackgroundColor    $BG_PACKAGE
+skinparam FolderBorderColor        $BORDER_PACKAGE
+
+skinparam ArtifactBackgroundColor  $BG_SURFACE
+skinparam ArtifactBorderColor      $BORDER_NEUTRAL
+
+skinparam CloudBackgroundColor     $BG_CLOUD
+skinparam CloudBorderColor         $BORDER_NEUTRAL
+
+skinparam QueueBackgroundColor     $BG_QUEUE
+skinparam QueueBorderColor         $BORDER_QUEUE
+skinparam QueueBorderThickness     1.2
+
+' ---------------------------------------------------------------------------
+' 7. Storage
+' ---------------------------------------------------------------------------
+skinparam DatabaseBackgroundColor  $BG_DB
+skinparam DatabaseBorderColor      $BORDER_DB
+skinparam DatabaseBorderThickness  1.4
+
+skinparam CollectionsBackgroundColor $BG_SURFACE
+skinparam CollectionsBorderColor     $BORDER_PRIMARY
+
+skinparam EntityBackgroundColor    $BG_ENTITY
+skinparam EntityBorderColor        $BORDER_PRIMARY
+
+' ---------------------------------------------------------------------------
+' 8. Actors and sequence participants
+' ---------------------------------------------------------------------------
+skinparam ActorStyle               awesome
+skinparam ActorBackgroundColor     $BG_ACTOR
+skinparam ActorBorderColor         $BORDER_ACTOR
+skinparam ActorBorderThickness     1.2
+skinparam ActorFontStyle           bold
+
+skinparam ParticipantBackgroundColor $BG_SURFACE
+skinparam ParticipantBorderColor     $BORDER_PRIMARY
+skinparam ParticipantBorderThickness 1.2
+skinparam ParticipantFontStyle       bold
+
+skinparam BoundaryBackgroundColor    $BG_HIGHLIGHT
+skinparam BoundaryBorderColor        $BORDER_HIGHLIGHT
+skinparam ControlBackgroundColor     $BG_SURFACE
+skinparam ControlBorderColor         $BORDER_PRIMARY
+
+' ---------------------------------------------------------------------------
+' 9. Sequence diagrams
+' ---------------------------------------------------------------------------
+skinparam SequenceMessageAlign            center
+skinparam SequenceArrowFontColor          $INK_MUTED
+skinparam responseMessageBelowArrow       true
+skinparam maxMessageSize                  95
+skinparam ParticipantPadding              6
+skinparam BoxPadding                      4
+skinparam SequenceLifeLineBackgroundColor $BG_SURFACE
+skinparam SequenceLifeLineBorderColor     $BORDER_PRIMARY
+skinparam SequenceGroupBackgroundColor    $BG_GROUP
+skinparam SequenceGroupBorderColor        $BORDER_HIGHLIGHT
+skinparam SequenceGroupHeaderFontColor    $INK_PRIMARY
+skinparam SequenceReferenceBackgroundColor $BG_SURFACE
+skinparam SequenceReferenceBorderColor    $BORDER_PRIMARY
+skinparam SequenceDividerBackgroundColor  $BG_PACKAGE
+skinparam SequenceDividerBorderColor      $BORDER_PACKAGE
+skinparam SequenceDividerFontStyle        bold
+skinparam SequenceDividerFontColor        $INK_PRIMARY
+skinparam SequenceBoxBackgroundColor      $BG_PACKAGE
+skinparam SequenceBoxBorderColor          $BORDER_PACKAGE
+
+' ---------------------------------------------------------------------------
+' 10. State diagrams
+' ---------------------------------------------------------------------------
+skinparam StateBackgroundColor          $BG_SURFACE
+skinparam StateBorderColor              $BORDER_PRIMARY
+skinparam StateBorderThickness          1.2
+skinparam StateFontStyle                bold
+skinparam StateFontColor                $INK_PRIMARY
+skinparam StateAttributeBackgroundColor $BG_PACKAGE
+skinparam StateAttributeFontColor       $INK_MUTED
+skinparam StateStartColor               $BORDER_HIGHLIGHT
+skinparam StateEndColor                 $BORDER_DB
+
+' ---------------------------------------------------------------------------
+' 11. Activity diagrams
+' ---------------------------------------------------------------------------
+skinparam ActivityBackgroundColor        $BG_SURFACE
+skinparam ActivityBorderColor            $BORDER_PRIMARY
+skinparam ActivityBorderThickness        1.2
+skinparam ActivityFontColor              $INK_PRIMARY
+skinparam ActivityArrowColor             $INK_ARROW
+skinparam ActivityArrowFontColor         $INK_MUTED
+skinparam ActivityDiamondBackgroundColor $BG_HIGHLIGHT
+skinparam ActivityDiamondBorderColor     $BORDER_HIGHLIGHT
+skinparam ActivityDiamondFontColor       $INK_PRIMARY
+skinparam ActivityStartColor             $BORDER_HIGHLIGHT
+skinparam ActivityEndColor               $BORDER_DB
+skinparam ActivityBarColor               $INK_ARROW
+
+' ---------------------------------------------------------------------------
+' 12. Legends and class diagrams (defaults aligned with the rest)
+' ---------------------------------------------------------------------------
+skinparam LegendBackgroundColor    $BG_PAGE
+skinparam LegendBorderColor        $BORDER_PACKAGE
+skinparam LegendFontColor          $INK_MUTED
+
+skinparam ClassBackgroundColor     $BG_SURFACE
+skinparam ClassBorderColor         $BORDER_PRIMARY
+skinparam ClassFontStyle           bold
+skinparam ClassAttributeFontColor  $INK_MUTED
+
+' ---------------------------------------------------------------------------
+' 13. Reusable macros (opt-in chrome)
+' ---------------------------------------------------------------------------
+' All macros are pure presentation — they never change diagram semantics.
+'
+'   $Subtitle("HTTPS · JSON · /api/v1")        — small caption under title
+'   $Footer("ADR-0020 · uml/include/style.puml") — bottom credit line
+'   $Hint("retry-safe")                          — short inline tag
+'   $LegendStandard()                            — colour legend (4 roles)
+'
+' Use sparingly: a diagram with a clear title rarely needs all four.
+
+!unquoted procedure $Subtitle($text)
+caption $text
+!endprocedure
+
+!unquoted procedure $Footer($text)
+center footer //$text//
+!endprocedure
+
+!unquoted procedure $Hint($text)
+note as N_$text #FFFBEB
+  $text
+end note
+!endprocedure
+
+!unquoted procedure $LegendStandard()
+legend right
+  |= role |= colour |
+  | actor / human            | <#ECFDF5> |
+  | application / API        | <#F8FAFC> |
+  | persistence / datastore  | <#FFF7ED> |
+  | infra / boundary         | <#F1F5F9> |
+endlegend
+!endprocedure

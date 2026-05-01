@@ -1824,87 +1824,157 @@
                         </dl>
                       </section>
 
-                      <section class="card backlog-item" id="item-46" data-group="docs" data-tags="bug" data-priority="P2" data-status="blocked" data-created-at="2026-04-29" data-risk="low" data-confidence="high" data-owner="Ivan Boyarkin" data-eta-days="0.1" data-blocked-days="0">
+                      <section class="card backlog-item" id="item-47" data-group="frontend" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-05-01" data-risk="medium" data-confidence="high" data-owner="Ivan Boyarkin" data-eta-days="2-3">
                         <h2>
-                          <span class="priority-tag">P2</span>
-                          Render <code>review_slot_state_machine.svg</code> (blocked on Kroki)
+                          <span class="priority-tag">P1</span>
+                          Playwright visual-regression harness for component galleries (mandatory follow-up)
                           <span class="status-pill"></span>
                         </h2>
                         <dl>
                           <dt>1) Summary</dt>
-                          <dd>Run <code>scripts/regenerate_docs.py</code> to render the new state-machine PUML source into <code>docs/uml/rendered/review_slot_state_machine.svg</code>. The page that consumes it (<code>internal/api/conspectus/operations/post-…actions-review.html</code> line 851) currently shows a broken image.</dd>
+                          <dd>Stand up a Playwright harness in <code>tests/visual/</code> that auto-generates the PNG screenshots referenced by the component galleries in <a href="../internal/front/screens/components/README.html">docs/internal/front/screens/components/README.html</a>. Replaces the manual capture flow that currently fills the gallery placeholders on the FAB spec pages.</dd>
                           <dt>2) Problem &amp; value</dt>
                           <dd>
-                            <strong>Problem:</strong> source <code>.puml</code> exists at <code>docs/uml/sequences/review_slot_state_machine.puml</code> but rendering pipeline (Kroki at <code>kroki.io</code>) returned HTTP 504 / connection timeout on every retry on 2026-04-29.<br>
-                            <strong>Value:</strong> readers of the apply-review API page cannot see the state diagram. Trivial fix once the external service recovers.
+                            <strong>Problem:</strong> manual screenshots drift the moment CSS changes ship. The bug-FAB sizing regression that landed before 2026-05-01 (38×38 mobile / 52×52 desktop, below WCAG 44×44 floor) would have been caught by a single visual-regression run; instead it lived in the docs as the "intended" mobile shrink. Until a harness exists, every gallery is a manual capture with the same drift risk.<br>
+                            <strong>Value:</strong> reviewers see the actual rendered component on every PR; gallery PNGs always match <code>main</code>; new viewport tiers automatically expand the matrix; the convention defined in the README becomes self-enforcing instead of paper-only.
                           </dd>
                           <dt>3) Scope &amp; deliverables</dt>
-                          <dd>(a) Retry <code>.venv/bin/python scripts/regenerate_docs.py</code> when Kroki responds. (b) Optionally: install <code>plantuml</code> via Homebrew as a local fallback for future outages — update <code>docs/uml/README.txt</code> with the new command.</dd>
-                          <dt>4) Rough estimate (calendar days)</dt>
-                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 minutes once unblocked</div><div class="time-cell"><strong>2 h/day</strong> ~5 min</div><div class="time-cell"><strong>1 h/day</strong> ~5 min</div></div></dd>
-                        </dl>
-                      </section>
+                          <dd>
+                            <ul>
+                              <li><code>tests/visual/playwright.config.ts</code> with the four canonical viewports
+                                (1440×900, 1024×1366, 430×932, 375×667), light + dark theme, DPR 2.</li>
+                                <li><code>tests/visual/components/</code> spec files — one per component spec page —
+                                  that navigate to a host page, optionally trigger a state (hover/focus/click/scroll),
+                                  wait for a stability marker (no in-flight transitions), and emit a PNG.</li>
+                                  <li>Output target: <code>docs/internal/front/screens/components/assets/&lt;component&gt;-&lt;viewport&gt;[-&lt;state&gt;][-&lt;theme&gt;].png</code>
+                                    — exact filenames consumed by the existing gallery placeholders.</li>
+                                    <li><code>make docs-screenshots</code> entrypoint that boots the local docs server,
+                                      runs the harness, replaces the dashed placeholders with real <code>&lt;img&gt;</code>
+                                      tags via a templating step (or relies on a "use real if present" gallery script).</li>
+                                      <li>CI job that runs the harness on PR, fails on visual diff above tolerance, posts the
+                                        diff PNGs as a comment for review.</li>
+                                        <li>First-pass component coverage (priority order):
+                                          <code>report-bug-fab</code>, <code>rocket-launch-animation</code>,
+                                          <code>internal-sidebar-drawer</code>, <code>docs-feedback-modal</code>,
+                                          <code>docs-page-hero</code>, <code>internal-layout</code> shell.</li>
+                                          <li>README update: <a href="../internal/front/screens/components/README.html#future-playwright">screens/components/README §future-playwright</a>
+                                            flips manual capture to a fallback after the harness lands.</li>
+                                          </ul>
+                                        </dd>
+                                        <dt>4) Rough estimate (calendar days)</dt>
+                                        <dd>
+                                          <div class="time-grid">
+                                            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~9 h)</div>
+                                            <div class="time-cell"><strong>2 h/day</strong> ~5 days</div>
+                                            <div class="time-cell"><strong>1 h/day</strong> ~9 days</div>
+                                          </div>
+                                        </dd>
+                                        <dt>5) Acceptance criteria</dt>
+                                        <dd>
+                                          <ul>
+                                            <li><code>make docs-screenshots</code> regenerates every PNG referenced by a
+                                              component gallery; running it twice produces byte-identical output.</li>
+                                              <li>The bug-FAB and rocket-launch-animation pages render with real
+                                                <code>&lt;img&gt;</code> elements (no dashed placeholders) for at least the four
+                                                canonical viewports.</li>
+                                                <li>CI on a PR that changes <code>docs/assets/docs.css</code> fails when a captured
+                                                  viewport diff exceeds the configured pixel tolerance.</li>
+                                                  <li>The harness covers the first-pass component list above; remaining components are
+                                                    queued in follow-up tickets, not blocked on this one.</li>
+                                                    <li>Documentation in <code>screens/components/README.html</code> describes how to add
+                                                      a new component to the harness in &lt; 30 lines of spec code.</li>
+                                                    </ul>
+                                                  </dd>
+                                                  <dt>6) Mandatory note</dt>
+                                                  <dd>
+                                                    This item is a <strong>mandatory follow-up</strong> to the manual screenshots
+                                                    convention introduced on 2026-05-01 (Phase 2α). The convention is a bridge; this
+                                                    harness is the destination. Do not retire the manual capture instructions until
+                                                    this lands.
+                                                  </dd>
+                                                </dl>
+                                              </section>
 
-                      <section id="page-history" class="card">
-                        <h2>Page history</h2>
-                        <div class="docs-table-scroll" role="region" aria-label="Page history">
-                          <table class="docs-page-history">
-                            <thead>
-                              <tr>
-                                <th scope="col">Date</th>
-                                <th scope="col">Change</th>
-                                <th scope="col">Author</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td><time datetime="2026-04-29">2026-04-29</time></td>
-                                <td>Added items 39–46: 7 follow-ups from the front-docs upgrade audit (interactive component explorer, screen-spec backfill, deprecation framework, dependency graph, motion-spec videos, testing matrix, changelog rollup) plus the blocked diagram-render bug (item-46).</td>
-                                <td>Ivan Boyarkin</td>
-                              </tr>
-                              <tr>
-                                <td><time datetime="2026-04-23">2026-04-23</time></td>
-                                <td>Backlog cockpit rollout: moved implementation details to internal frontend screen docs, redesigned
-                                  this page as a dashboard (hero/search/quick presets/view switch/new-task anchor), simplified the
-                                  model and filters (normalized tags/priorities and grouped block view), and added backlog items for
-                                  frontend validation Swagger and PDoc with unified navigation/theme.</td>
-                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                </tr>
-                                <tr>
-                                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                  <td>Added backlog item for iPhone 17 Pro Max navigation fix and adaptive docs layout by screen size.
-                                  </td>
-                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                </tr>
-                                <tr>
-                                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                  <td>Added critical QA foundation backlog item for tester space and full frontend/backend testing
-                                    process.</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                    <td>Added backlog item for document versioning and Document Version field policy.</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                    <td>Expanded Redis rate-limiting backlog item and added Redis idempotency/cache adoption item.</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                    <td>Added Page history section (repository baseline).</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </section>
+                                              <section class="card backlog-item" id="item-46" data-group="docs" data-tags="bug" data-priority="P2" data-status="blocked" data-created-at="2026-04-29" data-risk="low" data-confidence="high" data-owner="Ivan Boyarkin" data-eta-days="0.1" data-blocked-days="0">
+                                                <h2>
+                                                  <span class="priority-tag">P2</span>
+                                                  Render <code>review_slot_state_machine.svg</code> (blocked on Kroki)
+                                                  <span class="status-pill"></span>
+                                                </h2>
+                                                <dl>
+                                                  <dt>1) Summary</dt>
+                                                  <dd>Run <code>scripts/regenerate_docs.py</code> to render the new state-machine PUML source into <code>docs/uml/rendered/review_slot_state_machine.svg</code>. The page that consumes it (<code>internal/api/conspectus/operations/post-…actions-review.html</code> line 851) currently shows a broken image.</dd>
+                                                  <dt>2) Problem &amp; value</dt>
+                                                  <dd>
+                                                    <strong>Problem:</strong> source <code>.puml</code> exists at <code>docs/uml/sequences/review_slot_state_machine.puml</code> but rendering pipeline (Kroki at <code>kroki.io</code>) returned HTTP 504 / connection timeout on every retry on 2026-04-29.<br>
+                                                    <strong>Value:</strong> readers of the apply-review API page cannot see the state diagram. Trivial fix once the external service recovers.
+                                                  </dd>
+                                                  <dt>3) Scope &amp; deliverables</dt>
+                                                  <dd>(a) Retry <code>.venv/bin/python scripts/regenerate_docs.py</code> when Kroki responds. (b) Optionally: install <code>plantuml</code> via Homebrew as a local fallback for future outages — update <code>docs/uml/README.txt</code> with the new command.</dd>
+                                                  <dt>4) Rough estimate (calendar days)</dt>
+                                                  <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 minutes once unblocked</div><div class="time-cell"><strong>2 h/day</strong> ~5 min</div><div class="time-cell"><strong>1 h/day</strong> ~5 min</div></div></dd>
+                                                </dl>
+                                              </section>
 
-                          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                        </main>
-                      </div>
-                    </div>
+                                              <section id="page-history" class="card">
+                                                <h2>Page history</h2>
+                                                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                  <table class="docs-page-history">
+                                                    <thead>
+                                                      <tr>
+                                                        <th scope="col">Date</th>
+                                                        <th scope="col">Change</th>
+                                                        <th scope="col">Author</th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr>
+                                                        <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                        <td>Added items 39–46: 7 follow-ups from the front-docs upgrade audit (interactive component explorer, screen-spec backfill, deprecation framework, dependency graph, motion-spec videos, testing matrix, changelog rollup) plus the blocked diagram-render bug (item-46).</td>
+                                                        <td>Ivan Boyarkin</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                        <td>Backlog cockpit rollout: moved implementation details to internal frontend screen docs, redesigned
+                                                          this page as a dashboard (hero/search/quick presets/view switch/new-task anchor), simplified the
+                                                          model and filters (normalized tags/priorities and grouped block view), and added backlog items for
+                                                          frontend validation Swagger and PDoc with unified navigation/theme.</td>
+                                                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                          <td>Added backlog item for iPhone 17 Pro Max navigation fix and adaptive docs layout by screen size.
+                                                          </td>
+                                                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                          <td>Added critical QA foundation backlog item for tester space and full frontend/backend testing
+                                                            process.</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                            <td>Added backlog item for document versioning and Document Version field policy.</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                            <td>Expanded Redis rate-limiting backlog item and added Redis idempotency/cache adoption item.</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                            <td>Added Page history section (repository baseline).</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                        </tbody>
+                                                      </table>
+                                                    </div>
+                                                  </section>
 
-                  </body></html>
+                                                </main>
+                                              </div>
+                                            </div>
+
+                                          </body></html>

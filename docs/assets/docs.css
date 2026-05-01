@@ -153,28 +153,28 @@
    * one-off sizes are how the portal drifted into 18+ inconsistent values.
    *
    *   tier              rem      computed @ 17 px html root
-   *   --fs-h1           1.85rem  31.45 px  page title (display / hero)
-   *   --fs-h2           1.35rem  22.95 px  section heading
-   *   --fs-h3           1.1rem   18.70 px  subsection heading
-   *   --fs-h4           0.95rem  16.15 px  card heading / dense block
-   *   --fs-h5           0.86rem  14.62 px  small heading (sits above body)
-   *   --fs-body         0.86rem  14.62 px  body prose, lists, table cells, callouts
-   *   --fs-meta         0.78rem  13.26 px  badges, breadcrumbs, hints, sidebar nav
-   *   --fs-eyebrow      0.7rem   11.90 px  uppercase eyebrow / section cap
+   *   --fs-h1           1.6rem   27.20 px  page title (display / hero)
+   *   --fs-h2           1.2rem   20.40 px  section heading
+   *   --fs-h3           1.05rem  17.85 px  subsection heading
+   *   --fs-h4           0.95rem  16.15 px  card heading / dense block (above body — same size, bold weight)
+   *   --fs-h5           0.9rem   15.30 px  small heading (= body, bold weight makes the difference)
+   *   --fs-body         0.9rem   15.30 px  body prose, lists, table cells, callouts
+   *   --fs-meta         0.75rem  12.75 px  badges, breadcrumbs, hints, sidebar nav
+   *   --fs-eyebrow      0.68rem  11.56 px  uppercase eyebrow / section cap
    *
-   * Mobile (≤ 760 px) lowers only h1/h2/h3 so a long title still fits 360 px;
-   * body and below stay at the desktop scale (mobile is never larger than
-   * desktop). iOS auto-shrink is disabled via text-size-adjust on <html>, so
-   * 0.86 rem body is rendered as authored on iPhone — no bump needed.
+   * Uniform across viewports — every tier renders identically on desktop,
+   * tablet, and mobile. No mobile-specific override; the ladder is the
+   * contract. iOS auto-shrink is disabled via text-size-adjust on <html>,
+   * so the authored size is rendered as-is on iPhone.
    */
-  --fs-h1: 1.85rem;
-  --fs-h2: 1.35rem;
-  --fs-h3: 1.1rem;
+  --fs-h1: 1.6rem;
+  --fs-h2: 1.2rem;
+  --fs-h3: 1.05rem;
   --fs-h4: 0.95rem;
-  --fs-h5: 0.86rem;
-  --fs-body: 0.86rem;
-  --fs-meta: 0.78rem;
-  --fs-eyebrow: 0.7rem;
+  --fs-h5: 0.9rem;
+  --fs-body: 0.9rem;
+  --fs-meta: 0.75rem;
+  --fs-eyebrow: 0.68rem;
   --line-height-base: 1.55;
   --line-height-heading: 1.25;
   /* Spacing scale — 8 px base rhythm (matches Stripe / Linear grid) */
@@ -684,27 +684,13 @@ p {
 }
 
 /* Primary article prose scale.
-   Single tier from the canonical font ladder (--fs-body = 0.95rem ≈ 16.15 px on
-   the 17 px html root). Same on every page and every viewport — iOS auto-shrink
-   is disabled via text-size-adjust on <html>, so the desktop scale stays
-   readable on a phone without bumping the size up. */
+   Single tier from the canonical font ladder (--fs-body = 0.9rem ≈ 15.3 px on
+   the 17 px html root). Identical on every page and every viewport — the
+   ladder is uniform across desktop, tablet, and mobile. iOS auto-shrink is
+   disabled via text-size-adjust on <html>, so the authored size renders as-is
+   on iPhone. */
 main.container :is(p, li, blockquote, dd) {
   font-size: var(--fs-body);
-}
-
-/*
- * Mobile heading override — only the top three tiers (h1/h2/h3) shrink so a
- * long page title still fits a 360 px viewport. h4/h5/h6 already match their
- * desktop scale. Body and below stay at the desktop scale on every viewport
- * (matches the "mobile is not larger than desktop" rule).
- */
-@media (max-width: 760px) {
-  /* Each top heading drops exactly one rung in the ladder so the visual
-     hierarchy stays recognisable while a long title still fits a 360 px
-     viewport. */
-  h1 { font-size: var(--fs-h2); }   /* 22.95 px */
-  h2 { font-size: var(--fs-h3); }   /* 18.70 px */
-  h3 { font-size: var(--fs-h4); }   /* 16.15 px */
 }
 
 ul,
@@ -2054,7 +2040,8 @@ th {
 
 /* Mobile cell density: tighten padding so the visible width of each cell
    carries more glyphs while staying ergonomic to tap-scroll. The font-size
-   stays at 0.95rem (~16.15px on 17px root) for above-iOS-minimum readability. */
+   stays at --fs-body (0.9rem ≈ 15.3 px on the 17 px root) — same as desktop
+   per the uniform ladder. */
 @media (max-width: 760px) {
   th,
   td {
@@ -2072,8 +2059,8 @@ main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audi
   max-width: 100%;
 }
 
-main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) th,
-main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) td {
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table):not(.spec-status-help__table) th,
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table):not(.spec-status-help__table) td {
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   line-height: 1.55;
@@ -2265,7 +2252,7 @@ p.audit-score-legend-error {
 .audit-scoring-formula {
   margin: 0.75rem 0 1rem;
   padding: 0.85rem 1rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-body);
   line-height: 1.55;
   white-space: pre-wrap;
@@ -3476,7 +3463,7 @@ main.docs-page-layout [id] {
   border: 1px solid var(--line);
   border-radius: 5px;
   font-size: var(--fs-eyebrow);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   background: var(--card);
 }
 
@@ -3720,7 +3707,7 @@ main.docs-page-layout [id] {
   border-bottom-width: 1px;
   border-radius: 5px;
   font-size: var(--fs-eyebrow);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--muted) 78%, var(--text));
@@ -4343,8 +4330,12 @@ body.docs-reading-mode main.container li {
     color-mix(in srgb, var(--line) 60%, transparent)   calc(var(--rocket-progress, 0) * 1%),
     color-mix(in srgb, var(--line) 60%, transparent)   100%
   );
-  -webkit-mask: radial-gradient(circle, transparent calc(50% - 3px), #000 calc(50% - 3px), #000 calc(50% - 1px), transparent calc(50% - 1px));
-          mask: radial-gradient(circle, transparent calc(50% - 3px), #000 calc(50% - 3px), #000 calc(50% - 1px), transparent calc(50% - 1px));
+  /* Явные пиксели вместо calc(50% - …): `circle` по умолчанию = farthest-corner,
+     для квадрата 58×58 это ≈41 px, и 50% попадает не на край бокса (29 px),
+     а внутрь — кольцо садилось на stroke иконки и выглядело гранёным.
+     26 px / 28 px = кольцо ровно по внешней кромке 52×52 кнопки. */
+  -webkit-mask: radial-gradient(circle, transparent 26px, #000 26px, #000 28px, transparent 28px);
+          mask: radial-gradient(circle, transparent 26px, #000 26px, #000 28px, transparent 28px);
   opacity: 0;
   transition: opacity 0.32s ease;
 }
@@ -4794,7 +4785,7 @@ body.docs-reading-mode main.container li {
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   .docs-page-meta--premium {
     gap: 6px 10px;
     align-items: flex-start;
@@ -5216,20 +5207,12 @@ body.docs-reading-mode main.container li {
   min-height: 104px;
 }
 
-@media (max-width: 740px) {
-  .docs-report-bug-fab {
-    right: max(0.75rem, env(safe-area-inset-right, 0px)) !important;
-    bottom: calc(max(0.75rem, env(safe-area-inset-bottom, 0px)) + var(--docs-footer-visible-h, 0px) + 58px) !important;
-    left: auto !important;
-    width: 38px;
-    height: 38px;
-  }
-
-  .docs-report-bug-fab__icon {
-    width: 18px;
-    height: 18px;
-  }
-
+@media (max-width: 760px) {
+  /* Bug FAB stays the same physical footprint as the rocket on mobile — both
+     52×52 with 28×28 icons. Keep right/bottom and offset on the desktop
+     baseline (1.25rem + 64 px) so the bug sits exactly 12 px above the
+     rocket top, identical to the desktop pair. Mobile-only overrides here
+     touch only the modal layout, not the FAB sizing. */
   .docs-feedback-modal {
     align-items: flex-end;
     padding: 0.5rem;
@@ -5419,14 +5402,15 @@ body.docs-reading-mode main.container li {
     padding-bottom: max(72px, env(safe-area-inset-bottom, 0px));
   }
 
-  /* h1/h2/h3 sizes come from the mobile-tier override at the top of this file
-     (canonical font ladder). Only keep the long-title break rule here. */
+  /* h1/h2/h3 sizes come from the canonical font ladder (uniform across all
+     viewports — no mobile-tier override). Only keep the long-title break rule
+     here so a 38-char h1 wraps cleanly on a 360 px viewport. */
   h1 {
     overflow-wrap: break-word;
   }
 
   .card {
-    padding: 14px 14px;
+    padding: 12px 12px;
     border-radius: 12px;
   }
 
@@ -5439,12 +5423,6 @@ body.docs-reading-mode main.container li {
   ul,
   ol {
     margin-left: 18px;
-  }
-}
-
-@media (max-width: 380px) {
-  h1 {
-    font-size: var(--fs-h2);
   }
 }
 
@@ -5482,7 +5460,7 @@ body.docs-reading-mode main.container li {
   align-items: start;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
   .cue-sheet-walkthrough {
     grid-template-columns: 1fr;
   }

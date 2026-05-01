@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -87,235 +85,225 @@
             <li>Run the contract tests for that resource: <code>pytest tests/api/v1/&lt;resource&gt;/</code>.</li>
             <li>Open <a href="../../openapi/index.html">Swagger UI</a> and confirm the operation appears with the
               expected schema.</li>
-            <li>Run the steps in <a href="#happy-path">happy path</a>, <a href="#error-paths">error paths</a>, <a
-                href="#auth">auth</a>, <a href="#idempotency">idempotency</a>, <a
-                href="#observability">observability</a> from this playbook.</li>
-            <li>Annotate <a href="../0002-api-endpoint-acceptance-checklist.html">checklist 0002</a> with pass/fail per
-              row, attach evidence.</li>
-            <li>If anything fails, file a defect using <a href="../templates/bug-report-template.html">bug template</a>.
-            </li>
-          </ol>
-        </section>
+              <li>Run the steps in <a href="#happy-path">happy path</a>, <a href="#error-paths">error paths</a>, <a href="#auth">auth</a>, <a href="#idempotency">idempotency</a>, <a href="#observability">observability</a> from this playbook.</li>
+              <li>Annotate <a href="../0002-api-endpoint-acceptance-checklist.html">checklist 0002</a> with pass/fail per
+                row, attach evidence.</li>
+                <li>If anything fails, file a defect using <a href="../templates/bug-report-template.html">bug template</a>.
+                </li>
+              </ol>
+            </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Contract</div>
+            <div class="docs-section-divider" aria-hidden="true">Contract</div>
 
-        <section class="card" id="contract">
-          <h2>Verify the contract (schema)</h2>
-          <ul>
-            <li>Path, method, version segment match the spec exactly.</li>
-            <li>Request body schema matches — required, types, formats, enum values, length limits.</li>
-            <li>Response body schema matches for every documented status — 200/201, 4xx, 5xx.</li>
-            <li>OpenAPI baseline test (<code>tests/openapi/</code>) is green; if you changed the contract, it must be
-              regenerated.</li>
-            <li>Field conventions — UUIDs, timestamps in UTC ISO-8601, snake_case keys, enum values lowercase. See <a
-                href="../../internal/api/_shared/field-conventions.html">field conventions</a>.</li>
-          </ul>
-        </section>
+            <section class="card" id="contract">
+              <h2>Verify the contract (schema)</h2>
+              <ul>
+                <li>Path, method, version segment match the spec exactly.</li>
+                <li>Request body schema matches — required, types, formats, enum values, length limits.</li>
+                <li>Response body schema matches for every documented status — 200/201, 4xx, 5xx.</li>
+                <li>OpenAPI baseline test (<code>tests/openapi/</code>) is green; if you changed the contract, it must be
+                  regenerated.</li>
+                  <li>Field conventions — UUIDs, timestamps in UTC ISO-8601, snake_case keys, enum values lowercase. See <a href="../../internal/api/_shared/field-conventions.html">field conventions</a>.</li>
+                </ul>
+              </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Happy path</div>
+              <div class="docs-section-divider" aria-hidden="true">Happy path</div>
 
-        <section class="card" id="happy-path">
-          <h2>Happy path</h2>
-          <ul>
-            <li>Smallest valid body produces success status and well-formed response.</li>
-            <li>All optional fields, when supplied, round-trip and appear in the response unchanged.</li>
-            <li>Pagination (where applicable) — first page, next page using <code>cursor</code>, last page returns empty
-              <code>next_cursor</code>. See <a href="../../internal/api/_shared/pagination.html">pagination</a>.</li>
-            <li>Mutations are visible on a follow-up GET (read-after-write).</li>
-          </ul>
-        </section>
+              <section class="card" id="happy-path">
+                <h2>Happy path</h2>
+                <ul>
+                  <li>Smallest valid body produces success status and well-formed response.</li>
+                  <li>All optional fields, when supplied, round-trip and appear in the response unchanged.</li>
+                  <li>Pagination (where applicable) — first page, next page using <code>cursor</code>, last page returns empty
+                    <code>next_cursor</code>. See <a href="../../internal/api/_shared/pagination.html">pagination</a>.</li>
+                    <li>Mutations are visible on a follow-up GET (read-after-write).</li>
+                  </ul>
+                </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Error paths</div>
+                <div class="docs-section-divider" aria-hidden="true">Error paths</div>
 
-        <section class="card" id="error-paths">
-          <h2>Error paths — what every operation must do correctly</h2>
-          <p>
-            Every error response must conform to the
-            <a href="../../internal/api/_shared/error-envelope.html">error envelope</a> and the
-            specific <code>code</code> must exist in the
-            <a href="../../internal/api/_shared/error-catalog.html">error catalog</a>.
-          </p>
-          <div class="docs-table-scroll" role="region" aria-label="Error path matrix">
-            <table>
-              <thead>
-                <tr>
-                  <th>Class</th>
-                  <th>Trigger</th>
-                  <th>Expected</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Validation</td>
-                  <td>Missing required field, wrong type, value out of range, oversize string.</td>
-                  <td>422 + envelope + <code>field_errors</code> for each offender.</td>
-                </tr>
-                <tr>
-                  <td>Not found</td>
-                  <td>UUID for a resource that does not exist.</td>
-                  <td>404 + envelope + catalog code.</td>
-                </tr>
-                <tr>
-                  <td>Conflict</td>
-                  <td>State transition not allowed; unique constraint.</td>
-                  <td>409 + envelope + catalog code.</td>
-                </tr>
-                <tr>
-                  <td>Unauthenticated</td>
-                  <td>Missing/invalid auth.</td>
-                  <td>401 + envelope; never 500.</td>
-                </tr>
-                <tr>
-                  <td>Forbidden</td>
-                  <td>Authenticated, lacks permission.</td>
-                  <td>403 + envelope.</td>
-                </tr>
-                <tr>
-                  <td>Method not allowed</td>
-                  <td>Wrong method on the path.</td>
-                  <td>405 with <code>Allow</code> header.</td>
-                </tr>
-                <tr>
-                  <td>Unsupported media</td>
-                  <td>Content-Type wrong or absent on a body-bearing method.</td>
-                  <td>415 + envelope.</td>
-                </tr>
-                <tr>
-                  <td>Server error</td>
-                  <td>Forced (e.g. break a downstream).</td>
-                  <td>5xx + envelope; <code>X-Request-ID</code> traceable in logs.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+                <section class="card" id="error-paths">
+                  <h2>Error paths — what every operation must do correctly</h2>
+                  <p>
+                    Every error response must conform to the
+                    <a href="../../internal/api/_shared/error-envelope.html">error envelope</a> and the
+                    specific <code>code</code> must exist in the
+                    <a href="../../internal/api/_shared/error-catalog.html">error catalog</a>.
+                  </p>
+                  <div class="docs-table-scroll" role="region" aria-label="Error path matrix">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Class</th>
+                          <th>Trigger</th>
+                          <th>Expected</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Validation</td>
+                          <td>Missing required field, wrong type, value out of range, oversize string.</td>
+                          <td>422 + envelope + <code>field_errors</code> for each offender.</td>
+                        </tr>
+                        <tr>
+                          <td>Not found</td>
+                          <td>UUID for a resource that does not exist.</td>
+                          <td>404 + envelope + catalog code.</td>
+                        </tr>
+                        <tr>
+                          <td>Conflict</td>
+                          <td>State transition not allowed; unique constraint.</td>
+                          <td>409 + envelope + catalog code.</td>
+                        </tr>
+                        <tr>
+                          <td>Unauthenticated</td>
+                          <td>Missing/invalid auth.</td>
+                          <td>401 + envelope; never 500.</td>
+                        </tr>
+                        <tr>
+                          <td>Forbidden</td>
+                          <td>Authenticated, lacks permission.</td>
+                          <td>403 + envelope.</td>
+                        </tr>
+                        <tr>
+                          <td>Method not allowed</td>
+                          <td>Wrong method on the path.</td>
+                          <td>405 with <code>Allow</code> header.</td>
+                        </tr>
+                        <tr>
+                          <td>Unsupported media</td>
+                          <td>Content-Type wrong or absent on a body-bearing method.</td>
+                          <td>415 + envelope.</td>
+                        </tr>
+                        <tr>
+                          <td>Server error</td>
+                          <td>Forced (e.g. break a downstream).</td>
+                          <td>5xx + envelope; <code>X-Request-ID</code> traceable in logs.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Auth</div>
+                <div class="docs-section-divider" aria-hidden="true">Auth</div>
 
-        <section class="card" id="auth">
-          <h2>Authentication and authorization</h2>
-          <ul>
-            <li>Confirm the operation requires the auth class declared by the spec
-              (see <a href="../../internal/api/_shared/auth.html">auth</a>).</li>
-            <li>No token → 401. Wrong scope/role → 403. Valid token → 2xx.</li>
-            <li>Token in wrong scheme (<code>Basic</code> vs <code>Bearer</code>) → 401, not 500.</li>
-          </ul>
-        </section>
+                <section class="card" id="auth">
+                  <h2>Authentication and authorization</h2>
+                  <ul>
+                    <li>Confirm the operation requires the auth class declared by the spec
+                      (see <a href="../../internal/api/_shared/auth.html">auth</a>).</li>
+                      <li>No token → 401. Wrong scope/role → 403. Valid token → 2xx.</li>
+                      <li>Token in wrong scheme (<code>Basic</code> vs <code>Bearer</code>) → 401, not 500.</li>
+                    </ul>
+                  </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Idempotency</div>
+                  <div class="docs-section-divider" aria-hidden="true">Idempotency</div>
 
-        <section class="card" id="idempotency">
-          <h2>Idempotency (write operations)</h2>
-          <ul>
-            <li>Send the same request twice with the same <code>Idempotency-Key</code> within the
-              window — second call returns the same response without creating a duplicate.</li>
-            <li>Send same key with a <em>different</em> body — 409.</li>
-            <li>Resend after the key window expires — treated as a new request.</li>
-            <li>See <a href="../../internal/api/_shared/idempotency.html">idempotency</a> for the policy.</li>
-          </ul>
-        </section>
+                  <section class="card" id="idempotency">
+                    <h2>Idempotency (write operations)</h2>
+                    <ul>
+                      <li>Send the same request twice with the same <code>Idempotency-Key</code> within the
+                        window — second call returns the same response without creating a duplicate.</li>
+                        <li>Send same key with a <em>different</em> body — 409.</li>
+                        <li>Resend after the key window expires — treated as a new request.</li>
+                        <li>See <a href="../../internal/api/_shared/idempotency.html">idempotency</a> for the policy.</li>
+                      </ul>
+                    </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Observability</div>
+                    <div class="docs-section-divider" aria-hidden="true">Observability</div>
 
-        <section class="card" id="observability">
-          <h2>Observability</h2>
-          <ul>
-            <li>Every response carries <code>X-Request-ID</code> (UUID).</li>
-            <li>Search the structured log for that <code>X-Request-ID</code>; one record per request,
-              with <code>method</code>, <code>path</code>, <code>status</code>, <code>latency_ms</code>.</li>
-            <li>Sensitive headers and bodies are not logged in clear text — see
-              <a href="../../internal/api/_shared/observability-conventions.html">observability conventions</a>.
-            </li>
-            <li>Health and readiness endpoints respond appropriately while load is in flight.</li>
-          </ul>
-        </section>
+                    <section class="card" id="observability">
+                      <h2>Observability</h2>
+                      <ul>
+                        <li>Every response carries <code>X-Request-ID</code> (UUID).</li>
+                        <li>Search the structured log for that <code>X-Request-ID</code>; one record per request,
+                          with <code>method</code>, <code>path</code>, <code>status</code>, <code>latency_ms</code>.</li>
+                          <li>Sensitive headers and bodies are not logged in clear text — see
+                            <a href="../../internal/api/_shared/observability-conventions.html">observability conventions</a>.
+                          </li>
+                          <li>Health and readiness endpoints respond appropriately while load is in flight.</li>
+                        </ul>
+                      </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Evidence</div>
+                      <div class="docs-section-divider" aria-hidden="true">Evidence</div>
 
-        <section class="card" id="evidence">
-          <h2>Evidence to capture</h2>
-          <ul>
-            <li>Full request and response (including headers) for one of each: success, validation error, auth error.
-            </li>
-            <li>The <code>X-Request-ID</code> values used.</li>
-            <li>One log excerpt matching one of the request IDs.</li>
-            <li>Screenshot of Swagger UI with the operation expanded (verifies user-visible doc shape).</li>
-          </ul>
-        </section>
+                      <section class="card" id="evidence">
+                        <h2>Evidence to capture</h2>
+                        <ul>
+                          <li>Full request and response (including headers) for one of each: success, validation error, auth error.
+                          </li>
+                          <li>The <code>X-Request-ID</code> values used.</li>
+                          <li>One log excerpt matching one of the request IDs.</li>
+                          <li>Screenshot of Swagger UI with the operation expanded (verifies user-visible doc shape).</li>
+                        </ul>
+                      </section>
 
-        <div class="docs-section-divider" aria-hidden="true">cURL examples</div>
+                      <div class="docs-section-divider" aria-hidden="true">cURL examples</div>
 
-        <section class="card" id="examples">
-          <h2>cURL examples to copy</h2>
-          <pre><code class="language-bash"># Happy path: POST with idempotency key
-curl -sS -X POST "$BASE/api/v1/conspectuses" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: tc-001-$(date +%s)" \
-  -d '{"title":"Demo","content":"…"}' \
-  -i
+                      <section class="card" id="examples">
+                        <h2>cURL examples to copy</h2>
+                        <pre><code class="language-bash"># Happy path: POST with idempotency key
+                          curl -sS -X POST "$BASE/api/v1/conspectuses" \
+                          -H "Authorization: Bearer $TOKEN" \
+                          -H "Content-Type: application/json" \
+                          -H "Idempotency-Key: tc-001-$(date +%s)" \
+                          -d '{"title":"Demo","content":"…"}' \
+                          -i
 
-# Validation error: missing required field
-curl -sS -X POST "$BASE/api/v1/user" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"first_name":"I","last_name":"B"}' \
-  -i
+                          # Validation error: missing required field
+                          curl -sS -X POST "$BASE/api/v1/user" \
+                          -H "Authorization: Bearer $TOKEN" \
+                          -H "Content-Type: application/json" \
+                          -d '{"first_name":"I","last_name":"B"}' \
+                          -i
 
-# Auth missing
-curl -sS -X GET "$BASE/api/v1/conspectuses/due/" -i
+                          # Auth missing
+                          curl -sS -X GET "$BASE/api/v1/conspectuses/due/" -i
 
-# Pagination: follow next_cursor
-curl -sS "$BASE/api/v1/errors/?limit=10" -H "Authorization: Bearer $TOKEN"
-# then
-curl -sS "$BASE/api/v1/errors/?limit=10&amp;cursor=&lt;next_cursor&gt;" -H "Authorization: Bearer $TOKEN"
+                          # Pagination: follow next_cursor
+                          curl -sS "$BASE/api/v1/errors/?limit=10" -H "Authorization: Bearer $TOKEN"
+                          # then
+                          curl -sS "$BASE/api/v1/errors/?limit=10&amp;cursor=&lt;next_cursor&gt;" -H "Authorization: Bearer $TOKEN"
 
-# Idempotency replay
-KEY="tc-replay-$(date +%s)"
-for i in 1 2; do
-  curl -sS -X POST "$BASE/api/v1/conspectuses" \
-    -H "Authorization: Bearer $TOKEN" \
-    -H "Content-Type: application/json" \
-    -H "Idempotency-Key: $KEY" \
-    -d '{"title":"Replay","content":"x"}' -i
-done</code></pre>
-          <p class="small">
-            Set <code>BASE</code> and <code>TOKEN</code> in your shell. Keep captures in a folder
-            named after the ticket — paste them into the defect or sign-off note as evidence.
-          </p>
-        </section>
+                          # Idempotency replay
+                          KEY="tc-replay-$(date +%s)"
+                          for i in 1 2; do
+                          curl -sS -X POST "$BASE/api/v1/conspectuses" \
+                          -H "Authorization: Bearer $TOKEN" \
+                          -H "Content-Type: application/json" \
+                          -H "Idempotency-Key: $KEY" \
+                          -d '{"title":"Replay","content":"x"}' -i
+                          done</code></pre>
+                          <p class="small">
+                            Set <code>BASE</code> and <code>TOKEN</code> in your shell. Keep captures in a folder
+                            named after the ticket — paste them into the defect or sign-off note as evidence.
+                          </p>
+                        </section>
 
-        <section class="card" id="page-history">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Change</th>
-                  <th>Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-30">2026-04-30</time></td>
-                  <td>Initial API endpoint testing playbook.</td>
-                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+                        <section class="card" id="page-history">
+                          <h2>Page history</h2>
+                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                            <table class="docs-page-history">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Change</th>
+                                  <th>Author</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                  <td>Initial API endpoint testing playbook.</td>
+                                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-      </main>
-    </div>
-  </div>
+                      </main>
+                    </div>
+                  </div>
 
-</body>
-
-</html>
+                </body></html>

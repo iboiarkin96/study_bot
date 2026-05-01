@@ -22,7 +22,7 @@
     <div id="docs-page-meta-mount" hidden=""></div>
 
     <section id="overview" class="docs-page-hero">
-      <h2 id="overview">Overview</h2>
+      <h2>Overview</h2>
       <p>How to run the API locally, with optional metrics and optional log search.</p>
     </section>
 
@@ -41,43 +41,45 @@
 
     <section class="card">
       <h2>Run targets</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Command</th>
-            <th>What it does</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>make run</code></td>
-            <td>
-              Starts the FastAPI app with Uvicorn (reload). Reads <code>.env</code>. Use this when you only need the
-              API.
-            </td>
-          </tr>
-          <tr>
-            <td><code>make run</code> + <code>docker compose -f docker-compose.observability.yml up -d</code></td>
-            <td>
-              Runs observability via <code>docker compose -f docker-compose.observability.yml up -d</code> (after
-              rendering config), then starts API
-              <code>docker-compose.observability.yml</code>: Blackbox, Prometheus, Grafana), then the same Uvicorn
-              command as
-              <code>make run</code>. Requires Docker. The API process stays in the foreground; stop it with Ctrl+C.
-            </td>
-          </tr>
-          <tr>
-            <td><code>docker compose -f docker-compose.observability.yml up -d</code> /
-              <code>docker compose -f docker-compose.observability.yml down</code>
-            </td>
-            <td>
-              Start or stop the observability stack alone. Use when you already run <code>make run</code> in one
-              terminal
-              and want metrics dashboards without restarting the API.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>What it does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>make run</code></td>
+              <td>
+                Starts the FastAPI app with Uvicorn (reload). Reads <code>.env</code>. Use this when you only need the
+                API.
+              </td>
+            </tr>
+            <tr>
+              <td><code>make run</code> + <code>docker compose -f docker-compose.observability.yml up -d</code></td>
+              <td>
+                Runs observability via <code>docker compose -f docker-compose.observability.yml up -d</code> (after
+                rendering config), then starts API
+                <code>docker-compose.observability.yml</code>: Blackbox, Prometheus, Grafana), then the same Uvicorn
+                command as
+                <code>make run</code>. Requires Docker. The API process stays in the foreground; stop it with Ctrl+C.
+              </td>
+            </tr>
+            <tr>
+              <td><code>docker compose -f docker-compose.observability.yml up -d</code> /
+                <code>docker compose -f docker-compose.observability.yml down</code>
+              </td>
+              <td>
+                Start or stop the observability stack alone. Use when you already run <code>make run</code> in one
+                terminal
+                and want metrics dashboards without restarting the API.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
     <section class="card">
 
@@ -246,11 +248,6 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
       </main>
 
     </body></html>

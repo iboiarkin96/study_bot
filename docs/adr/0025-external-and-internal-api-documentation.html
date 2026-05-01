@@ -82,7 +82,7 @@
           landing page, service overview, an HTTP API hub under <code>docs/internal/api/</code>, and per-resource folders
           with a <strong>single hub</strong> (<code>index.html</code>) plus optional per-endpoint pages — see ADR 0026
           and <a href="../howto/0002-internal-service-docs-layout.html"><code>docs/howto/0002-internal-service-docs-layout.html</code></a>
-          (contributor layout; <a href="../internal/STRUCTURE.md"><code>STRUCTURE.md</code></a> links there). It does not replace OpenAPI
+          (contributor layout; <a href="../howto/0002-internal-service-docs-layout.html"><code>STRUCTURE.md</code></a> links there). It does not replace OpenAPI
           for external consumers.
         </li>
         <li>
@@ -109,37 +109,39 @@
     </section>
     <section class="card">
       <h2>Relationship to other artifacts</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Artifact</th>
-            <th>Primary audience</th>
-            <th>Authoritative for</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>OpenAPI baseline + runtime</td>
-            <td>External integrators</td>
-            <td>HTTP request/response contract at a version</td>
-          </tr>
-          <tr>
-            <td>Root <code>CHANGELOG.md</code></td>
-            <td>Integrators &amp; release readers</td>
-            <td>What changed between releases (API surface, behavior)</td>
-          </tr>
-          <tr>
-            <td><code>docs/internal/</code> (HTML) + <a href="../howto/0002-internal-service-docs-layout.html">how-to layout</a> / <code>STRUCTURE.md</code> stub</td>
-            <td>Engineers in this repo</td>
-            <td>Behavioral semantics, business rules, ops expectations, per-resource hubs and method pages (per ADR 0026)</td>
-          </tr>
-          <tr>
-            <td><code>docs/pdoc/</code> (pdoc)</td>
-            <td>Contributors</td>
-            <td>Python package internals</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <thead>
+            <tr>
+              <th>Artifact</th>
+              <th>Primary audience</th>
+              <th>Authoritative for</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>OpenAPI baseline + runtime</td>
+              <td>External integrators</td>
+              <td>HTTP request/response contract at a version</td>
+            </tr>
+            <tr>
+              <td>Root <code>CHANGELOG.md</code></td>
+              <td>Integrators &amp; release readers</td>
+              <td>What changed between releases (API surface, behavior)</td>
+            </tr>
+            <tr>
+              <td><code>docs/internal/</code> (HTML) + <a href="../howto/0002-internal-service-docs-layout.html">how-to layout</a> / <code>STRUCTURE.md</code> stub</td>
+              <td>Engineers in this repo</td>
+              <td>Behavioral semantics, business rules, ops expectations, per-resource hubs and method pages (per ADR 0026)</td>
+            </tr>
+            <tr>
+              <td><code>docs/pdoc/</code> (pdoc)</td>
+              <td>Contributors</td>
+              <td>Python package internals</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     </section>
     <section class="card">
@@ -196,11 +198,6 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-    <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-      Found a bug? Report issue
-    </button>
-    <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
   </main>
 
 </body></html>

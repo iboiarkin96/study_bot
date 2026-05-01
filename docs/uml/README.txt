@@ -9,9 +9,42 @@ Layout
   sequences/*.puml        Sequence diagrams (e.g. conspectus, review, error log)
   include/style.puml      Shared skin — injected after @startuml by scripts/regenerate_docs.py
                           (Kroki needs one file; !include is not expanded server-side.)
+  include/template.puml   Copy-paste starter for new diagrams (skeleton + macros usage).
+                          Not rendered: files under include/ are skipped by the build.
   rendered/*.svg          Generated — do not edit by hand
   input-hashes.json       Fingerprint cache (merged source + output SHA-256); commit it. Renders
                           skip Kroki when unchanged; use --bootstrap-manifest to fill offline.
+
+----------------------------------------------------------------------------
+Authoring a new diagram (style contract)
+----------------------------------------------------------------------------
+
+Start from include/template.puml — it shows the canonical structure plus
+sequence/state/activity skeletons in comments.
+
+The injected skin (include/style.puml) gives every diagram:
+  - Colour tokens: $BG_*, $BORDER_*, $INK_*. Reuse them in per-file overrides
+    instead of pasting raw hex literals.
+  - Semantic palette: blue = application/API, orange = persistence,
+    emerald = actor, violet = queue, slate = neutral infra. Add a colour only
+    when the role is genuinely new (and update ADR-0020 in the same PR).
+  - Calm amber notes (never the default flashy yellow).
+  - Coverage for state, activity, ER, sequence, and C4 element types out of
+    the box — no per-file skinparam dance needed.
+
+Optional chrome macros (defined in style.puml):
+  $Subtitle("…")          one-line caption directly under the title
+  $Footer("…")            italic credit / ADR link at the bottom
+  $Hint("…")              short inline tag note
+  $LegendStandard()       four-row colour legend (people / api / data / infra)
+
+Use macros sparingly: a clear title beats decorative chrome. Add a legend
+only when colour encodes meaning that is not obvious from labels.
+
+Opting out: put `!NO_STYLE` on the line directly after `@startuml` to skip
+injection. Reserved for diagrams that must override the global theme on
+purpose (extremely rare — prefer a per-file `skinparam` after the injected
+style instead).
 
 ----------------------------------------------------------------------------
 Sizing and visual consistency (exports + HTML)

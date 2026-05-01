@@ -37,7 +37,7 @@
         <li>Record updated: 2026-04-15 — concrete <code>docs/internal/</code> tree, hub-and-spoke HTTP docs, navigation
           ownership (<code>internal-sidebar.js</code>), contributor layout in
           <a href="../howto/0002-internal-service-docs-layout.html"><code>docs/howto/0002-internal-service-docs-layout.html</code></a>
-          (<a href="../internal/STRUCTURE.md"><code>STRUCTURE.md</code></a> stub links there), and how-to index at
+          (<a href="../howto/0002-internal-service-docs-layout.html"><code>STRUCTURE.md</code></a> stub links there), and how-to index at
           <a href="../howto/README.html"><code>docs/howto/README.html</code></a>.
         </li>
         <li>Record updated: 2026-04-17 — standardized docs block semantics for how-to and ADR index pages: use
@@ -121,7 +121,7 @@
                 <a href="../internal/README.html"><code>docs/internal/README.html</code></a> is the top-level index (teams,
                 practices, links into HTTP docs). The directory tree and contributor checklist live in
                 <a href="../howto/0002-internal-service-docs-layout.html"><code>docs/howto/0002-internal-service-docs-layout.html</code></a>;
-                <a href="../internal/STRUCTURE.md"><code>docs/internal/STRUCTURE.md</code></a> is a short pointer to that page
+                <a href="../howto/0002-internal-service-docs-layout.html"><code>docs/internal/STRUCTURE.md</code></a> is a short pointer to that page
                 and
                 should stay aligned when the tree changes.
               </li>
@@ -141,53 +141,55 @@
               → <strong>one resource</strong> → <strong>one endpoint</strong>, without a single monolithic HTML file for
               everything.
             </p>
-            <table>
-              <thead>
-                <tr>
-                  <th>Path (under <code>docs/internal/</code>)</th>
-                  <th>Role</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>README.html</code></td>
-                  <td>Single entry: project context, service role and boundaries, contract and observability summary, links to
-                    ADRs and the HTTP API area. (F here.)</td>
-                  </tr>
+            <div class="docs-table-scroll" role="region" aria-label="Table">
+              <table>
+                <thead>
                   <tr>
-                    <td><code>STRUCTURE.md</code> + <code>docs/howto/0002-internal-service-docs-layout.html</code></td>
-                    <td>Full tree outline and contributor checklist in the how-to HTML page; <code>STRUCTURE.md</code> links
-                      there.
-                      Update both when adding resources or renaming paths.</td>
+                    <th>Path (under <code>docs/internal/</code>)</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>README.html</code></td>
+                    <td>Single entry: project context, service role and boundaries, contract and observability summary, links to
+                      ADRs and the HTTP API area. (F here.)</td>
                     </tr>
                     <tr>
-                      <td><code>api/README.html</code></td>
-                      <td>HTTP API hub: lists documented resources and points to each resource hub.</td>
-                    </tr>
-                    <tr>
-                      <td><code>api/&lt;resource&gt;/index.html</code></td>
-                      <td>
-                        <strong>Single entry point per resource</strong> — business context, contract summary, governance,
-                        technical
-                        depth (layers, idempotency, errors, logging, metrics, dependencies), endpoint index, and stable fragment
-                        identifiers (e.g. <code>#user-op-createUser</code>) for deep links from per-method pages.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><code>api/&lt;resource&gt;/operations/*.html</code></td>
-                      <td>One page per HTTP endpoint, named from <strong>method + path template</strong> (not from Python
-                        <code>operationId</code>), focused on call semantics; each page links back to anchors on the resource
-                        <code>index.html</code>.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><code>api/&lt;resource&gt;/…</code> redirect stubs (optional)</td>
-                      <td>Legacy filenames may remain as minimal HTML that redirect to <code>index.html</code> with hash
-                        preserved,
-                        so old bookmarks keep working.</td>
+                      <td><code>STRUCTURE.md</code> + <code>docs/howto/0002-internal-service-docs-layout.html</code></td>
+                      <td>Full tree outline and contributor checklist in the how-to HTML page; <code>STRUCTURE.md</code> links
+                        there.
+                        Update both when adding resources or renaming paths.</td>
                       </tr>
-                    </tbody>
-                  </table>
+                      <tr>
+                        <td><code>api/README.html</code></td>
+                        <td>HTTP API hub: lists documented resources and points to each resource hub.</td>
+                      </tr>
+                      <tr>
+                        <td><code>api/&lt;resource&gt;/index.html</code></td>
+                        <td>
+                          <strong>Single entry point per resource</strong> — business context, contract summary, governance,
+                          technical
+                          depth (layers, idempotency, errors, logging, metrics, dependencies), endpoint index, and stable fragment
+                          identifiers (e.g. <code>#user-op-createUser</code>) for deep links from per-method pages.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><code>api/&lt;resource&gt;/operations/*.html</code></td>
+                        <td>One page per HTTP endpoint, named from <strong>method + path template</strong> (not from Python
+                          <code>operationId</code>), focused on call semantics; each page links back to anchors on the resource
+                          <code>index.html</code>.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><code>api/&lt;resource&gt;/…</code> redirect stubs (optional)</td>
+                        <td>Legacy filenames may remain as minimal HTML that redirect to <code>index.html</code> with hash
+                          preserved,
+                          so old bookmarks keep working.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
                 </section>
                 <section class="card">
@@ -333,11 +335,6 @@
                             </div>
                           </section>
 
-                          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                          <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-                            Found a bug? Report issue
-                          </button>
-                          <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
                         </main>
 
                       </body></html>

@@ -49,7 +49,7 @@ _INTER_FONT_MARKER = "fonts.googleapis.com/css2?family=Inter"
 _INTER_FONT_LINKS = (
     '    <link rel="preconnect" href="https://fonts.googleapis.com"/>\n'
     '    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>\n'
-    '    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>\n'
+    '    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"/>\n'
     "    <style>body,button,input{font-family:Inter,system-ui,-apple-system,sans-serif}</style>\n"
 )
 

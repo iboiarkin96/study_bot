@@ -86,16 +86,13 @@
           Additional <code>&lt;section id="..." class="card"&gt;</code> blocks — one topic per card.
         </li>
         <li>
-          <code>&lt;section id="page-history" class="card"&gt;</code> — page history table.
-        </li>
-        <li>
-          <code>&lt;div class="docs-inpage-toc-mount" data-inpage-toc="auto"&gt;&lt;/div&gt;</code> —
-          last child of <code>&lt;main&gt;</code>; generates the <strong>On this page</strong> outline.
-        </li>
-        <li>
-          FAB button + feedback anchor before <code>&lt;/main&gt;</code>.
+          <code>&lt;section id="page-history" class="card"&gt;</code> — page history table (last section before <code>&lt;/main&gt;</code>).
         </li>
       </ol>
+      <p class="small">
+        The <strong>On this page</strong> outline and the report-bug FAB are injected at runtime by
+        <code>docs-nav.js</code>; do not author them in HTML.
+      </p>
       <p>
         Canonical example:
         <a href="../internal/README.html"><code>docs/internal/README.html</code></a>.
@@ -187,11 +184,6 @@
         </div>
       </section>
 
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-        Found a bug? Report issue
-      </button>
-      <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
     </main>
 
   </body></html>

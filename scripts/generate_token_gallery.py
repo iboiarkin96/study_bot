@@ -272,7 +272,6 @@ def render() -> str:
         "            </table>\n"
         "          </div>\n"
         "        </section>\n"
-        '        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>\n'
         "      </main>\n"
         "    </div>\n"
         "  </div>\n"

@@ -1,0 +1,108 @@
+' ============================================================================
+' Diagram template — copy this file, drop it under the right folder
+' (architecture/, sequences/, make/, …), rename it, and replace the body.
+'
+' This file is **not rendered**: anything under `docs/uml/include/` is
+' skipped by `scripts/regenerate_docs.py`.
+'
+' Conventions inherited from `include/style.puml` (auto-injected after
+' `@startuml`):
+'   - Palette tokens: `$BG_*`, `$BORDER_*`, `$INK_*`. Reuse them, never
+'     paste raw hex into a diagram.
+'   - Element semantics: blue = application/API, orange = persistence,
+'     emerald = actor, violet = queue, slate = neutral infra.
+'   - Notes inherit calm amber styling — no need to colour them manually.
+'   - Macros: `$Subtitle("…")`, `$Footer("…")`, `$Hint("…")`,
+'     `$LegendStandard()`. Opt-in; skip when the title is enough.
+'
+' Layout direction:
+'   - Architecture / containers / components → `top to bottom direction`
+'   - Sequences → keep participant order consistent across sibling diagrams
+'     (Integrator → HTTP API → Service → SchedulePolicy → DB)
+' ============================================================================
+
+@startuml
+title ETR Study API — <one-line scope of this diagram>
+$Subtitle("optional caption — version, ADR link, or owning team")
+
+top to bottom direction
+
+' --- Participants / containers --------------------------------------------
+actor    "Integrator"        as Client
+rectangle "ETR Study API"    as Api
+database "Relational store"  as Db
+
+' --- Relationships ---------------------------------------------------------
+Client --> Api : HTTPS · JSON
+Api    --> Db  : SQL · transactions
+
+' --- Optional chrome -------------------------------------------------------
+' $LegendStandard()
+' $Footer("ADR-0020 · uml/include/style.puml")
+
+@enduml
+
+' ============================================================================
+' Sequence-diagram skeleton (keep participant order consistent across files)
+' ============================================================================
+'
+' @startuml
+' title ETR Study API — <flow name>
+' autonumber
+' hide footbox
+'
+' actor       "Integrator"        as Client
+' boundary    "HTTP API"          as Api
+' control     "ConspectusService" as Service
+' participant "SchedulePolicy"    as Policy
+' database    "DB (transaction)"  as Db
+'
+' Client -> Api : POST /api/v1/...
+' activate Api
+'   Api -> Service : call
+'   activate Service
+'     alt happy path
+'       Service -> Db : INSERT
+'       Service --> Api : DTO
+'       Api --> Client : 201 Created
+'     else error
+'       Service --> Api : 409
+'       Api --> Client : 409
+'     end
+'   deactivate Service
+' deactivate Api
+' @enduml
+'
+' ============================================================================
+' State-machine skeleton
+' ============================================================================
+'
+' @startuml
+' title <name> — state machine
+'
+' [*] --> Idle : start condition
+' Idle    : entry actions go here
+' Active  : entry actions go here
+'
+' Idle    --> Active  : trigger
+' Active  --> Idle    : reset trigger
+' Active  --> [*]     : terminal trigger
+' @enduml
+'
+' ============================================================================
+' Activity-diagram skeleton
+' ============================================================================
+'
+' @startuml
+' title <name> — decision flow
+'
+' start
+' :first action;
+' if (condition?) then (yes)
+'   :branch A;
+' else (no)
+'   :branch B;
+' endif
+' :join action;
+' stop
+' @enduml

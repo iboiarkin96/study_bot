@@ -1,4 +1,4 @@
-"""Insert a standard ``Page history`` section before ``docs-inpage-toc-mount`` when missing.
+"""Insert a standard ``Page history`` section just before ``</main>`` when missing.
 
 Skips ``docs/pdoc/**``, ``docs/assets/**``, and redirect stubs. Skips pages that already have
 ``<section id="page-history">`` or legacy ``Document history`` / ``5-document-history`` (migrate those separately).
@@ -15,10 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 
-TOC_MOUNT_RE = re.compile(
-    r'^(\s*)<div class="docs-inpage-toc-mount" data-inpage-toc="auto">\s*</div>\s*$',
-    re.MULTILINE,
-)
+MAIN_CLOSE_RE = re.compile(r"^(\s*)</main>\s*$", re.MULTILINE)
 
 BASELINE_DATE = "2026-04-21"
 BASELINE_CHANGE = "Added Page history section (repository baseline)."
@@ -88,7 +85,7 @@ def _has_legacy_history_heading(text: str) -> bool:
 
 
 def _page_history_block(indent: str, rel_from_docs: str) -> str:
-    """indent = leading whitespace before <div class="docs-inpage-toc-mount">."""
+    """indent = leading whitespace inside <main> (one level deeper than </main>)."""
     i2 = indent + "  "
     i3 = indent + "    "
     i4 = indent + "      "
@@ -129,13 +126,14 @@ def process_file(path: Path) -> bool:
         return False
     if _has_legacy_history_heading(text):
         return False
-    m = TOC_MOUNT_RE.search(text)
+    m = MAIN_CLOSE_RE.search(text)
     if not m:
         return False
-    indent = m.group(1)
+    main_indent = m.group(1)
+    inner_indent = main_indent + "  "
     rel = path.relative_to(DOCS).as_posix()
-    block = _page_history_block(indent, rel)
-    new_text = TOC_MOUNT_RE.sub(block + m.group(0), text, count=1)
+    block = _page_history_block(inner_indent, rel)
+    new_text = MAIN_CLOSE_RE.sub(block + m.group(0), text, count=1)
     if new_text == text:
         return False
     path.write_text(new_text, encoding="utf-8")

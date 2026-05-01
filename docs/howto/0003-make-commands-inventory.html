@@ -27,7 +27,7 @@
         <div id="docs-page-meta-mount" hidden=""></div>
 
         <section id="overview" class="docs-page-hero">
-          <h2 id="overview">Overview</h2>
+          <h2>Overview</h2>
           <p>
             Single page to discover what <code>make</code> can do in this project: daily workflows, release gates, and
             full
@@ -37,38 +37,40 @@
 
         <section id="workflow" class="card">
           <h2>Canonical workflows</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Workflow</th>
-                <th>Command</th>
-                <th>Purpose</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Autofix loop</td>
-                <td><code>make fix</code></td>
-                <td>Apply formatting, lint, and docs autofixes.</td>
-              </tr>
-              <tr>
-                <td>Local quality gate</td>
-                <td><code>make verify</code></td>
-                <td>Run strict gate: deps-audit, lint, typing, OpenAPI checks, contract tests, tests, docs drift check,
-                  and docs a11y.</td>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Workflow</th>
+                  <th>Command</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Autofix loop</td>
+                  <td><code>make fix</code></td>
+                  <td>Apply formatting, lint, and docs autofixes.</td>
                 </tr>
                 <tr>
-                  <td>Release gate</td>
-                  <td><code>make release-check</code></td>
-                  <td>Validate environment and full gate before deployment.</td>
-                </tr>
-                <tr>
-                  <td>Release command</td>
-                  <td><code>make release DEPLOY_CMD="..."</code></td>
-                  <td>Run release checks first, then execute the deployment command.</td>
-                </tr>
-              </tbody>
-            </table>
+                  <td>Local quality gate</td>
+                  <td><code>make verify</code></td>
+                  <td>Run strict gate: deps-audit, lint, typing, OpenAPI checks, contract tests, tests, docs drift check,
+                    and docs a11y.</td>
+                  </tr>
+                  <tr>
+                    <td>Release gate</td>
+                    <td><code>make release-check</code></td>
+                    <td>Validate environment and full gate before deployment.</td>
+                  </tr>
+                  <tr>
+                    <td>Release command</td>
+                    <td><code>make release DEPLOY_CMD="..."</code></td>
+                    <td>Run release checks first, then execute the deployment command.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <p class="small">
               For command taxonomy and rationale, see
               <a href="../developer/0010-make-commands-and-workflows.html">Make commands and workflows</a>.
@@ -79,162 +81,164 @@
             <h2>Full command inventory</h2>
             <p class="small">Auto-generated from `Makefile` help output (source of truth).</p>
             <!-- BEGIN:MAKEFILE_COMMANDS -->
-            <table>
-              <thead>
-                <tr>
-                  <th>Command</th>
-                  <th>Purpose</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>make check</code></td>
-                  <td>Run lint-check + type-check + openapi-check + contract-test + test</td>
-                </tr>
-                <tr>
-                  <td><code>make ci</code></td>
-                  <td>strict full gate (same as make verify)</td>
-                </tr>
-                <tr>
-                  <td><code>make contract-test</code></td>
-                  <td>Stricter: generated OpenAPI must equal baseline JSON exactly</td>
-                </tr>
-                <tr>
-                  <td><code>make dead-code-check</code></td>
-                  <td>Run Vulture (unused code; see ADR 0014; not in verify)</td>
-                </tr>
-                <tr>
-                  <td><code>make deps-audit</code></td>
-                  <td>Scan requirements.txt with pip-audit (OSV); fails on known CVEs</td>
-                </tr>
-                <tr>
-                  <td><code>make dev</code></td>
-                  <td>run local API (migrate + uvicorn)</td>
-                </tr>
-                <tr>
-                  <td><code>make docs</code></td>
-                  <td>regenerate docs artifacts</td>
-                </tr>
-                <tr>
-                  <td><code>make docs-a11y-check</code></td>
-                  <td>Baseline accessibility checks (headings, landmarks, contrast, keyboard)</td>
-                </tr>
-                <tr>
-                  <td><code>make docs-check</code></td>
-                  <td>Verify docs are already in sync (fails on drift)</td>
-                </tr>
-                <tr>
-                  <td><code>make docs-design-check</code></td>
-                  <td>Baseline docs design consistency checks (page skeleton, cards, mounts)</td>
-                </tr>
-                <tr>
-                  <td><code>make docs-feedback-check</code></td>
-                  <td>Smoke-check page-level feedback wiring for key docs pages</td>
-                </tr>
-                <tr>
-                  <td><code>make docs-fix</code></td>
-                  <td>Auto-update docs (UML + markers + md→html + HTML repair + format + maintainers + portal data JS +
-                    pdoc API + search index)</td>
+            <div class="docs-table-scroll" role="region" aria-label="Table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Command</th>
+                    <th>Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>make check</code></td>
+                    <td>Run lint-check + type-check + openapi-check + contract-test + test</td>
                   </tr>
                   <tr>
-                    <td><code>make docs-html-check</code></td>
-                    <td>Validate HTML consistency (fails if docs HTML needs repair)</td>
+                    <td><code>make ci</code></td>
+                    <td>strict full gate (same as make verify)</td>
                   </tr>
                   <tr>
-                    <td><code>make env-check</code></td>
-                    <td>Verify env, deps, and DB connectivity</td>
+                    <td><code>make contract-test</code></td>
+                    <td>Stricter: generated OpenAPI must equal baseline JSON exactly</td>
                   </tr>
                   <tr>
-                    <td><code>make env-init</code></td>
-                    <td>Create .env from env/example (once per machine)</td>
+                    <td><code>make dead-code-check</code></td>
+                    <td>Run Vulture (unused code; see ADR 0014; not in verify)</td>
                   </tr>
                   <tr>
-                    <td><code>make fix</code></td>
-                    <td>Run auto-fixes (format-fix + lint-fix + docs-fix)</td>
+                    <td><code>make deps-audit</code></td>
+                    <td>Scan requirements.txt with pip-audit (OSV); fails on known CVEs</td>
                   </tr>
                   <tr>
-                    <td><code>make format-check</code></td>
-                    <td>Verify code formatting (no changes)</td>
+                    <td><code>make dev</code></td>
+                    <td>run local API (migrate + uvicorn)</td>
                   </tr>
                   <tr>
-                    <td><code>make format-fix</code></td>
-                    <td>Auto-format Python code</td>
+                    <td><code>make docs</code></td>
+                    <td>regenerate docs artifacts</td>
                   </tr>
                   <tr>
-                    <td><code>make install</code></td>
-                    <td>Install dependencies</td>
+                    <td><code>make docs-a11y-check</code></td>
+                    <td>Baseline accessibility checks (headings, landmarks, contrast, keyboard)</td>
                   </tr>
                   <tr>
-                    <td><code>make lint-check</code></td>
-                    <td>Run Ruff lint checks</td>
+                    <td><code>make docs-check</code></td>
+                    <td>Verify docs are already in sync (fails on drift)</td>
                   </tr>
                   <tr>
-                    <td><code>make lint-fix</code></td>
-                    <td>Run Ruff with auto-fixes</td>
+                    <td><code>make docs-design-check</code></td>
+                    <td>Baseline docs design consistency checks (page skeleton, cards, mounts)</td>
                   </tr>
                   <tr>
-                    <td><code>make migrate</code></td>
-                    <td>Apply all Alembic migrations</td>
+                    <td><code>make docs-feedback-check</code></td>
+                    <td>Smoke-check page-level feedback wiring for key docs pages</td>
                   </tr>
                   <tr>
-                    <td><code>make openapi-accept-changes</code></td>
-                    <td>Overwrite baseline with current app.openapi() (commit the file)</td>
-                  </tr>
-                  <tr>
-                    <td><code>make openapi-check</code></td>
-                    <td>Lint (operationId, summary, write+422 examples) + breaking-change</td>
-                  </tr>
-                  <tr>
-                    <td><code>make pre-commit-check</code></td>
-                    <td>Run all pre-commit hooks</td>
-                  </tr>
-                  <tr>
-                    <td><code>make pre-commit-install</code></td>
-                    <td>Install git pre-commit hooks</td>
-                  </tr>
-                  <tr>
-                    <td><code>make release DEPLOY_CMD='…'</code></td>
-                    <td>Run release-check then deploy command</td>
-                  </tr>
-                  <tr>
-                    <td><code>make release-check</code></td>
-                    <td>Run env-check + deps-audit + verify before deploy</td>
-                  </tr>
-                  <tr>
-                    <td><code>make run</code></td>
-                    <td>Start FastAPI dev server</td>
-                  </tr>
-                  <tr>
-                    <td><code>make setup</code></td>
-                    <td>first-time local setup (.venv + install deps + .env)</td>
-                  </tr>
-                  <tr>
-                    <td><code>make ship</code></td>
-                    <td>full pre-release gate (same as make release-check)</td>
-                  </tr>
-                  <tr>
-                    <td><code>make test</code></td>
-                    <td>Run full test suite (pytest + coverage per pyproject.toml)</td>
-                  </tr>
-                  <tr>
-                    <td><code>make test-one path=…</code></td>
-                    <td>Run one test file or node</td>
-                  </tr>
-                  <tr>
-                    <td><code>make type-check</code></td>
-                    <td>Run mypy type checks</td>
-                  </tr>
-                  <tr>
-                    <td><code>make venv</code></td>
-                    <td>Create virtual environment</td>
-                  </tr>
-                  <tr>
-                    <td><code>make verify</code></td>
-                    <td>Run deps-audit + lint-check + type-check + openapi-check + contract-test + test + docs-check +
-                      docs-a11y-check</td>
+                    <td><code>make docs-fix</code></td>
+                    <td>Auto-update docs (UML + markers + md→html + HTML repair + format + maintainers + portal data JS +
+                      pdoc API + search index)</td>
                     </tr>
-                  </tbody>
-                </table>
+                    <tr>
+                      <td><code>make docs-html-check</code></td>
+                      <td>Validate HTML consistency (fails if docs HTML needs repair)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make env-check</code></td>
+                      <td>Verify env, deps, and DB connectivity</td>
+                    </tr>
+                    <tr>
+                      <td><code>make env-init</code></td>
+                      <td>Create .env from env/example (once per machine)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make fix</code></td>
+                      <td>Run auto-fixes (format-fix + lint-fix + docs-fix)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make format-check</code></td>
+                      <td>Verify code formatting (no changes)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make format-fix</code></td>
+                      <td>Auto-format Python code</td>
+                    </tr>
+                    <tr>
+                      <td><code>make install</code></td>
+                      <td>Install dependencies</td>
+                    </tr>
+                    <tr>
+                      <td><code>make lint-check</code></td>
+                      <td>Run Ruff lint checks</td>
+                    </tr>
+                    <tr>
+                      <td><code>make lint-fix</code></td>
+                      <td>Run Ruff with auto-fixes</td>
+                    </tr>
+                    <tr>
+                      <td><code>make migrate</code></td>
+                      <td>Apply all Alembic migrations</td>
+                    </tr>
+                    <tr>
+                      <td><code>make openapi-accept-changes</code></td>
+                      <td>Overwrite baseline with current app.openapi() (commit the file)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make openapi-check</code></td>
+                      <td>Lint (operationId, summary, write+422 examples) + breaking-change</td>
+                    </tr>
+                    <tr>
+                      <td><code>make pre-commit-check</code></td>
+                      <td>Run all pre-commit hooks</td>
+                    </tr>
+                    <tr>
+                      <td><code>make pre-commit-install</code></td>
+                      <td>Install git pre-commit hooks</td>
+                    </tr>
+                    <tr>
+                      <td><code>make release DEPLOY_CMD='…'</code></td>
+                      <td>Run release-check then deploy command</td>
+                    </tr>
+                    <tr>
+                      <td><code>make release-check</code></td>
+                      <td>Run env-check + deps-audit + verify before deploy</td>
+                    </tr>
+                    <tr>
+                      <td><code>make run</code></td>
+                      <td>Start FastAPI dev server</td>
+                    </tr>
+                    <tr>
+                      <td><code>make setup</code></td>
+                      <td>first-time local setup (.venv + install deps + .env)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make ship</code></td>
+                      <td>full pre-release gate (same as make release-check)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make test</code></td>
+                      <td>Run full test suite (pytest + coverage per pyproject.toml)</td>
+                    </tr>
+                    <tr>
+                      <td><code>make test-one path=…</code></td>
+                      <td>Run one test file or node</td>
+                    </tr>
+                    <tr>
+                      <td><code>make type-check</code></td>
+                      <td>Run mypy type checks</td>
+                    </tr>
+                    <tr>
+                      <td><code>make venv</code></td>
+                      <td>Create virtual environment</td>
+                    </tr>
+                    <tr>
+                      <td><code>make verify</code></td>
+                      <td>Run deps-audit + lint-check + type-check + openapi-check + contract-test + test + docs-check +
+                        docs-a11y-check</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
                 <!-- END:MAKEFILE_COMMANDS -->
               </section>
 
@@ -265,11 +269,6 @@
                 </div>
               </section>
 
-              <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-              <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-                Found a bug? Report issue
-              </button>
-              <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
             </main>
           </div>
         </div>

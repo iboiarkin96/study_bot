@@ -191,7 +191,14 @@
 @media (max-width: 900px) {
   .internal-layout__shell {
     grid-template-columns: 1fr;
-    padding: 16px 16px 56px;
+    /* Tight horizontal padding so the reading column claims as much of the
+       narrow viewport as possible. Safe-area insets only push the padding
+       outward when the device asks (notched phones in landscape). */
+    padding:
+      12px
+      max(8px, env(safe-area-inset-right, 0px))
+      56px
+      max(8px, env(safe-area-inset-left, 0px));
   }
 }
 
@@ -298,44 +305,17 @@
   outline-offset: 2px;
 }
 
+/* Drawer mirrors the desktop sidebar's visual language so the slid-out panel
+   reads as the same surface, just relocated. Vertical padding is bumped a hair
+   above desktop (8 px vs 6 px) to give a finger-comfortable target without
+   forcing a body-sized "native list view" aesthetic. */
 .internal-layout__drawer-body .internal-sidebar__tree a {
-  color: var(--text, #1f2937);
-  background: var(--card, #fff);
-  border: 1px solid transparent;
-  font-weight: 550;
-  /* Drawer items get a full body-sized font (vs. desktop sidebar 0.82rem) and
-     a 44 px minimum touch target so the drawer reads as a native list view. */
-  font-size: var(--fs-body);
-  padding: 10px 14px;
-  min-height: 44px;
-  line-height: 1.4;
-  display: flex;
-  align-items: center;
-}
-
-.internal-layout__drawer-body .internal-sidebar__tree a:hover {
-  background: var(--internal-tree-hover-bg);
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 20%, var(--line, #dbe3ef));
-}
-
-.internal-layout__drawer-body .internal-sidebar__tree a:active {
-  background: color-mix(in srgb, var(--accent, #2563eb) 8%, var(--card, #fff));
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 30%, var(--line, #dbe3ef));
-}
-
-.internal-layout__drawer-body .internal-sidebar__tree a.is-active {
-  background: var(--internal-tree-active-bg);
-  border-color: var(--internal-tree-active-border);
-  color: var(--internal-tree-active-text);
+  padding: 8px 10px;
 }
 
 .internal-layout__drawer-body .internal-sidebar__summary {
-  font-size: var(--fs-meta);
-  letter-spacing: 0.1em;
-  padding: 16px 12px 8px 24px;
-  color: var(--text, #0f172a);
-  background: color-mix(in srgb, var(--internal-summary-hover-bg) 66%, transparent);
-  border-bottom: 1px solid var(--line, #dbe3ef);
+  background: transparent;
+  border-bottom: 0;
 }
 
 .internal-layout__sidebar-title {
@@ -423,6 +403,14 @@
 }
 
 @media (max-width: 1024px) {
+  .internal-layout__shell.is-drawer-mode {
+    /* Without this, the base `min(288px, 92vw) 1fr` grid keeps the first
+       (sidebar) track at 288 px even when the sidebar is display:none — main
+       auto-places into that 288 px track and the reading column collapses to
+       a sliver. Collapse the grid so main spans the full viewport. */
+    grid-template-columns: 1fr;
+  }
+
   .internal-layout__shell.is-drawer-mode .internal-layout__sidebar {
     display: none;
   }
@@ -626,7 +614,7 @@ h1.internal-doc-h1 {
 
 .internal-http-tablet__path {
   margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-body);
   line-height: 1.45;
   color: var(--internal-http-tablet-path);
@@ -756,7 +744,6 @@ h1.internal-doc-h1 {
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   font-size: var(--fs-meta);
   line-height: 1.45;
-  overflow: hidden;
 }
 
 .internal-spec-meta__item {
@@ -953,7 +940,7 @@ h1.internal-doc-h1 {
   border-radius: 999px;
   background: var(--badge-default-bg, #ffffff);
   color: var(--muted, #475569);
-  font-size: var(--fs-eyebrow);
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.02em;
   user-select: none;
@@ -980,7 +967,7 @@ h1.internal-doc-h1 {
 }
 
 .spec-status-help__summary-icon {
-  font-size: var(--fs-body);
+  font-size: 1em;
   line-height: 1;
 }
 
@@ -1003,8 +990,8 @@ h1.internal-doc-h1 {
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
 }
 
-.spec-status-help__intro,
-.spec-status-help__example {
+.spec-status-help .spec-status-help__intro,
+.spec-status-help .spec-status-help__example {
   margin: 0 0 10px;
   color: var(--text, #0f172a);
   font-size: var(--fs-meta);
@@ -1030,10 +1017,11 @@ h1.internal-doc-h1 {
   text-align: left;
   vertical-align: middle;
   border-bottom: 1px solid var(--line, #e2e8f0);
+  font-size: var(--fs-meta);
 }
 
 .spec-status-help__table th {
-  font-size: var(--fs-eyebrow);
+  font-size: var(--fs-meta);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1057,19 +1045,27 @@ h1.internal-doc-h1 {
   background: color-mix(in srgb, var(--accent, #3b82f6) 14%, transparent);
 }
 
-/* Right-align the popover when it would overflow the viewport. */
+/* On narrow viewports the popover would overflow if anchored to the small
+   inline `.spec-status-help` button — switch to viewport-fixed positioning so
+   it sits centered on screen and never gets clipped by the strip or the body. */
 @media (max-width: 720px) {
   .spec-status-help__panel {
-    left: auto;
-    right: 0;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    width: min(560px, calc(100vw - 24px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
   }
 }
 
 /*
  * Code samples inside internal spec pages (request/response/envelope JSON).
- * Smaller than the global pre to match the surrounding doc text density.
- * The global pre defaults to 0.9rem; here we drop to 0.78rem matching the
- * cue-sheet walkthrough convention used elsewhere in the docs.
+ * Smaller than the global pre to match the surrounding doc text density —
+ * uses --fs-meta (~12.75 px) uniformly across desktop, tablet, and mobile.
+ * No viewport override: the ladder is the contract.
  */
 .internal-layout__main pre {
   font-size: var(--fs-meta);
@@ -1081,13 +1077,9 @@ h1.internal-doc-h1 {
   font-size: inherit;
 }
 
-/* Mobile readability lift for internal spec code samples.
-   The desktop 0.78rem (~13.3px) becomes unreadable on a phone; raise to 0.95rem
-   (~16.15px on the 17px root) so JSON/CLI samples stay scannable. */
+/* Mobile keeps the same --fs-meta size; only padding tightens. */
 @media (max-width: 760px) {
   .internal-layout__main pre {
-    font-size: var(--fs-body);
-    line-height: 1.55;
     padding: 12px 12px;
   }
 }
@@ -1113,7 +1105,7 @@ h1.internal-doc-h1 {
   border-left: 3px solid var(--accent, #2563eb);
   background: var(--badge-default-bg, #f8fafc);
   border-radius: 0 8px 8px 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-body);
   font-weight: 600;
 }

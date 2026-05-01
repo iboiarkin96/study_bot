@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -110,28 +108,28 @@
         <section class="card" id="diagram">
           <h2>State diagram</h2>
           <pre><code class="language-text">              ┌──────┐
-              │ New  │
-              └──┬───┘
-                 │ triage
-                 ▼
+            │ New  │
+            └──┬───┘
+            │ triage
+            ▼
             ┌────────┐
             │Triaged │────────────────────────────────────► Won't fix
             └──┬─────┘
-               │ assign + start
-               ▼
-         ┌──────────────┐
-         │  In progress │
-         └────┬─────────┘
-              │ fix merged on build
-              ▼
-          ┌────────┐
-          │ Fixed  │
-          └──┬─────┘
-             │ QA verify
-             ├───────────► Verified ─── release ───► Closed
-             │ verify fails
-             └───────────► Reopened ─── back to In progress
-</code></pre>
+            │ assign + start
+            ▼
+            ┌──────────────┐
+            │  In progress │
+            └────┬─────────┘
+            │ fix merged on build
+            ▼
+            ┌────────┐
+            │ Fixed  │
+            └──┬─────┘
+            │ QA verify
+            ├───────────► Verified ─── release ───► Closed
+            │ verify fails
+            └───────────► Reopened ─── back to In progress
+          </code></pre>
         </section>
 
         <div class="docs-section-divider" aria-hidden="true">Transitions</div>
@@ -141,81 +139,74 @@
           <ul>
             <li><strong>New → Triaged.</strong> Triage sets severity, priority, area, owner. If duplicate of an existing
               ticket → Closed (duplicate) with link.</li>
-            <li><strong>Triaged → In progress.</strong> Owner has begun coding the fix. SLA clock for "Fix by" starts
-              here.</li>
-            <li><strong>In progress → Fixed.</strong> Code merged on a build QA can pull. Comment must include the build
-              SHA and a one-line summary of the change.</li>
-            <li><strong>Fixed → Verified.</strong> QA reproduces the original repro on the new build; the failure no
-              longer occurs. Evidence attached.</li>
-            <li><strong>Fixed → Reopened.</strong> Repro still fails. New evidence attached, comment names the build
-              that was attempted.</li>
-            <li><strong>Verified → Closed.</strong> Defect is in a released build. The release tag is recorded in the
-              ticket.</li>
-            <li><strong>Closed → Reopened.</strong> Same defect returns post-release; new evidence required.</li>
-            <li><strong>Triaged → Won't fix.</strong> Documented rationale; product owner accepts; ticket stays
-              searchable.</li>
-          </ul>
-        </section>
+              <li><strong>Triaged → In progress.</strong> Owner has begun coding the fix. SLA clock for "Fix by" starts
+                here.</li>
+                <li><strong>In progress → Fixed.</strong> Code merged on a build QA can pull. Comment must include the build
+                  SHA and a one-line summary of the change.</li>
+                  <li><strong>Fixed → Verified.</strong> QA reproduces the original repro on the new build; the failure no
+                    longer occurs. Evidence attached.</li>
+                    <li><strong>Fixed → Reopened.</strong> Repro still fails. New evidence attached, comment names the build
+                      that was attempted.</li>
+                      <li><strong>Verified → Closed.</strong> Defect is in a released build. The release tag is recorded in the
+                        ticket.</li>
+                        <li><strong>Closed → Reopened.</strong> Same defect returns post-release; new evidence required.</li>
+                        <li><strong>Triaged → Won't fix.</strong> Documented rationale; product owner accepts; ticket stays
+                          searchable.</li>
+                        </ul>
+                      </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Owner</div>
+                      <div class="docs-section-divider" aria-hidden="true">Owner</div>
 
-        <section class="card" id="owner">
-          <h2>Who moves the ticket</h2>
-          <ul>
-            <li><strong>QA</strong> moves: New → Triaged, Fixed → Verified or Reopened, Verified → Closed.</li>
-            <li><strong>Developer</strong> moves: Triaged → In progress, In progress → Fixed.</li>
-            <li><strong>Triage rotation</strong> moves: Triaged → Won't fix (with feature owner consent).</li>
-            <li>Anyone may move: Closed → Reopened, with new evidence.</li>
-          </ul>
-        </section>
+                      <section class="card" id="owner">
+                        <h2>Who moves the ticket</h2>
+                        <ul>
+                          <li><strong>QA</strong> moves: New → Triaged, Fixed → Verified or Reopened, Verified → Closed.</li>
+                          <li><strong>Developer</strong> moves: Triaged → In progress, In progress → Fixed.</li>
+                          <li><strong>Triage rotation</strong> moves: Triaged → Won't fix (with feature owner consent).</li>
+                          <li>Anyone may move: Closed → Reopened, with new evidence.</li>
+                        </ul>
+                      </section>
 
-        <div class="docs-section-divider" aria-hidden="true">Examples</div>
+                      <div class="docs-section-divider" aria-hidden="true">Examples</div>
 
-        <section class="card" id="examples">
-          <h2>Worked examples</h2>
-          <ul>
-            <li><em>"POST /user accepts empty email"</em> — New (filed) → Triaged (S2/P2) → In progress → Fixed on
-              commit <code>abc123</code> → QA reproduces on build <code>abc123</code>, original 201 no longer occurs →
-              Verified → release tag <code>v0.4.0</code> → Closed.</li>
-            <li><em>"Sidebar drawer focus trap missing on Safari"</em> — New → Triaged (S2/P2) → In progress → Fixed →
-              QA verifies, but discovers Tab still escapes after seven cycles → Reopened with new evidence → developer
-              fixes, marks Fixed → Verified → Closed.</li>
-            <li><em>"Typo: documenttation"</em> — New → Triaged (S4/P3) → owner fixes opportunistically with the next
-              docs PR → Fixed → Verified → Closed.</li>
-          </ul>
-        </section>
+                      <section class="card" id="examples">
+                        <h2>Worked examples</h2>
+                        <ul>
+                          <li><em>"POST /user accepts empty email"</em> — New (filed) → Triaged (S2/P2) → In progress → Fixed on
+                            commit <code>abc123</code> → QA reproduces on build <code>abc123</code>, original 201 no longer occurs →
+                            Verified → release tag <code>v0.4.0</code> → Closed.</li>
+                            <li><em>"Sidebar drawer focus trap missing on Safari"</em> — New → Triaged (S2/P2) → In progress → Fixed →
+                              QA verifies, but discovers Tab still escapes after seven cycles → Reopened with new evidence → developer
+                              fixes, marks Fixed → Verified → Closed.</li>
+                              <li><em>"Typo: documenttation"</em> — New → Triaged (S4/P3) → owner fixes opportunistically with the next
+                                docs PR → Fixed → Verified → Closed.</li>
+                              </ul>
+                            </section>
 
-        <section class="card" id="page-history">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Change</th>
-                  <th>Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-30">2026-04-30</time></td>
-                  <td>Initial defect lifecycle.</td>
-                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+                            <section class="card" id="page-history">
+                              <h2>Page history</h2>
+                              <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                <table class="docs-page-history">
+                                  <thead>
+                                    <tr>
+                                      <th>Date</th>
+                                      <th>Change</th>
+                                      <th>Author</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                      <td>Initial defect lifecycle.</td>
+                                      <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
-      </main>
-    </div>
-  </div>
+                          </main>
+                        </div>
+                      </div>
 
-</body>
-
-</html>
+                    </body></html>

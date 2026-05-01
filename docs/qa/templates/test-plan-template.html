@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -146,60 +144,60 @@
           <h2>Template — copy this block</h2>
           <pre><code class="language-markdown"># Test plan: &lt;feature or release name&gt;
 
-- **Plan ID:** TP-&lt;area&gt;-&lt;number&gt;-v1
-- **Date:** &lt;ISO&gt;
-- **Author:** &lt;name&gt;
-- **Status:** Draft | In review | Approved
+            - **Plan ID:** TP-&lt;area&gt;-&lt;number&gt;-v1
+            - **Date:** &lt;ISO&gt;
+            - **Author:** &lt;name&gt;
+            - **Status:** Draft | In review | Approved
 
-## 1. Scope
-- In: &lt;list&gt;
-- Out: &lt;list&gt;
+            ## 1. Scope
+            - In: &lt;list&gt;
+            - Out: &lt;list&gt;
 
-## 2. References
-- Spec: &lt;link&gt;
-- Tickets: &lt;ids&gt;
-- ADRs: &lt;ids&gt;
+            ## 2. References
+            - Spec: &lt;link&gt;
+            - Tickets: &lt;ids&gt;
+            - ADRs: &lt;ids&gt;
 
-## 3. Risks
-| # | Risk | Impact | Likelihood | Mitigation |
-|---|------|--------|------------|------------|
+            ## 3. Risks
+            | # | Risk | Impact | Likelihood | Mitigation |
+            |---|------|--------|------------|------------|
 
-## 4. Test items and types
-| Item | Contract | System | Manual UI | Exploratory | A11y |
-|------|----------|--------|-----------|-------------|------|
+            ## 4. Test items and types
+            | Item | Contract | System | Manual UI | Exploratory | A11y |
+            |------|----------|--------|-----------|-------------|------|
 
-## 5. Approach
-- Layers used (per test pyramid): …
-- Tooling: pytest, httpx, browser …
-- Environments: local, staging.
-- Data fixtures: …
+            ## 5. Approach
+            - Layers used (per test pyramid): …
+            - Tooling: pytest, httpx, browser …
+            - Environments: local, staging.
+            - Data fixtures: …
 
-## 6. Pass / fail criteria
-- Pass: all P1 cases pass; no S1/S2 open.
-- Fail: any S1/S2 open at exit.
+            ## 6. Pass / fail criteria
+            - Pass: all P1 cases pass; no S1/S2 open.
+            - Fail: any S1/S2 open at exit.
 
-## 7. Entry criteria
-- Spec passes DoD; CI green; build deployable.
+            ## 7. Entry criteria
+            - Spec passes DoD; CI green; build deployable.
 
-## 8. Exit criteria
-- All in-scope cases executed; defects triaged; sign-off recorded.
+            ## 8. Exit criteria
+            - All in-scope cases executed; defects triaged; sign-off recorded.
 
-## 9. Schedule
-| Date | Activity | Owner |
-|------|----------|-------|
+            ## 9. Schedule
+            | Date | Activity | Owner |
+            |------|----------|-------|
 
-## 10. Deliverables
-- Annotated checklist runs.
-- Defect tickets (linked).
-- Sign-off note on the release ticket.
+            ## 10. Deliverables
+            - Annotated checklist runs.
+            - Defect tickets (linked).
+            - Sign-off note on the release ticket.
 
-## 11. Roles
-| Activity | R | A | C | I |
-|----------|---|---|---|---|
+            ## 11. Roles
+            | Activity | R | A | C | I |
+            |----------|---|---|---|---|
 
-## 12. Open questions
-- &lt;list&gt; or "None."
-</code></pre>
+            ## 12. Open questions
+            - &lt;list&gt; or "None."
+          </code></pre>
         </section>
 
         <div class="docs-section-divider" aria-hidden="true">Worked example</div>
@@ -208,33 +206,32 @@
           <h2>Worked example — abbreviated</h2>
           <pre><code class="language-markdown"># Test plan: POST /api/v1/conspectuses idempotency
 
-- Plan ID: TP-API-CONSPECTUS-007-v1
-- Date: 2026-04-30
-- Author: Ivan B.
+            - Plan ID: TP-API-CONSPECTUS-007-v1
+            - Date: 2026-04-30
+            - Author: Ivan B.
 
-## 1. Scope
-- In: POST /api/v1/conspectuses with Idempotency-Key header — first call,
-  retry within window, retry after window, conflict on different body.
-- Out: GET / PATCH / authentication scenarios (covered by TP-…-002).
+            ## 1. Scope
+            - In: POST /api/v1/conspectuses with Idempotency-Key header — first call,
+            retry within window, retry after window, conflict on different body.
+            - Out: GET / PATCH / authentication scenarios (covered by TP-…-002).
 
-## 3. Risks
-| # | Risk | Impact | Likelihood | Mitigation |
-|---|------|--------|------------|------------|
-| 1 | Replay attack creates duplicates | High | Med | Contract test on retry within window |
-| 2 | DB unique-constraint violation surfaces as 500 | Med | Low | Manual repro + log inspection |
+            ## 3. Risks
+            | # | Risk | Impact | Likelihood | Mitigation |
+            |---|------|--------|------------|------------|
+            | 1 | Replay attack creates duplicates | High | Med | Contract test on retry within window |
+            | 2 | DB unique-constraint violation surfaces as 500 | Med | Low | Manual repro + log inspection |
 
-## 4. Test items
-| Item | Contract | System | Manual UI | Exploratory | A11y |
-|------|----------|--------|-----------|-------------|------|
-| Idempotency key path | ✓ | ✓ |  | ✓ |  |
+            ## 4. Test items
+            | Item | Contract | System | Manual UI | Exploratory | A11y |
+            |------|----------|--------|-----------|-------------|------|
+            | Idempotency key path | ✓ | ✓ |  | ✓ |  |
 
-## 8. Exit criteria
-- All P1 cases pass.
-- No open S1/S2 defects.
-- OpenAPI baseline updated and contract test green.
-</code></pre>
+            ## 8. Exit criteria
+            - All P1 cases pass.
+            - No open S1/S2 defects.
+            - OpenAPI baseline updated and contract test green.
+          </code></pre>
         </section>
-
 
         <section class="card" id="page-history">
           <h2>Page history</h2>
@@ -258,15 +255,8 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        <button type="button" class="docs-report-bug-fab" data-feedback-open="">
-          Found a bug? Report issue
-        </button>
-        <div id="docs-feedback-anchor" data-feedback-ui="modal"></div>
       </main>
     </div>
   </div>
 
-</body>
-
-</html>
+</body></html>
