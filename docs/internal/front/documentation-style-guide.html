@@ -32,7 +32,7 @@
 
         <div class="internal-spec-meta" aria-label="Spec metadata">
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
-          <span>Page-skeleton, taxonomy, and audit standard for all internal docs.</span></span>
+          <span>Page skeleton, taxonomy, and audit rules for every hand-written page under <code>docs/</code>.</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
           <span data-spec-status-mount=""></span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
@@ -40,19 +40,23 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
           <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
-          <time datetime="2026-04-30">2026-04-30</time></span>
+          <time datetime="2026-05-02">2026-05-02</time></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
           <code>v1</code></span>
         </div>
+
         <section id="overview" class="card">
           <h2>Overview</h2>
           <p>
-            This document is the single source of truth for documentation style, structure, and quality checks across
-            <code>docs/</code>. Use it for both human review and LLM-driven conformance checks.
+            This guide is the rule set for every hand-written page under <code>docs/</code>.
+            Reviewers apply it during PR review, and authors paste it into LLM prompts when
+            a model assists with the audit.
           </p>
           <ul>
-            <li><strong>Goal:</strong> keep all docs predictable, readable, and auditable over time.</li>
-            <li><strong>Scope:</strong> all HTML documents under <code>docs/</code> plus index pages and redirect stubs.</li>
+            <li><strong>Goal:</strong> keep the docs predictable and easy to read for
+              engineers who use English as a second language.</li>
+            <li><strong>Scope:</strong> every HTML page under <code>docs/</code>, including
+              index pages and redirect stubs.</li>
             <li><strong>Related policy:</strong> <a href="../../adr/0001-docs-as-code.html">ADR 0001</a>,
               <a href="../../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>,
               <a href="../../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a>,
@@ -62,468 +66,479 @@
         </section>
 
         <section id="global-style" class="card">
-          <h2>Global style rules (all document types)</h2>
+          <h2>Global style rules</h2>
           <ul>
-            <li><strong>Language:</strong> English, clear engineering prose, no slang, no hype.</li>
-            <li><strong>Tone:</strong> neutral and directive; describe what is required, optional, and prohibited.</li>
-            <li><strong>Tense:</strong> present tense for current behavior and policy; future tense only for planned work.</li>
-            <li><strong>Heading case:</strong> sentence case for section headings; keep labels short and explicit.</li>
-            <li><strong>Formatting:</strong> one primary topic per <code>&lt;section class="card"&gt;</code>.</li>
-            <li><strong>Terminology:</strong> use stable terms consistently (for example: "OpenAPI contract test", not variants).</li>
-            <li><strong>Links:</strong> link by destination name (for example: <code>ADR 0027</code>, <code>Runbook: Tests failing</code>).</li>
-            <li><strong>Commands and paths:</strong> wrap in <code>&lt;code&gt;</code>; use copy-paste-safe command examples.</li>
-            <li><strong>Lists:</strong> use ordered lists for procedures and unordered lists for policies/reference.</li>
+            <li><strong>Language:</strong> English. Plain engineering prose. No slang, no marketing language.</li>
+            <li><strong>Tone:</strong> directive. State what is required, what is optional, and what is forbidden.</li>
+            <li><strong>Tense:</strong> present tense for current rules and behavior. Future tense only for planned work.</li>
+            <li><strong>Heading case:</strong> sentence case. Labels stay short and concrete.</li>
+            <li><strong>Sectioning:</strong> one topic per <code>&lt;section class="card"&gt;</code>.</li>
+            <li><strong>Terminology:</strong> one term per concept, repeated everywhere. Pick &ldquo;OpenAPI contract test&rdquo; and never write a variant.</li>
+            <li><strong>Links:</strong> name the destination, not the action. Write <code>ADR 0027</code>, not &ldquo;Open ADR 0027&rdquo;.</li>
+            <li><strong>Commands and paths:</strong> wrap in <code>&lt;code&gt;</code>. Examples must be safe to copy and paste.</li>
+            <li><strong>Lists:</strong> ordered for procedures, unordered for policies and reference rows.</li>
           </ul>
         </section>
 
         <section id="plain-language" class="card">
-          <h2>Plain language (readability)</h2>
+          <h2>Plain language</h2>
           <p>
-            Docs should be easy to read for engineers who use English as a second language. Stay formal and precise, but
-            prefer <strong>simple wording and short sentences</strong> over ornate or academic style.
+            The audience reads English as a second language. Stay formal and accurate, but
+            <strong>prefer plain words and short sentences over academic phrasing</strong>.
           </p>
           <ul>
-            <li><strong>Sentence length:</strong> aim for one main idea per sentence; split long chains with semicolons into two sentences.</li>
-            <li><strong>Vocabulary:</strong> use common terms (e.g. “use”, “show”, “end”) instead of heavy synonyms when both are accurate.</li>
-            <li><strong>Jargon:</strong> keep necessary technical terms; define acronyms on first use in a page (<abbr> plus title or a short gloss).</abbr></li>
-            <li><strong>Voice:</strong> prefer active voice for steps (“Run <code>make verify</code>”) and passive only where the actor does not matter.</li>
-            <li><strong>Nouns:</strong> avoid stacking long noun phrases; rephrase with a short verb (“The pipeline runs tests” not “The test execution phase of the pipeline”).</li>
-            <li><strong>Consistency:</strong> when you simplify a hub or index, apply the same pattern to similar rows (same grammar, same level of detail).</li>
+            <li><strong>Sentence length:</strong> one main idea per sentence. Split chained clauses into separate sentences.</li>
+            <li><strong>Vocabulary:</strong> pick the common word when both options are accurate. Write &ldquo;use&rdquo;, not &ldquo;utilize&rdquo;; &ldquo;show&rdquo;, not &ldquo;surface&rdquo;.</li>
+            <li><strong>Jargon:</strong> keep necessary technical terms. Spell out every acronym the first time it appears on a page (<code>&lt;abbr title="…"&gt;</code> or a short gloss).</li>
+            <li><strong>Voice:</strong> active voice for instructions: &ldquo;Run <code>make verify</code>.&rdquo; Passive voice only when the actor does not matter.</li>
+            <li><strong>Nouns:</strong> do not stack noun phrases. &ldquo;The pipeline runs tests&rdquo; beats &ldquo;the test execution phase of the pipeline&rdquo;.</li>
+            <li><strong>Consistency:</strong> when one row of a hub page is simplified, every row gets the same treatment.</li>
           </ul>
           <p class="small">
-            Rolling updates: apply this section when editing any page; large legacy pages (older ADRs, long internal specs)
-            can be updated in smaller PRs over time.
+            Apply these rules to every page you edit. Older pages catch up as they come up
+            for review; do not block a small PR on a sweep through legacy text.
           </p>
         </section>
 
         <section id="required-page-skeleton" class="card">
           <h2>Required page skeleton</h2>
-          <p>All non-redirect pages should follow this baseline skeleton.</p>
+          <p>Every non-redirect page follows this skeleton.</p>
           <ol>
             <li><code>&lt;h1&gt;</code> page title.</li>
-            <li><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> top navigation mount.</li>
-            <li>First content card: either <code>Overview</code> or <code>Status</code> (document type dependent).</li>
-            <li>Body cards grouped by one topic per card.</li>
-            <li><code>&lt;section id="page-history" class="card"&gt;</code> with a <strong>Page history</strong> table (see
-              <a href="#page-history">Page history</a>).</li>
-            </ol>
-            <p class="small">
-              The in-page TOC mount and the report-bug FAB are injected by <code>docs-nav.js</code> at runtime
-              and should not be authored in HTML.
-            </p>
-            <p class="small">
-              Redirect pages are the only exception: short "Page moved" card plus canonical link.
-            </p>
-          </section>
+            <li><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> top-navigation mount.</li>
+            <li>First content card: <code>Overview</code> or <code>Status</code>, depending on document type.</li>
+            <li>Body cards, one topic per card.</li>
+            <li><code>&lt;section id="page-history" class="card"&gt;</code> with the <strong>Page history</strong> table (see <a href="#page-history">Page history</a>).</li>
+          </ol>
+          <p class="small">
+            The in-page table of contents and the report-bug FAB are injected by
+            <code>docs-nav.js</code> at runtime. Do not write them into the HTML.
+          </p>
+          <p class="small">
+            Redirect pages are the one exception: a short &ldquo;Page moved&rdquo; card and the canonical link.
+          </p>
+        </section>
 
-          <section id="docs-frontend-contract" class="card">
-            <h2>Docs frontend contract (required mounts and attributes)</h2>
-            <p>
-              This section defines the required HTML mounts and <code>data-*</code> attributes for shared docs UI
-              features. Treat it as a stable frontend contract when creating or reviewing hand-written docs pages.
-            </p>
-            <div class="docs-table-scroll" role="region" aria-label="Table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Feature</th>
-                    <th>Required markup</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Top navigation and quick actions</td>
-                    <td><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code></td>
-                    <td>Mount for top nav, quick actions launcher, and command palette shortcuts.</td>
-                  </tr>
-                  <tr>
-                    <td>Page editors widget</td>
-                    <td><code>&lt;div id="docs-page-meta-mount" hidden&gt;&lt;/div&gt;</code> + <code>data-maintainer-ids</code> on <code>&lt;body&gt;</code></td>
-                    <td>Shows avatar stack by default; clicking <strong>Page editors</strong> reveals full maintainer list.</td>
-                  </tr>
-                  <tr>
-                    <td>Portal people listing</td>
-                    <td><code>&lt;div id="portal-people-mount"&gt;&lt;/div&gt;</code></td>
-                    <td>Used on <code>internal/README.html#team-onboarding</code> (legacy redirect: <code>internal/portal/index.html</code>); includes group sections, sort, counts, and skeleton state.</td>
-                  </tr>
-                  <tr>
-                    <td>Profile maintained pages</td>
-                    <td><code>&lt;div id="portal-maintained-mount"&gt;&lt;/div&gt;</code> + <code>data-person-id</code> on <code>&lt;body&gt;</code></td>
-                    <td>Used on <code>internal/portal/people/*/index.html</code>; includes pagination and skeleton state.</td>
-                  </tr>
-                  <tr>
-                    <td>Auto in-page TOC</td>
-                    <td>—</td>
-                    <td>Mount is created at runtime by <code>docs-nav.js</code>; do not author it in HTML. Opt out per page with <code>&lt;main data-inpage-toc="off"&gt;</code>. The <strong>On this page</strong> UI is desktop-only (<code>min-width: 1025px</code>).</td>
-                  </tr>
-                  <tr>
-                    <td>Report-bug FAB</td>
-                    <td>—</td>
-                    <td>Injected by <code>docs-nav.js</code> on every page that loads it. Do not author the static <code>&lt;button class="docs-report-bug-fab"&gt;</code> in HTML.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="small">
-              Script dependencies for this contract: <code>docs/assets/docs-nav.js</code>,
-              <code>docs/assets/docs-portal-data.js</code>, and <code>docs/assets/docs-internal-meta.js</code>.
-              If a page omits one of these mounts/attributes, the corresponding UI feature should be considered disabled by design.
-            </p>
-          </section>
+        <section id="docs-frontend-contract" class="card">
+          <h2>Docs frontend contract</h2>
+          <p>
+            Every hand-written page declares the mounts and <code>data-*</code> attributes
+            below. The list is the contract between the page and the shared docs runtime.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Docs frontend contract">
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Required markup</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Top navigation and quick actions</td>
+                  <td><code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code></td>
+                  <td>Mount for top nav, quick actions, and the command palette.</td>
+                </tr>
+                <tr>
+                  <td>Page editors widget</td>
+                  <td><code>&lt;div id="docs-page-meta-mount" hidden&gt;&lt;/div&gt;</code> + <code>data-maintainer-ids</code> on <code>&lt;body&gt;</code></td>
+                  <td>Renders an avatar stack. Clicking <strong>Page editors</strong> opens the full maintainer list.</td>
+                </tr>
+                <tr>
+                  <td>Portal people listing</td>
+                  <td><code>&lt;div id="portal-people-mount"&gt;&lt;/div&gt;</code></td>
+                  <td>Used on <code>internal/README.html#team-onboarding</code> (legacy redirect: <code>internal/portal/index.html</code>). Includes group sections, sort, counts, and a skeleton state.</td>
+                </tr>
+                <tr>
+                  <td>Profile maintained pages</td>
+                  <td><code>&lt;div id="portal-maintained-mount"&gt;&lt;/div&gt;</code> + <code>data-person-id</code> on <code>&lt;body&gt;</code></td>
+                  <td>Used on <code>internal/portal/people/*/index.html</code>. Includes pagination and a skeleton state.</td>
+                </tr>
+                <tr>
+                  <td>Auto in-page TOC</td>
+                  <td>—</td>
+                  <td>Mounted by <code>docs-nav.js</code> at runtime. Do not author it. Opt out per page with <code>&lt;main data-inpage-toc="off"&gt;</code>. The <strong>On this page</strong> UI is desktop-only (<code>min-width: 1025px</code>).</td>
+                </tr>
+                <tr>
+                  <td>Report-bug FAB</td>
+                  <td>—</td>
+                  <td>Injected by <code>docs-nav.js</code>. Do not author <code>&lt;button class="docs-report-bug-fab"&gt;</code> in the HTML.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">
+            Backed by <code>docs/assets/docs-nav.js</code>, <code>docs/assets/docs-portal-data.js</code>,
+            and <code>docs/assets/docs-internal-meta.js</code>. A page that omits a mount opts
+            out of the matching feature.
+          </p>
+        </section>
 
-          <section id="document-type-matrix" class="card">
-            <h2>Document-type matrix</h2>
-            <div class="docs-table-scroll" role="region" aria-label="Table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Primary purpose</th>
-                    <th>Must include</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>ADR</td>
-                    <td>Decision and rationale</td>
-                    <td>Status, Context, Decision, Consequences, Alternatives, change history</td>
-                  </tr>
-                  <tr>
-                    <td>RFC</td>
-                    <td>Implementation-level specification</td>
-                    <td>Status, Goals/non-goals, architecture/flow, operations/troubleshooting</td>
-                  </tr>
-                  <tr>
-                    <td>Runbook</td>
-                    <td>Incident triage and recovery procedure</td>
-                    <td>Symptoms, impact, pre-checks, step-by-step recovery, validation, escalation</td>
-                  </tr>
-                  <tr>
-                    <td>How-to</td>
-                    <td>Task-oriented instructional guide</td>
-                    <td>Prerequisites, ordered steps, verification, related links</td>
-                  </tr>
-                  <tr>
-                    <td>Internal API page</td>
-                    <td>Engineering narrative of behavior and operational meaning</td>
-                    <td>Contract summary, business rules, technical flow, error behavior, references</td>
-                  </tr>
-                  <tr>
-                    <td>Audit report</td>
-                    <td>Assessment against standards and references</td>
-                    <td>Method, scored mapping, findings, mitigations, residual risk, review date</td>
-                  </tr>
-                  <tr>
-                    <td>Index/hub</td>
-                    <td>Navigation and orientation</td>
-                    <td>Overview card, table/list of documents, concise "what this covers" descriptions</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+        <section id="document-type-matrix" class="card">
+          <h2>Document-type matrix</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Document-type matrix">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Primary purpose</th>
+                  <th>Must include</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ADR</td>
+                  <td>Decision and rationale</td>
+                  <td>Status, Context, Decision, Consequences, Alternatives, change history</td>
+                </tr>
+                <tr>
+                  <td>RFC</td>
+                  <td>Implementation-level specification</td>
+                  <td>Status, Goals and non-goals, architecture or flow, operations and troubleshooting</td>
+                </tr>
+                <tr>
+                  <td>Runbook</td>
+                  <td>Incident triage and recovery</td>
+                  <td>Symptoms, impact, pre-checks, ordered recovery steps, validation, escalation</td>
+                </tr>
+                <tr>
+                  <td>How-to</td>
+                  <td>Task-oriented instructions</td>
+                  <td>Prerequisites, ordered steps, verification, related links</td>
+                </tr>
+                <tr>
+                  <td>Internal API page</td>
+                  <td>Engineering narrative for an endpoint</td>
+                  <td>Contract summary, business rules, technical flow, error behavior, references</td>
+                </tr>
+                <tr>
+                  <td>Audit report</td>
+                  <td>Assessment against a reference</td>
+                  <td>Method, scored mapping, findings, mitigations, residual risk, review date</td>
+                </tr>
+                <tr>
+                  <td>Index or hub</td>
+                  <td>Navigation and orientation</td>
+                  <td>Overview card, list or table of pages, one-line descriptions in the same grammar</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-          <section id="page-type-taxonomy" class="card">
-            <h2>Frontend documentation page-type taxonomy</h2>
-            <p>
-              Pages under <code>docs/internal/front/</code> belong to one of six page types. Place a single
-              <code>&lt;span class="docs-page-type docs-page-type--&lt;variant&gt;"&gt;Label&lt;/span&gt;</code>
-              immediately after the page <code>&lt;h1&gt;</code> so the page type is visible to readers and to
-              automated link-graph tooling. Each type has a different size budget and a different set of mandatory
-              sections — choose the type before you start writing, not after.
-            </p>
-            <div class="docs-table-scroll" role="region" aria-label="Table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Badge</th>
-                    <th>Purpose</th>
-                    <th>Size budget</th>
-                    <th>Required sections</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Foundation</td>
-                    <td><span class="docs-page-type docs-page-type--foundation">Foundation</span></td>
-                    <td>Cross-cutting principles, vocabulary, process — applies to every other page.</td>
-                    <td>200–500 lines</td>
-                    <td>Overview, the foundational content itself, governance, page history</td>
-                  </tr>
-                  <tr>
-                    <td>Architecture</td>
-                    <td><span class="docs-page-type docs-page-type--architecture">Architecture</span></td>
-                    <td>System map: blocks, ownership, feature ledger, runtime contracts.</td>
-                    <td>300–600 lines</td>
-                    <td>Block model, ownership map, feature inventory, page history</td>
-                  </tr>
-                  <tr>
-                    <td>Screen</td>
-                    <td><span class="docs-page-type docs-page-type--screen">Screen</span></td>
-                    <td>Full-page recipe — anatomy, gallery, behavior, data contract for one rendered URL.</td>
-                    <td>250–900 lines</td>
-                    <td>At a glance, gallery, anatomy, layout map, data contract, behavior, accessibility, do/don't, where to change what, page history</td>
-                  </tr>
-                  <tr>
-                    <td>Component</td>
-                    <td><span class="docs-page-type docs-page-type--component">Component</span></td>
-                    <td>Reusable UI surface — anatomy, states, props, accessibility, do/don't.</td>
-                    <td>150–350 lines</td>
-                    <td>Inventory or anatomy, states, public surface, accessibility, do/don't, page history</td>
-                  </tr>
-                  <tr>
-                    <td>Reference</td>
-                    <td><span class="docs-page-type docs-page-type--reference">Reference</span></td>
-                    <td>Lookup tables — JS modules, CSS architecture, tokens, hotkeys, telemetry events.</td>
-                    <td>100–400 lines</td>
-                    <td>One-line introduction, normalized table, page history</td>
-                  </tr>
-                  <tr>
-                    <td>Contract</td>
-                    <td><span class="docs-page-type docs-page-type--contract">Contract</span></td>
-                    <td>Stable normative requirements only — implementation lives elsewhere.</td>
-                    <td>80–200 lines</td>
-                    <td>Overview (with links to implementation pages), the requirements as bullet lists, acceptance checklist, page history</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="small">
-              <strong>Why this matters:</strong> a 140-line page reads as "incomplete" only if its type is unknown.
-              A <em>Contract</em> page at 140 lines is correctly sized; a <em>Screen</em> page at 140 lines is missing
-              required sections. The badge resolves that ambiguity at first glance and lets reviewers apply the right
-              acceptance bar.
-            </p>
-          </section>
+        <section id="page-type-taxonomy" class="card">
+          <h2>Frontend documentation page-type taxonomy</h2>
+          <p>
+            Every page under <code>docs/internal/front/</code> belongs to one of six page
+            types. Place a single
+            <code>&lt;span class="docs-page-type docs-page-type--&lt;variant&gt;"&gt;Label&lt;/span&gt;</code>
+            directly after the <code>&lt;h1&gt;</code>, so the type is visible to readers
+            and to link-graph tooling. Pick the type before you write — size budgets and
+            required sections differ.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Page-type taxonomy">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Badge</th>
+                  <th>Purpose</th>
+                  <th>Size budget</th>
+                  <th>Required sections</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Foundation</td>
+                  <td><span class="docs-page-type docs-page-type--foundation">Foundation</span></td>
+                  <td>Cross-cutting principles, vocabulary, and process used by every other page.</td>
+                  <td>200–500 lines</td>
+                  <td>Overview, the foundational content, governance, page history</td>
+                </tr>
+                <tr>
+                  <td>Architecture</td>
+                  <td><span class="docs-page-type docs-page-type--architecture">Architecture</span></td>
+                  <td>System map: blocks, ownership, feature ledger, runtime contracts.</td>
+                  <td>300–600 lines</td>
+                  <td>Block model, ownership map, feature inventory, page history</td>
+                </tr>
+                <tr>
+                  <td>Screen</td>
+                  <td><span class="docs-page-type docs-page-type--screen">Screen</span></td>
+                  <td>Full-page recipe — anatomy, gallery, behavior, and data contract for one URL.</td>
+                  <td>250–900 lines</td>
+                  <td>At a glance, gallery, anatomy, layout map, data contract, behavior, accessibility, do and don't, where to change what, page history</td>
+                </tr>
+                <tr>
+                  <td>Component</td>
+                  <td><span class="docs-page-type docs-page-type--component">Component</span></td>
+                  <td>Reusable UI surface — anatomy, states, props, accessibility, do and don't.</td>
+                  <td>150–350 lines</td>
+                  <td>Inventory or anatomy, states, public surface, accessibility, do and don't, page history</td>
+                </tr>
+                <tr>
+                  <td>Reference</td>
+                  <td><span class="docs-page-type docs-page-type--reference">Reference</span></td>
+                  <td>Lookup tables — JS modules, CSS architecture, tokens, hotkeys, telemetry events.</td>
+                  <td>100–400 lines</td>
+                  <td>One-line introduction, normalized table, page history</td>
+                </tr>
+                <tr>
+                  <td>Contract</td>
+                  <td><span class="docs-page-type docs-page-type--contract">Contract</span></td>
+                  <td>Stable normative requirements only. Implementation lives elsewhere.</td>
+                  <td>80–200 lines</td>
+                  <td>Overview with links to the implementation pages, requirements as bullet lists, acceptance checklist, page history</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">
+            A 140-line page is short for a Screen and complete for a Contract. The badge
+            tells reviewers which bar to apply.
+          </p>
+        </section>
 
-          <section id="templates-by-type" class="card">
-            <h2>Minimal templates by type</h2>
-            <h3>ADR template baseline</h3>
-            <ol>
-              <li>Status</li>
-              <li>Context and problem statement</li>
-              <li>Decision</li>
-              <li>Consequences and trade-offs</li>
-              <li>Alternatives considered</li>
-              <li>References</li>
-              <li>History</li>
-            </ol>
+        <section id="templates-by-type" class="card">
+          <h2>Minimal templates by type</h2>
 
-            <h3>RFC template baseline</h3>
-            <ol>
-              <li>Status</li>
-              <li>Goals and non-goals</li>
-              <li>Architecture or data flow</li>
-              <li>Implementation details</li>
-              <li>Operational guidance and troubleshooting</li>
-              <li>Change management</li>
-            </ol>
+          <h3>ADR template baseline</h3>
+          <ol>
+            <li>Status</li>
+            <li>Context and problem statement</li>
+            <li>Decision</li>
+            <li>Consequences and trade-offs</li>
+            <li>Alternatives considered</li>
+            <li>References</li>
+            <li>History</li>
+          </ol>
 
-            <h3>Runbook template baseline</h3>
-            <ol>
-              <li>Incident definition and trigger conditions</li>
-              <li>Immediate safety checks</li>
-              <li>Triage checklist</li>
-              <li>Recovery actions (ordered)</li>
-              <li>Post-recovery validation</li>
-              <li>Escalation and owner handoff</li>
-            </ol>
+          <h3>RFC template baseline</h3>
+          <ol>
+            <li>Status</li>
+            <li>Goals and non-goals</li>
+            <li>Architecture or data flow</li>
+            <li>Implementation details</li>
+            <li>Operational guidance and troubleshooting</li>
+            <li>Change management</li>
+          </ol>
 
-            <h3>Screen spec template baseline (frontend pages)</h3>
-            <p class="small">
-              Authoritative copy of this skeleton lives at
-              <a href="./screens/docs-screen-template.html"><code>screens/docs-screen-template.html</code></a>.
-              Reviewers reject screen specs that omit any of the <strong>required</strong> sections.
-            </p>
-            <ol>
-              <li>Title block with <code>&lt;span class="docs-page-type docs-page-type--screen"&gt;</code> badge</li>
-              <li>At a glance (status, owner, audience, primary URL, tracked feature IDs, last verified)</li>
-              <li>Visual gallery (desktop light + dark, tablet, mobile, every transient state) — <strong>required</strong></li>
-              <li>Anatomy diagram (numbered SVG) and legend — <strong>required</strong></li>
-              <li>Layout map (reading-order region walk-through) — <strong>required</strong></li>
-              <li>Behavior matrix (events, states, side effects)</li>
-              <li>Timing budget (per-phase milliseconds)</li>
-              <li>Data contract (every <code>data-*</code> attribute)</li>
-              <li>Responsive behavior (per breakpoint)</li>
-              <li>Browser &amp; device support matrix — <strong>required</strong></li>
-              <li>Accessibility and motion (global policies + per-component table) — <strong>required</strong></li>
-              <li>Do's and Don'ts table — <strong>required</strong></li>
-              <li>Where to change what (file-by-file map + tuning knobs)</li>
-              <li>Acceptance checklist</li>
-              <li>Known edges and design decisions</li>
-              <li>Related internal docs</li>
-              <li>Page history</li>
-            </ol>
+          <h3>Runbook template baseline</h3>
+          <ol>
+            <li>Incident definition and trigger conditions</li>
+            <li>Immediate safety checks</li>
+            <li>Triage checklist</li>
+            <li>Ordered recovery actions</li>
+            <li>Post-recovery validation</li>
+            <li>Escalation and owner handoff</li>
+          </ol>
 
-            <h3>Component spec template baseline (frontend reusable surfaces)</h3>
-            <ol>
-              <li>Title with <code>&lt;span class="docs-page-type docs-page-type--component"&gt;</code> badge</li>
-              <li>Component inventory or single-component anatomy</li>
-              <li>States table (default, hover, focus, active, disabled, loading, error)</li>
-              <li>Public surface (CSS hooks, <code>data-*</code> contract, JS events) — <strong>required</strong></li>
-              <li>Accessibility notes (roles, keyboard, screen-reader, reduced-motion) — <strong>required</strong></li>
-              <li>Do's and Don'ts table — <strong>required</strong></li>
-              <li><strong>Positioning &amp; sizing table</strong> for any surface that has a fixed footprint
-                (FABs, drawers, modals, sticky chrome). State the values <em>per viewport</em> — even when
-                they are uniform, naming "uniform across all viewports" explicitly stops drift. Required when
-                the component appears at the same coordinates on multiple pages.</li>
-                <li><strong>Visual gallery</strong> with raster screenshots — <strong>required</strong> for any
-                  component whose appearance changes meaningfully across viewports (FABs, drawers, modals,
-                  sidebar, page header). Filenames and capture canon at
-                  <a href="./screens/components/README.html">screens/components/README</a>; minimum four
-                  captures (desktop 1440×900, tablet 1024×1366, iPhone Pro Max 430×932, iPhone SE 375×667)
-                  plus one capture per non-default state. Until the Playwright harness lands, capture is
-                  manual; gallery slots stay as dashed placeholders so reviewers can see the gap.</li>
-                  <li>Implementation map (which files, which tokens)</li>
-                  <li>Page history</li>
-                </ol>
+          <h3>Screen spec template baseline (frontend pages)</h3>
+          <p class="small">
+            The authoritative skeleton lives at
+            <a href="./screens/docs-screen-template.html"><code>screens/docs-screen-template.html</code></a>.
+            A screen spec missing any required section is rejected at review.
+          </p>
+          <ol>
+            <li>Title block with <code>&lt;span class="docs-page-type docs-page-type--screen"&gt;</code> badge</li>
+            <li>At a glance: status, owner, audience, primary URL, tracked feature IDs, last verified</li>
+            <li>Visual gallery: desktop light and dark, tablet, mobile, every transient state — <strong>required</strong></li>
+            <li>Anatomy diagram (numbered SVG) and legend — <strong>required</strong></li>
+            <li>Layout map: a reading-order region walk-through — <strong>required</strong></li>
+            <li>Behavior matrix: events, states, side effects</li>
+            <li>Timing budget: per-phase milliseconds</li>
+            <li>Data contract: every <code>data-*</code> attribute</li>
+            <li>Responsive behavior per breakpoint</li>
+            <li>Browser and device support matrix — <strong>required</strong></li>
+            <li>Accessibility and motion: global policies and a per-component table — <strong>required</strong></li>
+            <li>Do and Don't table — <strong>required</strong></li>
+            <li>Where to change what: file-by-file map and tuning knobs</li>
+            <li>Acceptance checklist</li>
+            <li>Known edges and design decisions</li>
+            <li>Related internal docs</li>
+            <li>Page history</li>
+          </ol>
 
-                <h3>Reference page template baseline</h3>
-                <ol>
-                  <li>Title with <code>&lt;span class="docs-page-type docs-page-type--reference"&gt;</code> badge</li>
-                  <li>One-line introduction stating the lookup question this page answers</li>
-                  <li>The normalized table (no per-row prose; everything in columns)</li>
-                  <li>Notes section for footnotes and conventions</li>
-                  <li>Page history</li>
-                </ol>
+          <h3>Component spec template baseline (frontend reusable surfaces)</h3>
+          <ol>
+            <li>Title with <code>&lt;span class="docs-page-type docs-page-type--component"&gt;</code> badge</li>
+            <li>Component inventory or single-component anatomy</li>
+            <li>States table: default, hover, focus, active, disabled, loading, error</li>
+            <li>Public surface: CSS hooks, <code>data-*</code> contract, JS events — <strong>required</strong></li>
+            <li>Accessibility notes: roles, keyboard, screen reader, reduced motion — <strong>required</strong></li>
+            <li>Do and Don't table — <strong>required</strong></li>
+            <li><strong>Positioning and sizing table</strong> for any surface with a fixed
+              footprint (FABs, drawers, modals, sticky chrome). List values per viewport.
+              When all viewports share a value, write &ldquo;uniform across all viewports&rdquo;
+              so future authors do not silently drift it. Required for any component that
+              appears at the same coordinates on more than one page.</li>
+            <li><strong>Visual gallery</strong> with raster screenshots — <strong>required</strong>
+              for any component whose appearance shifts across viewports (FABs, drawers,
+              modals, sidebar, page header). Filenames and capture rules:
+              <a href="./screens/components/README.html">screens/components/README</a>.
+              Minimum four captures (desktop 1440×900, tablet 1024×1366, iPhone Pro Max
+              430×932, iPhone SE 375×667) plus one capture per non-default state. Capture
+              is manual until the Playwright harness lands; gallery slots stay as dashed
+              placeholders so reviewers see the gap.</li>
+            <li>Implementation map: which files, which tokens</li>
+            <li>Page history</li>
+          </ol>
 
-                <h3>Contract page template baseline</h3>
-                <ol>
-                  <li>Title with <code>&lt;span class="docs-page-type docs-page-type--contract"&gt;</code> badge</li>
-                  <li>Overview with explicit links to the implementation page(s)</li>
-                  <li>Requirements as bullet lists, grouped by area</li>
-                  <li>Acceptance checklist (concrete observable behaviors)</li>
-                  <li>Page history</li>
-                </ol>
-              </section>
+          <h3>Reference page template baseline</h3>
+          <ol>
+            <li>Title with <code>&lt;span class="docs-page-type docs-page-type--reference"&gt;</code> badge</li>
+            <li>One-line introduction stating the lookup question this page answers</li>
+            <li>The normalized table — no per-row prose; everything in columns</li>
+            <li>Notes section for footnotes and conventions</li>
+            <li>Page history</li>
+          </ol>
 
-              <section id="authoring-for-mobile" class="card">
-                <h2>Authoring for mobile</h2>
-                <p>
-                  The docs portal must read on a phone (≈360–440 CSS px) without degraded
-                  typography or overflowing layout. The CSS does most of the work, but author-side mistakes can
-                  still break readability. The rules below are <strong>normative</strong>; reviewers should
-                  reject pages that violate them.
-                </p>
-                <ul>
-                  <li><strong>Wrap multi-column tables.</strong> Any table with three or more columns, or any
-                    column carrying long identifiers / <code>code</code>, must live inside
-                    <code>&lt;div class="docs-table-scroll" role="region" aria-label="…"&gt;…&lt;/div&gt;</code>.
-                    The <code>aria-label</code> is required for screen-reader navigation.</li>
-                    <li><strong>Don't paste raw long URLs into prose.</strong> If the URL is longer than ~50
-                      characters, prefer a named anchor link
-                      (<code>&lt;a href="…"&gt;readable label&lt;/a&gt;</code>) instead of the bare URL.</li>
-                      <li><strong>Use a block <code>&lt;pre&gt;</code> for code samples longer than ~20 characters.</strong>
-                        Inline <code>&lt;code&gt;</code> is for short tokens only — long inline code crowds the
-                        content column on mobile even with the global wrap rule.</li>
-                        <li><strong>Don't introduce a new component cut-off below 760 px without a documented
-                          reason.</strong> Canonical device tiers are
-                          <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">defined here</a>.
-                          If you add a 640 / 720 / 900 px rule, it must be a layout-specific reflow inside the
-                          mobile or tablet tier, not a new device tier.</li>
-                          <li><strong>Test on a phone-sized viewport before merge.</strong> Use the
-                            <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">mobile-contract
-                              acceptance smoke checklist</a> on iPhone 17 Pro Max (440 px) and iPhone SE
-                              (375 px). Pages that fail any item are not mergeable.</li>
-                            </ul>
-                          </section>
+          <h3>Contract page template baseline</h3>
+          <ol>
+            <li>Title with <code>&lt;span class="docs-page-type docs-page-type--contract"&gt;</code> badge</li>
+            <li>Overview with explicit links to the implementation pages</li>
+            <li>Requirements as bullet lists, grouped by area</li>
+            <li>Acceptance checklist of concrete observable behaviors</li>
+            <li>Page history</li>
+          </ol>
+        </section>
 
-                          <section id="naming-conventions" class="card">
-                            <h2>Naming and linking conventions</h2>
-                            <ul>
-                              <li><strong>File names:</strong> lowercase kebab-case with numeric prefix where series requires ordering (for example ADR/RFC/Runbook).</li>
-                              <li><strong>Operation page names:</strong> HTTP method plus path pattern (for example <code>post-api-v1-user.html</code>).</li>
-                              <li><strong>Link labels:</strong> keep style stable per index (for example always <code>ADR 00XX</code>, not mixed with <code>Open ADR 00XX</code>).</li>
-                              <li><strong>Index descriptions:</strong> one sentence, same grammatical style across rows.</li>
-                            </ul>
-                          </section>
+        <section id="authoring-for-mobile" class="card">
+          <h2>Authoring for mobile</h2>
+          <p>
+            The docs portal must remain readable on a phone (≈360–440 CSS px) with no
+            shrunk type and no horizontal overflow. CSS handles most of the work. The rules
+            below cover the cases authors still get wrong, and are
+            <strong>normative</strong> — reviewers reject pages that break them.
+          </p>
+          <ul>
+            <li><strong>Wrap multi-column tables.</strong> Any table with three or more
+              columns, or any column with long identifiers or <code>code</code>, lives
+              inside <code>&lt;div class="docs-table-scroll" role="region" aria-label="…"&gt;…&lt;/div&gt;</code>.
+              The <code>aria-label</code> is required for screen-reader navigation.</li>
+            <li><strong>Do not paste raw long URLs into prose.</strong> A URL longer than
+              about 50 characters belongs inside a named anchor:
+              <code>&lt;a href="…"&gt;readable label&lt;/a&gt;</code>.</li>
+            <li><strong>Use a block <code>&lt;pre&gt;</code> for code longer than about
+              20 characters.</strong> Inline <code>&lt;code&gt;</code> is for short tokens.
+              Even with the global wrap rule, long inline code crowds the content column on
+              a phone.</li>
+            <li><strong>Do not add a breakpoint below 760 px without a written reason.</strong>
+              The canonical device tiers are
+              <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">defined here</a>.
+              A 640, 720, or 900 px rule is allowed only as a layout reflow inside an
+              existing tier, never as a new device tier.</li>
+            <li><strong>Test on a phone-sized viewport before merge.</strong> Run the
+              <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">mobile-contract acceptance smoke</a>
+              on iPhone 17 Pro Max (440 px) and iPhone SE (375 px). A page that fails any
+              item does not merge.</li>
+          </ul>
+        </section>
 
-                          <section id="page-history" class="card">
-                            <h2>Page history</h2>
-                            <p>
-                              Every hand-written HTML page must end with a <strong>Page history</strong> card (before the in-page TOC mount).
-                              Use one row per substantive edit (skip trivial typo-only fixes). In <strong>Author</strong>, use a link to the
-                              maintainer’s <strong>Employee portal</strong> profile when it exists
-                              (<code>&lt;a href="…/internal/portal/people/&lt;slug&gt;/index.html"&gt;…&lt;/a&gt;</code>, path relative to the current page).
-                              Use an em dash (—) when the author is unknown for older rows.
-                            </p>
-                            <div class="docs-table-scroll" role="region" aria-label="Page history">
-                              <table class="docs-page-history">
-                                <thead>
-                                  <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Change</th>
-                                    <th scope="col">Author</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td><time datetime="2026-04-29">2026-04-29</time></td>
-                                    <td>Added page-type taxonomy section and 5 baseline templates (screen / component / reference / contract / etc.); added Foundation badge to H1.</td>
-                                    <td>Ivan Boyarkin</td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-27">2026-04-27</time></td>
-                                    <td>Aligned table typography with prose scale and fixed sticky "On this page" clickability on internal docs layout.</td>
-                                    <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                    <td>Required Page history for all hand-written docs: table columns Date, Change, Author; assessment reports use <code>5. Page history</code> / <code>#5-page-history</code>.</td>
-                                    <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                            <p class="small">
-                              Markup: <code>&lt;section id="page-history" class="card"&gt;</code>, optional
-                              <code>&lt;div class="docs-table-scroll" role="region" aria-label="Page history"&gt;</code>,
-                              <code>&lt;table class="docs-page-history"&gt;</code>, dates as <code>&lt;time datetime="YYYY-MM-DD"&gt;</code>.
-                              Author cells that name a person should use <code>&lt;a&gt;</code> to their portal profile (see
-                              <code>scripts/link_page_history_authors.py</code> for Ivan Boyarkin baseline rows).
-                              Numbered assessment reports may use <code>id="5-page-history"</code> and heading <code>5. Page history</code> instead.
-                            </p>
-                          </section>
+        <section id="naming-conventions" class="card">
+          <h2>Naming and linking conventions</h2>
+          <ul>
+            <li><strong>File names:</strong> lowercase kebab-case. Use a numeric prefix when ordering matters (ADRs, RFCs, runbooks).</li>
+            <li><strong>Operation page names:</strong> HTTP method plus path pattern, for example <code>post-api-v1-user.html</code>.</li>
+            <li><strong>Link labels:</strong> stay consistent inside one index. Use <code>ADR 00XX</code> everywhere; do not mix it with &ldquo;Open ADR 00XX&rdquo;.</li>
+            <li><strong>Index descriptions:</strong> one sentence per row, the same grammar across rows.</li>
+          </ul>
+        </section>
 
-                          <section id="audit-protocol" class="card">
-                            <h2>Audit protocol for documentation changes</h2>
-                            <p>Use this protocol for every docs PR and for periodic audits.</p>
-                            <ol>
-                              <li>Run quality gates: <code>make docs-fix</code>, <code>make docs-html-check</code>, and project-required checks.</li>
-                              <li>Verify links and navigation paths for all changed/added pages.</li>
-                              <li>Verify section structure against this standard for the affected document type.</li>
-                              <li>Check terminology consistency against nearby index/hub pages.</li>
-                              <li>Confirm changelog and cross-links were updated when policy/process changed.</li>
-                              <li>Record deviations and remediation in audit notes or PR checklist.</li>
-                            </ol>
-                          </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <p>
+            Every hand-written page ends with a <strong>Page history</strong> card, placed
+            before the in-page TOC mount. Add one row per substantive edit; skip pure typo
+            fixes. In <strong>Author</strong>, link to the maintainer's
+            <strong>Employee portal</strong> profile when one exists
+            (<code>&lt;a href="…/internal/portal/people/&lt;slug&gt;/index.html"&gt;…&lt;/a&gt;</code>,
+            path relative to the current page). Use an em dash (—) for older rows where the
+            author is unknown.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-02">2026-05-02</time></td>
+                  <td>Rewrote prose at C1 level: tightened sentences, dropped hedging language and parenthetical detours, replaced em-dash chains, and reworked LLM-flavored phrasing across every section.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added page-type taxonomy section and 5 baseline templates (screen / component / reference / contract / etc.); added Foundation badge to H1.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-27">2026-04-27</time></td>
+                  <td>Aligned table typography with prose scale and fixed sticky &ldquo;On this page&rdquo; clickability on the internal docs layout.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Required Page history for all hand-written docs: columns Date, Change, Author. Assessment reports use <code>5. Page history</code> / <code>#5-page-history</code>.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">
+            Markup: <code>&lt;section id="page-history" class="card"&gt;</code>, optional
+            <code>&lt;div class="docs-table-scroll" role="region" aria-label="Page history"&gt;</code>,
+            <code>&lt;table class="docs-page-history"&gt;</code>, dates as
+            <code>&lt;time datetime="YYYY-MM-DD"&gt;</code>. An Author cell that names a
+            person uses <code>&lt;a&gt;</code> to the portal profile;
+            <code>scripts/link_page_history_authors.py</code> keeps the Ivan Boyarkin baseline
+            rows in sync. Numbered assessment reports may use <code>id="5-page-history"</code>
+            and the heading <code>5. Page history</code> instead.
+          </p>
+        </section>
 
-                          <section id="llm-conformance-checklist" class="card">
-                            <h2>LLM conformance checklist (copy/paste)</h2>
-                            <p>Use this checklist when asking an LLM to review docs changes.</p>
-                            <pre><code>Validate changed docs against docs/internal/front/documentation-style-guide.html.
-                              Return:
-                              1) Violations grouped by severity (critical/major/minor).
-                              2) For each violation: file path, violated rule, short evidence, concrete fix.
-                              3) Missing required sections by document type.
-                              4) Terminology inconsistencies (same concept, different naming).
-                              5) Broken or suspicious links.
-                              6) Final pass/fail verdict and residual risks.</code></pre>
-                            </section>
+        <section id="audit-protocol" class="card">
+          <h2>Audit protocol for documentation changes</h2>
+          <p>Run this protocol on every docs PR and on periodic audits.</p>
+          <ol>
+            <li>Run the quality gates: <code>make docs-fix</code>, <code>make docs-html-check</code>, plus the checks the project requires.</li>
+            <li>Verify links and navigation on every changed or added page.</li>
+            <li>Compare section structure to the template for that document type.</li>
+            <li>Check terminology against nearby index and hub pages.</li>
+            <li>Confirm that the changelog and cross-links were updated when policy or process changed.</li>
+            <li>Record deviations and remediation in the PR checklist or in the audit notes.</li>
+          </ol>
+        </section>
 
-                            <section id="governance" class="card">
-                              <h2>Governance and updates</h2>
-                              <ul>
-                                <li>Any style-rule change must be updated in this page first, then reflected in related guides.</li>
-                                <li>If a rule affects architecture/process, update the relevant ADR/RFC in the same PR.</li>
-                                <li>When uncertainty exists, this document wins over local wording patterns in individual pages.</li>
-                              </ul>
-                            </section>
+        <section id="llm-conformance-checklist" class="card">
+          <h2>LLM conformance checklist (copy and paste)</h2>
+          <p>Paste this prompt when an LLM reviews a docs change.</p>
+          <pre><code>Validate changed docs against docs/internal/front/documentation-style-guide.html.
+Return:
+1) Violations grouped by severity (critical/major/minor).
+2) For each violation: file path, violated rule, short evidence, concrete fix.
+3) Missing required sections by document type.
+4) Terminology inconsistencies (same concept, different naming).
+5) Broken or suspicious links.
+6) Final pass/fail verdict and residual risks.</code></pre>
+        </section>
 
-                          </main>
-                        </div>
-                      </div>
+        <section id="governance" class="card">
+          <h2>Governance and updates</h2>
+          <ul>
+            <li>A style-rule change lands in this page first, then propagates to related guides.</li>
+            <li>When a rule changes architecture or process, the matching ADR or RFC moves in the same PR.</li>
+            <li>On any conflict, this guide overrides per-page wording.</li>
+          </ul>
+        </section>
 
-                    </body></html>
+      </main>
+    </div>
+  </div>
+
+</body></html>

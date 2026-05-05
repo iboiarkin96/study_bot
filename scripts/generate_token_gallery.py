@@ -86,7 +86,7 @@ FAMILY_RULES: list[tuple[str, str]] = [
     ("Internal layout", r"^internal-"),
     ("Premium components", r"^docs-premium-"),
     ("Search", r"^search-"),
-    ("ADR / lifecycle", r"^adr-|^docs-lifecycle-"),
+    ("ADR / lifecycle", r"^adr-"),
     ("Audit scoring", r"^audit-"),
     ("Workflow status", r"^status-"),
     ("Syntax tokens", r"^st-"),

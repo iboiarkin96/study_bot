@@ -22,7 +22,7 @@
     <div id="docs-page-meta-mount" hidden=""></div>
     <section class="docs-page-hero" id="overview" aria-labelledby="overview">
       <h2>Overview</h2>
-      <p>Where request/response schemas live and how to change them without breaking callers.</p>
+      <p>Where request, response, and error schemas live, and how to change them without breaking callers.</p>
     </section>
 
     <section class="card">
@@ -37,19 +37,19 @@
     <section class="card">
       <h2>Contract rules</h2>
       <ul>
-        <li>API contract is a public interface.</li>
-        <li>Existing fields and semantics are backward-compatible within the same major.</li>
+        <li>The API contract is a public interface.</li>
+        <li>Existing fields and their semantics stay backward-compatible inside the same major version.</li>
         <li>Error <code>code</code> and <code>key</code> semantics are immutable.</li>
         <li>Changes are additive by default.</li>
-        <li>Critical write endpoints define idempotency contract via <code>Idempotency-Key</code> header.</li>
+        <li>Critical write endpoints declare their idempotency contract through the <code>Idempotency-Key</code> header.</li>
       </ul>
     </section>
     <section class="card">
       <h2>Idempotency contract for writes</h2>
       <ul>
-        <li>Same key + same body → return the same success response as the first call.</li>
-        <li>Same key + different body → return a clear conflict response.</li>
-        <li>Missing key when required → return a clear validation error.</li>
+        <li>Same key plus same body returns the same success response as the first call.</li>
+        <li>Same key plus a different body returns an explicit conflict response.</li>
+        <li>A missing key when one is required returns an explicit validation error.</li>
       </ul>
     </section>
     <section class="card">
@@ -101,6 +101,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><time datetime="2026-05-03">2026-05-03</time></td>
+              <td>Tightened Overview, Contract rules, and Idempotency contract: replaced &ldquo;same key + same body → …&rdquo; arrow rows with full sentences and added articles where missing.</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
             <tr>
               <td><time datetime="2026-04-21">2026-04-21</time></td>
               <td>Added Page history section (repository baseline).</td>

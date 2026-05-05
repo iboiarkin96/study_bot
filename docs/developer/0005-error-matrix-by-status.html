@@ -22,11 +22,11 @@
     <section class="docs-page-hero" aria-labelledby="overview">
       <h2>Overview</h2>
       <p>
-        How to mix shared <code>COMMON_*</code> errors with entity codes (e.g. <code>USER_*</code>), and how to review
-        routers by HTTP status.
+        How to mix shared <code>COMMON_*</code> errors with entity-prefixed codes (for
+        example <code>USER_*</code>), and how to review routers by HTTP status.
       </p>
     </section>
-    <section id="page-history" class="card">
+    <section class="card">
 
       <h2>Rule of thumb</h2>
       <ul>
@@ -42,14 +42,14 @@
       <h2>Where to define reusable responses</h2>
       <ul>
         <li>
-          <code>app/errors/common.py</code> and <code>app/errors/user.py</code> — one place for stable
-          <code>code</code>, <code>key</code>, and default <code>message</code> (plus validation maps). Import here; do
-          not
-          copy strings.
+          <code>app/errors/common.py</code> and <code>app/errors/user.py</code> — one
+          place for stable <code>code</code>, <code>key</code>, and default
+          <code>message</code> values, plus the validation maps. Import from here; do not
+          copy the strings.
         </li>
-        <li><code>app/openapi/responses.py</code> - shared response blocks for routers.</li>
-        <li><code>app/openapi/examples/errors.py</code> - OpenAPI example payloads (built from the catalog above).</li>
-        <li><code>app/api/v1/*.py</code> - endpoint-level assembly of common + entity responses.</li>
+        <li><code>app/openapi/responses.py</code> — shared response blocks for routers.</li>
+        <li><code>app/openapi/examples/errors.py</code> — OpenAPI example payloads built from the catalog above.</li>
+        <li><code>app/api/v1/*.py</code> — endpoint-level assembly of common and entity responses.</li>
       </ul>
     </section>
     <section class="card">
@@ -111,7 +111,7 @@
         <li>Validate with tests and <code>make verify</code>.</li>
       </ol>
     </section>
-    <section class="card">
+    <section id="page-history" class="card">
 
       <h2>Page history</h2>
       <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -124,6 +124,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><time datetime="2026-05-03">2026-05-03</time></td>
+              <td>Moved <code>id="page-history"</code> from the Rule-of-thumb card to the actual page-history section. Normalized hyphen connectors in the &ldquo;Where to define reusable responses&rdquo; bullets to em dashes.</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
             <tr>
               <td><time datetime="2026-04-21">2026-04-21</time></td>
               <td>Added Page history section (repository baseline).</td>

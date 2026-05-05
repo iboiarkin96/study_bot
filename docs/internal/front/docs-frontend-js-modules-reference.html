@@ -165,14 +165,14 @@
             <dd>
               <code>data-adr-weight</code>, <code>data-rfc-weight</code>, <code>data-docs-theme-toggle</code>,
               <code>data-search-action</code>, <code>data-search-query</code>, <code>data-legend-id</code>,
-              <code>data-inpage-toc</code>, <code>data-docs-lifecycle</code>, <code>data-docs-page-title-row</code>,
+              <code>data-inpage-toc</code>, <code>data-docs-page-title-row</code>,
               <code>data-internal-drawer-menu</code>, <code>data-docs-quick-actions-open</code>,
               <code>data-docs-reading-mode-toggle</code>, <code>data-action-key</code>, <code>data-qa-close</code>
             </dd>
             <dt><code>data-*</code> attributes set</dt>
             <dd>
               <code>data-theme</code> (on <code>&lt;html&gt;</code>), <code>data-lang</code> (on <code>&lt;pre&gt;</code>),
-              <code>data-docs-lifecycle-version</code>, <code>data-theme-mode</code>,
+              <code>data-theme-mode</code>,
               <code>data-search-action</code>, <code>data-search-query</code>,
               <code>data-docs-page-title-row</code>, <code>data-internal-drawer-menu</code>,
               <code>dataset.docsFeedbackMounted</code>
@@ -181,13 +181,23 @@
             <dd>
               <code>docs-theme-preference</code>, <code>docs-reading-mode-enabled</code>,
               <code>docs-hotkey-hint-dismissed-v1</code>, <code>docs-reading-progress-v1</code>,
-              <code>docs.internal.sidebar.collapsed</code>, <code>docs.internal.sidebar.drawer.open</code>
+              <code>docs.internal.sidebar.collapsed</code>
             </dd>
             <dt>DOM mount points</dt>
             <dd>
               <code>#docs-top-nav</code>, <code>#internal-sidebar-mount</code>, <code>#docs-page-meta-mount</code>,
               <code>#docs-search-results</code>. The in-page TOC mount and the report-bug FAB are
               created at runtime and need no HTML hooks.
+            </dd>
+            <dt>Init order — load-bearing</dt>
+            <dd>
+              Inside <code>DOMContentLoaded</code>: <code>normalizeDocsPageHistory()</code> runs
+              <strong>before</strong> <code>initAutoInPageToc()</code> so the page-history <code>&lt;h2&gt;</code>
+              is folded into a <code>&lt;summary&gt;</code> before the TOC sees it. <code>initInPageTocScrollSpy()</code>
+              runs after the TOC is built and registers <code>scroll</code>, <code>resize</code>, and one-shot
+              <code>load</code> listeners. Internal helper <code>keepActiveLinkVisibleInNav()</code> nudges
+              <code>nav.scrollTop</code> only — never the window. Full contract:
+              <a href="./docs-frontend-sticky-toc.html">Sticky On this page TOC and scroll-spy</a>.
             </dd>
           </dl>
           <p class="small">Renames or removals here propagate to nearly every page. Touch with the change-management
@@ -207,7 +217,7 @@
               <dt><code>data-*</code> attributes set</dt>
               <dd><code>data-internal-sidebar-toggle</code>, <code>data-internal-sidebar-drawer-menu</code></dd>
               <dt>Storage keys owned</dt>
-              <dd><code>docs.internal.sidebar.collapsed</code>, <code>docs.internal.sidebar.drawer.open</code></dd>
+              <dd><code>docs.internal.sidebar.collapsed</code></dd>
               <dt>DOM mount points</dt>
               <dd><code>#internal-sidebar-mount</code>, <code>.internal-layout__sidebar</code>, <code>.internal-layout__main</code></dd>
               <dt>Single source of truth</dt>

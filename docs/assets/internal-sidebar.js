@@ -20,7 +20,6 @@
  */
 (function () {
   const INTERNAL_SIDEBAR_COLLAPSED_STORAGE_KEY = "docs.internal.sidebar.collapsed";
-  const INTERNAL_SIDEBAR_DRAWER_OPEN_STORAGE_KEY = "docs.internal.sidebar.drawer.open";
   const PHONE_MAX_WIDTH = 760;
   const DRAWER_MAX_WIDTH = 1024;
   /* The drawer used to render two extra link sections (Project + Code) above
@@ -40,22 +39,6 @@
   function persistSidebarCollapsedPreference(isCollapsed) {
     try {
       window.localStorage.setItem(INTERNAL_SIDEBAR_COLLAPSED_STORAGE_KEY, isCollapsed ? "1" : "0");
-    } catch {
-      // Ignore storage failures and keep interaction working.
-    }
-  }
-
-  function readDrawerOpenPreference() {
-    try {
-      return window.sessionStorage.getItem(INTERNAL_SIDEBAR_DRAWER_OPEN_STORAGE_KEY) === "1";
-    } catch {
-      return false;
-    }
-  }
-
-  function persistDrawerOpenPreference(isOpen) {
-    try {
-      window.sessionStorage.setItem(INTERNAL_SIDEBAR_DRAWER_OPEN_STORAGE_KEY, isOpen ? "1" : "0");
     } catch {
       // Ignore storage failures and keep interaction working.
     }
@@ -112,7 +95,6 @@
     const drawerMedia = window.matchMedia(`(max-width: ${DRAWER_MAX_WIDTH}px)`);
     const phoneMedia = window.matchMedia(`(max-width: ${PHONE_MAX_WIDTH}px)`);
     let isOpen = false;
-    const initialOpen = readDrawerOpenPreference();
     let lastLauncherFocus = null;
 
     let drawerRoot = document.getElementById("internal-docs-drawer");
@@ -157,10 +139,10 @@
       document.body.appendChild(drawerRoot);
 
       backdrop.addEventListener("click", () => {
-        closeDrawer(true);
+        closeDrawer();
       });
       closeBtn.addEventListener("click", () => {
-        closeDrawer(true);
+        closeDrawer();
       });
     }
 
@@ -183,7 +165,7 @@
       drawerBody.replaceChildren(navClone);
     }
 
-    function applyDrawerState(nextOpen, shouldPersist) {
+    function applyDrawerState(nextOpen) {
       const active = inDrawerMode();
       const open = active && nextOpen;
       isOpen = open;
@@ -218,14 +200,6 @@
         drawerRoot.setAttribute("hidden", "");
       }
 
-      if (shouldPersist && active) {
-        if (phoneMedia.matches) {
-          persistDrawerOpenPreference(false);
-        } else {
-          persistDrawerOpenPreference(open);
-        }
-      }
-
       document.dispatchEvent(
         new CustomEvent("internal-sidebar:drawer-state", {
           detail: {
@@ -237,16 +211,16 @@
       );
     }
 
-    function openDrawer(shouldPersist) {
-      applyDrawerState(true, shouldPersist);
+    function openDrawer() {
+      applyDrawerState(true);
       const firstLink = drawerBody ? drawerBody.querySelector("a, button, summary") : null;
       if (firstLink && typeof firstLink.focus === "function") {
         firstLink.focus();
       }
     }
 
-    function closeDrawer(shouldPersist) {
-      applyDrawerState(false, shouldPersist);
+    function closeDrawer() {
+      applyDrawerState(false);
       if (lastLauncherFocus && typeof lastLauncherFocus.focus === "function") {
         lastLauncherFocus.focus();
       }
@@ -257,26 +231,19 @@
         return;
       }
       if (isOpen) {
-        closeDrawer(true);
+        closeDrawer();
       } else {
-        openDrawer(true);
+        openDrawer();
       }
     }
 
+    /* Drawer is a transient surface — every page load starts closed,
+       regardless of whether the previous page or viewport had it open. */
     function syncForViewport() {
       if (!inDrawerMode()) {
-        closeDrawer(false);
         shell.classList.remove("is-drawer-mode");
-        return;
       }
-      if (phoneMedia.matches) {
-        closeDrawer(false);
-        return;
-      }
-      openDrawer(false);
-      if (!initialOpen) {
-        closeDrawer(false);
-      }
+      closeDrawer();
     }
 
     if (drawerBody && !drawerBody.__internalDrawerNavBound) {
@@ -304,7 +271,7 @@
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && isOpen) {
-        closeDrawer(true);
+        closeDrawer();
       }
     });
 
@@ -867,6 +834,7 @@
             { label: "Resume reading and back-to-top", path: "internal/front/docs-frontend-resume-and-back-to-top.html" },
             { label: "Rocket launch animation", path: "internal/front/docs-frontend-rocket-launch-animation.html" },
             { label: "Report-bug FAB", path: "internal/front/docs-frontend-report-bug-fab.html" },
+            { label: "Sticky On this page TOC", path: "internal/front/docs-frontend-sticky-toc.html" },
             { label: "Hotkeys", path: "internal/front/docs-frontend-hotkeys.html" },
           ],
         },

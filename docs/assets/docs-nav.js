@@ -395,9 +395,6 @@ const DOCS_THEME_FLASHLIGHT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewB
   <rect x="9.85" y="21.2" width="4.3" height="1.7" rx="0.5" fill="currentColor" opacity="0.88" />
 </svg>`;
 
-/** Bump when the shared ADR/RFC lifecycle help copy in `injectDocsLifecycleHelp` changes. */
-const DOCS_LIFECYCLE_HELP_SNIPPET_VERSION = "2";
-
 function docsPageDir() {
   const rel = currentDocsRelPath();
   const i = rel.lastIndexOf("/");
@@ -406,89 +403,6 @@ function docsPageDir() {
 
 function docsLifecycleHelpHref(targetRelPath) {
   return relHref(docsPageDir(), targetRelPath);
-}
-
-/**
- * Fills `<details class="adr-weight-help|rfc-weight-help" data-docs-lifecycle="…">` from a single source
- * so policy wording and links stay consistent across ADR/RFC pages (see DOCS_LIFECYCLE_HELP_SNIPPET_VERSION).
- */
-function injectDocsLifecycleHelp() {
-  const v = DOCS_LIFECYCLE_HELP_SNIPPET_VERSION;
-  for (const el of document.querySelectorAll("details[data-docs-lifecycle]")) {
-    const kind = el.getAttribute("data-docs-lifecycle");
-    el.setAttribute("data-docs-lifecycle-version", v);
-    if (kind === "adr-short") {
-      // Short ADR helper is now shown inside "Status log" callout.
-      el.remove();
-    } else if (kind === "rfc-short") {
-      const h18 = docsLifecycleHelpHref("adr/0018-adr-lifecycle-ratification-and-badges.html");
-      el.innerHTML = `<summary>RFC status on this page</summary>
-      <p class="small">
-        Set <code>data-rfc-weight</code> on <code>&lt;main&gt;</code> to a value from −1 to 7 (same scale as ADRs;
-        see <a href="${h18}">ADR 0018</a>). Change it when this document\u2019s milestone changes.
-      </p>`;
-    } else if (kind === "adr-template") {
-      const h18 = docsLifecycleHelpHref("adr/0018-adr-lifecycle-ratification-and-badges.html");
-      el.innerHTML = `<summary>How to set status (author reference)</summary>
-      <p class="small">
-        On <code>&lt;main&gt;</code>, set <code>data-adr-weight</code> to the <strong>current</strong> milestone (−1 … 7).
-        The page shows <strong>Current status</strong> and a collapsible <strong>Status log</strong> (expand to see all
-        steps) from that value. Policy:
-        <a href="${h18}">ADR 0018</a>.
-      </p>
-      <table>
-        <caption>Milestone scale (single order 0 → 7)</caption>
-        <thead>
-          <tr>
-            <th>Value</th>
-            <th>Meaning (current milestone)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>-1</code></td>
-            <td>Status not set (or unknown)</td>
-          </tr>
-          <tr>
-            <td><code>0</code></td>
-            <td><strong>Decision</strong> — Proposed</td>
-          </tr>
-          <tr>
-            <td><code>1</code></td>
-            <td><strong>Decision</strong> — Accepted</td>
-          </tr>
-          <tr>
-            <td><code>2</code></td>
-            <td><strong>Decision</strong> — Superseded</td>
-          </tr>
-          <tr>
-            <td><code>3</code></td>
-            <td><strong>Documentation</strong> — Draft</td>
-          </tr>
-          <tr>
-            <td><code>4</code></td>
-            <td><strong>Documentation</strong> — Ready</td>
-          </tr>
-          <tr>
-            <td><code>5</code></td>
-            <td><strong>Implementation</strong> — Not started</td>
-          </tr>
-          <tr>
-            <td><code>6</code></td>
-            <td><strong>Implementation</strong> — In progress</td>
-          </tr>
-          <tr>
-            <td><code>7</code></td>
-            <td><strong>Implementation</strong> — Done</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="small">
-        Example: <code>data-adr-weight="4"</code> gives <strong>Current status</strong> Documentation · Ready. Values
-        outside the range are clamped in <code>docs/assets/docs-nav.js</code>.
-      </p>`;
-    }
-  }
 }
 
 function getStoredDocsTheme() {
@@ -2856,30 +2770,70 @@ function initInPageTocScrollSpy() {
   const ACTIVATION_LINE_PX = 96;
 
   function updateActive() {
+    /* Filter out targets whose elements have been detached after init (e.g.
+       transformed by a later DOM normalizer). A detached element returns
+       top=0 from getBoundingClientRect, which would always satisfy
+       `top <= ACTIVATION_LINE_PX` and pin the active state to that entry. */
+    const liveTargets = targets.filter((t) => t.el.isConnected);
+    if (liveTargets.length === 0) {
+      return;
+    }
+
     const scrollBottom = window.scrollY + window.innerHeight;
     const docBottom = document.documentElement.scrollHeight;
-    const nearBottom = scrollBottom >= docBottom - 8;
+    /* Gate `nearBottom` on actual scroll: at scrollY=0 the document may fit
+       entirely in the viewport (short page, or async assets still loading),
+       which would otherwise trip the safety-net branch on initial load. */
+    const nearBottom = window.scrollY > 0 && scrollBottom >= docBottom - 8;
 
-    let activeIndex = 0;
+    let activeTarget = liveTargets[0];
     if (nearBottom) {
-      activeIndex = targets.length - 1;
+      activeTarget = liveTargets[liveTargets.length - 1];
     } else {
-      for (let i = 0; i < targets.length; i++) {
-        const top = targets[i].el.getBoundingClientRect().top;
+      for (let i = 0; i < liveTargets.length; i++) {
+        const top = liveTargets[i].el.getBoundingClientRect().top;
         if (top <= ACTIVATION_LINE_PX) {
-          activeIndex = i;
+          activeTarget = liveTargets[i];
         }
       }
     }
 
     for (let i = 0; i < targets.length; i++) {
-      const on = i === activeIndex;
+      const on = targets[i] === activeTarget;
       targets[i].a.classList.toggle("docs-inpage-toc__link--active", on);
       if (on) {
         targets[i].a.setAttribute("aria-current", "location");
       } else {
         targets[i].a.removeAttribute("aria-current");
       }
+    }
+
+    if (activeTarget) {
+      keepActiveLinkVisibleInNav(activeTarget.a);
+    }
+  }
+
+  /* When the TOC has more entries than fit in `max-height`, the inner <nav>
+     becomes its own scroll container. Adjust nav.scrollTop so the active link
+     stays in view as the page scrolls. We only move the nav's scroll, never
+     the window. */
+  function keepActiveLinkVisibleInNav(link) {
+    const navEl = link.closest("nav");
+    if (!navEl) {
+      return;
+    }
+    if (navEl.scrollHeight <= navEl.clientHeight) {
+      return;
+    }
+    const linkRect = link.getBoundingClientRect();
+    const navRect = navEl.getBoundingClientRect();
+    const margin = 24;
+    const offsetFromTop = linkRect.top - navRect.top;
+    const offsetFromBottom = linkRect.bottom - navRect.bottom;
+    if (offsetFromTop < margin) {
+      navEl.scrollTop += offsetFromTop - margin;
+    } else if (offsetFromBottom > -margin) {
+      navEl.scrollTop += offsetFromBottom + margin;
     }
   }
 
@@ -2896,6 +2850,10 @@ function initInPageTocScrollSpy() {
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
   window.addEventListener("resize", onScrollOrResize, { passive: true });
+  /* PlantUML / late-loading images grow the document after DOMContentLoaded;
+     re-measure once subresources finish so the active link reflects the final
+     layout instead of the half-rendered geometry. */
+  window.addEventListener("load", onScrollOrResize, { once: true });
   updateActive();
 }
 
@@ -5401,7 +5359,6 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   document.addEventListener("keydown", handleDocsQuickActionsGlobalKeydown);
   applyDocsReadingMode(isDocsReadingModeEnabled(), "initial_load");
-  injectDocsLifecycleHelp();
   renderTopNav();
   applyDocsThemeFromMode(getEffectiveDocsThemeMode());
   syncDocsThemeToggleLabel();
@@ -5421,6 +5378,17 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (typeof desktopDocsPageActionsMq.addListener === "function") {
     desktopDocsPageActionsMq.addListener(syncDocsPageActionsForViewport);
   }
+  /* Run page-history normalization BEFORE the in-page TOC is built. The
+     normalization removes the inner `<h2>Page history</h2>` (it becomes the
+     `<summary>` of a `<details>` fold). If the TOC is built first, it captures
+     a reference to that H2; once the H2 is removed from the DOM the cached
+     reference is detached and `getBoundingClientRect()` returns top=0, which
+     pins the scroll-spy active state to the last entry forever. */
+  try {
+    normalizeDocsPageHistory();
+  } catch {
+    // Keep docs usable if page-history normalization fails.
+  }
   initAutoInPageToc();
   restoreInitialHashPosition();
   syncInternalThemeTogglePlacement();
@@ -5436,11 +5404,6 @@ document.addEventListener("DOMContentLoaded", () => {
     injectDocsHotkeyHint();
   } catch {
     // Non-critical helper; ignore failures.
-  }
-  try {
-    normalizeDocsPageHistory();
-  } catch {
-    // Keep docs usable if page-history normalization fails.
   }
   // Level 3 — interactive premium patterns
   initLevel3CopyButtons();

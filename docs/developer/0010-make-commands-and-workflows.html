@@ -22,18 +22,20 @@
     <div id="docs-page-meta-mount" hidden=""></div>
     <section class="docs-page-hero" aria-labelledby="overview">
       <h2 id="overview">Overview</h2>
-      <p>Targets grouped by job, diagrams for composites, and <strong>if → then</strong> rows for common tasks. Full
-        list:
-        <code>make help</code>. Policy: <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR
-        0008</a>.
+      <p>
+        Targets grouped by job, diagrams for the composite pipelines, and an
+        <strong>if → then</strong> table for common tasks. The full target list lives in
+        <code>make help</code>. Governing policy:
+        <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>.
       </p>
     </section>
 
     <section id="recommended-entry-points" class="card">
       <h2>Recommended entry points (start here)</h2>
       <p>
-        Most days you only need one of these. They wrap the same atomic targets (format, lint, tests, OpenAPI, docs)
-        in different orders and with different final doc steps.
+        Most days you only need one of these. Each one wraps the same atomic targets
+        (format, lint, tests, OpenAPI, docs); they differ in the order and in how the
+        docs are handled at the end.
       </p>
       <div class="docs-table-scroll" role="region" aria-label="Table">
         <table>
@@ -76,15 +78,15 @@
 
     <section id="composite-pipelines" class="card">
       <h2>Composite pipelines (diagram)</h2>
-      <p>Diagram below shows how composite targets depend on each other. Arrows show order.</p>
+      <p>The diagram below shows how the composite targets depend on each other. Arrows mark the order.</p>
       <img class="diagram diagram--uml" src="../uml/rendered/make__composite_pipelines.svg" alt="PlantUML: Makefile composite targets — fix, verify, release-check, release" decoding="async" loading="lazy">
     </section>
 
     <section id="run-and-observability" class="card">
       <h2>Run and observability (diagram)</h2>
       <p>
-        Daily dev is usually <code>make run</code>. Use <code>run-project</code> when you want Compose + API in one
-        flow (requires Docker).
+        For day-to-day development, use <code>make run</code>. Use <code>run-project</code>
+        when you need Compose plus the API in one flow (Docker required).
       </p>
       <img class="diagram diagram--uml" src="../uml/rendered/make__run_and_observability.svg" alt="PlantUML: local run and optional observability stack via Docker Compose" decoding="async" loading="lazy">
       <p>
@@ -96,7 +98,7 @@
     <section id="commands-by-theme" class="card">
       <h2>Commands by theme (reference)</h2>
       <p>
-        Atomic targets you can run alone; composite targets are in section
+        Atomic targets you can run on their own. Composite targets live in
         <a href="#composite-pipelines">Composite pipelines</a>.
       </p>
 
@@ -388,6 +390,11 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr>
+                    <td><time datetime="2026-05-03">2026-05-03</time></td>
+                    <td>Tightened Overview, the entry-points intro, and the diagram captions; replaced &ldquo;Daily dev is usually make run&rdquo; with a complete sentence.</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
                   <tr>
                     <td><time datetime="2026-04-21">2026-04-21</time></td>
                     <td>Added Page history section (repository baseline).</td>

@@ -1556,10 +1556,7 @@ details.adr-status-log[open] > .adr-status-log__summary {
   font-weight: 600;
 }
 
-/* ADR template: collapsible weight instructions (<details> in 0000-template.html) */
-/* docs-theory-help: same chrome for optional “theory background” blocks (e.g. internal README). */
-details.adr-weight-help,
-details.rfc-weight-help,
+/* docs-theory-help: optional “theory background” blocks (e.g. internal README). */
 details.docs-theory-help {
   margin: 0 0 18px;
   border: 1px solid var(--line);
@@ -1568,16 +1565,12 @@ details.docs-theory-help {
   background: var(--card);
 }
 
-details.adr-weight-help summary,
-details.rfc-weight-help summary,
 details.docs-theory-help summary {
   cursor: pointer;
   font-weight: 600;
   color: var(--details-summary-fg);
 }
 
-details.adr-weight-help[open] summary,
-details.rfc-weight-help[open] summary,
 details.docs-theory-help[open] summary {
   margin-bottom: 8px;
   border-bottom: 1px solid var(--line);
@@ -2156,6 +2149,48 @@ main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audi
 .audit-score-table td.score-neutral {
   background-color: var(--audit-score-needs-bg);
   border-left-color: var(--audit-score-needs-border);
+}
+
+/* Table 2 (.audit-score-table) — collapse the ordinal-number (#) column to
+   shrink-to-fit, and pin the Score column to a small fixed width so the
+   "Score" header and the 1–2 digit number stay legible. The freed space
+   goes to the text-heavy columns (evidence / justification). */
+.audit-score-table th:first-child,
+.audit-score-table td:first-child {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  white-space: nowrap;
+  text-align: center;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+.audit-score-table th:last-child,
+.audit-score-table td:last-child {
+  width: 4.25rem;
+  min-width: 4.25rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Table 1 (.audit-ref-table) — same idea as Table 2: keep the ordinal
+   number column shrink-to-fit and cap the short-label Category column,
+   so Reference description and Typical benchmark get the breathing room. */
+.audit-ref-table th:first-child,
+.audit-ref-table td:first-child {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  white-space: nowrap;
+  text-align: center;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+.audit-ref-table th:nth-child(2),
+.audit-ref-table td:nth-child(2) {
+  width: 7rem;
+  min-width: 7rem;
+  white-space: nowrap;
 }
 
 aside.audit-score-legend {
@@ -4330,10 +4365,11 @@ body.docs-reading-mode main.container li {
     color-mix(in srgb, var(--line) 60%, transparent)   calc(var(--rocket-progress, 0) * 1%),
     color-mix(in srgb, var(--line) 60%, transparent)   100%
   );
-  /* Явные пиксели вместо calc(50% - …): `circle` по умолчанию = farthest-corner,
-     для квадрата 58×58 это ≈41 px, и 50% попадает не на край бокса (29 px),
-     а внутрь — кольцо садилось на stroke иконки и выглядело гранёным.
-     26 px / 28 px = кольцо ровно по внешней кромке 52×52 кнопки. */
+  /* Explicit pixels instead of calc(50% - …): `circle` defaults to
+     farthest-corner; for a 58×58 square that is ≈41 px, so 50% lands inside
+     the box (29 px) rather than on the edge — the ring used to sit on the
+     icon stroke and looked faceted. 26 px / 28 px puts the ring exactly on
+     the outer edge of the 52×52 button. */
   -webkit-mask: radial-gradient(circle, transparent 26px, #000 26px, #000 28px, transparent 28px);
           mask: radial-gradient(circle, transparent 26px, #000 26px, #000 28px, transparent 28px);
   opacity: 0;

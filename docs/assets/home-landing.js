@@ -36,9 +36,9 @@
 
   function startGlyphRain(intro) {
     const canvas = intro.querySelector("[data-home-intro-rain]");
-    if (!canvas) return { stop: () => {}, burst: () => {} };
+    if (!canvas) return { stop: () => { }, burst: () => { } };
     const ctx = canvas.getContext("2d");
-    if (!ctx) return { stop: () => {}, burst: () => {} };
+    if (!ctx) return { stop: () => { }, burst: () => { } };
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let width = 0;
@@ -374,27 +374,27 @@
 
   const TERMINAL_SCRIPT = [
     { cls: "home-terminal__t-mute", text: "$ " },
-    { cls: "home-terminal__t-cmd",  text: "curl" },
+    { cls: "home-terminal__t-cmd", text: "curl" },
     { text: " " },
-    { cls: "home-terminal__t-url",  text: "https://api.etr.study/v1/conspectuses/due" },
+    { cls: "home-terminal__t-url", text: "https://api.etr.study/v1/conspectuses/due" },
     { text: " \\\n     " },
     { cls: "home-terminal__t-flag", text: "-H" },
     { text: " " },
-    { cls: "home-terminal__t-str",  text: "\"Authorization: Bearer " },
-    { cls: "home-terminal__t-var",  text: "$ETR_TOKEN" },
-    { cls: "home-terminal__t-str",  text: "\"" },
+    { cls: "home-terminal__t-str", text: "\"Authorization: Bearer " },
+    { cls: "home-terminal__t-var", text: "$ETR_TOKEN" },
+    { cls: "home-terminal__t-str", text: "\"" },
     { text: "\n" },
     { cls: "home-terminal__t-mute", text: "→ " },
-    { cls: "home-terminal__t-ok",   text: "200 OK" },
+    { cls: "home-terminal__t-ok", text: "200 OK" },
     { cls: "home-terminal__t-mute", text: " · " },
-    { cls: "home-terminal__t-num",  text: "14" },
+    { cls: "home-terminal__t-num", text: "14" },
     { cls: "home-terminal__t-mute", text: " items · " },
-    { cls: "home-terminal__t-lat",  text: "38ms" },
+    { cls: "home-terminal__t-lat", text: "300ms" },
     { text: "\n" },
     { cls: "home-terminal__t-mute", text: "  " },
-    { cls: "home-terminal__t-ok",   text: "schedule_summary" },
+    { cls: "home-terminal__t-ok", text: "schedule_summary" },
     { cls: "home-terminal__t-mute", text: " · next review in " },
-    { cls: "home-terminal__t-num",  text: "12m" },
+    { cls: "home-terminal__t-num", text: "12m" },
   ];
 
   function renderTerminalStatic(target) {
@@ -521,7 +521,7 @@
     function readColors() {
       const isDark = document.documentElement.getAttribute("data-theme") === "dark"
         || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-            && document.documentElement.getAttribute("data-theme") !== "light");
+          && document.documentElement.getAttribute("data-theme") !== "light");
       // Restrained indigo family — same as the WebGL field + intro chrome.
       // The hot-spot is indigo-400 (#818cf8), not a punchy accent — feels
       // like a ripple of light, not a laser pointer.

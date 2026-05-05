@@ -4,6 +4,12 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-05-03
+
+### Removed
+
+- **Shared ADR/RFC lifecycle help:** removed `injectDocsLifecycleHelp` from [`docs/assets/docs-nav.js`](assets/docs-nav.js), empty `<details class="adr-weight-help">` / `<details class="rfc-weight-help">` hooks from ADR and RFC pages, and matching styles in [`docs/assets/docs.css`](assets/docs.css). Milestone guidance for authors remains in the **Status log** callout built by `renderAdrStatusLogAfter`.
+
 ## 2026-04-24
 
 ### Added

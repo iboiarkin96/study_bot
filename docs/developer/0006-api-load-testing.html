@@ -30,12 +30,13 @@
       <h2>Why run load-style traffic</h2>
       <ul>
         <li>
-          Unit tests (<code>make test</code>) check contracts. A load run shows <strong>2xx / 4xx / 5xx</strong> mix,
-          latency, and errors in Grafana or Prometheus.
+          Unit tests (<code>make test</code>) verify the contract. A load run shows the
+          <strong>2xx / 4xx / 5xx</strong> mix, the latency distribution, and the error
+          shape in Grafana or Prometheus.
         </li>
         <li>
-          This does <strong>not</strong> replace pytest: the runner sends real HTTP; user-create flows <strong>write
-          to the DB</strong>.
+          A load run does <strong>not</strong> replace pytest. The runner sends real HTTP,
+          and user-create scenarios <strong>write to the database</strong>.
         </li>
       </ul>
     </section>
@@ -60,10 +61,11 @@
     </section>
     <section class="card">
 
-      <h2>Simulating HTTP 500 (local / non-prod only)</h2>
+      <h2>Simulating HTTP 500 (local and non-prod only)</h2>
       <p>
-        Normal routes rarely return a steady 500. To emit 5xx from the <strong>same</strong> API process (so
-        <code>http_requests_total</code> counts them), set in <code>.env</code>:
+        Normal routes rarely return a steady stream of 500s. To emit 5xx from the
+        <strong>same</strong> API process, so <code>http_requests_total</code> counts them,
+        set the following in <code>.env</code>:
       </p>
       <pre><code>LOADTEST_HTTP_500=true</code></pre>
       <p>
@@ -146,17 +148,16 @@
 
                 <h2>Common issues</h2>
                 <ul>
-                  <li><strong>Connection refused</strong> — API not running or wrong <code>base_url</code>.</li>
+                  <li><strong>Connection refused:</strong> the API is not running or the <code>base_url</code> is wrong.</li>
                   <li>
-                    <strong>Script errors on “#”</strong> — a comment was passed as an argument; run the command without a
-                    trailing
-                    <code># ...</code>.
+                    <strong>Script errors on &ldquo;#&rdquo;:</strong> a comment was passed as an
+                    argument. Run the command again without a trailing <code># ...</code>.
                   </li>
-                  <li><strong>Expected 200, got 404</strong> on user GET — fix <code>ROTATE_SYSTEM_USER_IDS</code> in
+                  <li><strong>Expected 200, got 404</strong> on the user GET: fix <code>ROTATE_SYSTEM_USER_IDS</code> in
                     <code>user/get.py</code>.
                   </li>
-                  <li><strong>429 Too Many Requests</strong> — lower intensity (<code>--delay-ms</code>) or raise the dev rate
-                    limit.</li>
+                  <li><strong>429 Too Many Requests:</strong> lower the intensity through
+                    <code>--delay-ms</code>, or raise the dev rate limit.</li>
                   </ul>
                 </section>
                 <section class="card">
@@ -181,6 +182,11 @@
                         </tr>
                       </thead>
                       <tbody>
+                        <tr>
+                          <td><time datetime="2026-05-03">2026-05-03</time></td>
+                          <td>Tightened the Why-run section and the Common-issues bullets; replaced em-dash connectors with colons or full sentences.</td>
+                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                        </tr>
                         <tr>
                           <td><time datetime="2026-04-21">2026-04-21</time></td>
                           <td>Added Page history section (repository baseline).</td>

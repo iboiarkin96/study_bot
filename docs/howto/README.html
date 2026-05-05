@@ -30,10 +30,11 @@
         <section class="docs-page-hero" aria-labelledby="overview">
           <h2 id="overview">Overview</h2>
           <p>
-            Hands-on guides for contributors: from a first local run to shipping an endpoint and updating docs.
-            Use this page as the main entry for the recommended onboarding path and for the doc authoring checklist.
-            For decisions, see <a href="../adr/README.html">ADRs</a>. For detailed specs, see
-            <a href="../rfc/README.html">RFCs</a>. For writing rules and audits, see the
+            Practical guides for contributors: from the first local run to shipping an
+            endpoint with matching docs. Use this page as the entry point for onboarding
+            and for the doc-authoring checklist. For decisions see
+            <a href="../adr/README.html">ADRs</a>; for detailed specs see
+            <a href="../rfc/README.html">RFCs</a>; for writing rules see the
             <a href="../internal/front/documentation-style-guide.html">Documentation style guide</a>.
           </p>
           <nav class="docs-page-hero__chips" aria-label="Jump to section">
@@ -49,16 +50,16 @@
         <section id="onboarding" class="card">
           <h2>Onboarding and implementation</h2>
           <p>
-            Golden path for new contributors: from a clean machine to a working local API, through all service layers,
-            to a PR ready for review.
+            Golden path for new contributors: clean machine, working local API, endpoint
+            built across every layer, PR ready for review.
           </p>
           <ol>
             <li>
-              Run full onboarding guide:
+              Run the full onboarding guide:
               <a href="./0001-onboarding-from-zero-to-endpoint-docs.html">Onboarding from zero to endpoint and docs</a>.
             </li>
             <li>
-              Use the concrete endpoint implementation example:
+              Follow the worked endpoint example:
               <a href="./0004-how-to-add-post-contract.html">Add <code>POST /api/v1/contract</code> (beginner walkthrough)</a>.
             </li>
           </ol>
@@ -69,31 +70,28 @@
         <section id="documentation" class="card">
           <h2>Documentation operations</h2>
           <p>
-            Use these guides when you change behavior and need to update the docs to match, or when you need to add or
-            restructure pages in the internal documentation.
+            When a behavior change requires a docs update, or when you add or restructure
+            pages under <code>docs/internal/</code>, use the guides below.
           </p>
           <ol>
             <li>
-              Update internal service docs structure and navigation:
-              <a href="./0002-internal-service-docs-layout.html">Internal service docs layout and how to add pages</a>.
+              Internal docs layout and how to add pages:
+              <a href="./0002-internal-service-docs-layout.html">Internal service docs layout</a>.
             </li>
             <li>
-              Validate writing style and structure against:
+              Style and audit rules:
               <a href="../internal/front/documentation-style-guide.html">Documentation style guide and audit standard</a>.
             </li>
             <li>
-              For operational steps when changing docs frontend (Command Palette, feedback, breakpoints, maintainers):
-              <a href="./0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely (playbooks)</a>.
-            </li>
-            <li>
-              Sync generated fragments and docs artifacts:
-              <pre><code>make docs-fix</code></pre>
-            </li>
-            <li>
-              Run checks and drift validation before push:
-              <pre><code>make docs-check</code></pre>
+              Frontend playbooks (command palette, feedback, breakpoints, maintainers):
+              <a href="./0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely</a>.
             </li>
           </ol>
+          <p>
+            After any docs change, run <code>make docs-fix</code> to regenerate artifacts,
+            then <code>make docs-check</code> (or <code>make verify</code>) to confirm there
+            is no drift.
+          </p>
         </section>
 
         <div class="docs-section-divider" aria-hidden="true">Workflow</div>
@@ -101,12 +99,13 @@
         <section id="workflow" class="card">
           <h2>Workflow and commands</h2>
           <p>
-            Canonical <code>make</code> workflows and the full <code>Makefile</code> command reference.
+            Canonical <code>make</code> workflows and the full <code>Makefile</code> reference.
           </p>
           <ul>
             <li>
-              <a href="./0003-make-commands-inventory.html">Make commands inventory</a> — full <code>Makefile</code>
-              command list from <code>make help</code>, canonical workflows, and release gates.
+              <a href="./0003-make-commands-inventory.html">Make commands inventory</a> —
+              the full command list rendered from <code>make help</code>, plus the canonical
+              workflows and release gates.
             </li>
           </ul>
         </section>
@@ -127,7 +126,7 @@
               <tbody>
                 <tr>
                   <td><a href="./0001-onboarding-from-zero-to-endpoint-docs.html">Onboarding</a></td>
-                  <td>End-to-end path from a clean machine to a working local API, endpoint implementation across all layers, and a PR-ready quality gate.</td>
+                  <td>From a clean machine to a running local API to a PR ready for review, with the endpoint built across every layer.</td>
                   <td>Active</td>
                 </tr>
                 <tr>
@@ -137,17 +136,17 @@
                 </tr>
                 <tr>
                   <td><a href="./0002-internal-service-docs-layout.html">Internal service docs layout</a></td>
-                  <td>Directory tree, shared chrome, page skeleton, and step-by-step guide for adding a new API resource to <code>docs/internal/</code>.</td>
+                  <td>Shared assets, page anatomy, and the steps for adding or editing pages under <code>docs/internal/</code>.</td>
                   <td>Active</td>
                 </tr>
                 <tr>
                   <td><a href="./0005-how-to-change-docs-frontend-safely.html">Change docs frontend safely</a></td>
-                  <td>Playbooks for page actions, feedback types, breakpoint policy, maintainers, diagram lightbox, and search telemetry changes.</td>
+                  <td>Playbooks for page actions, feedback types, breakpoint policy, maintainers, the diagram lightbox, and search telemetry.</td>
                   <td>Active</td>
                 </tr>
                 <tr>
                   <td><a href="./0003-make-commands-inventory.html">Make commands inventory</a></td>
-                  <td>Canonical workflows (fix, verify, release-check) and full <code>Makefile</code> command list auto-generated from <code>make help</code>.</td>
+                  <td>Canonical workflows (fix, verify, release-check) and the full <code>Makefile</code> command list, generated from <code>make help</code>.</td>
                   <td>Active</td>
                 </tr>
               </tbody>
@@ -176,6 +175,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-05-02">2026-05-02</time></td>
+                  <td>Rewrote prose at C1 level: tighter overview, plain-prose section intros, consolidated <code>make docs-fix</code> / <code>make docs-check</code> instructions into a single paragraph, and refreshed stale index summaries.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-29">2026-04-29</time></td>
                   <td>Wired <code>docs-syntax.js</code> for code-block syntax highlighting.</td>

@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sticky On this page TOC and scroll-spy</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/docs-spec-status.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Sticky On this page TOC and scroll-spy <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Docs portal · Reading aids</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Right-rail "On this page" navigation auto-built from the article's <code>h2</code>/<code>h3</code> headings, with active-section highlight that follows the page scroll and an inner auto-scroll that keeps the active link in view when there are more entries than fit.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal · all docs pages with <code>main.container</code> &amp; <code>#docs-top-nav</code></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Component type</span>
+          <span>Sticky aside · scroll-spy · in-nav auto-scroll</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Implementation</span>
+          <span><code>initAutoInPageToc()</code>, <code>initInPageTocScrollSpy()</code> in <code>docs/assets/docs-nav.js</code></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-05-03">2026-05-03</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            The <strong>sticky TOC</strong> is the right-side "On this page" rail that appears next to the article on
+            tablet-wide and desktop viewports. It is built at runtime from the article's <code>h2</code>/<code>h3</code>
+            headings — authors don't write it by hand. As the reader scrolls, the entry matching the section currently
+            at the top of the viewport is highlighted (<strong>scroll-spy</strong>). When the article has more headings
+            than fit inside the rail's max-height, the rail's inner <code>&lt;nav&gt;</code> becomes its own scroll
+            container and the active link is kept in view without ever moving the page.
+          </p>
+          <p>
+            This page is the <em>UI</em> spec for the rail and its scroll-spy. The collapse-toggle (the
+            <code>&lt;</code> / <code>&gt;</code> chevron in the rail header) and the one-time "Sticky TOC available"
+            promo toast are still documented in
+            <a href="./docs-frontend-navigation-search-and-discovery.html#on-this-page-collapse-control">Navigation, search, discovery §On this page collapse control</a>
+            and <a href="./docs-frontend-popups-and-overlays.html">Popups and overlays</a> respectively.
+          </p>
+          <p class="small">
+            Source-of-truth for the contract is this page; source-of-truth for the code is
+            <code>docs/assets/docs-nav.js</code> (functions <code>initAutoInPageToc()</code>,
+            <code>initInPageTocScrollSpy()</code>, <code>ensureTocAnchorIds()</code>,
+            <code>collectTocEntries()</code>) and
+            <code>docs/assets/docs.css</code> (selectors prefixed <code>.docs-inpage-toc*</code> and
+            <code>.docs-page-layout__inner*</code>).
+          </p>
+        </section>
+
+        <section id="goals-non-goals" class="card">
+          <h2>Goals and non-goals</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Goals and non-goals">
+            <table>
+              <thead>
+                <tr><th scope="col" style="width:50%;">Goals</th><th scope="col" style="width:50%;">Non-goals</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Always show the reader where they are in the article without forcing them to scroll the rail.</td>
+                  <td>Replicate the left sidebar tree — the TOC is page-scoped, not site-scoped.</td>
+                </tr>
+                <tr>
+                  <td>Build itself from the actual content (<code>h2</code>/<code>h3</code>) so docs authors don't drift.</td>
+                  <td>Index every heading level — <code>h4+</code> are deliberately excluded to keep the rail scannable.</td>
+                </tr>
+                <tr>
+                  <td>Keep window scroll under the reader's control: the rail's auto-scroll only moves <em>its own</em> overflow, never the page.</td>
+                  <td>Smoothly animate <code>nav.scrollTop</code> while the user is mid-flick — that would fight the reader's input.</td>
+                </tr>
+                <tr>
+                  <td>Survive page-level DOM rewrites (e.g., page-history fold, lifecycle status injection) without pinning the active state to a stale entry.</td>
+                  <td>Re-build the TOC on every layout change. Targets are captured once; the spy is defensive but the list is stable.</td>
+                </tr>
+                <tr>
+                  <td>Hide entirely on phone widths so the article gets the full reading column.</td>
+                  <td>Replace the sticky rail with a drawer/sheet on phone — that role belongs to the in-page hero chips.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="anatomy" class="card">
+          <h2>Anatomy</h2>
+          <ol>
+            <li>
+              <strong>Aside container</strong> — <code>aside.docs-inpage-toc</code> in column 1 of
+              <code>.docs-page-layout__inner</code> (article is column 2 with <code>order: 2</code>, so DOM order is
+              article → aside but visual order is aside → article).
+              Sticky via <code>position: sticky; top: 1rem;</code>.
+            </li>
+            <li>
+              <strong>Header row</strong> — <code>.docs-inpage-toc__head</code> with the title
+              <span class="small">("On this page")</span> and a chevron <code>.docs-inpage-toc__toggle</code>. The
+              entire header is clickable (collapse/expand); the chevron is a decorative SVG inside the button.
+            </li>
+            <li>
+              <strong>Inner scroll container</strong> — <code>.docs-inpage-toc nav</code> with
+              <code>max-height: min(75vh, 36rem); overflow-y: auto; overscroll-behavior: contain;</code>. This is the
+              container the auto-scroll moves; the page never moves because of the spy.
+            </li>
+            <li>
+              <strong>Entry list</strong> — flat <code>&lt;ul&gt;</code> of <code>li &gt; a</code>. <code>h3</code>
+              entries get <code>.docs-inpage-toc__item--nested</code> for the indent.
+            </li>
+            <li>
+              <strong>Active link</strong> — <code>.docs-inpage-toc__link--active</code> sets the accent left border,
+              accent text colour, and a subtle background. The same anchor also gets
+              <code>aria-current="location"</code>.
+            </li>
+            <li>
+              <strong>Heading anchor ids</strong> — every <code>h2</code>/<code>h3</code> gets a stable id assigned by
+              <code>ensureTocAnchorIds()</code> if the author didn't write one. Slugs are based on the heading text and
+              de-duplicated against ids already present on the page (this matters — see
+              <a href="#failure-modes">Failure modes</a>).
+            </li>
+            <li>
+              <strong>Promo toast</strong> — one-shot "Sticky TOC available" toast on first visit to a wide-desktop
+              page where the TOC starts collapsed. Lives in <code>docs-popups.js</code>; see
+              <a href="./docs-frontend-popups-and-overlays.html">Popups and overlays</a>.
+            </li>
+          </ol>
+        </section>
+
+        <section id="visual-reference" class="card">
+          <h2>Visual reference</h2>
+          <p>
+            Three side-by-side states. Left: reader at the top of a long page — the first entry is active. Middle:
+            reader scrolled past several sections — the entry whose <code>h2</code> just crossed the activation line
+            (96 px from the viewport top) is active. Right: a TOC long enough to overflow the rail — the inner
+            <code>nav</code> auto-scrolled so the active link sits within the visible band.
+          </p>
+
+          <figure class="sys-diagram" aria-label="Sticky TOC scroll-spy states">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Mock · Visual reference</span>
+              <div class="sys-diagram__titles">
+                <h3>Sticky TOC at top, mid-scroll, and overflowing</h3>
+                <p class="sys-diagram__sub">Same rail, three reader positions. Dashed line at <code>96 px</code> is the activation threshold; only sections whose <code>h2</code> top has crossed it are candidates for "active".</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#f7f9fc;">
+              <svg viewBox="0 0 880 380" role="img" aria-labelledby="toc-spy-title toc-spy-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+                <title id="toc-spy-title">Sticky TOC scroll-spy in three states</title>
+                <desc id="toc-spy-desc">Three viewport mocks side by side. Each shows the article column on the left and the sticky On this page rail on the right. The first mock has the reader at the top of the page with the first TOC entry highlighted. The second has the reader scrolled mid-article with a middle TOC entry highlighted. The third shows a long TOC with the inner nav scrolled so the active link near the bottom of the entry list is in view.</desc>
+                <defs>
+                  <linearGradient id="toc-spy-pageBg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#ffffff"></stop>
+                    <stop offset="1" stop-color="#f1f5f9"></stop>
+                  </linearGradient>
+                  <filter id="toc-spy-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <fedropshadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.10"></fedropshadow>
+                  </filter>
+                </defs>
+
+                <!-- ========== State 1: top of page ========== -->
+                <g transform="translate(10 20)">
+                  <rect width="280" height="340" rx="12" fill="url(#toc-spy-pageBg)" stroke="#cbd5e1"></rect>
+                  <!-- Browser chrome -->
+                  <rect width="280" height="22" rx="12" fill="#e2e8f0"></rect>
+                  <circle cx="14" cy="11" r="3" fill="#f87171"></circle>
+                  <circle cx="26" cy="11" r="3" fill="#fbbf24"></circle>
+                  <circle cx="38" cy="11" r="3" fill="#34d399"></circle>
+                  <text x="140" y="380" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569" text-anchor="middle">State 1 — top of page</text>
+
+                  <!-- Activation line at 96px from viewport top -->
+                  <line x1="0" y1="118" x2="280" y2="118" stroke="#7c5cff" stroke-dasharray="3,3" stroke-width="1" stroke-opacity="0.55"></line>
+                  <text x="6" y="113" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#7c5cff">activation line · 96 px</text>
+
+                  <!-- Article column -->
+                  <g transform="translate(8 32)">
+                    <rect width="160" height="14" rx="3" fill="#1f2937"></rect>
+                    <text x="0" y="11" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff">H1: Page title</text>
+                    <rect y="22" width="60" height="10" rx="3" fill="#94a3b8"></rect>
+                    <text x="2" y="30" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#ffffff">breadcrumbs</text>
+                    <!-- H2 #1 sits BELOW the activation line — first entry stays active by default -->
+                    <rect y="56" width="160" height="14" rx="3" fill="#0f172a" stroke="#7c5cff" stroke-width="1.5"></rect>
+                    <text x="6" y="66" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff">H2: Overview ← top:124 px</text>
+                    <rect y="80" width="150" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="92" width="156" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="104" width="120" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="124" width="160" height="14" rx="3" fill="#0f172a"></rect>
+                    <text x="6" y="134" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff">H2: Behaviour</text>
+                    <rect y="148" width="156" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="160" width="148" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="180" width="160" height="14" rx="3" fill="#0f172a"></rect>
+                    <text x="6" y="190" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff">H2: States</text>
+                  </g>
+
+                  <!-- TOC rail -->
+                  <g transform="translate(180 32)">
+                    <rect width="92" height="276" rx="8" fill="#ffffff" stroke="#e2e8f0" filter="url(#toc-spy-shadow)"></rect>
+                    <text x="8" y="14" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="700" fill="#64748b" letter-spacing="0.045em">ON THIS PAGE</text>
+                    <line x1="8" x2="84" y1="22" y2="22" stroke="#e2e8f0"></line>
+                    <!-- Active entry: first one -->
+                    <rect x="6" y="30" width="80" height="20" rx="6" fill="#ede9fe" stroke="#7c5cff" stroke-width="0" ></rect>
+                    <line x1="6" x2="6" y1="30" y2="50" stroke="#7c5cff" stroke-width="2"></line>
+                    <text x="14" y="44" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#7c5cff">Overview</text>
+                    <text x="14" y="68" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Behaviour</text>
+                    <text x="14" y="92" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">States</text>
+                    <text x="14" y="116" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Anatomy</text>
+                    <text x="14" y="140" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Failure modes</text>
+                    <text x="14" y="164" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Tokens</text>
+                  </g>
+                </g>
+
+                <!-- ========== State 2: mid-scroll ========== -->
+                <g transform="translate(300 20)">
+                  <rect width="280" height="340" rx="12" fill="url(#toc-spy-pageBg)" stroke="#cbd5e1"></rect>
+                  <rect width="280" height="22" rx="12" fill="#e2e8f0"></rect>
+                  <circle cx="14" cy="11" r="3" fill="#f87171"></circle>
+                  <circle cx="26" cy="11" r="3" fill="#fbbf24"></circle>
+                  <circle cx="38" cy="11" r="3" fill="#34d399"></circle>
+                  <text x="140" y="380" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569" text-anchor="middle">State 2 — mid-scroll · "Behaviour" crossed the line</text>
+
+                  <line x1="0" y1="118" x2="280" y2="118" stroke="#7c5cff" stroke-dasharray="3,3" stroke-width="1" stroke-opacity="0.55"></line>
+                  <text x="6" y="113" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#7c5cff">activation line · 96 px</text>
+
+                  <!-- Article column: scrolled, h2 Behaviour just above the line -->
+                  <g transform="translate(8 32)">
+                    <rect y="0" width="156" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="12" width="148" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="24" width="160" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="44" width="160" height="14" rx="3" fill="#0f172a"></rect>
+                    <text x="6" y="54" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#94a3b8">H2: Overview (scrolled past)</text>
+                    <rect y="64" width="156" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="76" width="148" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <!-- Active section: Behaviour, sitting just above activation line -->
+                    <rect y="92" width="160" height="14" rx="3" fill="#0f172a" stroke="#7c5cff" stroke-width="1.5"></rect>
+                    <text x="6" y="102" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff">H2: Behaviour ← top:92 px</text>
+                    <rect y="116" width="156" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="128" width="148" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="140" width="158" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="160" width="160" height="14" rx="3" fill="#0f172a"></rect>
+                    <text x="6" y="170" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff">H2: States (top:170 px)</text>
+                  </g>
+
+                  <!-- TOC rail: active = Behaviour -->
+                  <g transform="translate(180 32)">
+                    <rect width="92" height="276" rx="8" fill="#ffffff" stroke="#e2e8f0" filter="url(#toc-spy-shadow)"></rect>
+                    <text x="8" y="14" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="700" fill="#64748b" letter-spacing="0.045em">ON THIS PAGE</text>
+                    <line x1="8" x2="84" y1="22" y2="22" stroke="#e2e8f0"></line>
+                    <text x="14" y="44" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Overview</text>
+                    <rect x="6" y="54" width="80" height="20" rx="6" fill="#ede9fe"></rect>
+                    <line x1="6" x2="6" y1="54" y2="74" stroke="#7c5cff" stroke-width="2"></line>
+                    <text x="14" y="68" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#7c5cff">Behaviour</text>
+                    <text x="14" y="92" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">States</text>
+                    <text x="14" y="116" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Anatomy</text>
+                    <text x="14" y="140" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Failure modes</text>
+                    <text x="14" y="164" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Tokens</text>
+                  </g>
+                </g>
+
+                <!-- ========== State 3: long TOC, inner nav auto-scrolled ========== -->
+                <g transform="translate(590 20)">
+                  <rect width="280" height="340" rx="12" fill="url(#toc-spy-pageBg)" stroke="#cbd5e1"></rect>
+                  <rect width="280" height="22" rx="12" fill="#e2e8f0"></rect>
+                  <circle cx="14" cy="11" r="3" fill="#f87171"></circle>
+                  <circle cx="26" cy="11" r="3" fill="#fbbf24"></circle>
+                  <circle cx="38" cy="11" r="3" fill="#34d399"></circle>
+                  <text x="140" y="380" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569" text-anchor="middle">State 3 — long TOC · inner nav auto-scrolled to active</text>
+
+                  <line x1="0" y1="118" x2="280" y2="118" stroke="#7c5cff" stroke-dasharray="3,3" stroke-width="1" stroke-opacity="0.55"></line>
+
+                  <!-- Article column -->
+                  <g transform="translate(8 32)">
+                    <rect y="0" width="156" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="12" width="148" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="24" width="160" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="36" width="120" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="56" width="160" height="14" rx="3" fill="#0f172a" stroke="#7c5cff" stroke-width="1.5"></rect>
+                    <text x="6" y="66" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff">H2: Decision matrix</text>
+                    <rect y="80" width="156" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="92" width="148" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="104" width="158" height="6" rx="2" fill="#cbd5e1"></rect>
+                    <rect y="116" width="160" height="6" rx="2" fill="#cbd5e1"></rect>
+                  </g>
+
+                  <!-- TOC rail with overflow indicator -->
+                  <g transform="translate(180 32)">
+                    <rect width="92" height="276" rx="8" fill="#ffffff" stroke="#e2e8f0" filter="url(#toc-spy-shadow)"></rect>
+                    <text x="8" y="14" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="700" fill="#64748b" letter-spacing="0.045em">ON THIS PAGE</text>
+                    <line x1="8" x2="84" y1="22" y2="22" stroke="#e2e8f0"></line>
+
+                    <!-- "scrolled-out" hint at top of nav -->
+                    <text x="14" y="40" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#cbd5e1" font-style="italic">… (3 more)</text>
+
+                    <text x="14" y="64" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Goals</text>
+                    <text x="14" y="88" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Anatomy</text>
+
+                    <!-- Active = Decision matrix -->
+                    <rect x="6" y="98" width="80" height="20" rx="6" fill="#ede9fe"></rect>
+                    <line x1="6" x2="6" y1="98" y2="118" stroke="#7c5cff" stroke-width="2"></line>
+                    <text x="14" y="112" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#7c5cff">Decision matrix</text>
+
+                    <text x="14" y="136" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Migration</text>
+                    <text x="14" y="160" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Tokens</text>
+
+                    <!-- "more below" hint -->
+                    <text x="14" y="184" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#cbd5e1" font-style="italic">… (4 more)</text>
+
+                    <!-- Inner scrollbar hint -->
+                    <rect x="86" y="50" width="3" height="180" rx="1.5" fill="#e2e8f0"></rect>
+                    <rect x="86" y="100" width="3" height="60" rx="1.5" fill="#94a3b8"></rect>
+                  </g>
+
+                  <!-- Annotation: only nav.scrollTop changes -->
+                  <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#64748b">
+                    <line x1="180" y1="296" x2="160" y2="312" stroke="#64748b" stroke-dasharray="2,2"></line>
+                    <text x="60" y="316">nav.scrollTop adjusted</text>
+                    <text x="60" y="328">window scroll untouched</text>
+                  </g>
+                </g>
+
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">
+              <strong>Source:</strong> inline SVG mock (no external asset). Mirrors the runtime markup built by
+              <code>initAutoInPageToc()</code> in <code>docs/assets/docs-nav.js</code>; styling per
+              <code>.docs-inpage-toc*</code> in <code>docs/assets/docs.css</code>.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section id="behaviour-contract" class="card">
+          <h2>Behaviour contract</h2>
+          <p>
+            The scroll-spy in <code>initInPageTocScrollSpy()</code> runs on every <code>scroll</code>,
+            <code>resize</code>, and once on <code>window.load</code>. Each run it computes a single active target
+            against this contract:
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Behaviour contract">
+            <table>
+              <thead>
+                <tr><th scope="col">Rule</th><th scope="col">Why</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Activation line at 96 px from viewport top.</strong> The active entry is the last one whose <code>h2/h3</code> top is <code>≤ 96 px</code>.</td>
+                  <td>Picks the section the reader is "in" rather than the one they scrolled past five lines ago. 96 px clears the sticky top-bar zone.</td>
+                </tr>
+                <tr>
+                  <td><strong>Default before first crossing = first entry.</strong> When no heading has crossed the line yet (reader is at the top of the page), entry #0 is active.</td>
+                  <td>Otherwise the rail would render with no active highlight at the canonical reading position (top of page).</td>
+                </tr>
+                <tr>
+                  <td><strong>Near-bottom safety net is gated on <code>scrollY &gt; 0</code>.</strong> The "you've reached the end → activate last entry" branch only fires after the reader actually scrolls.</td>
+                  <td>At <code>scrollY = 0</code> a short page (or a long page with assets still loading) trivially satisfies <code>scrollBottom ≥ docBottom − 8</code>; without the gate the last entry is incorrectly pinned on initial load. See <a href="#failure-modes">Failure modes #2</a>.</td>
+                </tr>
+                <tr>
+                  <td><strong>Detached targets are filtered out per tick.</strong> <code>updateActive()</code> recomputes <code>liveTargets = targets.filter(t =&gt; t.el.isConnected)</code> before measuring.</td>
+                  <td>Detached elements return <code>top: 0</code> from <code>getBoundingClientRect()</code>, which would always satisfy <code>top ≤ 96</code> and pin that entry forever. See <a href="#failure-modes">Failure modes #1</a>.</td>
+                </tr>
+                <tr>
+                  <td><strong>Auto-scroll inside the rail keeps the active link visible.</strong> When <code>nav.scrollHeight &gt; nav.clientHeight</code>, <code>keepActiveLinkVisibleInNav()</code> nudges <code>nav.scrollTop</code> just enough to land the active <code>&lt;a&gt;</code> within a <code>24 px</code> margin from the top or bottom of the visible band.</td>
+                  <td>On long articles the TOC overflows its <code>max-height: min(75vh, 36rem)</code>. Without this the active highlight scrolls out of sight and the rail looks broken.</td>
+                </tr>
+                <tr>
+                  <td><strong>Window scroll is never moved.</strong> The auto-scroll only writes to <code>nav.scrollTop</code>; it never calls <code>scrollIntoView()</code> on the link.</td>
+                  <td><code>scrollIntoView()</code> walks every scrollable ancestor including the document. Moving the page in response to scroll-spy would feel like the browser fighting the user.</td>
+                </tr>
+                <tr>
+                  <td><strong>Updates are <code>rAF</code>-throttled.</strong> Multiple scroll events between two animation frames coalesce into one measurement.</td>
+                  <td><code>getBoundingClientRect()</code> in a tight scroll loop is the canonical reflow trap.</td>
+                </tr>
+                <tr>
+                  <td><strong>Page-history section is excluded from the TOC.</strong> <code>normalizeDocsPageHistory()</code> runs <em>before</em> <code>initAutoInPageToc()</code>, removing the <code>&lt;h2&gt;Page history&lt;/h2&gt;</code> (it becomes the <code>&lt;summary&gt;</code> of a fold) before the TOC sees it.</td>
+                  <td>If the TOC captured that <code>h2</code> first, the later normalization would detach it. See <a href="#failure-modes">Failure modes #1</a> for the historical bug.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="states" class="card">
+          <h2>States</h2>
+          <div class="docs-table-scroll" role="region" aria-label="States">
+            <table>
+              <thead>
+                <tr><th scope="col">State</th><th scope="col">Trigger</th><th scope="col">Effect</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Idle</td>
+                  <td>No scroll, no hover.</td>
+                  <td>Active entry from the contract above; other entries muted (<code>color: color-mix(...var(--text)...var(--muted))</code>).</td>
+                </tr>
+                <tr>
+                  <td>Hover</td>
+                  <td>Pointer over a non-active entry.</td>
+                  <td>Accent text + accent left border + soft <code>--docs-premium-item-hover-bg</code> background; <code>transform: translateX(1px)</code>.</td>
+                </tr>
+                <tr>
+                  <td>Active</td>
+                  <td>Section <code>h2/h3</code> top crossed the activation line and is the latest such crossing.</td>
+                  <td><code>.docs-inpage-toc__link--active</code>: accent colour, accent left border, accent-tinted background, <code>font-weight: 600</code>, <code>aria-current="location"</code>.</td>
+                </tr>
+                <tr>
+                  <td>Active &amp; off-screen inside rail</td>
+                  <td>TOC overflows its <code>max-height</code>; active link is above or below the visible band by more than <code>24 px</code>.</td>
+                  <td><code>nav.scrollTop</code> nudged so the active link sits exactly <code>24 px</code> from the top (when above) or <code>24 px</code> from the bottom (when below).</td>
+                </tr>
+                <tr>
+                  <td>Collapsed rail</td>
+                  <td>Reader clicked <code>&lt;</code> in the rail header (or wide-desktop default on long pages).</td>
+                  <td><code>.docs-inpage-toc--collapsed</code> hides the nav; the chevron flips to <code>&gt;</code>; the spy keeps running but visual state is invisible until expanded.</td>
+                </tr>
+                <tr>
+                  <td>Phone</td>
+                  <td><code>max-width: 900 px</code>.</td>
+                  <td>Aside is <code>display: none</code>; the page-layout grid collapses to a single column; the spy still mounts but does no visible work.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="implementation" class="card">
+          <h2>Implementation</h2>
+          <p>Init order in <code>document.addEventListener("DOMContentLoaded", …)</code> (<code>docs/assets/docs-nav.js</code>):</p>
+          <ol>
+            <li><code>normalizeDocsPageHistory()</code> — folds the page-history section into a <code>&lt;details&gt;</code> and <strong>removes</strong> its <code>&lt;h2&gt;</code>. Must run before the TOC is built.</li>
+            <li><code>initAutoInPageToc()</code> — wraps content in <code>.docs-page-layout__inner</code>, calls <code>ensureTocAnchorIds()</code>, builds the rail from <code>collectTocEntries()</code>, attaches the collapse toggle and the (optional) promo toast.</li>
+            <li><code>restoreInitialHashPosition()</code> — re-runs <code>scrollIntoView()</code> on the URL hash target after layout transforms.</li>
+            <li><code>initInPageTocScrollSpy()</code> — captures targets via <code>document.getElementById</code>, registers <code>scroll</code> + <code>resize</code> + one-shot <code>load</code> listeners, runs <code>updateActive()</code> once.</li>
+          </ol>
+          <div class="docs-table-scroll" role="region" aria-label="Surface">
+            <table>
+              <thead>
+                <tr><th scope="col">Surface</th><th scope="col">Where</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Build &amp; layout</td><td><code>initAutoInPageToc()</code>, <code>collectTocEntries()</code>, <code>ensureTocAnchorIds()</code>, <code>removeLegacyManualContents()</code></td></tr>
+                <tr><td>Spy &amp; auto-scroll</td><td><code>initInPageTocScrollSpy()</code> · inner helper <code>keepActiveLinkVisibleInNav()</code></td></tr>
+                <tr><td>Page-history fold</td><td><code>normalizeDocsPageHistory()</code> (called <em>before</em> the build)</td></tr>
+                <tr><td>CSS — rail layout</td><td><code>.docs-page-layout</code>, <code>.docs-page-layout__inner</code>, <code>.docs-page-layout__article</code></td></tr>
+                <tr><td>CSS — rail chrome</td><td><code>.docs-inpage-toc</code>, <code>.docs-inpage-toc__head</code>, <code>.docs-inpage-toc__title</code>, <code>.docs-inpage-toc__toggle</code>, <code>.docs-inpage-toc nav</code></td></tr>
+                <tr><td>CSS — entries &amp; states</td><td><code>.docs-inpage-toc nav a</code>, <code>.docs-inpage-toc__link--active</code>, <code>.docs-inpage-toc__item--nested</code>, <code>.docs-inpage-toc--collapsed</code></td></tr>
+                <tr><td>Promo toast</td><td><code>showStickyTocPromoToast()</code> in <code>docs-nav.js</code> · <code>.docs-inpage-toc-toast*</code> in <code>docs.css</code> · runtime in <code>docs-popups.js</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="accessibility" class="card">
+          <h2>Accessibility</h2>
+          <ul>
+            <li>Container is <code>&lt;aside&gt;</code> with <code>aria-labelledby="inpage-toc-heading"</code>; the heading paragraph has a unique id.</li>
+            <li>The inner <code>&lt;nav&gt;</code> is also labelled by the same heading id.</li>
+            <li>Active link gets <code>aria-current="location"</code>; the class is purely visual.</li>
+            <li>Collapse toggle exposes <code>aria-expanded</code>, <code>aria-controls</code>, and a label that toggles between "Hide On this page" and "Show On this page".</li>
+            <li>Auto-scroll only writes <code>scrollTop</code> on the <em>nav</em> — focus is never moved as a side effect.</li>
+            <li><code>prefers-reduced-motion: reduce</code> is honoured by upstream CSS (<code>html { scroll-behavior: smooth }</code> is overridden to <code>auto</code>); the spy itself does instant updates.</li>
+          </ul>
+        </section>
+
+        <section id="failure-modes" class="card">
+          <h2>Failure modes</h2>
+          <ol>
+            <li>
+              <strong>Detached active target pinned forever.</strong> If a later DOM step removes a heading the spy
+              already captured, <code>getBoundingClientRect()</code> on the now-detached node returns
+              <code>top: 0</code>, which always satisfies the <code>≤ 96 px</code> rule and pins that entry as active.
+              <br>
+              <em>Guard:</em> <code>updateActive()</code> filters <code>targets</code> by <code>el.isConnected</code>
+              every tick. <em>Root-cause fix:</em> <code>normalizeDocsPageHistory()</code> runs before
+              <code>initAutoInPageToc()</code> so its <code>&lt;h2&gt;</code> never enters the TOC.
+            </li>
+            <li>
+              <strong>Last entry pinned at <code>scrollY = 0</code> on short or slow-loading pages.</strong> The
+              "you scrolled to the end" branch incorrectly fires because <code>innerHeight ≥ scrollHeight</code>
+              when assets (e.g., PlantUML images) haven't grown the document yet.
+              <br>
+              <em>Guard:</em> <code>nearBottom</code> requires <code>scrollY &gt; 0</code>; a one-shot
+              <code>window.load</code> listener re-runs the spy after subresources settle.
+            </li>
+            <li>
+              <strong>Heading-id collision with section <code>id</code>.</strong> If the author writes
+              <code>&lt;section id="page-history"&gt;&lt;h2&gt;Page history&lt;/h2&gt;</code>,
+              <code>ensureTocAnchorIds()</code> assigns the <code>h2</code> a de-duplicated id (e.g.,
+              <code>page-history-2</code>) and the TOC links there. Anything that later removes that <code>h2</code>
+              orphans the link.
+              <br>
+              <em>Guard:</em> avoid putting <code>id</code> on a wrapping <code>&lt;section&gt;</code> that has the
+              same slug as its inner heading. The page-history fold sidesteps this by removing the <code>h2</code>
+              before the TOC sees it.
+            </li>
+            <li>
+              <strong>Author writes a manual "Contents" block.</strong>
+              <code>removeLegacyManualContents()</code> scrubs <code>&lt;nav&gt;</code> elements that contain a
+              "Contents" heading; if a custom variant slips through, the page renders both the manual and the auto
+              rail. <em>Mitigation:</em> rely on the auto-TOC; do not write inline contents.
+            </li>
+          </ol>
+        </section>
+
+        <section id="acceptance-checklist" class="card">
+          <h2>Acceptance checklist</h2>
+          <ul>
+            <li>Rail renders to the right of the article on viewports <code>&gt; 900 px</code>; hidden at <code>≤ 900 px</code>.</li>
+            <li>At <code>scrollY = 0</code> the first entry is active; "Page history" is not in the list.</li>
+            <li>Scrolling past each <code>h2</code> moves the active highlight to that entry within one frame.</li>
+            <li>Scrolling the very last <code>h2</code> past the activation line activates the last TOC entry; further scroll to the document end keeps the last entry active.</li>
+            <li>On a TOC longer than the rail's <code>max-height</code>, the active link is always inside the visible band — never clipped above or below — and the page itself does not move when the rail auto-scrolls.</li>
+            <li>Collapse chevron toggles the rail; the spy keeps tracking; expanding restores the active highlight without flicker.</li>
+            <li>No regressions on the related fall-back paths: pages with no <code>h2/h3</code> render as <code>.docs-page-layout__inner--single</code> (full-width article, no aside).</li>
+          </ul>
+        </section>
+
+        <section id="related" class="card">
+          <h2>Related internal docs</h2>
+          <ul>
+            <li><a href="./docs-frontend-navigation-search-and-discovery.html#on-this-page-collapse-control">Navigation, search, discovery</a> — collapse-control contract and the desktop-only collapse default.</li>
+            <li><a href="./docs-frontend-popups-and-overlays.html">Popups and overlays</a> — the "Sticky TOC available" promo toast.</li>
+            <li><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a> — runtime contract for <code>docs-nav.js</code> (functions, init order, storage keys).</li>
+            <li><a href="./docs-frontend-css-architecture.html">CSS architecture</a> — where layout and rail tokens live.</li>
+            <li><a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">Mobile contract</a> — the breakpoint canon (<code>≥ 1025 / 761–1024 / ≤ 760</code>) and reduced-motion rules.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-03">2026-05-03</time></td>
+                  <td>Page created — first authoritative spec for the sticky On this page TOC and its scroll-spy. Documents the activation-line rule (96 px), the <code>scrollY &gt; 0</code> gate on the near-bottom safety net, the <code>el.isConnected</code> filter for detached targets, the move of <code>normalizeDocsPageHistory()</code> ahead of <code>initAutoInPageToc()</code>, and the new in-rail auto-scroll (<code>keepActiveLinkVisibleInNav()</code>) that keeps the active link visible without ever moving the window scroll. Includes a three-state visual mock (top of page · mid-scroll · long-TOC overflow) and an acceptance checklist.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

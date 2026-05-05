@@ -23,7 +23,7 @@
 
     <section id="overview" class="docs-page-hero">
       <h2>Overview</h2>
-      <p>How to run the API locally, with optional metrics and optional log search.</p>
+      <p>How to run the API locally, with optional metrics and optional log search on top.</p>
     </section>
 
     <div class="docs-section-divider" aria-hidden="true">First-time setup</div>
@@ -60,11 +60,11 @@
             <tr>
               <td><code>make run</code> + <code>docker compose -f docker-compose.observability.yml up -d</code></td>
               <td>
-                Runs observability via <code>docker compose -f docker-compose.observability.yml up -d</code> (after
-                rendering config), then starts API
-                <code>docker-compose.observability.yml</code>: Blackbox, Prometheus, Grafana), then the same Uvicorn
-                command as
-                <code>make run</code>. Requires Docker. The API process stays in the foreground; stop it with Ctrl+C.
+                Brings up the observability stack
+                (<code>docker-compose.observability.yml</code>: Blackbox, Prometheus, Grafana)
+                in one terminal, then runs the same Uvicorn command as <code>make run</code>
+                in another. Requires Docker. The API stays in the foreground; stop it with
+                Ctrl+C.
               </td>
             </tr>
             <tr>
@@ -238,6 +238,11 @@
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><time datetime="2026-05-03">2026-05-03</time></td>
+                  <td>Fixed the broken second row in the Run targets table (duplicated <code>docker-compose.observability.yml</code> mention and unmatched parenthesis); minor Overview tweak.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
                 <tr>
                   <td><time datetime="2026-04-21">2026-04-21</time></td>
                   <td>Added Page history section (repository baseline).</td>

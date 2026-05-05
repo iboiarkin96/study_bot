@@ -21,59 +21,66 @@
     <div id="docs-page-meta-mount" hidden=""></div>
     <section class="docs-page-hero" id="overview" aria-labelledby="overview">
       <h2>Overview</h2>
-      <p>How we map product requirements to code and tests.</p>
+      <p>How product requirements map into code and tests.</p>
     </section>
+
     <section class="card">
       <h2>Functional requirements</h2>
-      <p>Product-level requirements: <a href="../internal/analysis/system-design.html">System design</a> →
+      <p>
+        Product-level requirements live under
+        <a href="../internal/analysis/system-design.html">System design</a> →
         <strong>Functional Requirements</strong>.
       </p>
       <p>When you implement an endpoint:</p>
       <ul>
-        <li>Tie it to at least one stated functional requirement.</li>
+        <li>Tie it to at least one named functional requirement.</li>
         <li>Keep behavior predictable and covered by tests.</li>
-        <li>Keep the HTTP contract and database behavior in sync.</li>
+        <li>Keep the HTTP contract and the database behavior in sync.</li>
       </ul>
     </section>
+
     <section class="card">
       <h2>Non-functional requirements (NFR)</h2>
-      <p>Non-functional requirements: <a href="../internal/analysis/system-design.html#dev-nfr"><code>docs/internal/analysis/system-design.html#dev-nfr</code></a>.
+      <p>
+        Non-functional requirements live in
+        <a href="../internal/analysis/system-design.html#dev-nfr"><code>docs/internal/analysis/system-design.html#dev-nfr</code></a>.
       </p>
       <p>Engineering checklist:</p>
       <ul>
-        <li><strong>Performance:</strong> avoid N+1 queries and needless serialization work.</li>
-        <li><strong>Reliability:</strong> use transactions; roll back on failure.</li>
-        <li><strong>Maintainability:</strong> keep layering strict (<code>api → service → repository</code>).</li>
-        <li><strong>Observability:</strong> request and business logs are structured and useful for debugging.</li>
-        <li><strong>Environments:</strong> safe defaults differ by profile (<code>dev</code> / <code>qa</code> /
-          <code>prod</code>).
-        </li>
-        <li><strong>Contracts:</strong> change APIs and errors in additive ways when possible.</li>
-        <li><strong>Idempotent writes:</strong> retries must dedupe safely with clear rules.</li>
+        <li><strong>Performance:</strong> avoid N+1 queries; do not serialize fields callers do not consume.</li>
+        <li><strong>Reliability:</strong> wrap multi-step writes in a transaction and roll back on any failure.</li>
+        <li><strong>Maintainability:</strong> keep the layering strict (<code>api → service → repository</code>).</li>
+        <li><strong>Observability:</strong> request and business logs are structured and carry enough context to debug a failure.</li>
+        <li><strong>Environments:</strong> safe defaults differ by profile (<code>dev</code>, <code>qa</code>, <code>prod</code>).</li>
+        <li><strong>Contracts:</strong> change APIs and errors in additive ways whenever the call site allows it.</li>
+        <li><strong>Idempotent writes:</strong> retries deduplicate safely under explicit rules.</li>
       </ul>
     </section>
+
     <section class="card">
       <h2>Requirement-to-implementation mapping</h2>
-      <p>For a new endpoint, check:</p>
+      <p>Before merging a new endpoint, confirm:</p>
       <ol>
-        <li>The requirement is named in the docstring or docs.</li>
+        <li>The requirement is named in the docstring or in the docs.</li>
         <li>Request and response schemas are explicit.</li>
-        <li>Business rules live in the service layer.</li>
-        <li>OpenAPI <code>responses</code> document errors.</li>
-        <li>Tests cover success and failure.</li>
-        <li>Write routes document idempotency (<code>Idempotency-Key</code>, replay, conflicts).</li>
+        <li>Business rules sit in the service layer.</li>
+        <li>OpenAPI <code>responses</code> document every error.</li>
+        <li>Tests cover both success and failure.</li>
+        <li>Write routes document idempotency: <code>Idempotency-Key</code>, replay, and conflicts.</li>
       </ol>
     </section>
+
     <section class="card">
-      <h2>Done criteria (requirements)</h2>
-      <p>You are done when:</p>
+      <h2>Done criteria</h2>
+      <p>The endpoint is done when:</p>
       <ul>
         <li>Behavior matches the requirement.</li>
-        <li>You thought through NFR impact.</li>
+        <li>The NFR impact is reviewed.</li>
         <li>Tests pass.</li>
         <li>Docs are up to date (<code>make docs-fix</code>).</li>
       </ul>
     </section>
+
     <section id="page-history" class="card">
       <h2>Page history</h2>
       <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -86,6 +93,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><time datetime="2026-05-03">2026-05-03</time></td>
+              <td>Rewrote prose at C1 level: replaced &ldquo;needless serialization work&rdquo; and similar weak phrasings with concrete checklist items; clarified the done criteria as full sentences.</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
             <tr>
               <td><time datetime="2026-04-21">2026-04-21</time></td>
               <td>Added Page history section (repository baseline).</td>

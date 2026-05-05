@@ -22,16 +22,17 @@
     <section class="docs-page-hero" aria-labelledby="overview">
       <h2 id="overview">Overview</h2>
       <p>
-        How internal pages are structured, which assets wire the sidebar and navigation, and how to add a new
-        API resource to <code>docs/internal/</code>.
+        The layout of every page under <code>docs/internal/</code>, the assets behind the
+        sidebar and the top nav, and the steps to add a new API resource.
       </p>
     </section>
 
     <section id="shared-chrome" class="card">
       <h2>Shared assets</h2>
       <p>
-        Every page under <code>docs/internal/</code> that shows the sidebar must load these three assets and
-        include the mount point <code>#internal-sidebar-mount</code> inside the sidebar shell.
+        Every page under <code>docs/internal/</code> that renders the sidebar loads the
+        three assets below and mounts <code>#internal-sidebar-mount</code> inside the
+        sidebar shell.
       </p>
       <div class="docs-table-scroll" role="region" aria-label="Shared assets">
         <table>
@@ -44,17 +45,17 @@
           <tbody>
             <tr>
               <td><code>docs/assets/internal-layout.css</code></td>
-              <td>Two-column layout, sidebar chrome, and HTTP method "tablet" styling on operation pages.</td>
+              <td>Two-column layout, sidebar chrome, and HTTP-method "tablet" styling on operation pages.</td>
             </tr>
             <tr>
               <td><code>docs/assets/internal-sidebar.js</code></td>
-              <td><strong>Single source of truth</strong> for the left nav tree. Edit
+              <td>The single source of truth for the left nav tree. Edit
                 <code>INTERNAL_SIDEBAR_NAV</code> here when adding or renaming pages.
               </td>
             </tr>
             <tr>
               <td><code>docs/assets/docs-nav.js</code></td>
-              <td>Top pill navigation shared across all docs sections.</td>
+              <td>The pill-style top navigation shared across every docs section.</td>
             </tr>
           </tbody>
         </table>
@@ -64,34 +65,34 @@
     <section id="page-anatomy" class="card">
       <h2>Page anatomy</h2>
       <p>
-        Internal pages with a sidebar use <code>class="internal-layout"</code> on <code>&lt;body&gt;</code>
-        and a two-div shell. For hub and index pages, keep this order inside <code>.container</code>:
+        Internal pages with a sidebar set <code>class="internal-layout"</code> on the
+        <code>&lt;body&gt;</code> and use a two-<code>&lt;div&gt;</code> shell. Inside
+        <code>.container</code>, hub and index pages keep this order:
       </p>
       <ol>
         <li>
-          <code>&lt;h1 class="internal-h1--accent-tail"&gt;</code> — page title with gradient accent.
+          <code>&lt;h1 class="internal-h1--accent-tail"&gt;</code> — page title with the gradient accent.
         </li>
         <li>
-          <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> — top pill nav (injected by
-          <code>docs-nav.js</code>).
+          <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> — top pill nav, injected by <code>docs-nav.js</code>.
         </li>
         <li>
           <code>&lt;div id="docs-page-meta-mount" hidden=""&gt;&lt;/div&gt;</code> — maintainer meta block.
         </li>
         <li>
-          <code>&lt;section class="docs-page-hero" aria-labelledby="overview"&gt;</code> — hero block with
-          <code>&lt;h2 id="overview"&gt;</code> and optional chip nav.
+          <code>&lt;section class="docs-page-hero" aria-labelledby="overview"&gt;</code> — hero with
+          <code>&lt;h2 id="overview"&gt;</code> and an optional chip nav.
         </li>
         <li>
-          Additional <code>&lt;section id="..." class="card"&gt;</code> blocks — one topic per card.
+          One or more <code>&lt;section id="..." class="card"&gt;</code> blocks, one topic per card.
         </li>
         <li>
-          <code>&lt;section id="page-history" class="card"&gt;</code> — page history table (last section before <code>&lt;/main&gt;</code>).
+          <code>&lt;section id="page-history" class="card"&gt;</code> — the page-history table, last section before <code>&lt;/main&gt;</code>.
         </li>
       </ol>
       <p class="small">
-        The <strong>On this page</strong> outline and the report-bug FAB are injected at runtime by
-        <code>docs-nav.js</code>; do not author them in HTML.
+        The <strong>On this page</strong> outline and the report-bug FAB are injected at
+        runtime by <code>docs-nav.js</code>. Do not write them into the HTML.
       </p>
       <p>
         Canonical example:
@@ -101,89 +102,91 @@
 
     <section id="add-resource" class="card">
       <h2>How to add a new API resource</h2>
-      <p>Example: adding <code>Order</code>.</p>
+      <p>Worked example: adding <code>Order</code>.</p>
       <ol>
         <li>
           Create the resource folder and files:
           <ul>
-            <li><code>docs/internal/api/order/index.html</code> — hub page with business context, contract
-              summary, and method index.</li>
-              <li><code>docs/internal/api/order/operations/</code> — one HTML file per HTTP endpoint,
-                named from method + path template (e.g. <code>post-api-v1-order.html</code>,
-                <code>get-api-v1-order--order_id.html</code>). Do not use Python <code>operationId</code>
-                as the filename.
-              </li>
-            </ul>
-          </li>
-          <li>
-            Register in the sidebar — open <code>docs/assets/internal-sidebar.js</code> and extend
-            <code>INTERNAL_SIDEBAR_NAV</code> with the new paths (relative to <code>docs/</code> root).
-          </li>
-          <li>
-            Link from the API hub — add a card and link on
-            <a href="../internal/api/README.html"><code>docs/internal/api/README.html</code></a>.
-          </li>
-          <li>
-            Write the content — put business rules, field contracts, and technical notes on the resource
-            <code>index.html</code>. Add operation pages for each endpoint.
-            See <a href="../internal/api/user/index.html"><code>internal/api/user/index.html</code></a>
-            as a reference.
-          </li>
-          <li>
-            Run <code>make docs-fix</code> to normalize HTML and rebuild the search index.
-          </li>
-        </ol>
-      </section>
+            <li><code>docs/internal/api/order/index.html</code> — hub page with the business context, the contract summary, and a method index.</li>
+            <li><code>docs/internal/api/order/operations/</code> — one HTML file per HTTP endpoint, named from the HTTP method and the path template (for example <code>post-api-v1-order.html</code>, <code>get-api-v1-order--order_id.html</code>). Do not use the Python <code>operationId</code> as the filename.</li>
+          </ul>
+        </li>
+        <li>
+          Register in the sidebar. Open <code>docs/assets/internal-sidebar.js</code> and
+          extend <code>INTERNAL_SIDEBAR_NAV</code> with the new paths, relative to the
+          <code>docs/</code> root.
+        </li>
+        <li>
+          Link from the API hub. Add a card and a link on
+          <a href="../internal/api/README.html"><code>docs/internal/api/README.html</code></a>.
+        </li>
+        <li>
+          Write the content. Put business rules, field contracts, and technical notes on
+          the resource <code>index.html</code>. Add one operation page per endpoint. Use
+          <a href="../internal/api/user/index.html"><code>internal/api/user/index.html</code></a>
+          as a reference.
+        </li>
+        <li>
+          Run <code>make docs-fix</code> to normalize the HTML and rebuild the search index.
+        </li>
+      </ol>
+    </section>
 
-      <section id="edit-pages" class="card">
-        <h2>How to edit existing pages</h2>
-        <ul>
-          <li>
-            <strong>Sidebar labels or order</strong> — edit <code>INTERNAL_SIDEBAR_NAV</code> in
-            <code>docs/assets/internal-sidebar.js</code>.
-          </li>
-          <li>
-            <strong>Top navigation</strong> (Home, Internal, …) — edit <code>renderTopNav</code> in
-            <code>docs/assets/docs-nav.js</code>.
-          </li>
-          <li>
-            <strong>Page body</strong> — edit the HTML file directly; run <code>make docs-fix</code> after to
-            normalize and rebuild the search index.
-          </li>
-          <li>
-            <strong>Renaming a page</strong> — update the file path in <code>internal-sidebar.js</code> and
-            <code>docs-portal-data.js</code>, then add a redirect stub at the old URL if bookmarks exist.
-          </li>
-        </ul>
-      </section>
+    <section id="edit-pages" class="card">
+      <h2>How to edit existing pages</h2>
+      <ul>
+        <li>
+          <strong>Sidebar labels or order:</strong> edit <code>INTERNAL_SIDEBAR_NAV</code> in
+          <code>docs/assets/internal-sidebar.js</code>.
+        </li>
+        <li>
+          <strong>Top navigation</strong> (Home, Internal, …): edit <code>renderTopNav</code> in
+          <code>docs/assets/docs-nav.js</code>.
+        </li>
+        <li>
+          <strong>Page body:</strong> edit the HTML directly, then run <code>make docs-fix</code>
+          to normalize the file and rebuild the search index.
+        </li>
+        <li>
+          <strong>Renaming a page:</strong> update the file path in <code>internal-sidebar.js</code>
+          and <code>docs-portal-data.js</code>. Add a redirect stub at the old URL if outside
+          bookmarks may exist.
+        </li>
+      </ul>
+    </section>
 
-      <section id="page-history" class="card">
-        <h2>Page history</h2>
-        <div class="docs-table-scroll" role="region" aria-label="Page history">
-          <table class="docs-page-history">
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Change</th>
-                <th scope="col">Author</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><time datetime="2026-04-28">2026-04-28</time></td>
-                <td>Redesigned: removed directory tree, added hero, condensed into focused sections.</td>
-                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-              </tr>
-              <tr>
-                <td><time datetime="2026-04-21">2026-04-21</time></td>
-                <td>Added Page history section (repository baseline).</td>
-                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+    <section id="page-history" class="card">
+      <h2>Page history</h2>
+      <div class="docs-table-scroll" role="region" aria-label="Page history">
+        <table class="docs-page-history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Change</th>
+              <th scope="col">Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><time datetime="2026-05-02">2026-05-02</time></td>
+              <td>Rewrote prose at C1 level: tightened overview, replaced em-dash connectors in step lists with full sentences, and clarified the redirect-stub rule for renames.</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+            <tr>
+              <td><time datetime="2026-04-28">2026-04-28</time></td>
+              <td>Redesigned: removed directory tree, added hero, condensed into focused sections.</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+            <tr>
+              <td><time datetime="2026-04-21">2026-04-21</time></td>
+              <td>Added Page history section (repository baseline).</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-    </main>
+  </main>
 
-  </body></html>
+</body></html>
