@@ -527,6 +527,10 @@ docs-check:
 		rm -f "$$tmp_before" "$$tmp_after"; \
 	else \
 		printf "$(ICON_ERR) %s\n" "Docs drift detected. Run 'make docs-fix' and commit updated files."; \
+		printf "$(ICON_INFO) %s\n" "Files differing from HEAD after docs-fix:"; \
+		git status --short | sed 's/^/    /'; \
+		printf "$(ICON_INFO) %s\n" "Per-file diff size:"; \
+		git diff HEAD --stat | sed 's/^/    /'; \
 		rm -f "$$tmp_before" "$$tmp_after"; \
 		exit 1; \
 	fi
