@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend: tooltips and inline hints</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-syntax.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Docs frontend: tooltips and inline hints <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Docs portal · Surfaces &amp; overlays</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Premium tooltip surface and content contract.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-30">2026-04-30</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            Hand-authored HTML under <code>docs/</code> uses two complementary patterns for short, optional explanations.
+            This page is the <strong>normative contract</strong> for which pattern to use so hints stay visually consistent,
+            keyboard-accessible, and not clipped by layout chrome.
+          </p>
+          <ul>
+            <li><strong>Default for UI labels, table headers, cockpit copy:</strong> <code>data-tooltip</code> only (no dotted underline).</li>
+            <li><strong>Optional glossary term in prose:</strong> <code>class="docs-tooltip"</code> with <code>data-tooltip</code> text, or <code>docs-tooltip--etr</code> for the shared ETR definition.</li>
+            <li><strong>Stylesheet source of truth:</strong> <code>docs/assets/docs.css</code> (not per-page ad-hoc tooltip CSS unless the page deliberately does not load shared assets).</li>
+            <li><strong>Authoring model:</strong> Frontend reference shape from <a href="../../../rfc/0003-documentation-authoring-model.html">RFC 0003</a> — anatomy diagram, visual gallery, do/don't, page history.</li>
+          </ul>
+        </section>
+
+        <section id="visual-gallery" class="card">
+          <h2>Visual gallery — what users see</h2>
+          <p class="small">Inline SVG mockups of both patterns. Bubbles render with the same <code>--docs-overlay-*</code> tokens as the live runtime.</p>
+
+          <figure class="docs-popup-mock">
+            <figcaption>1 · Pattern A — <code>data-tooltip</code> on focused trigger. Bubble opens above the anchor with no underline.</figcaption>
+            <svg viewBox="0 0 460 180" role="img" aria-labelledby="tip-a-title tip-a-desc" xmlns="http://www.w3.org/2000/svg">
+              <title id="tip-a-title">Pattern A tooltip on a column header</title>
+              <desc id="tip-a-desc">A small light bubble above the word "Score" with one short line of explanation.</desc>
+              <rect x="0" y="0" width="460" height="180" fill="#f7f9fc" stroke="#e2e8f0"></rect>
+              <!-- Header row -->
+              <rect x="40" y="120" width="380" height="36" rx="6" fill="#ffffff" stroke="#e2e8f0"></rect>
+              <text x="60" y="142" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#0f172a">Score</text>
+              <text x="160" y="142" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#475569">Owner</text>
+              <text x="280" y="142" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#475569">Status</text>
+              <!-- Bubble -->
+              <g transform="translate(40,52)">
+                <rect width="220" height="48" rx="9" fill="#ffffff" stroke="#cbd5e1"></rect>
+                <text x="12" y="22" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">What this column means in</text>
+                <text x="12" y="38" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">one or two short sentences.</text>
+                <polygon points="20,48 30,48 25,56" fill="#ffffff" stroke="#cbd5e1"></polygon>
+              </g>
+              <!-- Focus ring on Score -->
+              <rect x="56" y="128" width="44" height="22" rx="4" fill="none" stroke="#7c5cff" stroke-width="2"></rect>
+            </svg>
+          </figure>
+
+          <figure class="docs-popup-mock">
+            <figcaption>2 · Pattern B — <code>.docs-tooltip</code> glossary term. Dotted underline + dark surface signal a definition lookup.</figcaption>
+            <svg viewBox="0 0 460 180" role="img" aria-labelledby="tip-b-title tip-b-desc" xmlns="http://www.w3.org/2000/svg">
+              <title id="tip-b-title">Pattern B glossary tooltip on the term ETR</title>
+              <desc id="tip-b-desc">A dark bubble above the underlined term ETR explaining the abbreviation in two short lines.</desc>
+              <rect x="0" y="0" width="460" height="180" fill="#f7f9fc" stroke="#e2e8f0"></rect>
+              <text x="40" y="142" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" fill="#0f172a">The estimate is reported as</text>
+              <text x="240" y="142" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" fill="#0f172a" font-weight="700" text-decoration="underline" text-decoration-style="dotted">ETR</text>
+              <text x="276" y="142" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" fill="#0f172a">in the RFC table.</text>
+              <!-- Bubble -->
+              <g transform="translate(190,60)">
+                <rect width="220" height="56" rx="9" fill="#0f172a"></rect>
+                <text x="12" y="22" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#e2e8f0">Estimated time to resolution —</text>
+                <text x="12" y="38" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#e2e8f0">how long this work item is</text>
+                <text x="12" y="54" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#e2e8f0">expected to take.</text>
+                <polygon points="56,56 70,56 63,64" fill="#0f172a"></polygon>
+              </g>
+            </svg>
+          </figure>
+
+          <figure class="docs-popup-mock">
+            <figcaption>3 · Clipping fallback — when the trigger lives in a <code>&lt;th&gt;</code> or scrollable region, shared CSS opens the bubble below the anchor instead of above.</figcaption>
+            <svg viewBox="0 0 460 180" role="img" aria-labelledby="tip-clip-title tip-clip-desc" xmlns="http://www.w3.org/2000/svg">
+              <title id="tip-clip-title">Tooltip opening below a clipped table header</title>
+              <desc id="tip-clip-desc">A table with a dotted-underlined header. Because the table has overflow hidden, the tooltip bubble opens beneath the header row to remain visible.</desc>
+              <rect x="0" y="0" width="460" height="180" fill="#f7f9fc" stroke="#e2e8f0"></rect>
+              <rect x="30" y="36" width="400" height="36" rx="6" fill="#ffffff" stroke="#e2e8f0"></rect>
+              <text x="50" y="58" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#0f172a" text-decoration="underline" text-decoration-style="dotted">RFC weight</text>
+              <text x="170" y="58" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#475569">Status</text>
+              <text x="280" y="58" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#475569">Owner</text>
+              <!-- Bubble below -->
+              <g transform="translate(40,82)">
+                <polygon points="20,0 34,0 27,-8" fill="#ffffff" stroke="#cbd5e1"></polygon>
+                <rect y="0" width="240" height="44" rx="9" fill="#ffffff" stroke="#cbd5e1"></rect>
+                <text x="12" y="20" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Score 0–10. Updated each</text>
+                <text x="12" y="36" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">audit. Anchored downward.</text>
+              </g>
+            </svg>
+          </figure>
+        </section>
+
+        <section id="anatomy" class="card">
+          <h2>Anatomy diagram</h2>
+          <p class="small">Anatomy of both tooltip patterns. Numbered callouts match the regions referenced in the markup tables above.</p>
+          <figure class="docs-popup-mock">
+            <svg viewBox="0 0 540 220" role="img" aria-labelledby="tip-anatomy-title tip-anatomy-desc" xmlns="http://www.w3.org/2000/svg">
+              <title id="tip-anatomy-title">Tooltip anatomy</title>
+              <desc id="tip-anatomy-desc">Anatomy with four labeled regions: trigger element, bubble surface, arrow, and live-region announcement.</desc>
+              <rect x="20" y="20" width="500" height="180" rx="14" fill="none" stroke="#94a3b8" stroke-dasharray="6 4"></rect>
+              <!-- Trigger -->
+              <g transform="translate(60,120)">
+                <rect width="120" height="40" rx="6" fill="#ffffff" stroke="#cbd5e1"></rect>
+                <text x="60" y="25" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">Score</text>
+              </g>
+              <!-- Bubble -->
+              <g transform="translate(60,52)">
+                <rect width="220" height="56" rx="10" fill="#ffffff" stroke="#cbd5e1"></rect>
+                <text x="14" y="22" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Tooltip body — short, ≤10 words.</text>
+                <text x="14" y="40" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Auto-anchored above; flips below if clipped.</text>
+                <polygon points="50,56 70,56 60,68" fill="#ffffff" stroke="#cbd5e1"></polygon>
+              </g>
+              <!-- Callouts -->
+              <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700">
+                <circle cx="320" cy="60" r="12" fill="#0f172a"></circle>
+                <text x="320" y="64" fill="#ffffff" text-anchor="middle">1</text>
+                <text x="340" y="64" fill="#0f172a">Bubble surface (Pattern A light / Pattern B dark)</text>
+
+                <circle cx="320" cy="110" r="12" fill="#0f172a"></circle>
+                <text x="320" y="114" fill="#ffffff" text-anchor="middle">2</text>
+                <text x="340" y="114" fill="#0f172a">Arrow indicator</text>
+
+                <circle cx="320" cy="148" r="12" fill="#0f172a"></circle>
+                <text x="320" y="152" fill="#ffffff" text-anchor="middle">3</text>
+                <text x="340" y="152" fill="#0f172a">Trigger (focusable host with <tspan font-family="ui-monospace,monospace">tabindex="0"</tspan>)</text>
+
+                <circle cx="320" cy="186" r="12" fill="#0f172a"></circle>
+                <text x="320" y="190" fill="#ffffff" text-anchor="middle">4</text>
+                <text x="340" y="190" fill="#0f172a">aria-describedby reference (live announcement)</text>
+              </g>
+            </svg>
+            <figcaption>Tooltip anatomy — bubble, arrow, trigger, ARIA reference.</figcaption>
+          </figure>
+        </section>
+
+        <section id="data-tooltip" class="card">
+          <h2>Pattern A — <code>data-tooltip</code> (compact “backlog-style” hint)</h2>
+          <p><strong>Use when:</strong> explaining a control, column header, filter, or short label without turning the term into a glossary link.</p>
+          <h3>Markup</h3>
+          <ul>
+            <li>
+              <strong>Non-focusable host (e.g. <code>&lt;span&gt;</code>):</strong> add <code>tabindex="0"</code> so keyboard users can focus the term and see the hint.
+            </li>
+            <li><strong>Native controls (<code>&lt;button&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>):</strong> no extra <code>tabindex</code> required.</li>
+            <li>Put the explanation in <code>data-tooltip="…"</code>. Keep copy short; wrap is handled in CSS.</li>
+          </ul>
+          <pre class="docs-tooltip-snippet"><code>&lt;span tabindex="0" data-tooltip="What this column means in one or two sentences."&gt;Score&lt;/span&gt;</code></pre>
+          <h3>Visual contract</h3>
+          <ul>
+            <li>No dotted underline on the trigger (unlike <code>.docs-tooltip</code>).</li>
+            <li>Light surface bubble, small type (<code>0.7rem</code>), centered above the anchor by default.</li>
+            <li>Typography resets inside the bubble so text does not inherit <code>&lt;strong&gt;</code> uppercase or bold from cockpit labels.</li>
+          </ul>
+        </section>
+
+        <section id="docs-tooltip" class="card">
+          <h2>Pattern B — <code>class="docs-tooltip"</code> (glossary / “look up this term”)</h2>
+          <p><strong>Use when:</strong> the trigger is a deliberate glossary entry or you want the dotted underline to signal “more context on hover/focus”.</p>
+          <ul>
+            <li>Requires <code>data-tooltip="…"</code> on the element unless you use the <code>docs-tooltip--etr</code> modifier (ETR uses shared copy from CSS variables).</li>
+            <li>Dark tooltip surface — distinct from Pattern A — so readers can tell glossary from field hints.</li>
+          </ul>
+          <pre class="docs-tooltip-snippet"><code>&lt;span class="docs-tooltip" tabindex="0" data-tooltip="Your definition here."&gt;Term&lt;/span&gt;</code></pre>
+          <pre class="docs-tooltip-snippet"><code>&lt;span class="docs-tooltip docs-tooltip--etr" tabindex="0"&gt;ETR&lt;/span&gt;</code></pre>
+        </section>
+
+        <section id="clipping" class="card">
+          <h2>Clipping, tables, and sticky chrome</h2>
+          <p>
+            Global <code>table { overflow: hidden; }</code> (for rounded table frames) clips absolutely positioned bubbles that extend
+            <strong>above</strong> a cell. For <code>&lt;th&gt;</code> (and the same combined rules for horizontal scroll regions and a few other hotspots),
+            shared CSS opens hints <strong>below</strong> the trigger so they stay inside the paint region.
+          </p>
+          <ul>
+            <li>If a hint still disappears under a sticky strip (narrow internal layout title row), prefer Pattern A in that region or keep the trigger lower on the page — the downward rules also cover <code>.docs-feedback-card</code> labels.</li>
+            <li>Wide tables wrapped in <code>.docs-table-scroll</code> use the same downward behavior for both patterns.</li>
+          </ul>
+        </section>
+
+        <section id="javascript" class="card">
+          <h2>JavaScript-generated UI</h2>
+          <p>
+            Example: the “Page feedback” card in <code>docs/assets/docs-nav.js</code> builds label spans with <code>data-tooltip</code> only (no <code>docs-tooltip</code> class)
+            so it matches Pattern A automatically wherever the card is injected.
+          </p>
+          <p>
+            The backlog cockpit sets <code>data-tooltip</code> on rendered chips from <code>docs/backlog/backlog.js</code>; styles for <code>[data-tooltip]</code> live in
+            <code>docs.css</code> (backlog still loads that file first).
+          </p>
+        </section>
+
+        <section id="checklist" class="card">
+          <h2>Contributor checklist</h2>
+          <ol>
+            <li>Prefer <strong>Pattern A</strong> for filters, cockpit labels, assessment table headers, RFC KPI columns, and similar.</li>
+            <li>Use <strong>Pattern B</strong> for intentional glossary terms; use <code>docs-tooltip--etr</code> only for the standard ETR expansion.</li>
+            <li>Do not duplicate tooltip CSS on standalone pages — either load <code>docs.css</code> or copy the <code>[data-tooltip]</code> rules explicitly and keep them in sync.</li>
+            <li>After editing, spot-check hover and <kbd>Tab</kbd> + focus on the trigger in light and dark theme.</li>
+          </ol>
+        </section>
+
+        <section id="component-states" class="card">
+          <h2>Per-component states and accessibility</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Per-component states and accessibility">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Component</th>
+                  <th scope="col">States</th>
+                  <th scope="col">Role / ARIA</th>
+                  <th scope="col">Keyboard</th>
+                  <th scope="col">Reduced motion</th>
+                  <th scope="col">Screen-reader announcement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Pattern A — <code>data-tooltip</code></td>
+                  <td>hidden, on-hover, on-focus, clipped (when ancestor has <code>overflow: hidden</code>)</td>
+                  <td><code>role="tooltip"</code> via <code>aria-describedby</code> on the trigger</td>
+                  <td><kbd>Tab</kbd> focus shows the tooltip; <kbd>Esc</kbd> dismisses while focused</td>
+                  <td>Show instantly (skip 120 ms fade)</td>
+                  <td>Tooltip text is read after the trigger label, e.g. "Apply review, tooltip: posts the user's tag"</td>
+                </tr>
+                <tr>
+                  <td>Pattern B — <code>.docs-tooltip</code></td>
+                  <td>underlined inactive, on-hover, on-focus, dismissed</td>
+                  <td>Term acts as <code>&lt;dfn&gt;</code> with paired tooltip</td>
+                  <td><kbd>Tab</kbd> to the underlined term reveals the definition; <kbd>Esc</kbd> dismisses</td>
+                  <td>Definition appears without animation</td>
+                  <td>"DFEAT-04, definition: docs frontend feature ledger entry…"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Use Pattern A (<code>data-tooltip</code>) for compact backlog-style hints — short labels under ~10 words.</td>
+                  <td>Use it for paragraph-length explanations — use a <code>.callout</code> from the UI kit instead.</td>
+                </tr>
+                <tr>
+                  <td>Use Pattern B (<code>.docs-tooltip</code>) only for glossary terms that need an in-place definition.</td>
+                  <td>Sprinkle <code>&lt;dfn&gt;</code>-like markup across narrative text — readability drops fast.</td>
+                </tr>
+                <tr>
+                  <td>Verify the tooltip appears on keyboard <kbd>Tab</kbd> focus, not only on mouse hover.</td>
+                  <td>Ship a tooltip that disappears the moment focus moves to it — keyboard users get nothing.</td>
+                </tr>
+                <tr>
+                  <td>Test inside scrollable tables and under sticky chrome — both clip tooltips by default.</td>
+                  <td>Position a tooltip absolutely without checking that it escapes <code>overflow: hidden</code> ancestors.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                  <td>Added Visual gallery (Pattern A focused, Pattern B glossary, clipping fallback) and Anatomy diagram with numbered callouts — RFC 0003 Frontend reference compliance.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Per-component states and accessibility section (Pattern A and Pattern B).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (Pattern A vs B, keyboard focus, clipping).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-24">2026-04-24</time></td>
+                  <td>Registered in internal sidebar and portal search; cross-links from UI kit and glossary; code examples use inline <code>&lt;pre&gt;</code> styling; <code>docs.css</code> comment points here.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-24">2026-04-24</time></td>
+                  <td>Initial page: normative contract for <code>data-tooltip</code> vs <code>docs-tooltip</code>, clipping notes, and contributor checklist.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

@@ -1,13 +1,12 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>QA checklist 0001: Documentation pages visual verification</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
-  <link rel="stylesheet" href="../assets/internal-layout.css">
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
@@ -23,15 +22,31 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>QA checklist 0001: Documentation pages visual verification</h1>
+        <h1 class="internal-h1--accent-tail">QA checklist 0001: Documentation pages visual verification</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Manual checklist for visual and interaction verification of documentation pages on desktop and mobile
+            breakpoints. Use this checklist when validating portal UI changes before release.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#preconditions">Preconditions</a>
+            <a class="docs-page-hero__chip" href="#section-checklist">Page sections</a>
+            <a class="docs-page-hero__chip" href="#ui-controls-checklist">Interactive controls</a>
+            <a class="docs-page-hero__chip" href="#pass-fail-rules">Pass/fail rules</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Scope and setup</div>
 
         <section class="card" id="scope">
           <h2>Scope</h2>
           <p>
-            Use this checklist to verify that documentation pages are visually correct, navigable, and interactive.
-            It is intended for manual QA on desktop and mobile widths.
+            Manual QA pass at desktop and mobile widths. Covers visuals, navigation, and the interactive
+            controls a reader uses while moving through a page.
           </p>
         </section>
 
@@ -44,79 +59,85 @@
           </ul>
         </section>
 
+        <div class="docs-section-divider" aria-hidden="true">Verification checklist</div>
+
         <section class="card" id="section-checklist">
           <h2>Checklist by page sections</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Section</th>
-                <th>What to verify</th>
-                <th>Expected result</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Top navigation</td>
-                <td>Project links, Code links, active page highlight, search input visibility.</td>
-                <td>Links open correct pages, active state is correct, search opens and returns results.</td>
-              </tr>
-              <tr>
-                <td>Breadcrumbs</td>
-                <td>Hierarchy for current page, clickable parent items.</td>
-                <td>Breadcrumb path matches page location and parent links are valid.</td>
-              </tr>
-              <tr>
-                <td>Main content cards</td>
-                <td>Titles, paragraphs, tables, and lists alignment.</td>
-                <td>No clipping, overlap, broken spacing, or unreadable contrast.</td>
-              </tr>
-              <tr>
-                <td>On this page sidebar</td>
-                <td>Auto-generated anchors from H2/H3, active section highlight while scrolling.</td>
-                <td>Anchor list is present and active state follows current section.</td>
-              </tr>
-              <tr>
-                <td>Footer</td>
-                <td>Footer links and informational text block.</td>
-                <td>Links are valid and footer remains readable in both themes.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Section</th>
+                  <th>What to verify</th>
+                  <th>Expected result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Top navigation</td>
+                  <td>Project links, Code links, active page highlight, search input visibility.</td>
+                  <td>Links open correct pages, active state is correct, search opens and returns results.</td>
+                </tr>
+                <tr>
+                  <td>Breadcrumbs</td>
+                  <td>Hierarchy for current page, clickable parent items.</td>
+                  <td>Breadcrumb path matches page location and parent links are valid.</td>
+                </tr>
+                <tr>
+                  <td>Main content cards</td>
+                  <td>Titles, paragraphs, tables, and lists alignment.</td>
+                  <td>No clipping, overlap, broken spacing, or unreadable contrast.</td>
+                </tr>
+                <tr>
+                  <td>On this page sidebar</td>
+                  <td>Auto-generated anchors from H2/H3, active section highlight while scrolling.</td>
+                  <td>Anchor list is present and active state follows current section.</td>
+                </tr>
+                <tr>
+                  <td>Footer</td>
+                  <td>Footer links and informational text block.</td>
+                  <td>Links are valid and footer remains readable in both themes.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section class="card" id="ui-controls-checklist">
           <h2>Interactive controls checklist</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Control</th>
-                <th>Where it is located</th>
-                <th>What to check</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Flashlight theme toggle</td>
-                <td>Top navigation, theme button area (flashlight icon).</td>
-                <td>Cycles modes in order: system → light → dark, tooltip and aria-label are updated.</td>
-              </tr>
-              <tr>
-                <td>Rocket back-to-top button</td>
-                <td>Bottom-right area after scrolling near page end (rocket icon).</td>
-                <td>Appears near page bottom, scrolls to top on click, animation does not break layout.</td>
-              </tr>
-              <tr>
-                <td>Sidebar menu button</td>
-                <td>Near page title in drawer mode.</td>
-                <td>Opens and closes documentation drawer, keyboard Escape closes it.</td>
-              </tr>
-              <tr>
-                <td>Docs search</td>
-                <td>Top navigation search field.</td>
-                <td>Handles empty states, keyboard navigation, and result click navigation correctly.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Control</th>
+                  <th>Where it is located</th>
+                  <th>What to check</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Flashlight theme toggle</td>
+                  <td>Top navigation, theme button area (flashlight icon).</td>
+                  <td>Cycles modes in order: system → light → dark, tooltip and aria-label are updated.</td>
+                </tr>
+                <tr>
+                  <td>Rocket back-to-top button</td>
+                  <td>Bottom-right area after scrolling near page end (rocket icon).</td>
+                  <td>Appears near page bottom, scrolls to top on click, animation does not break layout.</td>
+                </tr>
+                <tr>
+                  <td>Sidebar menu button</td>
+                  <td>Near page title in drawer mode.</td>
+                  <td>Opens and closes documentation drawer, keyboard Escape closes it.</td>
+                </tr>
+                <tr>
+                  <td>Docs search</td>
+                  <td>Top navigation search field.</td>
+                  <td>Handles empty states, keyboard navigation, and result click navigation correctly.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section class="card" id="screenshots-required">
@@ -133,6 +154,8 @@
             <li>Screenshot 5: search result list with at least one matched query.</li>
           </ul>
         </section>
+
+        <div class="docs-section-divider" aria-hidden="true">QA decision</div>
 
         <section class="card" id="pass-fail-rules">
           <h2>Pass/fail rules</h2>
@@ -165,7 +188,6 @@
           </div>
         </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
       </main>
     </div>
   </div>

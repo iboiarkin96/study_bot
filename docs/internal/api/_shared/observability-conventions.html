@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Observability conventions — shared rules — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Observability conventions</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Naming and shape rules for log events, metrics, traces, and alerts emitted by API
+            handlers. Per-operation specs only declare <em>their</em> events — the names, fields,
+            labels, and severity follow the conventions on this page. Governing ADRs:
+            <a href="../../../adr/0023-structured-logging-and-local-elasticsearch.html">0023
+              (logging)</a>,
+              <a href="../../../adr/0009-health-readiness-and-observability.html">0009 (health,
+                readiness, observability)</a>,
+                <a href="../../../adr/0011-slo-sla-error-budget.html">0011 (SLO/SLA/error budget)</a>.
+              </p>
+            </section>
+
+            <section class="card" id="log-events">
+              <h2>Log events</h2>
+              <h3>Naming</h3>
+              <ul>
+                <li><strong>Lifecycle of a request</strong> emits one
+                  <code>request_done</code> info line from middleware. Always.</li>
+                  <li><strong>Operation events</strong> follow
+                    <code>{resource}_{verb_past_tense}[_{qualifier}]</code>:
+                    <code>conspectus_reviewed</code>, <code>user_created</code>,
+                    <code>conspectus_review_idempotent_replay</code>.</li>
+                    <li><strong>Failures</strong> use a verb that names the failure mode, not the HTTP
+                      status: <code>conspectus_review_revision_conflict</code> (good) vs
+                      <code>conspectus_review_409</code> (bad).</li>
+                    </ul>
+
+                    <h3>Severity</h3>
+                    <div class="docs-table-scroll" role="region" aria-label="Log severity matrix">
+                      <table>
+                        <thead>
+                          <tr><th>Level</th><th>Use for</th><th>Examples</th></tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><code>info</code></td>
+                            <td>Successful business outcomes; expected client errors.</td>
+                            <td><code>conspectus_reviewed</code>, <code>conspectus_review_not_owned</code>
+                              (4xx).</td>
+                            </tr>
+                            <tr>
+                              <td><code>warning</code></td>
+                              <td>Misuses of the API by a client that we want to notice but not page on.</td>
+                              <td><code>idempotency_payload_mismatch</code>,
+                                <code>conspectus_review_revision_conflict</code>,
+                                <code>validation_error</code>, <code>request_body_limit_exceeded</code>.</td>
+                              </tr>
+                              <tr>
+                                <td><code>error</code></td>
+                                <td>Invariant violations; bugs we want to fix.</td>
+                                <td><code>conspectus_review_schedule_missing</code>.</td>
+                              </tr>
+                              <tr>
+                                <td><code>exception</code></td>
+                                <td>Uncaught — global handler; always paired with a stack trace and
+                                  <code>request_id</code>.</td>
+                                  <td><code>request_failed</code>.</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+
+                          <h3>Required structured fields</h3>
+                          <ul>
+                            <li><code>request_id</code> — propagated from <code>X-Request-Id</code> header
+                              (server-generates if absent). Carried in every log line in a request scope.</li>
+                              <li><code>method</code>, <code>path_template</code>, <code>status</code>,
+                                <code>elapsed_ms</code> — on the middleware <code>request_done</code> line.</li>
+                                <li>For business events: the canonical resource ID
+                                  (<code>conspectus_uuid</code>, <code>client_uuid</code>, …) and the relevant state
+                                  fields named by the operation spec.</li>
+                                </ul>
+
+                                <h3>Forbidden contents</h3>
+                                <ul>
+                                  <li><strong>API keys</strong> in any field — mask to last 4 chars before logging.</li>
+                                  <li><strong>Idempotency keys verbatim</strong> — log the SHA-256 prefix
+                                    (<code>idempotency_key_hash</code>), not the raw value.</li>
+                                    <li><strong>PII beyond the canonical IDs</strong> — no email, no learner-typed prose
+                                      from <code>dense_paragraph</code> / <code>bullets</code>.</li>
+                                      <li><strong>Stack frames in non-exception levels</strong> — only the global handler
+                                        attaches them.</li>
+                                      </ul>
+                                    </section>
+
+                                    <section class="card" id="metrics">
+                                      <h2>Metrics</h2>
+                                      <h3>Naming</h3>
+                                      <ul>
+                                        <li>HTTP-layer metrics from middleware:
+                                          <code>http_requests_total</code> (counter),
+                                          <code>http_request_duration_seconds</code> (histogram).</li>
+                                          <li>Business metrics:
+                                            <code>{resource}_{verb}_{kind}</code> — <code>kind ∈ {total, duration_seconds,
+                                            in_progress}</code>. Examples:
+                                            <code>conspectus_review_total</code>,
+                                            <code>conspectus_review_duration_seconds</code>.</li>
+                                            <li>Database timing inherits the shared
+                                              <code>db_operation_duration_seconds</code> histogram with labels
+                                              <code>{operation, table}</code>.</li>
+                                            </ul>
+
+                                            <h3>Standard labels</h3>
+                                            <ul>
+                                              <li><code>method</code>, <code>path_template</code>, <code>status_code</code> —
+                                                middleware metrics.</li>
+                                                <li>Business metrics: high-cardinality fields go to logs, not metric labels.
+                                                  Allowed labels are bounded enums (<code>tag</code>, <code>slot_from</code>,
+                                                  <code>slot_to</code>, <code>status_code</code>). Never label by user UUID or
+                                                  free-text.</li>
+                                                </ul>
+
+                                                <h3>Histogram buckets</h3>
+                                                <p class="small">
+                                                  Default duration buckets: 0.005, 0.01, 0.025, 0.05, 0.1, 0.2, 0.5, 1, 2, 5 (seconds).
+                                                  Per-operation specs may override; document the override in the spec.
+                                                </p>
+                                              </section>
+
+                                              <section class="card" id="traces">
+                                                <h2>Traces (OpenTelemetry)</h2>
+                                                <ul>
+                                                  <li>One root span per HTTP request, named after the route
+                                                    (<code>{method} {path_template}</code>).</li>
+                                                    <li>Service boundaries get child spans named
+                                                      <code>{resource}.{verb}</code> (e.g. <code>conspectus.review.apply</code>).</li>
+                                                      <li>DB calls get a span named <code>db.{operation}</code> with attribute
+                                                        <code>db.statement</code> (parameterised, never inlined values).</li>
+                                                        <li>Span attributes: the same canonical IDs as logs; never log full payloads.</li>
+                                                        <li><code>trace_id</code> and <code>span_id</code> are added to every log line
+                                                          automatically.</li>
+                                                        </ul>
+                                                      </section>
+
+                                                      <section class="card" id="alerts">
+                                                        <h2>Alerts</h2>
+                                                        <h3>Severity ladder</h3>
+                                                        <div class="docs-table-scroll" role="region" aria-label="Alert severity">
+                                                          <table>
+                                                            <thead>
+                                                              <tr><th>Severity</th><th>Reaction time</th><th>Example trigger</th></tr>
+                                                            </thead>
+                                                            <tbody>
+                                                              <tr>
+                                                                <td><strong>Page</strong></td>
+                                                                <td>&lt; 15 min, on-call.</td>
+                                                                <td>5xx rate &gt; 1 % over 5 min on a critical endpoint;
+                                                                  <code>conspectus_review_schedule_missing</code> any occurrence.</td>
+                                                                </tr>
+                                                                <tr>
+                                                                  <td><strong>Ticket</strong></td>
+                                                                  <td>Next business day.</td>
+                                                                  <td>Abnormal client-side conflict rate; SLO error budget burn warning.</td>
+                                                                </tr>
+                                                                <tr>
+                                                                  <td><strong>Info</strong></td>
+                                                                  <td>Dashboard only.</td>
+                                                                  <td>Idempotent replay rate above baseline (might indicate retry loops).</td>
+                                                                </tr>
+                                                              </tbody>
+                                                            </table>
+                                                          </div>
+                                                          <p class="small">
+                                                            SLO targets and error-budget policy live in
+                                                            <a href="../../../adr/0011-slo-sla-error-budget.html">ADR 0011</a>. Per-operation
+                                                            specs declare their alert triggers; this page only lists the global ladder.
+                                                          </p>
+                                                        </section>
+
+                                                        <section class="card" id="checklist">
+                                                          <h2>Per-operation checklist</h2>
+                                                          <p>
+                                                            For Section 14 of an operation spec to pass the lint, the following must be filled:
+                                                          </p>
+                                                          <ul>
+                                                            <li>Log events: name, level, when, required structured fields.</li>
+                                                            <li>Metrics: name, kind, labels (bounded), buckets if non-default.</li>
+                                                            <li>Traces: at least the apply-span and the DB child span.</li>
+                                                            <li>Alerts: severity (page / ticket / info), trigger, threshold, sustain window.</li>
+                                                          </ul>
+                                                        </section>
+
+                                                        <section class="card" id="traceability">
+                                                          <h2>Traceability</h2>
+                                                          <ul>
+                                                            <li><strong>ADRs:</strong>
+                                                              <a href="../../../adr/0023-structured-logging-and-local-elasticsearch.html">0023 —
+                                                                structured logging</a>,
+                                                                <a href="../../../adr/0009-health-readiness-and-observability.html">0009 — health
+                                                                  / readiness / observability</a>,
+                                                                  <a href="../../../adr/0011-slo-sla-error-budget.html">0011 — SLO / SLA / error
+                                                                    budget</a>.</li>
+                                                                    <li><strong>Code home:</strong> <code>app/core/logging.py</code>,
+                                                                      <code>app/core/metrics.py</code>, <code>app/main.py</code> (middleware).</li>
+                                                                    </ul>
+                                                                  </section>
+
+                                                                  <section id="page-history" class="card">
+                                                                    <h2>Page history</h2>
+                                                                    <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                      <table class="docs-page-history">
+                                                                        <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                                        <tbody>
+                                                                          <tr>
+                                                                            <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                            <td>Phase 3: shared observability conventions.</td>
+                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                          </tr>
+                                                                        </tbody>
+                                                                      </table>
+                                                                    </div>
+                                                                  </section>
+
+                                                                </main>
+                                                              </div>
+                                                            </div>
+
+                                                          </body></html>

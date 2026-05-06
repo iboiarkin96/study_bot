@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
-
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>POST /api/v1/conspectuses — Conspectus — Study App</title>
@@ -11,157 +10,688 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+  <script defer src="../../../../assets/docs-syntax.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation" data-spec-status="draft" data-spec-owner="ivan-boyarkin" data-spec-operation-id="createConspectus">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>POST /api/v1/conspectuses</h1>
+        <h1 class="internal-h1--accent-tail internal-http-tablet">
+          <span class="internal-http-tablet__method badge badge--method-post">POST</span>
+          <span class="internal-http-tablet__path code">/api/v1/conspectuses</span>
+        </h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">Conspectus</section>
-        <section class="card">
-          <span class="badge badge--method-post">POST</span>
-          <code class="internal-http-tablet__path">/api/v1/conspectuses</code>
+        <p class="internal-doc-entity">Conspectus</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Summary</span>
+            <span>Creates a conspectus and seeds its initial review schedule.</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Owner</span>
+            <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">operationId</span>
+            <code>createConspectus</code>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-04-29">2026-04-29</time>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Spec template</span>
+            <code>v1</code>
+          </span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Create a new <strong>conspectus</strong> for an identified learner. The body carries
+            the Extract-and-Transform output (cue sheet + dense paragraph + bullets); the server
+            persists the content, seeds an initial <code>conspectus_schedules</code> row at
+            <code>slot=A</code> per the active <code>SchedulePolicy</code>, and emits a
+            <code>CREATED</code> event.
+          </p>
         </section>
-        <p class="lead">
-          <strong>Specification.</strong> Intended behavior: create an <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> conspectus for a user resolved by
-          <code>(system_user_id, system_uuid)</code>. Narrative per
-          <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>. Planned
-          <code>operationId</code>: <code>createConspectus</code> (OpenAPI when implemented).
-        </p>
-        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>createConspectus</code></p>
 
-        <section class="card">
-          <h2>Request path and behavior</h2>
+        <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+          <h2>1. Business context</h2>
           <p>
-            Intended: protected route; middleware per <a href="../../../../adr/0005-api-security-defaults.html">ADR 0005</a>.
-            Flow: resolve <code>client_uuid</code> via existing user lookup; persist conspectus row; compute initial slot and
-            <code>next_review_at</code> from a schedule policy (implementation TBD).
+            The learner has just finished an Extract-and-Transform pass per the
+            <a href="../../../analysis/methodology.html#etr-home">ETR methodology</a>. They need
+            to save that work as one durable artefact (the conspectus) so spaced retrieval can
+            kick in starting one hour later (Slot A retrieve cadence).
           </p>
           <p>
-            <strong>Idempotency:</strong> required <code>Idempotency-Key</code> header. Storage key
-            <code>endpoint_path = "/api/v1/conspectuses"</code> (constant <code>CONSPECTUS_HTTP_BASE_PATH</code>) plus
-            SHA-256 hash of canonical JSON body per <a href="../../../../adr/0006-idempotency-write-operations.html">ADR 0006</a>.
-            Replay returns stored <code>201</code> body.
-          </p>
-          <p><strong>Success:</strong> <code>201 Created</code> — body matches <code>ConspectusResponse</code> (includes
-            <code>conspectus_uuid</code>, <code>slot</code>, <code>next_review_at</code>, <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields).</p>
-          </section>
-
-          <section class="card">
-            <h2>Errors</h2>
-            <p class="small">Envelope per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>.</p>
-            <table>
-              <thead>
-                <tr>
-                  <th>HTTP</th>
-                  <th>Code / key</th>
-                  <th>When</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>400</code></td>
-                  <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
-                  <td>Missing or empty <code>Idempotency-Key</code> after handler check.</td>
-                </tr>
-                <tr>
-                  <td><code>404</code></td>
-                  <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
-                  <td>No user for <code>(system_user_id, system_uuid)</code>.</td>
-                </tr>
-                <tr>
-                  <td><code>409</code></td>
-                  <td><code>COMMON_409</code></td>
-                  <td>Same idempotency key reused with different payload hash.</td>
-                </tr>
-                <tr>
-                  <td><code>422</code></td>
-                  <td>Validation</td>
-                  <td>Body fails Pydantic rules (e.g. invalid <code>cue_sheet</code> shape, empty bullets).</td>
-                </tr>
-                <tr>
-                  <td><code>401</code> / <code>429</code> / <code>413</code></td>
-                  <td>—</td>
-                  <td>Middleware (auth, rate limit, body size).</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section class="card">
-            <h2>Logging</h2>
-            <p>
-              <code>conspectus_created</code> at info after persist; <code>create_conspectus_idempotent_replay</code> on replay.
-              Standard <code>request_done</code> with path template from metrics.
+            This endpoint is the <strong>only</strong> way to create a conspectus row and its
+            associated schedule. The two are created atomically — there is no half-state where
+            a conspectus exists without a schedule row (per
+            <a href="../../../analysis/system-design.html#persistence-model">system-design ·
+              persistence</a>).
             </p>
           </section>
 
-          <section class="card">
-            <h2>Single-file deep spec</h2>
-            <p>
-              <a href="../index.html#conspectus-op-createConspectus">Conspectus hub — this operation</a> ·
-              <a href="../index.html#etr-to-api">Field mapping (cue sheet → JSON)</a>
-            </p>
-          </section>
+          <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+            <h2>2. User stories</h2>
+            <ul>
+              <li><strong>US-CONSP-CREATE-1.</strong> As a <em>learner</em>, I want to save my
+                Transform output as one note, so the system can remind me to retrieve it on a
+                schedule.</li>
+                <li><strong>US-CONSP-CREATE-2.</strong> As an <em>integrator</em>, I want creation to
+                  be idempotent so that retrying after a network blip never creates a duplicate
+                  note.</li>
+                  <li><strong>US-CONSP-CREATE-3.</strong> As a <em>product owner</em>, I want every
+                    new note to start at Slot A with a deterministic <code>next_review_at</code> so
+                    the due-list is predictable.</li>
+                  </ul>
+                </section>
 
-          <p class="small">
-            <a href="../index.html">← Conspectus resource hub</a>
-          </p>
+                <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+                  <h2>3. Acceptance criteria (Given / When / Then)</h2>
+                  <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th scope="col">ID &amp; scenario</th>
+                          <th scope="col">Given</th>
+                          <th scope="col">When</th>
+                          <th scope="col">Then</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>AC-CONSP-CREATE-001</code><br>
+                            <span class="small">Happy path.</span></td>
+                            <td>An existing user U; valid body; fresh
+                              <code>Idempotency-Key</code>.</td>
+                              <td>Request arrives.</td>
+                              <td><code>201 Created</code>; response includes
+                                <code>conspectus_uuid</code>, <code>slot=A</code>,
+                                <code>next_review_at = created_at + PT1H</code>,
+                                <code>schedule_revision=1</code>.</td>
+                              </tr>
+                              <tr>
+                                <td><code>AC-CONSP-CREATE-002</code><br>
+                                  <span class="small">Idempotent replay.</span></td>
+                                  <td>Successful create with key K and body B persisted in
+                                    <code>idempotency_keys</code>.</td>
+                                    <td>Same key + body sent within TTL.</td>
+                                    <td><code>201</code> with stored body byte-for-byte; no new conspectus
+                                      row.</td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>AC-CONSP-CREATE-003</code><br>
+                                        <span class="small">User not found.</span></td>
+                                        <td>No user matches the body composite key.</td>
+                                        <td>Request arrives.</td>
+                                        <td><code>404 USER_404 USER_NOT_FOUND</code>; no DB write.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>AC-CONSP-CREATE-004</code><br>
+                                          <span class="small">Idempotency-key conflict.</span></td>
+                                          <td>Key K previously used with a different body hash.</td>
+                                          <td>Request arrives with key K and a new body.</td>
+                                          <td><code>409 COMMON_409</code>; no DB write.</td>
+                                        </tr>
+                                        <tr>
+                                          <td><code>AC-CONSP-CREATE-005</code><br>
+                                            <span class="small">Validation — empty paragraph.</span></td>
+                                            <td>Body with <code>dense_paragraph=""</code>.</td>
+                                            <td>Pydantic runs.</td>
+                                            <td><code>422 COMMON_000</code> with
+                                              <code>loc=["body","dense_paragraph"]</code>.</td>
+                                            </tr>
+                                            <tr>
+                                              <td><code>AC-CONSP-CREATE-006</code><br>
+                                                <span class="small">Atomic schedule insert.</span></td>
+                                                <td>A successful create.</td>
+                                                <td>The transaction commits.</td>
+                                                <td>Both <code>conspectuses</code> and
+                                                  <code>conspectus_schedules</code> rows exist; no orphan content row.</td>
+                                                </tr>
+                                                <tr>
+                                                  <td><code>AC-CONSP-CREATE-007</code><br>
+                                                    <span class="small">CREATED event.</span></td>
+                                                    <td>A successful create.</td>
+                                                    <td>Transaction commits.</td>
+                                                    <td><code>conspectus_events</code> has one row with
+                                                      <code>event_type="CREATED"</code>.</td>
+                                                    </tr>
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                            </section>
 
-          <section id="page-history" class="card">
+                                            <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                                              <h2>4. Functional requirements</h2>
+                                              <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+                                                <table>
+                                                  <thead>
+                                                    <tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    <tr>
+                                                      <td><code>FR-CONSP-CREATE-001</code></td>
+                                                      <td>Resolve owner via composite user key.</td>
+                                                      <td>Resolve <code>users.client_uuid</code> from
+                                                        <code>(system_user_id, system_uuid)</code>; <code>404 USER_404</code> when
+                                                        not found.</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td><code>FR-CONSP-CREATE-002</code></td>
+                                                        <td>Persist content + schedule atomically.</td>
+                                                        <td>One DB transaction inserts the <code>conspectuses</code> row, the 1:1
+                                                          <code>conspectus_schedules</code> row (with the active policy FK), and a
+                                                          <code>conspectus_events</code> row with
+                                                          <code>event_type="CREATED"</code>.</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td><code>FR-CONSP-CREATE-003</code></td>
+                                                          <td>Seed initial schedule per active policy.</td>
+                                                          <td>Resolve the active <code>SchedulePolicy</code> (default:
+                                                            <code>etr_methodology_four_slot v1.0.0</code>); set
+                                                            <code>slot=A</code>, <code>slot_d_ladder_index=0</code>,
+                                                            <code>next_review_at=now()+PT1H</code>,
+                                                            <code>schedule_revision=1</code>.</td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><code>FR-CONSP-CREATE-004</code></td>
+                                                            <td>Validate Extract / Transform fields.</td>
+                                                            <td><code>cue_sheet</code> must be a JSON object (not array);
+                                                              <code>dense_paragraph</code> non-empty (1–4000 chars);
+                                                              <code>bullets</code> array of 1–20 non-empty strings.</td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td><code>FR-CONSP-CREATE-005</code></td>
+                                                              <td>Enforce idempotency.</td>
+                                                              <td>Per <a href="../../_shared/idempotency.html">shared rules</a>: namespace
+                                                                <code>POST /api/v1/conspectuses</code>; replay returns the original
+                                                                <code>201</code> body byte-for-byte.</td>
+                                                              </tr>
+                                                              <tr>
+                                                                <td><code>FR-CONSP-CREATE-006</code></td>
+                                                                <td>Pin <code>cue_sheet_schema_version</code>.</td>
+                                                                <td>Server stamps the current default
+                                                                  (<code>cue_sheet_schema_version=1</code>).</td>
+                                                                </tr>
+                                                                <tr>
+                                                                  <td><code>FR-CONSP-CREATE-007</code></td>
+                                                                  <td>Server-assigned UUID and timestamps.</td>
+                                                                  <td>Server generates <code>conspectus_uuid</code> (UUIDv4), stamps
+                                                                    <code>created_at</code> / <code>updated_at</code> via DB
+                                                                    <code>now()</code>.</td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                    <td><code>FR-CONSP-CREATE-008</code></td>
+                                                                    <td>Return <code>ConspectusResponse</code> on success.</td>
+                                                                    <td><code>201 Created</code> with the full response shape; integrator does
+                                                                      not need a follow-up <code>GET</code>.</td>
+                                                                    </tr>
+                                                                  </tbody>
+                                                                </table>
+                                                              </div>
+                                                            </section>
 
-            <h2>Page history</h2>
+                                                            <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                                                              <h2>5. Non-functional requirements</h2>
+                                                              <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+                                                                <table>
+                                                                  <thead>
+                                                                    <tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr>
+                                                                  </thead>
+                                                                  <tbody>
+                                                                    <tr><td><code>NFR-CONSP-CREATE-001</code></td><td>Latency.</td>
+                                                                      <td>P95 ≤ <strong>300 ms</strong>, P99 ≤ <strong>700 ms</strong>.</td></tr>
+                                                                      <tr><td><code>NFR-CONSP-CREATE-002</code></td><td>Durability.</td>
+                                                                        <td><code>201</code> only after the transaction is fsync’d.</td></tr>
+                                                                        <tr><td><code>NFR-CONSP-CREATE-003</code></td><td>Idempotency window.</td>
+                                                                          <td>24 h replay TTL (per
+                                                                            <a href="../../_shared/idempotency.html">shared rules</a>).</td></tr>
+                                                                            <tr><td><code>NFR-CONSP-CREATE-004</code></td><td>Payload limit.</td>
+                                                                              <td>Body ≤ <strong>32 KB</strong>; oversize → <code>413</code>.</td></tr>
+                                                                              <tr><td><code>NFR-CONSP-CREATE-005</code></td><td>Auditability.</td>
+                                                                                <td>Every successful create writes one row to
+                                                                                  <code>conspectus_events</code>.</td></tr>
+                                                                                  <tr><td><code>NFR-CONSP-CREATE-006</code></td><td>Backwards compatibility.</td>
+                                                                                    <td>Adding new optional fields is additive; renames or new required fields
+                                                                                      are breaking (see
+                                                                                      <a href="../../_shared/versioning.html">versioning</a>).</td></tr>
+                                                                                      <tr><td><code>NFR-CONSP-CREATE-007</code></td><td>Observability.</td>
+                                                                                        <td>All log events listed in §14 emitted; no silent failures.</td></tr>
+                                                                                        <tr><td><code>NFR-CONSP-CREATE-008</code></td><td>Rate limit.</td>
+                                                                                          <td>Inherits global per-API-key rate limit (ADR 0005).</td></tr>
+                                                                                        </tbody>
+                                                                                      </table>
+                                                                                    </div>
+                                                                                  </section>
 
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                  <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                                                                    <h2>6. Authorization &amp; permissions</h2>
+                                                                                    <p>
+                                                                                      API key per <a href="../../_shared/auth.html">shared auth rules</a>; learner resolved
+                                                                                      from <code>(system_user_id, system_uuid)</code> in the body. No additional scope.
+                                                                                      <strong>Ownership rule:</strong> the resolved learner becomes the
+                                                                                      <code>owner_client_uuid</code> on the new <code>conspectuses</code> row — no admin
+                                                                                      override, no proxy creation.
+                                                                                    </p>
+                                                                                  </section>
 
-              <table class="docs-page-history">
+                                                                                  <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                                                                    <h2>7. Request contract</h2>
 
-                <thead>
+                                                                                    <h3>Headers</h3>
+                                                                                    <dl class="internal-field-list">
+                                                                                      <dt><code>X-API-Key</code>
+                                                                                        <span class="badge badge--field-type">string</span>
+                                                                                        <span class="badge badge--field-req">required</span></dt>
+                                                                                        <dd><p>Tenant API key (see <a href="../../_shared/auth.html">auth</a>).</p></dd>
+                                                                                        <dt><code>Idempotency-Key</code>
+                                                                                          <span class="badge badge--field-type">string</span>
+                                                                                          <span class="badge badge--field-req">required</span></dt>
+                                                                                          <dd>
+                                                                                            <p>See <a href="../../_shared/idempotency.html">shared idempotency rules</a>.</p>
+                                                                                            <dl class="internal-field-list__attrs">
+                                                                                              <dt>Length</dt><dd>1–128 chars (printable ASCII).</dd>
+                                                                                            </dl>
+                                                                                          </dd>
+                                                                                          <dt><code>Content-Type</code>
+                                                                                            <span class="badge badge--field-type">string</span>
+                                                                                            <span class="badge badge--field-req">required</span></dt>
+                                                                                            <dd><p>Must be <code>application/json</code>.</p></dd>
+                                                                                          </dl>
 
-                  <tr>
+                                                                                          <h3>Body</h3>
+                                                                                          <dl class="internal-field-list">
+                                                                                            <dt><code>system_user_id</code>
+                                                                                              <span class="badge badge--field-type">string</span>
+                                                                                              <span class="badge badge--field-req">required</span></dt>
+                                                                                              <dd>
+                                                                                                <p>External user identifier from the integrator.</p>
+                                                                                                <dl class="internal-field-list__attrs">
+                                                                                                  <dt>Length</dt><dd>1–128 chars.</dd>
+                                                                                                  <dt>PII class</dt><dd>Low — opaque.</dd>
+                                                                                                </dl>
+                                                                                              </dd>
+                                                                                              <dt><code>system_uuid</code>
+                                                                                                <span class="badge badge--field-type">string · uuid</span>
+                                                                                                <span class="badge badge--field-req">required</span></dt>
+                                                                                                <dd><p>External tenant UUID (RFC 4122).</p></dd>
+                                                                                                <dt><code>title</code>
+                                                                                                  <span class="badge badge--field-type">string</span>
+                                                                                                  <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                  <dd>
+                                                                                                    <p>Short label for list views.</p>
+                                                                                                    <dl class="internal-field-list__attrs">
+                                                                                                      <dt>Length</dt><dd>0–256 chars.</dd>
+                                                                                                      <dt>PII class</dt><dd>Medium.</dd>
+                                                                                                    </dl>
+                                                                                                  </dd>
+                                                                                                  <dt><code>cue_sheet</code>
+                                                                                                    <span class="badge badge--field-type">object</span>
+                                                                                                    <span class="badge badge--field-req">required</span></dt>
+                                                                                                    <dd>
+                                                                                                      <p>Extract layer — object (not array). Recommended shape on the
+                                                                                                        <a href="../index.html#cue-sheet-convention">resource hub</a>.</p>
+                                                                                                        <dl class="internal-field-list__attrs">
+                                                                                                          <dt>PII class</dt><dd>High — learner-typed text.</dd>
+                                                                                                        </dl>
+                                                                                                      </dd>
+                                                                                                      <dt><code>dense_paragraph</code>
+                                                                                                        <span class="badge badge--field-type">string</span>
+                                                                                                        <span class="badge badge--field-req">required</span></dt>
+                                                                                                        <dd>
+                                                                                                          <p>Transform layer — single dense paragraph, sources closed.</p>
+                                                                                                          <dl class="internal-field-list__attrs">
+                                                                                                            <dt>Length</dt><dd>1–4000 chars.</dd>
+                                                                                                            <dt>PII class</dt><dd>High.</dd>
+                                                                                                          </dl>
+                                                                                                        </dd>
+                                                                                                        <dt><code>bullets</code>
+                                                                                                          <span class="badge badge--field-type">array&lt;string&gt;</span>
+                                                                                                          <span class="badge badge--field-req">required</span></dt>
+                                                                                                          <dd>
+                                                                                                            <p>Transform bullets (Feynman-style).</p>
+                                                                                                            <dl class="internal-field-list__attrs">
+                                                                                                              <dt>Constraints</dt><dd>1–20 items; each 1–500 chars, non-empty.</dd>
+                                                                                                              <dt>PII class</dt><dd>High.</dd>
+                                                                                                            </dl>
+                                                                                                          </dd>
+                                                                                                        </dl>
 
-                    <th scope="col">Date</th>
+                                                                                                        <h3>Example request</h3>
+                                                                                                        <pre><code>POST /api/v1/conspectuses HTTP/1.1
+                                                                                                          Host: api.study.example
+                                                                                                          X-API-Key: sk_live_***
+                                                                                                          Idempotency-Key: 3a3c1e9f-77a4-4f4e-9b9e-3f5b3e3c0001-2026-04-29T10:00:00Z
+                                                                                                          Content-Type: application/json
 
-                    <th scope="col">Change</th>
+                                                                                                          {
+                                                                                                          "system_user_id": "learner-01",
+                                                                                                          "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                                                                                                          "title": "The water cycle",
+                                                                                                          "cue_sheet": {
+                                                                                                          "topic": "Water cycle",
+                                                                                                          "rows": [
+                                                                                                          { "keywords": "evaporation", "question": "What drives water into vapor?", "hint": "Sun heats surface" }
+                                                                                                          ]
+                                                                                                          },
+                                                                                                          "dense_paragraph": "The sun heats oceans and lakes so water evaporates …",
+                                                                                                          "bullets": [
+                                                                                                          "Evaporation moves water from surface to atmosphere.",
+                                                                                                          "Condensation forms clouds when air cools."
+                                                                                                          ]
+                                                                                                          }
+                                                                                                        </code></pre>
+                                                                                                      </section>
 
-                    <th scope="col">Author</th>
+                                                                                                      <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                                                                                        <h2>8. Response contract</h2>
+                                                                                                        <h3>201 Created — conspectus persisted</h3>
+                                                                                                        <p>
+                                                                                                          Body matches <code>ConspectusResponse</code> (same schema as the
+                                                                                                          <a href="post-api-v1-conspectuses-conspectus_uuid-actions-review.html#response-contract">
+                                                                                                            review response</a>). Initial values: <code>slot="A"</code>,
+                                                                                                            <code>slot_d_ladder_index=0</code>, <code>schedule_revision=1</code>,
+                                                                                                            <code>next_review_at = created_at + PT1H</code>.
+                                                                                                          </p>
+                                                                                                          <p>
+                                                                                                            <strong>Headers:</strong> <code>Location: /api/v1/conspectuses/{uuid}</code>.
+                                                                                                          </p>
 
-                  </tr>
+                                                                                                          <h3>Example 201 response</h3>
+                                                                                                          <pre><code>HTTP/1.1 201 Created
+                                                                                                            Content-Type: application/json
+                                                                                                            Location: /api/v1/conspectuses/9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001
+                                                                                                            X-Request-Id: 1c0a-…
 
-                </thead>
+                                                                                                            {
+                                                                                                            "conspectus_uuid": "9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001",
+                                                                                                            "title": "The water cycle",
+                                                                                                            "cue_sheet": { "topic": "Water cycle", "rows": [/*…*/] },
+                                                                                                            "cue_sheet_schema_version": 1,
+                                                                                                            "dense_paragraph": "The sun heats oceans …",
+                                                                                                            "bullets": ["Evaporation moves …"],
+                                                                                                            "slot": "A",
+                                                                                                            "slot_d_ladder_index": 0,
+                                                                                                            "next_review_at": "2026-04-29T11:00:00Z",
+                                                                                                            "schedule_policy_id": "etr_methodology_four_slot",
+                                                                                                            "algorithm_version": "1.0.0",
+                                                                                                            "schedule_revision": 1,
+                                                                                                            "created_at": "2026-04-29T10:00:00Z",
+                                                                                                            "updated_at": "2026-04-29T10:00:00Z",
+                                                                                                            "schedule_updated_at": "2026-04-29T10:00:00Z"
+                                                                                                            }
+                                                                                                          </code></pre>
+                                                                                                        </section>
 
-                <tbody>
+                                                                                                        <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                                                                                          <h2>10. Side effects</h2>
+                                                                                                          <ul>
+                                                                                                            <li><strong>On success.</strong> One transaction:
+                                                                                                              <ol>
+                                                                                                                <li><code>INSERT INTO conspectuses</code> (content snapshot,
+                                                                                                                  <code>cue_sheet_schema_version=1</code>,
+                                                                                                                  <code>content_version=1</code>).</li>
+                                                                                                                  <li><code>INSERT INTO conspectus_schedules</code>
+                                                                                                                    (<code>slot=A</code>, <code>slot_d_ladder_index=0</code>,
+                                                                                                                    <code>next_review_at=now()+PT1H</code>,
+                                                                                                                    <code>schedule_revision=1</code>, FK to active policy).</li>
+                                                                                                                    <li><code>INSERT INTO conspectus_events</code>
+                                                                                                                      (<code>event_type="CREATED"</code>).</li>
+                                                                                                                      <li><code>INSERT INTO idempotency_keys</code> with the response.</li>
+                                                                                                                      <li>Emit log event <code>conspectus_created</code> (info).</li>
+                                                                                                                    </ol>
+                                                                                                                  </li>
+                                                                                                                  <li><strong>On idempotent replay.</strong> No DB writes; replay stored
+                                                                                                                    <code>201</code> body; emit
+                                                                                                                    <code>conspectus_create_idempotent_replay</code> (info).</li>
+                                                                                                                    <li><strong>On any error.</strong> Transaction rolls back; no partial state.</li>
+                                                                                                                  </ul>
+                                                                                                                </section>
 
-                  <tr>
+                                                                                                                <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                                                                                                  <h2>11. Idempotency &amp; concurrency</h2>
+                                                                                                                  <ul>
+                                                                                                                    <li><strong>Namespace:</strong> <code>POST /api/v1/conspectuses</code>.</li>
+                                                                                                                    <li><strong>Key composition:</strong> <code>Idempotency-Key</code> header +
+                                                                                                                      SHA-256 of canonical JSON body.</li>
+                                                                                                                      <li><strong>Replay status:</strong> <code>201 Created</code> with stored body
+                                                                                                                        byte-for-byte.</li>
+                                                                                                                        <li><strong>TTL:</strong> 24 h (NFR-003).</li>
+                                                                                                                        <li><strong>Concurrency model:</strong> not applicable — fresh row, server-generated
+                                                                                                                          UUID prevents collisions.</li>
+                                                                                                                        </ul>
+                                                                                                                      </section>
 
-                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                                                                                      <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                                                                                                        <h2>12. Error catalog</h2>
+                                                                                                                        <p class="small">Envelope per <a href="../../_shared/error-envelope.html">shared
+                                                                                                                          envelope</a>; codes registered in
+                                                                                                                          <a href="../../_shared/error-catalog.html">shared catalog</a>.</p>
+                                                                                                                          <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+                                                                                                                            <table>
+                                                                                                                              <thead>
+                                                                                                                                <tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th>
+                                                                                                                                  <th>Log event (level)</th></tr>
+                                                                                                                                </thead>
+                                                                                                                                <tbody>
+                                                                                                                                  <tr><td><code>400</code></td><td><code>COMMON_400</code></td>
+                                                                                                                                    <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                                                                                                                                    <td>Missing header.</td>
+                                                                                                                                    <td><code>request_idempotency_key_missing</code> (warn)</td></tr>
+                                                                                                                                    <tr><td><code>401</code></td><td><code>COMMON_401</code></td>
+                                                                                                                                      <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                                                                                                                      <td>Missing/invalid API key.</td><td>middleware</td></tr>
+                                                                                                                                      <tr><td><code>404</code></td><td><code>USER_404</code></td>
+                                                                                                                                        <td><code>USER_NOT_FOUND</code></td>
+                                                                                                                                        <td>No user for body composite key.</td>
+                                                                                                                                        <td><code>conspectus_create_user_not_found</code> (info)</td></tr>
+                                                                                                                                        <tr><td><code>409</code></td><td><code>COMMON_409</code></td>
+                                                                                                                                          <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                                                                                                                                          <td>Same key, different body hash.</td>
+                                                                                                                                          <td><code>idempotency_payload_mismatch</code> (warn)</td></tr>
+                                                                                                                                          <tr><td><code>413</code></td><td><code>COMMON_413</code></td>
+                                                                                                                                            <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+                                                                                                                                            <td>Body &gt; 32 KB.</td><td>middleware</td></tr>
+                                                                                                                                            <tr><td><code>422</code></td><td><code>COMMON_000</code></td>
+                                                                                                                                              <td><code>COMMON_VALIDATION_ERROR</code></td>
+                                                                                                                                              <td>Pydantic validation
+                                                                                                                                                (empty paragraph, bad cue_sheet shape, &gt;20 bullets).</td>
+                                                                                                                                                <td><code>validation_error</code> (warn)</td></tr>
+                                                                                                                                                <tr><td><code>429</code></td><td><code>COMMON_429</code></td>
+                                                                                                                                                  <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                                                                                                                                                  <td>Rate limit.</td><td>middleware</td></tr>
+                                                                                                                                                </tbody>
+                                                                                                                                              </table>
+                                                                                                                                            </div>
+                                                                                                                                          </section>
 
-                    <td>Added Page history section (repository baseline).</td>
+                                                                                                                                          <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                                                                                                                            <h2>13. Edge cases checklist</h2>
+                                                                                                                                            <ul>
+                                                                                                                                              <li><strong>cue_sheet as top-level array.</strong> Reject — must be object
+                                                                                                                                                (<code>422</code>).</li>
+                                                                                                                                                <li><strong>cue_sheet with extra unknown keys.</strong> Accept (free-form object);
+                                                                                                                                                  shape recommendation lives on the resource hub.</li>
+                                                                                                                                                  <li><strong>bullets is empty array.</strong> Reject (<code>422</code>);
+                                                                                                                                                    minimum 1 bullet.</li>
+                                                                                                                                                    <li><strong>Repeated idempotent replays.</strong> All return the original
+                                                                                                                                                      <code>201</code>; alert if replay rate is abnormally high.</li>
+                                                                                                                                                      <li><strong>SchedulePolicy missing in DB.</strong> Operator misconfiguration —
+                                                                                                                                                        <code>500</code> with
+                                                                                                                                                        <code>conspectus_create_policy_missing</code> at error level.</li>
+                                                                                                                                                        <li><strong>Unicode in paragraph/bullets.</strong> Accept; size check is on bytes
+                                                                                                                                                          (UTF-8).</li>
+                                                                                                                                                          <li><strong>Concurrent creates with different keys.</strong> Both succeed; each
+                                                                                                                                                            gets its own UUID and schedule row.</li>
+                                                                                                                                                          </ul>
+                                                                                                                                                        </section>
 
-                    <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                                                        <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                                                                                                                                          <h2>14. Observability requirements</h2>
+                                                                                                                                                          <p>Conventions:
+                                                                                                                                                            <a href="../../_shared/observability-conventions.html">shared conventions</a>.</p>
+                                                                                                                                                            <h3>Log events</h3>
+                                                                                                                                                            <ul>
+                                                                                                                                                              <li><code>conspectus_created</code> (info) —
+                                                                                                                                                                <code>{conspectus_uuid, owner_client_uuid, schedule_policy_id,
+                                                                                                                                                                  algorithm_version}</code>.</li>
+                                                                                                                                                                  <li><code>conspectus_create_idempotent_replay</code> (info) —
+                                                                                                                                                                    <code>{conspectus_uuid, idempotency_key_hash}</code>.</li>
+                                                                                                                                                                    <li><code>conspectus_create_user_not_found</code> (info) —
+                                                                                                                                                                      <code>{requesting_system_user_id}</code>.</li>
+                                                                                                                                                                      <li><code>conspectus_create_policy_missing</code> (error) — invariant violation.</li>
+                                                                                                                                                                    </ul>
+                                                                                                                                                                    <h3>Metrics</h3>
+                                                                                                                                                                    <ul>
+                                                                                                                                                                      <li><code>conspectus_create_total</code> (counter) — labels:
+                                                                                                                                                                        <code>status_code</code>.</li>
+                                                                                                                                                                        <li><code>conspectus_create_duration_seconds</code> (histogram).</li>
+                                                                                                                                                                      </ul>
+                                                                                                                                                                      <h3>Alerts</h3>
+                                                                                                                                                                      <ul>
+                                                                                                                                                                        <li><strong>Page:</strong> <code>conspectus_create_policy_missing</code> any
+                                                                                                                                                                          occurrence.</li>
+                                                                                                                                                                          <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+                                                                                                                                                                        </ul>
+                                                                                                                                                                      </section>
 
-                  </tr>
+                                                                                                                                                                      <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                                                                                                                                                        <h2>15. Test plan</h2>
+                                                                                                                                                                        <ul>
+                                                                                                                                                                          <li><strong>Unit:</strong> validators for cue_sheet shape, bullets length, paragraph
+                                                                                                                                                                            non-empty. Covers AC-005.</li>
+                                                                                                                                                                            <li><strong>Integration:</strong> AC-001 happy path; AC-002 replay; AC-003 user not
+                                                                                                                                                                              found; AC-004 idempotency conflict; AC-006 atomic commit (verify both rows
+                                                                                                                                                                              exist); AC-007 CREATED event.</li>
+                                                                                                                                                                              <li><strong>Contract:</strong> Schemathesis on <code>createConspectus</code> — no
+                                                                                                                                                                                5xx on schema-conforming input.</li>
+                                                                                                                                                                                <li><strong>End-to-end:</strong> create → list-due (within 1 h window) returns the
+                                                                                                                                                                                  new row.</li>
+                                                                                                                                                                                </ul>
+                                                                                                                                                                              </section>
 
-                </tbody>
+                                                                                                                                                                              <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                                                                                                                                                <h2>16. OpenAPI authoring hints</h2>
+                                                                                                                                                                                <ul>
+                                                                                                                                                                                  <li><strong>operationId:</strong> <code>createConspectus</code>.</li>
+                                                                                                                                                                                  <li><strong>Tags:</strong> <code>Conspectus</code>.</li>
+                                                                                                                                                                                  <li><strong>Reused components:</strong> <code>ConspectusResponse</code>,
+                                                                                                                                                                                    <code>CueSheet</code>, <code>Uuid</code>, <code>Timestamp</code>,
+                                                                                                                                                                                    <code>ErrorEnvelope</code>. Define <code>CreateConspectusBody</code> here.</li>
+                                                                                                                                                                                    <li><strong>Examples:</strong> request + 201 response from §7 / §8 verbatim;
+                                                                                                                                                                                      <code>Location</code> header documented.</li>
+                                                                                                                                                                                      <li><strong>Hide from external:</strong>
+                                                                                                                                                                                        <code>schedule_policy_id</code>/<code>algorithm_version</code> internals; log
+                                                                                                                                                                                        event names.</li>
+                                                                                                                                                                                      </ul>
+                                                                                                                                                                                    </section>
 
-              </table>
+                                                                                                                                                                                    <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                                                                                                                                                      <h2>17. Open questions</h2>
+                                                                                                                                                                                      <ul>
+                                                                                                                                                                                        <li><strong>Q1.</strong> Should the integrator be allowed to override
+                                                                                                                                                                                          <code>schedule_policy_id</code> on create? v1: no. <em>Owner:</em> product.
+                                                                                                                                                                                          <em>Deadline:</em> before 2026-06-01.</li>
+                                                                                                                                                                                          <li><strong>Q2.</strong> Hard caps on paragraph (4000 chars) and bullet count
+                                                                                                                                                                                            (20) — strict or warn? Current draft: enforce strictly.
+                                                                                                                                                                                            <em>Owner:</em> Ivan Boyarkin.</li>
+                                                                                                                                                                                          </ul>
+                                                                                                                                                                                        </section>
 
-            </div>
+                                                                                                                                                                                        <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                                                                                                                                                          <h2>18. Out of scope</h2>
+                                                                                                                                                                                          <ul>
+                                                                                                                                                                                            <li>Bulk create (multiple conspectuses in one request).</li>
+                                                                                                                                                                                            <li>Server-side validation of pedagogical quality (no NLP).</li>
+                                                                                                                                                                                            <li>Image / attachment uploads — content is text-only in v1.</li>
+                                                                                                                                                                                            <li>Webhook/event-bus emission — only in-DB events
+                                                                                                                                                                                              (<code>conspectus_events</code>).</li>
+                                                                                                                                                                                            </ul>
+                                                                                                                                                                                          </section>
 
-          </section>
+                                                                                                                                                                                          <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                                                                                                                                                            <h2>19. Traceability</h2>
+                                                                                                                                                                                            <ul>
+                                                                                                                                                                                              <li><strong>Methodology:</strong>
+                                                                                                                                                                                                <a href="../../../analysis/methodology.html#etr-home">ETR at home (Extract +
+                                                                                                                                                                                                  Transform)</a>.</li>
+                                                                                                                                                                                                  <li><strong>System design:</strong>
+                                                                                                                                                                                                    <a href="../../../analysis/system-design.html#domain-model">domain model</a>,
+                                                                                                                                                                                                    <a href="../../../analysis/system-design.html#persistence-model">persistence</a>,
+                                                                                                                                                                                                    decisions D1, D2, D7.</li>
+                                                                                                                                                                                                    <li><strong>ADRs:</strong>
+                                                                                                                                                                                                      <a href="../../../../adr/0003-error-contract-governance.html">0003</a>,
+                                                                                                                                                                                                      <a href="../../../../adr/0005-api-security-defaults.html">0005</a>,
+                                                                                                                                                                                                      <a href="../../../../adr/0006-idempotency-write-operations.html">0006</a>,
+                                                                                                                                                                                                      <a href="../../../../adr/0023-structured-logging-and-local-elasticsearch.html">
+                                                                                                                                                                                                        0023</a>,
+                                                                                                                                                                                                        <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">
+                                                                                                                                                                                                          0026</a>.</li>
+                                                                                                                                                                                                          <li><strong>OpenAPI:</strong> <code>createConspectus</code>.</li>
+                                                                                                                                                                                                        </ul>
+                                                                                                                                                                                                      </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
-    </div>
+                                                                                                                                                                                                      <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                                                                                                                                                                        <h2>20. Spec changelog</h2>
+                                                                                                                                                                                                        <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+                                                                                                                                                                                                          <table>
+                                                                                                                                                                                                            <thead>
+                                                                                                                                                                                                              <tr><th>Date</th><th>Type</th><th>Change</th><th>Author</th></tr>
+                                                                                                                                                                                                            </thead>
+                                                                                                                                                                                                            <tbody>
+                                                                                                                                                                                                              <tr>
+                                                                                                                                                                                                                <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                                                                <td>additive</td>
+                                                                                                                                                                                                                <td>Phase 5 rollout: stub promoted to full 21-section analyst spec.</td>
+                                                                                                                                                                                                                <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                                                  Boyarkin</a></td>
+                                                                                                                                                                                                                </tr>
+                                                                                                                                                                                                              </tbody>
+                                                                                                                                                                                                            </table>
+                                                                                                                                                                                                          </div>
+                                                                                                                                                                                                        </section>
 
-  </body></html>
+                                                                                                                                                                                                        <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                                                                                                                                                                          <h2>Page history</h2>
+                                                                                                                                                                                                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                                                                                                                                            <table class="docs-page-history">
+                                                                                                                                                                                                              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                                                                              <tbody>
+                                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                                                                  <td>Phase 5: rewritten as full analyst spec.</td>
+                                                                                                                                                                                                                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                                                    Boyarkin</a></td>
+                                                                                                                                                                                                                  </tr>
+                                                                                                                                                                                                                </tbody>
+                                                                                                                                                                                                              </table>
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                          </section>
+
+                                                                                                                                                                                                        </main>
+                                                                                                                                                                                                      </div>
+                                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                                  </body></html>

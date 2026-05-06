@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Specification template — Internal API — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="template" data-spec-status="template" data-spec-owner="ivan-boyarkin" data-spec-operation-id="(template)">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Specification — template</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <div class="internal-http-tablet">
+          <span class="badge badge--method-post">METHOD</span>
+          <code class="internal-http-tablet__path">/api/v1/&lt;path&gt;</code>
+        </div>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Summary</span>
+            <span>One-line purpose of this operation; fill in when copying the template.</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Owner</span>
+            <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">operationId</span>
+            <code>&lt;operationId&gt;</code>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-04-29">2026-04-29</time>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Spec template</span>
+            <code>v1</code>
+          </span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">How to use this template</h2>
+          <p>
+            <strong>This is the golden template for any internal operation specification under
+              <code>docs/internal/api/&lt;resource&gt;/operations/</code>.</strong> Copy this file, rename
+              to <code>&lt;method&gt;-&lt;path-with-dashes&gt;.html</code>, then fill in every required
+              section in the order shown below.
+            </p>
+            <p>
+              <strong>Required vs optional.</strong> Each section is tagged with a badge in its heading and
+              with a <code>data-spec-required="true|false"</code> attribute on its
+              <code>&lt;section&gt;</code> wrapper. Required sections must exist and be non-empty — the lint
+              blocks the PR otherwise. Optional sections may be removed for trivial operations
+              (e.g. a read endpoint usually has no <em>State transitions</em>) — never reorder, only remove.
+            </p>
+            <p>
+              Authoring rules, lint expectations, and the full Definition of Done for an operation spec are
+              tracked separately in <code>_shared/spec-definition-of-done.html</code>. A spec is considered
+              ready for engineering only when every required section is non-empty and the DoD checklist
+              passes.
+            </p>
+            <p class="small">
+              Source-of-truth note: this template is the structural contract for analyst-spec pages.
+              Cross-cutting topics (idempotency, error envelope, auth, pagination, versioning, observability
+              conventions, OpenAPI authoring guide) live once under <code>_shared/</code> — link to anchors
+              there instead of repeating their content per operation.
+            </p>
+          </section>
+
+          <section class="card" id="lint-checklist" aria-labelledby="lint-checklist-h">
+            <h2 id="lint-checklist-h">Lint checklist (block-merge gate)</h2>
+            <p class="small">
+              This block lives only on the template page. Real specs do not duplicate it — the linter
+              (<code>scripts/spec_lint.py</code>) reads <code>data-spec-section</code> /
+              <code>data-spec-required</code> attributes from the spec and applies the rules below.
+            </p>
+            <ul>
+              <li><strong>Body attributes:</strong> <code>data-spec-status</code>,
+                <code>data-spec-owner</code>, <code>data-spec-operation-id</code> are set on
+                <code>&lt;body&gt;</code>.</li>
+                <li><strong>Status badge</strong> in the metadata strip matches
+                  <code>data-spec-status</code>.</li>
+                  <li><strong>Every required section exists</strong> as
+                    <code>&lt;section data-spec-section="…" data-spec-required="true"&gt;</code> with non-empty
+                    content (no lone <code>TODO</code>, no empty placeholder).</li>
+                    <li><strong>Field tables in sections 7 / 8</strong> are present with all required columns.</li>
+                    <li><strong>At least one request example and one response example per success status.</strong></li>
+                    <li><strong>Every error <code>code/key</code> in section 12</strong> is also registered in
+                      <code>_shared/error-catalog.html</code> (consistency check).</li>
+                      <li><strong>Sections 17 (Open questions) and 18 (Out of scope)</strong> are non-empty: either
+                        a list, or the literal word <em>None.</em></li>
+                        <li><strong>OpenAPI <code>operationId</code></strong> in metadata strip exists in
+                          <code>docs/openapi/openapi-baseline.json</code>.</li>
+                          <li><strong>Page history</strong> section present with at least one entry.</li>
+                        </ul>
+                      </section>
+
+                      <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+                        <h2>1. Business context <span class="badge badge--req-required">required</span></h2>
+                        <p>
+                          <strong>Why this endpoint exists.</strong> 2–4 sentences on the user problem and product outcome
+                          it enables. No implementation, no schema. Anchor to the relevant section in
+                          <a href="../../analysis/system-design.html">system design</a> and, where applicable,
+                          <a href="../../analysis/methodology.html">methodology</a>.
+                        </p>
+                        <p class="small">TODO(spec-template): replace with real business context.</p>
+                      </section>
+
+                      <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+                        <h2>2. User stories <span class="badge badge--req-required">required</span></h2>
+                        <p>
+                          <strong>One or more user stories</strong> the operation closes, in the form
+                          <em>“As a &lt;role&gt;, I want &lt;capability&gt;, so that &lt;outcome&gt;.”</em>
+                        </p>
+                        <p class="small">TODO(spec-template): list the user stories closed by this endpoint.</p>
+                      </section>
+
+                      <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+                        <h2>3. Acceptance criteria (Given / When / Then)
+                          <span class="badge badge--req-required">required</span></h2>
+                          <p>
+                            <strong>Testable scenarios</strong> in Given / When / Then format. Each AC has an ID
+                            (<code>AC-&lt;RESOURCE&gt;-&lt;NN&gt;</code>) and is referenced from the test plan (section 16).
+                          </p>
+                          <p class="small">TODO(spec-template): write Given / When / Then scenarios for happy path,
+                            unhappy paths, and edge cases.</p>
+                          </section>
+
+                          <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                            <h2>4. Functional requirements (FR-IDs)
+                              <span class="badge badge--req-required">required</span></h2>
+                              <p>
+                                Bullet list of testable FRs, each with an ID
+                                (<code>FR-&lt;RESOURCE&gt;-&lt;NN&gt;</code>). FRs are traced from the methodology / system-design
+                                and traced to tests in section 16.
+                              </p>
+                              <p class="small">TODO(spec-template): list FRs with IDs.</p>
+                            </section>
+
+                            <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                              <h2>5. Non-functional requirements (NFR-IDs)
+                                <span class="badge badge--req-required">required</span></h2>
+                                <p>
+                                  Latency budget, throughput target, availability, max payload, max concurrency, data freshness,
+                                  cacheability. Each with an ID (<code>NFR-&lt;RESOURCE&gt;-&lt;NN&gt;</code>) and a measurable
+                                  threshold.
+                                </p>
+                                <p class="small">TODO(spec-template): set quantitative NFRs.</p>
+                              </section>
+
+                              <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                <h2>6. Authorization &amp; permissions
+                                  <span class="badge badge--req-required">required</span></h2>
+                                  <p>
+                                    Auth scheme (link to <code>_shared/auth.html</code>), required scopes, ownership rule (which
+                                    resource may the caller touch), tenancy boundary. Avoid duplicating the global auth doc — only
+                                    describe operation-specific deltas here.
+                                  </p>
+                                  <p class="small">TODO(spec-template): describe operation-specific authorization rules only.</p>
+                                </section>
+
+                                <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                  <h2>7. Request contract <span class="badge badge--req-required">required</span></h2>
+                                  <p>
+                                    Full request shape. <strong>Each parameter is one row in a table</strong> with columns:
+                                    <em>name · location (path / query / header / body) · type · format · required · nullable ·
+                                      default · constraints (regex, length, enum) · business meaning · PII class · OpenAPI mapping</em>.
+                                      Add a JSON example after the table.
+                                    </p>
+                                    <p class="small">TODO(spec-template): full field-level request table + JSON example.</p>
+                                  </section>
+
+                                  <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                    <h2>8. Response contract (per success status)
+                                      <span class="badge badge--req-required">required</span></h2>
+                                      <p>
+                                        One sub-section per success status (<code>200</code>, <code>201</code>, <code>202</code>,
+                                        <code>204</code>). Same field-level table format as the request. Add a JSON example for each
+                                        status.
+                                      </p>
+                                      <p class="small">TODO(spec-template): full field-level response table + JSON example for each
+                                        success status.</p>
+                                      </section>
+
+                                      <section class="card" id="state-transitions" data-spec-section="state-transitions" data-spec-required="false">
+                                        <h2>9. State transitions <span class="badge badge--req-optional">optional</span></h2>
+                                        <p class="small">
+                                          <strong>Required</strong> if the operation mutates a state machine
+                                          (e.g. <code>POST …/actions/review</code> drives slot transitions A→B→C→D).
+                                          <strong>Remove</strong> for plain CRUD reads or stateless writes.
+                                        </p>
+                                        <p>
+                                          <strong>PlantUML</strong> state diagram (per
+                                          <a href="../../../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>) for
+                                          the state machine the operation drives, plus a tabular listing:
+                                          <em>from-state · trigger · to-state · guard · effect</em>.
+                                        </p>
+                                        <p class="small">TODO(spec): add PlantUML state diagram + transition table, or remove the
+                                          section.</p>
+                                        </section>
+
+                                        <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                          <h2>10. Side effects <span class="badge badge--req-required">required</span></h2>
+                                          <p>
+                                            What the operation changes outside its own response: DB writes (which tables, which columns),
+                                            events emitted (topic + payload schema), downstream calls, cache invalidations, audit log
+                                            entries. Write the list as <em>“on success: X · on failure: Y · on idempotent replay: Z”</em>.
+                                          </p>
+                                          <p class="small">TODO(spec-template): list side effects per outcome.</p>
+                                        </section>
+
+                                        <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                          <h2>11. Idempotency &amp; concurrency
+                                            <span class="badge badge--req-required">required</span></h2>
+                                            <p>
+                                              Link to <code>_shared/idempotency.html</code> for the global rules. Specify here only:
+                                              namespace (<code>endpoint_path</code> value), key composition (which path/body fields are part
+                                              of the hash), replay status code, and concurrency strategy
+                                              (optimistic via revision, pessimistic, none).
+                                            </p>
+                                            <p class="small">TODO(spec-template): namespace + key composition + concurrency model.</p>
+                                          </section>
+
+                                          <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                            <h2>12. Error catalog <span class="badge badge--req-required">required</span></h2>
+                                            <p>
+                                              Table: <em>HTTP · code · key · when · log-event · envelope JSON example</em>. Every entry must
+                                              also exist in the global error catalog (<code>_shared/error-catalog.html</code>) — the lint
+                                              checks this.
+                                            </p>
+                                            <p class="small">TODO(spec-template): full error table + envelope JSON examples (per ADR 0003).</p>
+                                          </section>
+
+                                          <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                            <h2>13. Edge cases checklist <span class="badge badge--req-required">required</span></h2>
+                                            <p>
+                                              Bullet list of edge cases the implementation must handle, each with the expected behavior.
+                                              Typical entries: empty list, missing optional field, unicode, max-length boundary, timezone
+                                              crossover, concurrent writes, retry storm, soft-deleted resource, archived resource, partial
+                                              failure mid-transaction.
+                                            </p>
+                                            <p class="small">TODO(spec-template): enumerate edge cases.</p>
+                                          </section>
+
+                                          <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                            <h2>14. Observability requirements
+                                              <span class="badge badge--req-required">required</span></h2>
+                                              <p>
+                                                Log events (names + level + structured fields), metrics (names + labels), trace spans, alerts
+                                                and their thresholds. Conventions live in
+                                                <code>_shared/observability-conventions.html</code> — only operation-specific events go here.
+                                              </p>
+                                              <p class="small">TODO(spec-template): list log events, metrics, and alerts.</p>
+                                            </section>
+
+                                            <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                              <h2>15. Test plan <span class="badge badge--req-required">required</span></h2>
+                                              <p>
+                                                Layered list:
+                                              </p>
+                                              <ul>
+                                                <li><strong>Unit:</strong> service / repository methods exercised.</li>
+                                                <li><strong>Integration:</strong> handler + DB scenarios.</li>
+                                                <li><strong>Contract:</strong> Schemathesis / Dredd cases (against the OpenAPI generated from
+                                                  this spec).</li>
+                                                  <li><strong>End-to-end:</strong> happy path + at least one error envelope path.</li>
+                                                </ul>
+                                                <p>
+                                                  Each scenario links back to its <code>AC-…</code> ID from section 3.
+                                                </p>
+                                                <p class="small">TODO(spec-template): map ACs to test layers.</p>
+                                              </section>
+
+                                              <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                <h2>16. OpenAPI authoring hints
+                                                  <span class="badge badge--req-required">required</span></h2>
+                                                  <p>
+                                                    Explicit instructions to the developer who will translate this spec into
+                                                    <code>docs/openapi/openapi-baseline.json</code>: which schemas to reuse, which examples to
+                                                    attach, which security scheme, which tags, what to <em>hide</em> from external integrators
+                                                    (e.g. internal log-event names, ADR refs, internal IDs).
+                                                  </p>
+                                                  <p class="small">TODO(spec-template): write OpenAPI translation instructions.</p>
+                                                </section>
+
+                                                <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                  <h2>17. Open questions <span class="badge badge--req-required">required</span></h2>
+                                                  <p>
+                                                    Bullet list, each with: question · current best guess · owner · deadline. If there are no open
+                                                    questions, write <em>“None.”</em> explicitly — empty section fails the lint.
+                                                  </p>
+                                                  <p class="small">TODO(spec-template): list open questions or write “None.”</p>
+                                                </section>
+
+                                                <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                  <h2>18. Out of scope <span class="badge badge--req-required">required</span></h2>
+                                                  <p>
+                                                    Explicit non-goals for this operation, to prevent silent scope creep. If nothing is excluded,
+                                                    write <em>“None.”</em> explicitly.
+                                                  </p>
+                                                  <p class="small">TODO(spec-template): list non-goals or write “None.”</p>
+                                                </section>
+
+                                                <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                  <h2>19. Traceability <span class="badge badge--req-required">required</span></h2>
+                                                  <p>
+                                                    Cross-links (always with anchors when possible):
+                                                  </p>
+                                                  <ul>
+                                                    <li>Methodology section(s) this operation realises.</li>
+                                                    <li>System-design section(s) (domain model, ADRs referenced).</li>
+                                                    <li>ADRs that apply (e.g. 0003 errors, 0005 security, 0006 idempotency, 0026 internal docs).</li>
+                                                    <li>Tickets (Jira / GitHub issues / RFC).</li>
+                                                    <li>OpenAPI <code>operationId</code>.</li>
+                                                  </ul>
+                                                  <p class="small">TODO(spec-template): fill traceability links.</p>
+                                                </section>
+
+                                                <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                  <h2>20. Spec changelog <span class="badge badge--req-required">required</span></h2>
+                                                  <p>
+                                                    Reverse-chronological list of <em>contract-affecting</em> changes to this spec. Each entry:
+                                                    date · author · change type (<code>breaking</code> · <code>additive</code> · <code>fix</code> ·
+                                                    <code>doc-only</code>) · description · linked PR or ADR. Different from “page history” —
+                                                    page-history covers cosmetic edits, changelog covers contract intent.
+                                                  </p>
+                                                  <p class="small">TODO(spec-template): seed first entry on real specs.</p>
+                                                </section>
+
+                                                <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                  <h2>Page history <span class="badge badge--req-required">required</span></h2>
+                                                  <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                    <table class="docs-page-history">
+                                                      <thead>
+                                                        <tr>
+                                                          <th scope="col">Date</th>
+                                                          <th scope="col">Change</th>
+                                                          <th scope="col">Author</th>
+                                                        </tr>
+                                                      </thead>
+                                                      <tbody>
+                                                        <tr>
+                                                          <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                          <td>Phase 1: production-ready template — metadata strip, status badges,
+                                                            machine-readable section markers, lint checklist, PlantUML for diagrams (per ADR
+                                                            0020).</td>
+                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                            <td>Phase 0 skeleton: 21 required sections seeded with TODO placeholders.</td>
+                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                        </tbody>
+                                                      </table>
+                                                    </div>
+                                                  </section>
+
+                                                </main>
+                                              </div>
+                                            </div>
+
+                                          </body></html>

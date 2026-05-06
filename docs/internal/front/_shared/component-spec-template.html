@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Component spec template — Docs frontend — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="template" data-spec-status="template" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Component spec — template <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — Docs frontend · _shared</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Summary</span>
+            <span>One-line description of what this component is. Fill in when copying the template.</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Owner</span>
+            <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Implementation</span>
+            <code>&lt;js-module&gt;</code> · <code>&lt;css-selector-prefix&gt;</code>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-05-06">2026-05-06</time>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Spec template</span>
+            <code>component v1</code>
+          </span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="how-to-use">
+          <h2 id="how-to-use">How to use this template</h2>
+          <p>
+            <strong>Golden template for any single-component page under
+              <code>docs/internal/front/components/</code>.</strong> Copy this file, rename to
+              <code>&lt;component-name&gt;.html</code>, then fill in every required section in the order shown
+              below.
+            </p>
+            <p>
+              <strong>Required vs optional.</strong> Each section is tagged with a badge in its heading and with a
+              <code>data-spec-required="true|false"</code> attribute on its <code>&lt;section&gt;</code> wrapper.
+              Required sections must exist and be non-empty. Optional sections may be removed when they do not apply
+              (for example, a component with a single state has no states matrix to draw) — never reorder, only remove.
+            </p>
+            <p class="small">
+              Authoring rules and the full Definition of Done for a component spec are tracked separately in
+              <code>_shared/spec-definition-of-done.html</code> (Phase 3 — to be created). Cross-cutting topics
+              (foundations, motion policy, breakpoints) live once in
+              <a href="../foundations/">foundations/</a> — link to anchors there instead of repeating their content
+              per component.
+            </p>
+          </section>
+
+          <section class="card" id="lint-checklist" aria-labelledby="lint-checklist-h">
+            <h2 id="lint-checklist-h">Lint checklist (block-merge gate, future)</h2>
+            <p class="small">
+              This block lives only on the template page. Real component specs do not duplicate it — when a
+              front-spec linter is added (Phase 3), it will read <code>data-spec-section</code> /
+              <code>data-spec-required</code> attributes from the page and apply the rules below.
+            </p>
+            <ul>
+              <li><strong>Body attributes:</strong> <code>data-spec-page="component"</code>,
+                <code>data-spec-status</code>, <code>data-spec-owner</code> on <code>&lt;body&gt;</code>.</li>
+                <li><strong>Page-type badge</strong> in the H1 reads <em>Component</em>.</li>
+                <li><strong>Every required section exists</strong> as
+                  <code>&lt;section data-spec-section="…" data-spec-required="true"&gt;</code> with non-empty content
+                  (no lone <code>TODO</code>, no empty placeholder).</li>
+                  <li><strong>Anatomy</strong> includes either an inline SVG diagram or a numbered parts list, with
+                    labelled regions matching the prose.</li>
+                    <li><strong>States &amp; variants</strong> includes a visual matrix (table or figure) covering at minimum
+                      <em>default</em>, <em>hover</em> (or focus), <em>active</em>, <em>disabled</em> when applicable.</li>
+                      <li><strong>Accessibility</strong> covers keyboard, focus, ARIA roles/state, contrast, and motion.</li>
+                      <li><strong>Do / Don't</strong> has at least three pairs.</li>
+                      <li><strong>Code handoff</strong> names every JS module, CSS selector prefix, and DOM hook.</li>
+                      <li><strong>Page history</strong> section present with at least one entry.</li>
+                    </ul>
+                  </section>
+
+                  <section class="card" id="overview" data-spec-section="overview" data-spec-required="true">
+                    <h2>1. Overview <span class="badge badge--req-required">required</span></h2>
+                    <p>
+                      <strong>What this component is and when to use it.</strong> 2–4 sentences. State the user-visible
+                      behaviour and the surface it lives on (every internal docs page, hero only, etc.). Avoid implementation
+                      language — that goes in <em>Code handoff</em>.
+                    </p>
+                    <p class="small">TODO(spec-template): replace with concrete overview prose.</p>
+                  </section>
+
+                  <section class="card" id="anatomy" data-spec-section="anatomy" data-spec-required="true">
+                    <h2>2. Anatomy <span class="badge badge--req-required">required</span></h2>
+                    <p>
+                      <strong>Labelled parts.</strong> Either an inline SVG with numbered callouts or a numbered list mapping
+                      DOM regions to user-visible roles. Each part should appear elsewhere in the spec (states, code handoff)
+                      with the same name.
+                    </p>
+                    <ol>
+                      <li><strong>Part name</strong> — what it is, what role it plays. Example DOM hook:
+                        <code>&lt;.component-name__part&gt;</code>.</li>
+                        <li><strong>Part name</strong> — …</li>
+                      </ol>
+                      <p class="small">TODO(spec-template): add inline SVG and numbered parts list.</p>
+                    </section>
+
+                    <section class="card" id="states" data-spec-section="states" data-spec-required="true">
+                      <h2>3. States &amp; variants <span class="badge badge--req-required">required</span></h2>
+                      <p>
+                        <strong>Visual matrix</strong> of every state the component renders. Cover at least default, hover or
+                        focus, active, and disabled (where applicable). Add transient states (loading, error, success) when the
+                        component has them. Capture both light and dark theme.
+                      </p>
+                      <div class="docs-table-scroll" role="region" aria-label="States matrix">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>State</th>
+                              <th>Trigger</th>
+                              <th>Visual change</th>
+                              <th>Theme parity?</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>Default</td>
+                              <td>Initial render</td>
+                              <td>—</td>
+                              <td>Yes / No</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p class="small">TODO(spec-template): expand the matrix; add screenshots or inline SVGs per row.</p>
+                    </section>
+
+                    <section class="card" id="accessibility" data-spec-section="accessibility" data-spec-required="true">
+                      <h2>4. Accessibility <span class="badge badge--req-required">required</span></h2>
+                      <p><strong>Keyboard, focus, ARIA, contrast, motion.</strong> All five must be addressed.</p>
+                      <ul>
+                        <li><strong>Keyboard:</strong> which keys reach and operate the component (Tab, Enter, Space, Esc, arrows).</li>
+                        <li><strong>Focus management:</strong> where focus moves on open/close; focus indicator contrast.</li>
+                        <li><strong>ARIA:</strong> role, <code>aria-*</code> state attributes, labelling. Prefer native semantics
+                          over ARIA; only add ARIA when the native element does not provide the role.</li>
+                          <li><strong>Contrast:</strong> text ≥ 4.5:1; non-text UI ≥ 3:1; focus rings ≥ 3:1 against adjacent colors.</li>
+                          <li><strong>Motion:</strong> behaviour under <code>prefers-reduced-motion: reduce</code>.</li>
+                        </ul>
+                        <p class="small">TODO(spec-template): document each point for this component.</p>
+                      </section>
+
+                      <section class="card" id="behavior" data-spec-section="behavior" data-spec-required="true">
+                        <h2>5. Behavior contract <span class="badge badge--req-required">required</span></h2>
+                        <p>
+                          <strong>Interactions, lifecycle, edge cases.</strong> What the component does on mount, on user action,
+                          on viewport change, on theme switch. List edge cases the implementation must handle (empty content,
+                          overflow, two instances on the same page, repeated rapid input).
+                        </p>
+                        <p class="small">TODO(spec-template): describe behaviour and edge cases.</p>
+                      </section>
+
+                      <section class="card" id="do-dont" data-spec-section="do-dont" data-spec-required="true">
+                        <h2>6. Do / Don't <span class="badge badge--req-required">required</span></h2>
+                        <p>
+                          <strong>At least three pairs.</strong> Each pair contrasts a correct usage with a tempting incorrect one.
+                          Be concrete; avoid abstract advice.
+                        </p>
+                        <div class="docs-table-scroll" role="region" aria-label="Do and don't">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Do</th>
+                                <th>Don't</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Use the component for &lt;intended use case&gt;.</td>
+                                <td>Don't use it for &lt;tempting wrong use case&gt; — see &lt;alternative&gt; instead.</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <p class="small">TODO(spec-template): add at least three concrete pairs.</p>
+                      </section>
+
+                      <section class="card" id="code-handoff" data-spec-section="code-handoff" data-spec-required="true">
+                        <h2>7. Code handoff <span class="badge badge--req-required">required</span></h2>
+                        <p>
+                          <strong>Where the component lives in the codebase.</strong>
+                        </p>
+                        <ul>
+                          <li><strong>JS module:</strong> <code>docs/assets/&lt;module&gt;.js</code> · entry function:
+                            <code>&lt;init function&gt;</code>.</li>
+                            <li><strong>CSS:</strong> <code>docs/assets/docs.css</code> · selectors prefixed
+                              <code>.&lt;component-name&gt;*</code>.</li>
+                              <li><strong>DOM hooks:</strong> <code>data-&lt;hook-name&gt;</code> attributes the runtime looks for.</li>
+                              <li><strong>Tokens used:</strong> <code>--color-*</code>, <code>--spacing-*</code>, <code>--radius-*</code>
+                                — link to <a href="../foundations/tokens.html">foundations/tokens.html</a> when relevant.</li>
+                                <li><strong>Feature ledger ID:</strong> <code>DFEAT-xxx</code> in
+                                  <a href="../architecture-map.html#feature-implementation-ledger">architecture map</a>.</li>
+                                </ul>
+                                <p class="small">TODO(spec-template): fill in actual paths and selectors.</p>
+                              </section>
+
+                              <section class="card" id="related" data-spec-section="related" data-spec-required="false">
+                                <h2>8. Related <span class="badge badge--req-optional">optional</span></h2>
+                                <p>
+                                  Links to siblings, foundations the component reuses, and patterns it participates in.
+                                </p>
+                                <ul>
+                                  <li><a href="../components/">Other components</a> in this category.</li>
+                                  <li>Foundation pages this component depends on (tokens, motion, ui-kit).</li>
+                                  <li>Patterns the component appears in (Phase 2+).</li>
+                                </ul>
+                                <p class="small">TODO(spec-template): list real related links or remove this section.</p>
+                              </section>
+
+                              <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                <h2>Page history <span class="badge badge--req-required">required</span></h2>
+                                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                  <table class="docs-page-history">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Change</th>
+                                        <th scope="col">Author</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td><time datetime="2026-05-06">2026-05-06</time></td>
+                                        <td>Phase 2: component spec template seeded with required sections.</td>
+                                        <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </section>
+
+                            </main>
+                          </div>
+                        </div>
+
+                      </body></html>

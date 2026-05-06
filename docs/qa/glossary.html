@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QA glossary — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">QA glossary</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Foundations</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Definitions used across the QA portal. When two terms are commonly confused, the entry
+            says explicitly which one we use here. Aligned with ISTQB terminology unless otherwise
+            noted.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#a-c">A–C</a>
+            <a class="docs-page-hero__chip" href="#d-f">D–F</a>
+            <a class="docs-page-hero__chip" href="#g-l">G–L</a>
+            <a class="docs-page-hero__chip" href="#m-p">M–P</a>
+            <a class="docs-page-hero__chip" href="#q-s">Q–S</a>
+            <a class="docs-page-hero__chip" href="#t-z">T–Z</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">A–C</div>
+
+        <section class="card" id="a-c">
+          <h2>A–C</h2>
+          <dl>
+            <dt>Acceptance criteria</dt>
+            <dd>Conditions a feature must meet to be accepted by the product owner. Written in the spec or ticket.</dd>
+            <dt>Acceptance test</dt>
+            <dd>A test confirming acceptance criteria are met. Often runs at the contract or system layer.</dd>
+            <dt>Accessibility</dt>
+            <dd>Whether the product is usable by people with disabilities. We target WCAG 2.1 AA.</dd>
+            <dt>Bug vs Defect</dt>
+            <dd>We treat them as synonyms. <em>Defect</em> is preferred in tickets; <em>bug</em> is fine in
+              conversation.</dd>
+              <dt>Charter (exploratory)</dt>
+              <dd>A one-line mission for an exploratory session: "Explore X with Y, looking for Z, in T minutes".</dd>
+              <dt>Checklist</dt>
+              <dd>An ordered list of pass/fail steps for a class of testing. Runs as a script.</dd>
+              <dt>Contract test</dt>
+              <dd>A test that asserts the public surface (HTTP API / OpenAPI document) matches the documented contract.
+              </dd>
+            </dl>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">D–F</div>
+
+          <section class="card" id="d-f">
+            <h2>D–F</h2>
+            <dl>
+              <dt>Defect lifecycle</dt>
+              <dd>The state machine a defect moves through. See <a href="reference/defect-lifecycle.html">defect
+                lifecycle</a>.</dd>
+                <dt>Definition of Done</dt>
+                <dd>A checklist a feature must satisfy to be considered complete. The spec DoD lives at <a href="../internal/api/_shared/spec-definition-of-done.html">spec DoD</a>.</dd>
+                <dt>Edge case</dt>
+                <dd>An input or condition at the boundary of the valid range — empty, max length, negative, off-by-one,
+                  last-day-of-month, etc.</dd>
+                  <dt>End-to-end (E2E)</dt>
+                  <dd>A test exercising a full user flow across multiple components. Sits at the top of the pyramid.</dd>
+                  <dt>Entry / exit criteria</dt>
+                  <dd>Preconditions to start a test phase, and postconditions to declare it done.</dd>
+                  <dt>Equivalence partition</dt>
+                  <dd>A set of inputs the system should treat the same way; one example per partition is enough.</dd>
+                  <dt>Evidence</dt>
+                  <dd>Screenshot, log line, or capture proving a test step passed or failed. Required for sign-off.</dd>
+                  <dt>Exploratory testing</dt>
+                  <dd>Time-boxed, charter-driven testing where design and execution are simultaneous. Not "unscripted" —
+                    chartered.</dd>
+                    <dt>Flaky test</dt>
+                    <dd>A test that passes and fails on the same code without changes. We treat flakes as defects against the
+                      test.</dd>
+                    </dl>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">G–L</div>
+
+                  <section class="card" id="g-l">
+                    <h2>G–L</h2>
+                    <dl>
+                      <dt>Golden path</dt>
+                      <dd>The most common, expected use of a feature. Always covered by automated tests.</dd>
+                      <dt>Heuristic</dt>
+                      <dd>A rule-of-thumb used as a test oracle when no formal spec exists. We use HICCUPPS-F.</dd>
+                      <dt>Idempotency</dt>
+                      <dd>Repeating a request yields the same result. See <a href="../internal/api/_shared/idempotency.html">idempotency</a>.</dd>
+                      <dt>Integration test</dt>
+                      <dd>A test exercising a component with at least one real adapter (DB, file, network).</dd>
+                    </dl>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">M–P</div>
+
+                  <section class="card" id="m-p">
+                    <h2>M–P</h2>
+                    <dl>
+                      <dt>Oracle</dt>
+                      <dd>The source of truth a test compares against. See <a href="test-strategy.html#oracles">strategy:
+                        oracles</a>.</dd>
+                        <dt>Priority</dt>
+                        <dd>How soon to fix. Independent of severity. See <a href="reference/bug-severity-and-priority.html">matrix</a>.</dd>
+                        <dt>Pass / fail / needs follow-up</dt>
+                        <dd>The three outcomes of a checklist row. <em>Needs follow-up</em> means works but with a non-blocking
+                          concern.</dd>
+                        </dl>
+                      </section>
+
+                      <div class="docs-section-divider" aria-hidden="true">Q–S</div>
+
+                      <section class="card" id="q-s">
+                        <h2>Q–S</h2>
+                        <dl>
+                          <dt>Regression</dt>
+                          <dd>A previously working behavior that broke. A regression test is the test that would have caught it.</dd>
+                          <dt>Risk-based testing</dt>
+                          <dd>Allocating coverage by impact × likelihood, not by feature count.</dd>
+                          <dt>Sanity testing</dt>
+                          <dd>A narrow check that a specific area still works after a focused change. Smaller than smoke.</dd>
+                          <dt>Severity</dt>
+                          <dd>How bad the impact of a defect is, independent of priority. See <a href="reference/bug-severity-and-priority.html">matrix</a>.</dd>
+                          <dt>Smoke testing</dt>
+                          <dd>A broad shallow check that the build is "live and lit": health, golden paths, key UI.</dd>
+                          <dt>Sign-off</dt>
+                          <dd>QA's recorded recommendation on a release: Go / Conditional / No-go.</dd>
+                        </dl>
+                      </section>
+
+                      <div class="docs-section-divider" aria-hidden="true">T–Z</div>
+
+                      <section class="card" id="t-z">
+                        <h2>T–Z</h2>
+                        <dl>
+                          <dt>Test case</dt>
+                          <dd>A documented scenario with steps, inputs, and expected results. See <a href="templates/test-case-template.html">template</a>.</dd>
+                          <dt>Test data</dt>
+                          <dd>The fixtures or seed values needed by a test. Belongs in the test, not in shared databases.</dd>
+                          <dt>Test plan</dt>
+                          <dd>The "what we will test" document for a feature or release. See <a href="templates/test-plan-template.html">template</a>.</dd>
+                          <dt>Traceability</dt>
+                          <dd>The link from a requirement → test case → defect. Achieved here by referencing spec anchors.</dd>
+                          <dt>Triage</dt>
+                          <dd>Classifying defects after intake — severity, priority, owner.</dd>
+                          <dt>Unit test</dt>
+                          <dd>A test for one function/class with no I/O. Bottom of the pyramid.</dd>
+                          <dt>UAT (User acceptance testing)</dt>
+                          <dd>Acceptance tests run by or on behalf of end users. Internal sign-off for this project; we do not
+                            maintain a separate UAT environment.</dd>
+                          </dl>
+                        </section>
+
+                        <section class="card" id="page-history">
+                          <h2>Page history</h2>
+                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                            <table class="docs-page-history">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Change</th>
+                                  <th>Author</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                  <td>Initial QA glossary.</td>
+                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+
+                      </main>
+                    </div>
+                  </div>
+
+                </body></html>

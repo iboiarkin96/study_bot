@@ -7,7 +7,6 @@
   <title>Backlog — quality and scale roadmap</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
-  <link rel="stylesheet" href="../assets/internal-layout.css">
   <link rel="stylesheet" href="backlog.css">
   <script defer src="backlog.js"></script>
   <script defer src="../assets/docs-nav.js"></script>
@@ -16,6 +15,7 @@
 
   <script defer src="../assets/internal-sidebar.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <script defer src="../assets/docs-syntax.js"></script>
 </head>
 
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
@@ -416,7 +416,7 @@
                             pip
                             cache, <code>make verify</code> then <code>pre-commit run --all-files</code>. Coverage enforced via
                             pytest-cov and <code>fail_under</code> in <code>pyproject.toml</code>. Local pre-push drift check:
-                            <code>make verify-ci</code>. Contributor note in engineering practices (CI / reproduce locally).
+                            <code>make verify</code>. Contributor note in engineering practices (CI / reproduce locally).
                           </dd>
                         </dl>
 
@@ -546,7 +546,7 @@
                             0019</a>
                             (pinning, pip-audit, cadence, exceptions). <code>pip_audit</code> pinned in <code>requirements.txt</code>;
                             <code>make deps-audit</code> (OSV scan, <code>.pip-audit-cache</code>); CI quality job runs it before
-                            <code>make verify</code> (<code>.github/workflows/ci.yml</code>); <code>make verify-ci</code> includes
+                            <code>make verify</code> (<code>.github/workflows/ci.yml</code>); <code>make verify</code> includes
                             <code>deps-audit</code> for local pre-push parity; engineering practices table documents the command.
                           </dd>
                         </dl>
@@ -1225,7 +1225,7 @@
                           <dd>
                             <code>publish-image</code> job in <code>.github/workflows/ci.yml</code> (GHCR, metadata tags, GHA cache);
                             <a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a>;
-                            <code>make docker-build</code>
+                            <code>docker build -t study-app-api:local .</code>
                             for local parity.
                           </dd>
                         </dl>
@@ -1277,7 +1277,7 @@
                           <dd>
                             In GitHub Actions, run a small smoke or short load (health + one protected route, or
                             <code>tools/load_testing/</code>) so latency and 5xx regressions show without manual
-                            <code>make run-loadtest-api</code>. Builds on <a href="#item-11">item 11</a>.
+                            <code>ENV_FILE=.env bash tools/load_testing/run_with_local_api.sh</code>. Builds on <a href="#item-11">item 11</a>.
                           </dd>
                           <dt>2) Problem &amp; value</dt>
                           <dd>
@@ -1434,7 +1434,7 @@
                               <li>Interactive controls in collapsed/compact states keep at least 44px touch target width.</li>
                               <li>Tablet/phone drawer mode hides desktop sidebar and keeps reliable open/close behavior.</li>
                               <li>Implemented behavior is documented in
-                                <code>docs/internal/front/docs-frontend-menu-and-theme-controls.html</code>.
+                                <code>docs/internal/front/contracts/menu-and-theme.html</code>.
                               </li>
                             </ul>
                           </dd>
@@ -1675,61 +1675,306 @@
                         </dl>
                       </section>
 
-                      <section id="page-history" class="card">
-                        <h2>Page history</h2>
-                        <div class="docs-table-scroll" role="region" aria-label="Page history">
-                          <table class="docs-page-history">
-                            <thead>
-                              <tr>
-                                <th scope="col">Date</th>
-                                <th scope="col">Change</th>
-                                <th scope="col">Author</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td><time datetime="2026-04-23">2026-04-23</time></td>
-                                <td>Backlog cockpit rollout: moved implementation details to internal frontend screen docs, redesigned
-                                  this page as a dashboard (hero/search/quick presets/view switch/new-task anchor), simplified the
-                                  model and filters (normalized tags/priorities and grouped block view), and added backlog items for
-                                  frontend validation Swagger and PDoc with unified navigation/theme.</td>
-                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                </tr>
-                                <tr>
-                                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                  <td>Added backlog item for iPhone 17 Pro Max navigation fix and adaptive docs layout by screen size.
-                                  </td>
-                                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                </tr>
-                                <tr>
-                                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                  <td>Added critical QA foundation backlog item for tester space and full frontend/backend testing
-                                    process.</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                    <td>Added backlog item for document versioning and Document Version field policy.</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                    <td>Expanded Redis rate-limiting backlog item and added Redis idempotency/cache adoption item.</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                  <tr>
-                                    <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                    <td>Added Page history section (repository baseline).</td>
-                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </section>
+                      <section class="card backlog-item" id="item-39" data-group="docs" data-tags="feature" data-priority="P2" data-status="todo" data-created-at="2026-04-29" data-risk="medium" data-confidence="medium" data-owner="Ivan Boyarkin" data-eta-days="5-7">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Interactive component explorer (Storybook-tier state previews)
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Build an interactive component preview surface with togglable states (default / hover / focus / active / disabled / loading / error) for every UI primitive in <a href="../internal/front/foundations/ui-kit.html">UI kit</a> and <a href="../internal/front/components/popups-and-overlays.html">popup inventory</a>.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> today states are described in tables but readers cannot see hover/focus/disabled live without the application running. Stripe / GitHub Primer / Atlassian all ship live previews.<br>
+                            <strong>Value:</strong> closes the last industry-leading gap; lets reviewers verify visual states before merging; eliminates drift between described and rendered states.
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>
+                            Either: (a) Storybook 8 with vanilla framework adapter, components imported from <code>docs/assets/*</code>; (b) hand-rolled <code>&lt;iframe srcdoc&gt;</code> explorer per component using a <code>data-state</code> toggler. Decision needed before scoping. Output: at least one interactive page covering all 5 UI-kit primitives + 7 popup types + lightbox + drawer.
+                          </dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 days</div><div class="time-cell"><strong>2 h/day</strong> ~7 days</div><div class="time-cell"><strong>1 h/day</strong> ~14 days</div></div></dd>
+                        </dl>
+                      </section>
 
-                          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                        </main>
-                      </div>
-                    </div>
+                      <section class="card backlog-item" id="item-40" data-group="docs" data-tags="tech-debt" data-priority="P2" data-status="todo" data-created-at="2026-04-29" data-risk="low" data-confidence="high" data-owner="Ivan Boyarkin" data-eta-days="1-2">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Backfill screen specs for top-3 unspec'd pages
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Write screen specs (using <a href="../internal/front/screens/docs-screen-template.html">the upgraded screen-template</a>) for three high-traffic pages currently without one: search results, settings / theme controls, error / empty states.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> the template now requires Browser matrix + per-component a11y + Do/Don't, but only 2 of N rendered screens have a spec (home + backlog). Coverage gap remains the main reason DX still feels uneven across the portal.<br>
+                            <strong>Value:</strong> brings the screen-spec catalogue from "showcase" to "comprehensive"; surfaces hidden contracts (e.g. search empty state).
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Three new pages under <code>docs/internal/front/screens/</code>: search-results, settings (theme controls), error/empty states. Each: gallery, anatomy, layout map, behavior, browser matrix, per-component a11y, do/don't, page history.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~1 day</div><div class="time-cell"><strong>2 h/day</strong> ~1.5 days</div><div class="time-cell"><strong>1 h/day</strong> ~3 days</div></div></dd>
+                        </dl>
+                      </section>
 
-                  </body></html>
+                      <section class="card backlog-item" id="item-41" data-group="docs" data-tags="feature" data-priority="P3" data-status="todo" data-created-at="2026-04-29" data-risk="low" data-confidence="medium" data-owner="Ivan Boyarkin" data-eta-days="0.5-1">
+                        <h2>
+                          <span class="priority-tag">P3</span>
+                          Deprecation framework and migration guide template
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Formalize how a frontend component / module is marked deprecated and how readers find the migration path.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> we already have a "deprecated" badge value in <code>screen-status</code> but no defined process — when a component is removed, readers are stranded.<br>
+                            <strong>Value:</strong> the cost is low because we have no deprecated components <em>today</em>, but during the next refactor (e.g. command palette redesign) we will need this immediately.
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>(a) Add a "Deprecated" page-type variant + CSS badge; (b) write <code>docs/internal/front/migration-template.html</code> with required sections (what changed, why, migration steps, removal timeline); (c) update style guide page-skeleton with the deprecation rule.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~0.5 day</div><div class="time-cell"><strong>2 h/day</strong> ~1 day</div><div class="time-cell"><strong>1 h/day</strong> ~2 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-42" data-group="docs" data-tags="feature" data-priority="P3" data-status="todo" data-created-at="2026-04-29" data-risk="low" data-confidence="medium" data-owner="Ivan Boyarkin" data-eta-days="0.5-1">
+                        <h2>
+                          <span class="priority-tag">P3</span>
+                          Component dependency graph (auto-generated)
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Auto-generate a graph that shows which JS modules / CSS files / data-* contracts each component depends on, derived from the data already collected in <a href="../internal/front/foundations/js-modules.html">JS modules reference</a> and <a href="../internal/front/foundations/css-architecture.html">CSS architecture</a>.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> two reference pages list dependencies but readers cannot see "if I rename <code>data-tooltip</code>, who breaks?".<br>
+                            <strong>Value:</strong> visualizes blast radius of any contract change; reduces "I didn't know that page used this".
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Script <code>scripts/generate_component_dep_graph.py</code> outputs <code>docs-frontend-component-graph.html</code> with a SVG / D3-style node-edge diagram. Alternative: a clickable adjacency-matrix table.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~0.5 day</div><div class="time-cell"><strong>2 h/day</strong> ~1 day</div><div class="time-cell"><strong>1 h/day</strong> ~2 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-43" data-group="docs" data-tags="feature" data-priority="P3" data-status="todo" data-created-at="2026-04-29" data-risk="low" data-confidence="low" data-owner="Ivan Boyarkin" data-eta-days="2-3">
+                        <h2>
+                          <span class="priority-tag">P3</span>
+                          Motion specs with frame-by-frame video / Lottie reference
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Replace prose-only motion descriptions with capture-ready specs: short MP4 clips (or Lottie JSON) and frame timing tables for non-trivial animations (boot intro phases, magnetic CTA, command palette open, drawer slide).</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> motion is described as <em>"slide in 200 ms ease-out"</em> — useless for verifying intent without running the page.<br>
+                            <strong>Value:</strong> matches Stripe motion guidelines; lets contributors validate animations against reference clips before merging.
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Pick one of: (a) Playwright video capture extension to <code>capture_screen_specs.py</code> producing 2-3 s clips; (b) Lottie export from a separate animation source. Apply to the home boot-intro overlay first (highest visual complexity), then command palette + drawer.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~2 days</div><div class="time-cell"><strong>2 h/day</strong> ~3 days</div><div class="time-cell"><strong>1 h/day</strong> ~6 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-44" data-group="docs" data-tags="tech-debt" data-priority="P2" data-status="todo" data-created-at="2026-04-29" data-risk="low" data-confidence="medium" data-owner="Ivan Boyarkin" data-eta-days="1-2">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Per-component testing matrix (link spec to e2e/unit tests)
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Add a "Tests" column to the per-component states table on every component page, linking each row to the actual test that exercises that state (file path + test name).</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> states are described but readers cannot answer "is this verified by automation, or only by my eyes?"<br>
+                            <strong>Value:</strong> turns spec into living contract; gaps surface immediately ("error state listed but no test").
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Inventory existing tests under <code>tests/</code> (Python) and any frontend test scaffolding; create a one-line "Tests" row per component on the 5 component pages; flag missing coverage as small follow-ups.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~1 day</div><div class="time-cell"><strong>2 h/day</strong> ~1.5 days</div><div class="time-cell"><strong>1 h/day</strong> ~3 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-45" data-group="docs" data-tags="feature" data-priority="P2" data-status="todo" data-created-at="2026-04-29" data-risk="low" data-confidence="high" data-owner="Ivan Boyarkin" data-eta-days="0.5-1">
+                        <h2>
+                          <span class="priority-tag">P2</span>
+                          Changelog rollup automation from page-history tables
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Aggregate all <code>&lt;table class="docs-page-history"&gt;</code> entries across <code>docs/</code> into a weekly / per-release rollup, output as <code>docs/CHANGELOG.md</code> append (or a dedicated <code>docs/CHANGELOG.html</code>).</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> every page logs its own history, but there is no portal-wide "what changed this week" view. Readers cannot see the docs cadence.<br>
+                            <strong>Value:</strong> automatic release notes; replaces hand-maintained changelog drift; matches how Stripe docs publish weekly digests.
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>Script <code>scripts/aggregate_page_history.py</code> walks <code>docs/**/*.html</code>, parses history rows, groups by week / release, emits Markdown. Optional: GitHub Action that opens a PR with a fresh rollup every Monday.</dd>
+                          <dt>4) Rough estimate (calendar days)</dt>
+                          <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~0.5 day</div><div class="time-cell"><strong>2 h/day</strong> ~1 day</div><div class="time-cell"><strong>1 h/day</strong> ~2 days</div></div></dd>
+                        </dl>
+                      </section>
+
+                      <section class="card backlog-item" id="item-47" data-group="frontend" data-tags="feature" data-priority="P1" data-status="todo" data-created-at="2026-05-01" data-risk="medium" data-confidence="high" data-owner="Ivan Boyarkin" data-eta-days="2-3">
+                        <h2>
+                          <span class="priority-tag">P1</span>
+                          Playwright visual-regression harness for component galleries (mandatory follow-up)
+                          <span class="status-pill"></span>
+                        </h2>
+                        <dl>
+                          <dt>1) Summary</dt>
+                          <dd>Stand up a Playwright harness in <code>tests/visual/</code> that auto-generates the PNG screenshots referenced by the component galleries in <a href="../internal/front/screens/components/README.html">docs/internal/front/screens/components/README.html</a>. Replaces the manual capture flow that currently fills the gallery placeholders on the FAB spec pages.</dd>
+                          <dt>2) Problem &amp; value</dt>
+                          <dd>
+                            <strong>Problem:</strong> manual screenshots drift the moment CSS changes ship. The bug-FAB sizing regression that landed before 2026-05-01 (38×38 mobile / 52×52 desktop, below WCAG 44×44 floor) would have been caught by a single visual-regression run; instead it lived in the docs as the "intended" mobile shrink. Until a harness exists, every gallery is a manual capture with the same drift risk.<br>
+                            <strong>Value:</strong> reviewers see the actual rendered component on every PR; gallery PNGs always match <code>main</code>; new viewport tiers automatically expand the matrix; the convention defined in the README becomes self-enforcing instead of paper-only.
+                          </dd>
+                          <dt>3) Scope &amp; deliverables</dt>
+                          <dd>
+                            <ul>
+                              <li><code>tests/visual/playwright.config.ts</code> with the four canonical viewports
+                                (1440×900, 1024×1366, 430×932, 375×667), light + dark theme, DPR 2.</li>
+                                <li><code>tests/visual/components/</code> spec files — one per component spec page —
+                                  that navigate to a host page, optionally trigger a state (hover/focus/click/scroll),
+                                  wait for a stability marker (no in-flight transitions), and emit a PNG.</li>
+                                  <li>Output target: <code>docs/internal/front/screens/components/assets/&lt;component&gt;-&lt;viewport&gt;[-&lt;state&gt;][-&lt;theme&gt;].png</code>
+                                    — exact filenames consumed by the existing gallery placeholders.</li>
+                                    <li><code>make docs-screenshots</code> entrypoint that boots the local docs server,
+                                      runs the harness, replaces the dashed placeholders with real <code>&lt;img&gt;</code>
+                                      tags via a templating step (or relies on a "use real if present" gallery script).</li>
+                                      <li>CI job that runs the harness on PR, fails on visual diff above tolerance, posts the
+                                        diff PNGs as a comment for review.</li>
+                                        <li>First-pass component coverage (priority order):
+                                          <code>report-bug-fab</code>, <code>rocket-launch-animation</code>,
+                                          <code>internal-sidebar-drawer</code>, <code>docs-feedback-modal</code>,
+                                          <code>docs-page-hero</code>, <code>internal-layout</code> shell.</li>
+                                          <li>README update: <a href="../internal/front/screens/components/README.html#future-playwright">screens/components/README §future-playwright</a>
+                                            flips manual capture to a fallback after the harness lands.</li>
+                                          </ul>
+                                        </dd>
+                                        <dt>4) Rough estimate (calendar days)</dt>
+                                        <dd>
+                                          <div class="time-grid">
+                                            <div class="time-cell"><strong>3 h/day</strong> ~3 days (~9 h)</div>
+                                            <div class="time-cell"><strong>2 h/day</strong> ~5 days</div>
+                                            <div class="time-cell"><strong>1 h/day</strong> ~9 days</div>
+                                          </div>
+                                        </dd>
+                                        <dt>5) Acceptance criteria</dt>
+                                        <dd>
+                                          <ul>
+                                            <li><code>make docs-screenshots</code> regenerates every PNG referenced by a
+                                              component gallery; running it twice produces byte-identical output.</li>
+                                              <li>The bug-FAB and rocket-launch-animation pages render with real
+                                                <code>&lt;img&gt;</code> elements (no dashed placeholders) for at least the four
+                                                canonical viewports.</li>
+                                                <li>CI on a PR that changes <code>docs/assets/docs.css</code> fails when a captured
+                                                  viewport diff exceeds the configured pixel tolerance.</li>
+                                                  <li>The harness covers the first-pass component list above; remaining components are
+                                                    queued in follow-up tickets, not blocked on this one.</li>
+                                                    <li>Documentation in <code>screens/components/README.html</code> describes how to add
+                                                      a new component to the harness in &lt; 30 lines of spec code.</li>
+                                                    </ul>
+                                                  </dd>
+                                                  <dt>6) Mandatory note</dt>
+                                                  <dd>
+                                                    This item is a <strong>mandatory follow-up</strong> to the manual screenshots
+                                                    convention introduced on 2026-05-01 (Phase 2α). The convention is a bridge; this
+                                                    harness is the destination. Do not retire the manual capture instructions until
+                                                    this lands.
+                                                  </dd>
+                                                </dl>
+                                              </section>
+
+                                              <section class="card backlog-item" id="item-46" data-group="docs" data-tags="bug" data-priority="P2" data-status="blocked" data-created-at="2026-04-29" data-risk="low" data-confidence="high" data-owner="Ivan Boyarkin" data-eta-days="0.1" data-blocked-days="0">
+                                                <h2>
+                                                  <span class="priority-tag">P2</span>
+                                                  Render <code>review_slot_state_machine.svg</code> (blocked on Kroki)
+                                                  <span class="status-pill"></span>
+                                                </h2>
+                                                <dl>
+                                                  <dt>1) Summary</dt>
+                                                  <dd>Run <code>scripts/regenerate_docs.py</code> to render the new state-machine PUML source into <code>docs/uml/rendered/review_slot_state_machine.svg</code>. The page that consumes it (<code>internal/api/conspectus/operations/post-…actions-review.html</code> line 851) currently shows a broken image.</dd>
+                                                  <dt>2) Problem &amp; value</dt>
+                                                  <dd>
+                                                    <strong>Problem:</strong> source <code>.puml</code> exists at <code>docs/uml/sequences/review_slot_state_machine.puml</code> but rendering pipeline (Kroki at <code>kroki.io</code>) returned HTTP 504 / connection timeout on every retry on 2026-04-29.<br>
+                                                    <strong>Value:</strong> readers of the apply-review API page cannot see the state diagram. Trivial fix once the external service recovers.
+                                                  </dd>
+                                                  <dt>3) Scope &amp; deliverables</dt>
+                                                  <dd>(a) Retry <code>.venv/bin/python scripts/regenerate_docs.py</code> when Kroki responds. (b) Optionally: install <code>plantuml</code> via Homebrew as a local fallback for future outages — update <code>docs/uml/README.txt</code> with the new command.</dd>
+                                                  <dt>4) Rough estimate (calendar days)</dt>
+                                                  <dd><div class="time-grid"><div class="time-cell"><strong>3 h/day</strong> ~5 minutes once unblocked</div><div class="time-cell"><strong>2 h/day</strong> ~5 min</div><div class="time-cell"><strong>1 h/day</strong> ~5 min</div></div></dd>
+                                                </dl>
+                                              </section>
+
+                                              <section id="page-history" class="card">
+                                                <h2>Page history</h2>
+                                                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                  <table class="docs-page-history">
+                                                    <thead>
+                                                      <tr>
+                                                        <th scope="col">Date</th>
+                                                        <th scope="col">Change</th>
+                                                        <th scope="col">Author</th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr>
+                                                        <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                        <td>Added items 39–46: 7 follow-ups from the front-docs upgrade audit (interactive component explorer, screen-spec backfill, deprecation framework, dependency graph, motion-spec videos, testing matrix, changelog rollup) plus the blocked diagram-render bug (item-46).</td>
+                                                        <td>Ivan Boyarkin</td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                        <td>Backlog cockpit rollout: moved implementation details to internal frontend screen docs, redesigned
+                                                          this page as a dashboard (hero/search/quick presets/view switch/new-task anchor), simplified the
+                                                          model and filters (normalized tags/priorities and grouped block view), and added backlog items for
+                                                          frontend validation Swagger and PDoc with unified navigation/theme.</td>
+                                                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                          <td>Added backlog item for iPhone 17 Pro Max navigation fix and adaptive docs layout by screen size.
+                                                          </td>
+                                                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                          <td>Added critical QA foundation backlog item for tester space and full frontend/backend testing
+                                                            process.</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                            <td>Added backlog item for document versioning and Document Version field policy.</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                            <td>Expanded Redis rate-limiting backlog item and added Redis idempotency/cache adoption item.</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                            <td>Added Page history section (repository baseline).</td>
+                                                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                          </tr>
+                                                        </tbody>
+                                                      </table>
+                                                    </div>
+                                                  </section>
+
+                                                </main>
+                                              </div>
+                                            </div>
+
+                                          </body></html>

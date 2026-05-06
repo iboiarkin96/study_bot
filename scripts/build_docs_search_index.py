@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -133,11 +134,25 @@ def _tokenize(text: str) -> list[str]:
 def _iter_docs_html() -> list[Path]:
     """List HTML files under docs excluding static fragments.
 
+    Restricted to git-tracked files so locally gitignored notes do not leak
+    into the committed search index and trigger CI drift.
+
     Returns:
         Sorted file paths relative to docs root.
     """
+    try:
+        output = subprocess.check_output(
+            ["git", "ls-files", "-z", "--", "docs"],
+            cwd=ROOT,
+            stderr=subprocess.DEVNULL,
+        )
+        tracked = {ROOT / rel for rel in output.decode().split("\0") if rel.endswith(".html")}
+    except (OSError, subprocess.CalledProcessError):
+        tracked = None
     return sorted(
-        path for path in DOCS_DIR.rglob("*.html") if "assets" not in path.parts and path.is_file()
+        path
+        for path in DOCS_DIR.rglob("*.html")
+        if "assets" not in path.parts and path.is_file() and (tracked is None or path in tracked)
     )
 
 

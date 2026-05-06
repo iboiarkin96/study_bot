@@ -1,0 +1,49 @@
+@startuml
+title Docs frontend — Rocket smoke renderer pipeline (per fixed step)
+
+skinparam linetype ortho
+
+rectangle "Particle pool\n(2 400 GL / 800 2D)" as Pool
+
+rectangle "emit()" as Emit
+note bottom of Emit
+  Boil phase only:
+  squashed-disc emission
+  around nozzle, vy ≥ 0
+end note
+
+rectangle "physicsStep()" as Phys
+note bottom of Phys
+  settle + drag + 3-frequency swirl
+  ceiling clamp at startY − 2·s
+  smoke killed at lift-off
+end note
+
+cloud "WebGL2 path\ninstanced quads\n+ domain-warped FBM shader" as GL
+cloud "Canvas2D fallback\n3-stop radial gradients" as C2
+
+frame "smoke pass\npremultiplied over" as P1
+frame "hot pass\nadditive" as P2
+
+Pool --> Emit : write head\n(ring buffer)
+Emit --> Phys : updated state
+Phys --> GL : useGL = true
+Phys --> C2 : useGL = false
+
+GL --> P1
+GL --> P2
+C2 --> P1
+C2 --> P2
+
+note right of GL
+  pack instance buffers (positions × DPR)
+  drawArraysInstanced × 2 passes
+  uPass uniform routes particle type
+end note
+
+note right of C2
+  iterate pool, draw radialGradient
+  globalCompositeOperation per pass
+end note
+
+@enduml

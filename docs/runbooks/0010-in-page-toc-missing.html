@@ -1,19 +1,19 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Runbook: In-page “On this page” sidebar missing or empty</title>
+  <title>Runbook: In-page "On this page" sidebar missing or empty</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
-
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
+
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
@@ -27,20 +27,22 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Runbook: In-page “On this page” sidebar missing or empty</h1>
+        <h1 class="internal-h1--accent-tail">Runbook: In-page "On this page" sidebar missing or empty</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
+
         <section class="card">
           <h2>Trigger</h2>
           <ul>
             <li>
-              A long HTML page under <code>docs/</code> (not <code>docs/pdoc/</code>) has no “On this page” list, or the list is empty.
+              A long HTML page under <code>docs/</code> (not <code>docs/pdoc/</code>) has no "On this page" list, or the list is empty.
             </li>
             <li>
               You expect a main column plus a right-hand (or stacked) table of contents from <code>docs/assets/docs-nav.js</code>.
             </li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Fast triage</h2>
           <ol>
@@ -61,6 +63,7 @@
             </li>
           </ol>
         </section>
+
         <section class="card">
           <h2>Most common causes</h2>
           <ul>
@@ -77,21 +80,22 @@
               <strong>Diagram headings</strong> — <code>h3</code> inside <code>figure.sys-diagram</code> / <code>.sys-diagram</code> is skipped.
             </li>
             <li>
-              <strong>Long list</strong> — Many headings still use one mount; the sidebar scrolls. To hide the sidebar on one page, remove that page’s mount only.
+              <strong>Long list</strong> — Many headings still use one mount; the sidebar scrolls. To hide the sidebar on one page, remove that page's mount only.
             </li>
             <li>
-              <strong>Two TOCs</strong> — Old <code>Contents</code> blocks are removed by <code>docs-nav.js</code>; keep only the generated “On this page”.
+              <strong>Two TOCs</strong> — Old <code>Contents</code> blocks are removed by <code>docs-nav.js</code>; keep only the generated "On this page".
             </li>
           </ul>
         </section>
+
         <section class="card">
           <h2>Recovery steps</h2>
           <ol>
             <li>
               Ensure page shell is correct: <code>&lt;main class="container"&gt;</code> with
               <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> near the top (see
-              <a href="../developer/0008-docs-pipeline.html#in-page-on-this-page-sidebar">Documentation pipeline → In-page
-                “On this page” sidebar</a>).
+              <a href="../developer/0008-docs-pipeline.html#inpage-toc">Documentation pipeline → In-page
+                "On this page" sidebar</a>).
               </li>
               <li>
                 Ensure each section you want in the TOC has an <code>h2</code> or <code>h3</code> with a stable
@@ -105,13 +109,15 @@
               </li>
             </ol>
           </section>
+
           <section class="card">
             <h2>Exit criteria</h2>
             <ul>
-              <li>“On this page” lists the right sections; the active link updates as you scroll.</li>
+              <li>"On this page" lists the right sections; the active link updates as you scroll.</li>
               <li>No console errors from <code>docs-nav.js</code> on that page.</li>
             </ul>
           </section>
+
           <section id="page-history" class="card">
             <h2>Page history</h2>
             <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -134,7 +140,6 @@
             </div>
           </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
         </main>
       </div>
     </div>

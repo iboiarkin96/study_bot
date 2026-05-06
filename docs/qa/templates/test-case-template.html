@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test case template — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Test case template</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Templates</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Canonical shape for a manually-executed test case. Copy the template block below
+            into the ticket or test plan, fill every field, delete this commentary.
+          </p>
+          <p>
+            For automated contract tests, mirror the same fields in the test docstring so a future
+            reader can map test ↔ behavior without leaving the file.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#fields">Fields</a>
+            <a class="docs-page-hero__chip" href="#template">Template</a>
+            <a class="docs-page-hero__chip" href="#worked-example">Worked example</a>
+            <a class="docs-page-hero__chip" href="#do-dont">Do / don't</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Fields</div>
+
+        <section class="card" id="fields">
+          <h2>Fields and rules</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Test case fields">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Required</th>
+                  <th>Rule</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ID</td>
+                  <td>Yes</td>
+                  <td><code>TC-&lt;area&gt;-&lt;number&gt;</code>, e.g. <code>TC-API-USER-014</code>. Stable; never
+                    reused.</td>
+                  </tr>
+                  <tr>
+                    <td>Title</td>
+                    <td>Yes</td>
+                    <td>Imperative, action + outcome. <em>"Reject POST /user with missing email — 422"</em>.</td>
+                  </tr>
+                  <tr>
+                    <td>Area</td>
+                    <td>Yes</td>
+                    <td>Top-level resource or page (User, Conspectus, Docs portal, Auth, …).</td>
+                  </tr>
+                  <tr>
+                    <td>Type</td>
+                    <td>Yes</td>
+                    <td>One of: contract, system, manual UI, accessibility, exploratory, regression.</td>
+                  </tr>
+                  <tr>
+                    <td>Priority</td>
+                    <td>Yes</td>
+                    <td>P1 / P2 / P3 — how often we run it (P1 every release, P3 ad-hoc).</td>
+                  </tr>
+                  <tr>
+                    <td>Linked spec</td>
+                    <td>Yes</td>
+                    <td>Anchor under <code>docs/internal/api/&lt;resource&gt;/</code> or other authoritative page.</td>
+                  </tr>
+                  <tr>
+                    <td>Preconditions</td>
+                    <td>Yes</td>
+                    <td>System state required before step 1. List, never prose.</td>
+                  </tr>
+                  <tr>
+                    <td>Test data</td>
+                    <td>Yes</td>
+                    <td>Inline values or a named fixture. Don't say "any user" — name it.</td>
+                  </tr>
+                  <tr>
+                    <td>Steps</td>
+                    <td>Yes</td>
+                    <td>Numbered, one action per row. Past tense for the recorded run.</td>
+                  </tr>
+                  <tr>
+                    <td>Expected</td>
+                    <td>Yes</td>
+                    <td>One row per step where the result is observable.</td>
+                  </tr>
+                  <tr>
+                    <td>Postconditions</td>
+                    <td>No</td>
+                    <td>Cleanup steps if the test mutates state.</td>
+                  </tr>
+                  <tr>
+                    <td>Evidence</td>
+                    <td>Yes</td>
+                    <td>What to capture for sign-off (screenshot of X, response body of Y).</td>
+                  </tr>
+                  <tr>
+                    <td>Notes</td>
+                    <td>No</td>
+                    <td>Edge cases out of scope, related cases, or known flake conditions.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Template</div>
+
+          <section class="card" id="template">
+            <h2>Template — copy this block</h2>
+            <pre><code class="language-markdown">### TC-&lt;AREA&gt;-&lt;NUMBER&gt; — &lt;Imperative title&gt;
+
+              - **Area:** &lt;User | Conspectus | Docs | …&gt;
+              - **Type:** &lt;contract | system | manual UI | a11y | exploratory | regression&gt;
+              - **Priority:** &lt;P1 | P2 | P3&gt;
+              - **Linked spec:** &lt;link to internal API spec or page anchor&gt;
+
+              #### Preconditions
+              - &lt;state required before step 1&gt;
+
+              #### Test data
+              - &lt;named fixture or inline values&gt;
+
+              #### Steps and expected results
+              | # | Step | Expected |
+              |---|------|----------|
+              | 1 | &lt;action&gt; | &lt;observable result&gt; |
+              | 2 | &lt;action&gt; | &lt;observable result&gt; |
+
+              #### Evidence to capture
+              - &lt;screenshot of …, response body of …, log line containing …&gt;
+
+              #### Postconditions
+              - &lt;cleanup, or "none — test does not mutate state"&gt;
+
+              #### Notes
+              - &lt;optional&gt;
+            </code></pre>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Worked example</div>
+
+          <section class="card" id="worked-example">
+            <h2>Worked example</h2>
+            <pre><code class="language-markdown">### TC-API-USER-014 — Reject POST /api/v1/user with missing email — 422
+
+              - **Area:** User
+              - **Type:** contract
+              - **Priority:** P1
+              - **Linked spec:** internal/api/user/operations/post-api-v1-user.html#request-body
+
+              #### Preconditions
+              - API is reachable on the local dev server at http://127.0.0.1:8000.
+              - Caller has a valid auth token (see auth shared doc).
+
+              #### Test data
+              - Body: { "first_name": "Ivan", "last_name": "Boyarkin" }    (no email field)
+              - Headers: Authorization: Bearer &lt;token&gt;, Idempotency-Key: tc-api-user-014-001
+
+              #### Steps and expected results
+              | # | Step | Expected |
+              |---|------|----------|
+              | 1 | POST /api/v1/user with the body above | HTTP 422 |
+              | 2 | Inspect response body | Conforms to error envelope; contains code "validation_error" and a field error pointing at "email" |
+              | 3 | Inspect response headers | X-Request-ID is present and is a UUID |
+
+              #### Evidence to capture
+              - Full request/response capture from the HTTP client.
+              - The X-Request-ID header value (used to find the matching log line).
+
+              #### Postconditions
+              - None — request was rejected, no DB change.
+
+              #### Notes
+              - Pair test: TC-API-USER-015 covers blank string vs missing key (both reject as invalid).
+            </code></pre>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Do / don't</div>
+
+          <section class="card" id="do-dont">
+            <h2>Do / don't</h2>
+            <ul>
+              <li><strong>Do</strong> link to a spec anchor as the oracle. <strong>Don't</strong> restate the spec in the
+                case.</li>
+                <li><strong>Do</strong> name fixtures (e.g. <code>fixture: user_default</code>). <strong>Don't</strong> say
+                  "any user".</li>
+                  <li><strong>Do</strong> capture the <code>X-Request-ID</code> on every API case. <strong>Don't</strong> rely
+                    on log timestamps to correlate.</li>
+                    <li><strong>Do</strong> split a multi-assertion case into multiple cases when assertions cover different
+                      concerns.
+                      <strong>Don't</strong> stuff happy-path + error path into one case.
+                    </li>
+                    <li><strong>Don't</strong> include implementation details (table names, internal classes) — they invalidate
+                      the case after refactors.</li>
+                    </ul>
+                  </section>
+
+                  <section class="card" id="page-history">
+                    <h2>Page history</h2>
+                    <div class="docs-table-scroll" role="region" aria-label="Page history">
+                      <table class="docs-page-history">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Change</th>
+                            <th>Author</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><time datetime="2026-04-30">2026-04-30</time></td>
+                            <td>Initial test case template.</td>
+                            <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                </main>
+              </div>
+            </div>
+
+          </body></html>

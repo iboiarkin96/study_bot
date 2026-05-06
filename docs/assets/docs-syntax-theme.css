@@ -1,0 +1,107 @@
+/*
+ * docs-syntax-theme.css — Token colors for docs-syntax.js.
+ *
+ * Token classes (emitted by docs-syntax.js):
+ *   st-kw   keyword        st-str  string
+ *   st-cmt  comment        st-num  number
+ *   st-key  object/map key st-bi   builtin / type
+ *   st-var  variable ($X)  st-flag CLI flag (--flag)
+ *   st-dec  decorator      st-op   operator
+ *
+ * Design: uses CSS custom properties so light/dark both come from
+ * the same rule. Override --st-* per theme below.
+ *
+ * Language label: pre[data-lang]::before badge (set by docs-syntax.js).
+ */
+
+/* ── Light theme token palette ─────────────────────────────────────────────
+   Inspired by GitHub Light / VS Code Light+.                               */
+:root {
+  --st-kw:   #2563eb;   /* keyword        — accent blue                   */
+  --st-str:  #16a34a;   /* string         — green-700                     */
+  --st-cmt:  #64748b;   /* comment        — slate-500                     */
+  --st-num:  #d97706;   /* number         — amber-600                     */
+  --st-key:  #0891b2;   /* object key     — cyan-600                      */
+  --st-bi:   #7c3aed;   /* builtin / type — violet-700                    */
+  --st-var:  #0369a1;   /* variable       — sky-700                       */
+  --st-flag: #475569;   /* CLI flag       — slate-600                     */
+  --st-dec:  #db2777;   /* decorator      — pink-600                      */
+  --st-op:   #64748b;   /* operator       — slate-500                     */
+}
+
+/* ── Dark theme token palette ───────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --st-kw:   #60a5fa;   /* keyword        — blue-400                      */
+    --st-str:  #4ade80;   /* string         — green-400                     */
+    --st-cmt:  #64748b;   /* comment        — slate-500 (same; readable)   */
+    --st-num:  #fbbf24;   /* number         — amber-400                     */
+    --st-key:  #22d3ee;   /* object key     — cyan-400                      */
+    --st-bi:   #a78bfa;   /* builtin / type — violet-400                    */
+    --st-var:  #7dd3fc;   /* variable       — sky-300                       */
+    --st-flag: #94a3b8;   /* CLI flag       — slate-400                     */
+    --st-dec:  #f472b6;   /* decorator      — pink-400                      */
+    --st-op:   #94a3b8;   /* operator       — slate-400                     */
+  }
+}
+
+/* Manual dark-theme override (html[data-theme="dark"]) */
+html[data-theme="dark"] {
+  --st-kw:   #60a5fa;
+  --st-str:  #4ade80;
+  --st-cmt:  #64748b;
+  --st-num:  #fbbf24;
+  --st-key:  #22d3ee;
+  --st-bi:   #a78bfa;
+  --st-var:  #7dd3fc;
+  --st-flag: #94a3b8;
+  --st-dec:  #f472b6;
+  --st-op:   #94a3b8;
+}
+
+/* ── Token span styles ──────────────────────────────────────────────────── */
+
+.st-kw   { color: var(--st-kw);   font-weight: 600; }
+.st-str  { color: var(--st-str); }
+.st-cmt  { color: var(--st-cmt);  font-style: italic; }
+.st-num  { color: var(--st-num); }
+.st-key  { color: var(--st-key);  font-weight: 600; }
+.st-bi   { color: var(--st-bi); }
+.st-var  { color: var(--st-var); }
+.st-flag { color: var(--st-flag); }
+.st-dec  { color: var(--st-dec); }
+.st-op   { color: var(--st-op); }
+
+/* ── Language label badge — pre[data-lang]::before ──────────────────────── */
+
+pre[data-lang] {
+  position: relative;
+}
+
+pre[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: var(--fs-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--pre-bg, #f1f5f9) 80%, var(--line, #dbe3ef) 20%);
+  border: 1px solid color-mix(in srgb, var(--line, #dbe3ef) 70%, transparent);
+  border-radius: 5px;
+  padding: 1px 6px;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.82;
+}
+
+/* ── Reduced-motion: keep styling, disable any potential transitions ──────── */
+@media (prefers-reduced-motion: reduce) {
+  .st-kw, .st-str, .st-cmt, .st-num, .st-key,
+  .st-bi, .st-var, .st-flag, .st-dec, .st-op {
+    transition: none;
+  }
+}

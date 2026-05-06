@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RFC 0003: Documentation authoring model — API specs, screen specs, and templates</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <main class="container" data-rfc-weight="9">
+    <h1 class="internal-h1--accent-tail">RFC 0003: Documentation authoring model — API specs, screen specs, and templates</h1>
+    <div id="docs-top-nav"></div>
+    <div id="docs-page-meta-mount" hidden=""></div>
+
+    <section class="card">
+      <h2>Metadata</h2>
+      <ul>
+        <li>Date: 2026-04-30</li>
+        <li>Status: <strong>Proposed</strong> (single-author authoring model consolidation)</li>
+        <li>Discussion Issue: <em>open with <code>[RFC]</code> title per <a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a></em></li>
+        <li>Merge PR: <em>see git history for this file</em></li>
+        <li>Related ADRs:
+          <a href="../adr/0001-docs-as-code.html">ADR 0001</a> (Docs as Code),
+          <a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a> (OpenAPI governance),
+          <a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a> (Python docstrings &amp; pdoc),
+          <a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> (PlantUML / C4 diagrams),
+          <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024</a> (Quality assessments),
+          <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> (External vs internal API docs),
+          <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> (Internal docs as source of truth)
+        </li>
+        <li>Related RFCs: <a href="0001-docs-search-implementation.html">RFC 0001</a>, <a href="0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a></li>
+        <li>Owner: <a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Goals and non-goals</h2>
+      <p>
+        This RFC pulls together — into a single normative reference — the authoring model the project uses for every
+        kind of documentation page it ships. Earlier ADRs (<a href="../adr/0001-docs-as-code.html">0001</a>,
+        <a href="../adr/0025-external-and-internal-api-documentation.html">0025</a>,
+        <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">0026</a>,
+        <a href="../adr/0007-openapi-governance-and-usability-standard.html">0007</a>) decided <em>that</em> we use
+        Docs-as-Code, <em>where</em> internal vs external content lives, and <em>which</em> artifact is authoritative
+        for which audience. They did not, in one place, describe the templates a contributor must copy and the
+        rationale behind their shape. This RFC fills that gap.
+      </p>
+      <h3>Goals</h3>
+      <ul>
+        <li>Name every document type produced in this repository and its canonical template.</li>
+        <li>Specify the <strong>required section list</strong> for the two heavy templates — the
+          <strong>API operation spec</strong> and the <strong>screen spec</strong> — plus the lighter templates
+          (ADR, RFC, runbook, how-to, glossary).</li>
+          <li>Justify each template against published, internationally recognised documentation programs
+            (Stripe, Atlassian Design System, GitHub Primer, Vercel, Linear, IBM Carbon, Material Design,
+            Adobe Spectrum, Salesforce Lightning, Storybook, Mailchimp, GOV.UK Service Manual, Kubernetes,
+            Wikipedia / MDN page-history).</li>
+            <li>Enumerate the lint, audit, and Definition-of-Done gates that turn the templates into a contract.</li>
+            <li>Provide copy-pasteable section catalogues (<a href="#appendix-a">Appendix A</a>,
+              <a href="#appendix-b">Appendix B</a>) so a contributor never has to reverse-engineer the template by
+              reading a sibling page.</li>
+            </ul>
+            <h3>Non-goals</h3>
+            <ul>
+              <li><strong>Visual styling.</strong> Typography, colour, spacing, motion, and the design tokens are
+                governed by the docs frontend stylesheet (<code>docs/assets/docs.css</code>) and by
+                <a href="../internal/front/foundations/tokens.html">foundations/tokens.html</a> —
+                not by this RFC.</li>
+                <li><strong>OpenAPI authoring rules.</strong> Already governed by
+                  <a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a> and the shared
+                  <a href="../internal/api/_shared/openapi-authoring-guide.html">OpenAPI authoring guide</a>. This RFC
+                  links them; it does not restate them.</li>
+                  <li><strong>Public developer-portal product.</strong> Out of scope per
+                    <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>.</li>
+                    <li><strong>Marketing or end-user help-centre copy.</strong> The corpus described here is for engineers
+                      and integrators only.</li>
+                    </ul>
+                  </section>
+
+                  <section class="card">
+                    <h2>Background</h2>
+                    <p>
+                      Until this RFC, the project's documentation rules were <strong>distributed across seven ADRs and three
+                      process pages</strong>. A contributor who landed in the repository needed to read
+                      <a href="../adr/0001-docs-as-code.html">ADR 0001</a> for the governance principle,
+                      <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> for the audience split,
+                      <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> for the internal
+                      layout, <a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a> for the
+                      external-contract rules, the <a href="../internal/front/_shared/process.html">documentation
+                      maintenance process</a> for the lifecycle, the <a href="../internal/front/_shared/style-guide.html">documentation
+                      style guide</a> for the page skeleton, and finally the two heavy templates
+                      (<a href="../internal/api/_shared/spec-template.html">API spec template</a> and
+                      <a href="../internal/front/screens/docs-screen-template.html">screen spec template</a>) to actually start
+                      writing. The intent of each artifact was sound; the <em>discoverability</em> was poor and the
+                      <em>rationale</em> for the chosen shape was implicit.
+                    </p>
+                    <p>
+                      The motivation to consolidate is simple: as the surface grows, the cost of an inconsistent page is
+                      compounded — readers stop trusting the docs, drift creeps in unnoticed, and the corpus loses its claim of
+                      being a <em>source of truth</em>. International programs that have lived through this growth phase
+                      (Stripe, Atlassian, Vercel) all converged on <strong>fixed-shape templates plus a public rationale</strong>.
+                      This RFC adopts the same posture for our repository, with <strong>this single page</strong> as the entry
+                      point a new contributor reads first.
+                    </p>
+                  </section>
+
+                  <section class="card">
+                    <h2>Design</h2>
+
+                    <h3>1. Document taxonomy</h3>
+                    <p>
+                      Every page authored under <code>docs/</code> belongs to exactly one of the following document types.
+                      A page that does not match any type is either misfiled or a missing type — open a discussion before
+                      inventing a new shape.
+                    </p>
+                    <div class="docs-table-scroll" role="region" aria-label="Document taxonomy">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Type</th>
+                            <th scope="col">Audience</th>
+                            <th scope="col">Authoritative for</th>
+                            <th scope="col">Template / location</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><strong>ADR</strong> — Architecture Decision Record</td>
+                            <td>Engineers (in this repo)</td>
+                            <td>One architectural decision, its context, the alternatives considered, and the consequences</td>
+                            <td><a href="../adr/0000-template.html"><code>docs/adr/0000-template.html</code></a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>RFC</strong> — Request for Comments</td>
+                            <td>Engineers</td>
+                            <td>The specification an ADR intentionally omits: implementation, validation, rollout</td>
+                            <td><a href="0000-template.html"><code>docs/rfc/0000-template.html</code></a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>API operation spec</strong></td>
+                            <td>Engineers (analysts, developers, reviewers)</td>
+                            <td>Behavioural contract of one HTTP endpoint: business rules, request/response, errors, observability</td>
+                            <td><a href="../internal/api/_shared/spec-template.html"><code>docs/internal/api/_shared/spec-template.html</code></a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>API resource hub</strong></td>
+                            <td>Engineers</td>
+                            <td>One resource: business context, invariants, endpoint index, anchor targets for per-method pages</td>
+                            <td>Pattern documented in <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html#repository-layout">ADR 0026 §Repository layout</a> and <a href="../howto/0002-internal-service-docs-layout.html"><code>howto/0002</code></a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>Screen spec</strong> (frontend)</td>
+                            <td>Frontend / design / docs maintainers</td>
+                            <td>One user-facing screen: anatomy, states, data contract, where to change what</td>
+                            <td><a href="../internal/front/screens/docs-screen-template.html"><code>docs/internal/front/screens/docs-screen-template.html</code></a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>Frontend reference</strong></td>
+                            <td>Frontend maintainers</td>
+                            <td>One cross-cutting frontend system (navigation, motion, tooltips, …)</td>
+                            <td>Convention from <a href="../internal/front/_shared/process.html#document-types">_shared/process.html § Document types</a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>Runbook</strong></td>
+                            <td>On-call / operators</td>
+                            <td>Operational procedure for one incident or recurring task</td>
+                            <td><a href="../runbooks/README.html"><code>docs/runbooks/</code></a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>How-to</strong></td>
+                            <td>Contributors</td>
+                            <td>Step-by-step procedure for one repeatable engineering task</td>
+                            <td><a href="../howto/README.html"><code>docs/howto/</code></a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>Glossary</strong></td>
+                            <td>All readers</td>
+                            <td>Single canonical definition of every domain term used elsewhere</td>
+                            <td><a href="../internal/front/_shared/glossary.html">frontend glossary</a> (extend with sections per area as needed)</td>
+                          </tr>
+                          <tr>
+                            <td><strong>External API contract</strong></td>
+                            <td>Integrators (partners, third-party clients)</td>
+                            <td>HTTP request/response surface at a given version</td>
+                            <td>OpenAPI under <code>docs/openapi/</code> — governed by <a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a></td>
+                          </tr>
+                          <tr>
+                            <td><strong>Python reference</strong></td>
+                            <td>Contributors</td>
+                            <td>Python module / class / function reference</td>
+                            <td>Generated under <code>docs/pdoc/</code> per <a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">ADR 0016</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p class="small">
+                      The taxonomy is closed. A contribution that does not fit one of these types is <em>by definition</em>
+                      a request to extend the taxonomy — open a discussion issue first
+                      (<a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>).
+                    </p>
+
+                    <h3>2. The API operation spec template</h3>
+                    <p>
+                      The heavy template at
+                      <a href="../internal/api/_shared/spec-template.html"><code>_shared/spec-template.html</code></a>
+                      is the contract that the systems analyst owes the developer before implementation begins. Its
+                      <strong>21 required sections</strong> are catalogued in <a href="#appendix-a">Appendix A</a>; the live
+                      page is the source of truth for the markup. The lint at <code>scripts/spec_lint.py</code> enforces presence,
+                      attribute markers, and content density.
+                    </p>
+                    <p>
+                      The template's shape is <strong>not arbitrary</strong>. It is the intersection of three established practices:
+                    </p>
+                    <ol>
+                      <li>
+                        <strong>Behaviour-first specification</strong> — the section order forces the analyst to write the
+                        <em>why</em> (business context, user stories, acceptance criteria) before the <em>what</em>
+                        (request/response, errors, side effects). This is the same authoring order recommended in
+                        <a href="https://www.gov.uk/service-manual" rel="noopener">GOV.UK Service Manual</a> and the
+                        <a href="https://stripe.com/docs/api" rel="noopener">Stripe API reference</a>: a reader who scans only
+                        the first two cards must understand whether the operation applies to their problem, before paying the
+                        cost of reading the schema.
+                      </li>
+                      <li>
+                        <strong>Contract-first technical spec</strong> — request and response sections are
+                        <em>field-level tables</em> (name · location · type · format · required · nullable · default · constraints
+                        · business meaning · PII class · OpenAPI mapping), not free prose. This shape is borrowed from
+                        <a href="https://swagger.io/specification/" rel="noopener">OpenAPI 3.1</a> parameter objects and from the
+                        <a href="https://atlassian.design/" rel="noopener">Atlassian REST API documentation</a> tabular convention.
+                        It survives translation to OpenAPI without information loss.
+                      </li>
+                      <li>
+                        <strong>Operational realism</strong> — every spec must declare <em>side effects</em>, <em>idempotency
+                        and concurrency</em>, <em>error catalog with envelope JSON</em>, <em>edge cases</em>, and
+                        <em>observability</em>. Without these sections, an endpoint passes review but fails in production. The
+                        requirement is shaped after the post-mortem culture at companies that publish their incident reviews
+                        publicly (Cloudflare, Stripe, AWS).
+                      </li>
+                    </ol>
+
+                    <h3>3. The screen spec template</h3>
+                    <p>
+                      The frontend twin of the API spec lives at
+                      <a href="../internal/front/screens/docs-screen-template.html"><code>screens/docs-screen-template.html</code></a>.
+                      Its required sections are catalogued in <a href="#appendix-b">Appendix B</a>. The template is informed by:
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>Atlassian Design System</strong>, <strong>GitHub Primer</strong>, and <strong>Material Design</strong>:
+                        <em>anatomy diagrams as the canonical visual reference</em> — annotated SVG embedded inline, with numbered
+                        callouts that the rest of the spec references by number, not by colour or position.
+                      </li>
+                      <li>
+                        <strong>Stripe Elements</strong>, <strong>Adobe Spectrum</strong>, and <strong>IBM Carbon</strong>:
+                        <em>component anatomy with named regions</em> (header, body, footer, icon, content slots). Every spec has
+                        a <em>Layout map</em> that lists each region with its CSS hook and purpose.
+                      </li>
+                      <li>
+                        <strong>Web Components</strong> and <strong>Salesforce Lightning</strong>:
+                        <em>data contract</em> — every <code>data-*</code> attribute consumed by the runtime is listed in the spec,
+                        so the markup-to-code coupling is reviewable in a single PR.
+                      </li>
+                      <li>
+                        <strong>Storybook</strong> stories: <em>states gallery</em> (default, hover, focus, error, loading, empty)
+                        rendered as a per-state row with a screenshot or anatomy panel.
+                      </li>
+                      <li>
+                        <strong>Linear's engineering posts</strong> and <strong>Notion's eng playbook</strong>:
+                        <em>"where to change what"</em> — every spec ends with a file-by-file mapping from behaviour to source,
+                        eliminating the most common new-contributor question on day one.
+                      </li>
+                    </ul>
+
+                    <h3>4. Visual evidence — screenshots <em>and</em> anatomy diagrams</h3>
+                    <p>
+                      The screen-spec template carries <strong>both</strong> a real-screenshot gallery and a hand-authored
+                      anatomy diagram. Each answers a different question:
+                    </p>
+                    <ul>
+                      <li><strong>Screenshots</strong> — “what does this look like right now?” — captured by
+                        <code>scripts/capture_screen_specs.py</code> for reproducibility, refreshed in the same PR that changes
+                        the screen.</li>
+                        <li><strong>Anatomy diagrams</strong> — “what are the named regions?” — inline SVG, hand-edited in git,
+                          numbered callouts, accessible (<code>&lt;title&gt;</code> + <code>&lt;desc&gt;</code> + caption).</li>
+                        </ul>
+                        <p>
+                          Why keep both: screenshots rot on every style tweak and are useless in code-review diffs,
+                          while diagrams age gracefully and survive cosmetic changes — but only screenshots prove
+                          <em>current</em> visual reality. The pair is cheap to maintain because each artifact has a
+                          single authoring path and an automatic refresh hook.
+                        </p>
+
+                        <h3>5. Diagrams: PlantUML only</h3>
+                        <p>
+                          Per <a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>, every diagram in the
+                          repository is <strong>PlantUML</strong> — sources under <code>docs/uml/**/*.puml</code>, rendered SVG under
+                          <code>docs/uml/rendered/*.svg</code>. Mermaid, Graphviz, Lucid, draw.io, and image-only diagrams are not
+                          admitted. The reason is auditability: PlantUML is text in git, diff-readable in code review, and rendered
+                          by a deterministic build step. Templates reference rendered SVGs; they do not embed alternative formats.
+                        </p>
+
+                        <h3>6. Plain-language editorial standard</h3>
+                        <p>
+                          Every page in this repository is written for engineers whose first language is rarely English. The
+                          editorial rules in
+                          <a href="../internal/front/_shared/style-guide.html#plain-language">_shared/style-guide.html § Plain language</a>
+                          are normative: short sentences, common vocabulary, one idea per sentence, defined acronyms on first use,
+                          active voice for procedures. The standard is modelled on
+                          <a href="https://www.gov.uk/service-manual/content" rel="noopener">GOV.UK Content design</a>,
+                          <a href="https://stripe.com/docs/style-guide" rel="noopener">Stripe writing principles</a>, and
+                          <a href="https://styleguide.mailchimp.com/voice-and-tone/" rel="noopener">Mailchimp Voice &amp; Tone</a>.
+                        </p>
+
+                        <h3>7. Page history is required</h3>
+                        <p>
+                          Every non-redirect page ends with a <strong>Page history</strong> table. This is borrowed directly from
+                          Wikipedia's "View history", MDN's "Page history", and Notion's "Page updates" — each of which discovered
+                          independently that an attached, human-readable change log is what turns a page from "current" into
+                          "audited". <code>git log</code> remains the full audit trail; the table is a scannable surface for a
+                          future reader who needs to know <em>when</em> the page was last verified against reality.
+                        </p>
+
+                        <h3>8. Single source of truth, co-located with code</h3>
+                        <p>
+                          Every topic has exactly one canonical page. Other pages link, never restate. When two pages contradict,
+                          the canonical page is fixed and the other becomes a link. This is the <em>only</em> rule that survives
+                          across the documentation programs we modelled this on (Stripe, Atlassian, Vercel, Storybook, Linear); it
+                          is also the rule most often violated under deadline pressure, which is why the lint and review checklist
+                          enforce it explicitly.
+                        </p>
+                      </section>
+
+                      <section class="card">
+                        <h2>Why this template — international references</h2>
+                        <p>
+                          The two heavy templates (API operation spec, screen spec) and the lighter ones (ADR, RFC, runbook,
+                          how-to) are not novel. Each section in each template traces back to a published convention from a
+                          documentation program known for its quality. The table below is the explicit map; it is also the answer to
+                          the question <em>"why this template and not another?"</em> — every choice has a precedent, and the cost of
+                          deviating from it is well understood.
+                        </p>
+                        <div class="docs-table-scroll" role="region" aria-label="Industry references">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th scope="col">Pattern</th>
+                                <th scope="col">Established by</th>
+                                <th scope="col">Where it appears in our templates</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Audience-split docs (external contract vs internal narrative)</td>
+                                <td>Stripe API reference + Stripe internal handbook; Atlassian REST API + design-system docs</td>
+                                <td><a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> — OpenAPI is normative for integrators; <code>docs/internal/</code> is normative for engineers.</td>
+                              </tr>
+                              <tr>
+                                <td>Decision records (ADRs) co-located with code</td>
+                                <td>Michael Nygard's original ADR pattern; ThoughtWorks Tech Radar; Spotify engineering culture</td>
+                                <td><code>docs/adr/</code> tree, ratification process in <a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.</td>
+                              </tr>
+                              <tr>
+                                <td>RFC / specification document for implementation</td>
+                                <td>IETF RFC series; Rust RFC repository; Python PEPs</td>
+                                <td><code>docs/rfc/</code> — section list (Goals → Background → Design → Implementation → Validation → Rollout) follows the IETF / Rust shape.</td>
+                              </tr>
+                              <tr>
+                                <td>Field-level request/response tables in API docs</td>
+                                <td>OpenAPI 3.1 parameter objects; Atlassian REST API; Stripe; GitHub REST API</td>
+                                <td>Sections 7–8 of the <a href="../internal/api/_shared/spec-template.html">API spec template</a>.</td>
+                              </tr>
+                              <tr>
+                                <td>Error catalog with envelope examples per code</td>
+                                <td>Stripe <code>errors</code> reference; Google Cloud canonical error model; AWS error tables</td>
+                                <td>Section 12 of the API spec template; cross-checked against <a href="../internal/api/_shared/error-catalog.html"><code>_shared/error-catalog.html</code></a>.</td>
+                              </tr>
+                              <tr>
+                                <td>Idempotency &amp; concurrency declared per write</td>
+                                <td>Stripe <code>Idempotency-Key</code> docs; AWS Lambda idempotency layer</td>
+                                <td>Section 11 of the API spec template; underlying rule in <a href="../adr/0006-idempotency-write-operations.html">ADR 0006</a>.</td>
+                              </tr>
+                              <tr>
+                                <td>Observability requirements declared per operation</td>
+                                <td>Google SRE Workbook; Honeycomb observability handbook; Stripe internal dashboards convention</td>
+                                <td>Section 14 of the API spec template; conventions in <a href="../internal/api/_shared/observability-conventions.html"><code>_shared/observability-conventions.html</code></a>.</td>
+                              </tr>
+                              <tr>
+                                <td>Acceptance criteria in Given / When / Then</td>
+                                <td>Behaviour-Driven Development (Dan North); Cucumber Gherkin; Atlassian agile docs</td>
+                                <td>Section 3 of the API spec template; same shape used in screen-spec acceptance checklists.</td>
+                              </tr>
+                              <tr>
+                                <td>Anatomy diagrams as canonical visual reference</td>
+                                <td>Atlassian Design System; GitHub Primer; Material Design; Adobe Spectrum</td>
+                                <td>Anatomy section of the <a href="../internal/front/screens/docs-screen-template.html">screen spec template</a>.</td>
+                              </tr>
+                              <tr>
+                                <td>Component anatomy with named parts (header / body / icon)</td>
+                                <td>Stripe Elements; IBM Carbon; Adobe Spectrum; Salesforce Lightning</td>
+                                <td>Layout map section of the screen spec template.</td>
+                              </tr>
+                              <tr>
+                                <td>States gallery (default / hover / focus / error / loading / empty)</td>
+                                <td>Storybook stories model; Material Design state-overlay docs</td>
+                                <td>Visual gallery + interaction-logic sections of the screen spec template.</td>
+                              </tr>
+                              <tr>
+                                <td>Data contract (markup hooks named in the spec)</td>
+                                <td>Web Components specs; Salesforce Lightning Web Components docs</td>
+                                <td>Data contract section of the screen spec template.</td>
+                              </tr>
+                              <tr>
+                                <td>"Where to change what" file-map per page</td>
+                                <td>Linear engineering blog architecture posts; Notion eng playbook</td>
+                                <td>Final card of every screen spec.</td>
+                              </tr>
+                              <tr>
+                                <td>Page history / changelog at the bottom of every page</td>
+                                <td>Wikipedia "View history"; MDN "Page history"; Notion "Page updates"</td>
+                                <td>Required <code>#page-history</code> section on every non-redirect page.</td>
+                              </tr>
+                              <tr>
+                                <td>Maintainer ownership in metadata</td>
+                                <td>Kubernetes <code>OWNERS</code> files; Sentry <code>CODEOWNERS</code>; GitHub <code>CODEOWNERS</code></td>
+                                <td><code>data-maintainer-ids</code> attribute on <code>&lt;body&gt;</code>; rendered by the "Page editors" widget.</td>
+                              </tr>
+                              <tr>
+                                <td>Plain-language editorial guidelines</td>
+                                <td>GOV.UK Service Manual; Mailchimp Voice &amp; Tone; Stripe writing principles</td>
+                                <td><a href="../internal/front/_shared/style-guide.html#plain-language">style guide § Plain language</a>.</td>
+                              </tr>
+                              <tr>
+                                <td>One topic per page; cards within a page for sub-topics</td>
+                                <td>Stripe API reference; Vercel docs; Astro docs</td>
+                                <td><code>&lt;section class="card"&gt;</code> per topic, enforced in the page skeleton.</td>
+                              </tr>
+                              <tr>
+                                <td>Definition of done that includes docs</td>
+                                <td>Atlassian DoD; Spotify engineering excellence; GitLab Handbook</td>
+                                <td><a href="../internal/front/_shared/process.html#definition-of-done">_shared/process § DoD</a>.</td>
+                              </tr>
+                              <tr>
+                                <td>Living docs alongside source code (no separate CMS)</td>
+                                <td>Storybook; Astro docs; Vercel <code>docs.vercel.com</code></td>
+                                <td><a href="../adr/0001-docs-as-code.html">ADR 0001</a> — static <code>docs/</code> shipped with code.</td>
+                              </tr>
+                              <tr>
+                                <td>PlantUML / C4 model for architecture diagrams</td>
+                                <td>Simon Brown's C4 model; PlantUML community</td>
+                                <td><a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — sources in <code>docs/uml/</code>, rendered SVGs only.</td>
+                              </tr>
+                              <tr>
+                                <td>Glossary as a contract</td>
+                                <td>Stripe API glossary; IBM Carbon "Concepts"; Material Design glossary</td>
+                                <td><a href="../internal/front/_shared/glossary.html">frontend glossary</a>; new terms added in the same PR that introduces them.</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+
+                      <section class="card">
+                        <h2>Implementation</h2>
+                        <p>
+                          The templates and the rules around them already exist in the repository. This RFC's implementation work
+                          is therefore <em>discoverability and enforcement</em>, not new authoring.
+                        </p>
+                        <ol>
+                          <li>
+                            <strong>Land this RFC at <code>docs/rfc/0003-documentation-authoring-model.html</code>.</strong>
+                            The page is the canonical entry point a contributor reads before touching docs. Add it to the RFC index
+                            (<a href="README.html"><code>rfc/README.html</code></a>) and to the internal sidebar
+                            (<code>docs/assets/internal-sidebar.js</code>).
+                          </li>
+                          <li>
+                            <strong>Cross-link from the entry-points.</strong>
+                            <a href="../adr/0001-docs-as-code.html">ADR 0001</a>,
+                            <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>,
+                            <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>,
+                            <a href="../internal/front/_shared/style-guide.html">style guide</a>, and
+                            <a href="../internal/front/_shared/process.html">_shared/process</a> all link to this RFC
+                            as their single rationale-and-template index.
+                          </li>
+                          <li>
+                            <strong>Templates as concrete artifacts</strong> — keep them where they already are; this RFC links to
+                            them, never duplicates them:
+                            <ul>
+                              <li><a href="../internal/api/_shared/spec-template.html"><code>docs/internal/api/_shared/spec-template.html</code></a> — API operation spec.</li>
+                              <li><a href="../internal/api/_shared/spec-definition-of-done.html"><code>docs/internal/api/_shared/spec-definition-of-done.html</code></a> — DoD checklist.</li>
+                              <li><a href="../internal/front/screens/docs-screen-template.html"><code>docs/internal/front/screens/docs-screen-template.html</code></a> — screen spec.</li>
+                              <li><a href="../adr/0000-template.html"><code>docs/adr/0000-template.html</code></a> — ADR.</li>
+                              <li><a href="0000-template.html"><code>docs/rfc/0000-template.html</code></a> — RFC.</li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Lint hookup.</strong>
+                            <code>scripts/spec_lint.py</code> already validates the API spec template; add a one-line check that
+                            <code>data-spec-template="v1"</code> is present in metadata so future template versions are
+                            machine-detectable. <code>make docs-check</code> already runs as part of <code>make verify</code> per
+                            <a href="../adr/0001-docs-as-code.html">ADR 0001</a>.
+                          </li>
+                          <li>
+                            <strong>PR template entry.</strong> The PR template asks "Did you copy the right template? Did you fill
+                            every required section? Did you add a Page history row?" — a single bullet pointing here.
+                          </li>
+                        </ol>
+                      </section>
+
+                      <section class="card">
+                        <h2>Validation</h2>
+                        <h3>Local checks</h3>
+                        <ul>
+                          <li><code>make docs-fix</code> — normalises HTML; idempotent.</li>
+                          <li><code>make docs-check</code> — fails when committed output is stale.</li>
+                          <li><code>python scripts/spec_lint.py docs/internal/api/&lt;resource&gt;/operations/*.html</code> — section-level lint for API specs.</li>
+                          <li><code>python scripts/spec_consistency.py</code> — cross-checks error keys against the global error catalog.</li>
+                        </ul>
+                        <h3>CI / automated checks</h3>
+                        <ul>
+                          <li><code>make verify</code> in CI runs <code>docs-check</code>; a failing run blocks merge.</li>
+                          <li>Search index build (<a href="../adr/0027-client-side-docs-search-index-and-ranking.html">ADR 0027</a>) detects orphan pages — a page not linked from the sidebar surfaces as a low-rank result and triggers an audit.</li>
+                        </ul>
+                        <h3>Operational checks</h3>
+                        <ul>
+                          <li>Quarterly screen-spec re-verify per <a href="../internal/front/_shared/process.html#audit">_shared/process § Audit cadence</a>.</li>
+                          <li>Glossary scan on every release: any new domain term must have a glossary entry in the same PR.</li>
+                          <li>Annual taxonomy review: confirm no new document type has accumulated outside the closed list in §1.</li>
+                        </ul>
+                      </section>
+
+                      <section class="card">
+                        <h2>Rollout plan</h2>
+                        <ul>
+                          <li><strong>Rollout phases:</strong> single PR. The artifact is documentation; there is no service to deploy.</li>
+                          <li><strong>Feature flags:</strong> none.</li>
+                          <li><strong>Rollback strategy:</strong> revert the PR. No persistent state, no migration.</li>
+                          <li><strong>Backward compatibility:</strong> none required. The RFC consolidates rules that already apply;
+                            existing pages remain valid until they are next edited, at which point the contributor brings them up to
+                            spec.</li>
+                          </ul>
+                        </section>
+
+                        <section class="card">
+                          <h2>Change management</h2>
+                          <p>
+                            This RFC is the canonical statement of <em>which templates we use and why</em>. It is updated, not
+                            superseded, when a template gains or loses a section, when a new document type is introduced, or when an
+                            industry reference is replaced by a more relevant one. A new RFC is opened only if the underlying model
+                            itself changes — for example, a move away from co-located Docs-as-Code, or a decision to host
+                            documentation on a third-party platform.
+                          </p>
+                          <ul>
+                            <li><strong>Update this RFC when:</strong>
+                              <ul>
+                                <li>A required section is added, removed, or renamed in the API spec template or screen spec template.</li>
+                                <li>A new document type is admitted into the closed taxonomy in §1.</li>
+                                <li>The list of industry references in §"Why this template" is revised.</li>
+                              </ul>
+                            </li>
+                            <li><strong>Open a new RFC when:</strong>
+                              <ul>
+                                <li>The repository moves away from static HTML under <code>docs/</code>.</li>
+                                <li>A separate developer-portal product is introduced (currently out of scope per
+                                  <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>).</li>
+                                  <li>The single-source-of-truth principle for internal docs is revisited.</li>
+                                </ul>
+                              </li>
+                              <li><strong>Owner after merge:</strong> the docs maintainer listed in <code>data-maintainer-ids</code> on this page.</li>
+                            </ul>
+                          </section>
+
+                          <section class="card" id="appendix-a">
+                            <h2>Appendix A — API operation spec template, section catalogue</h2>
+                            <p>
+                              The live template at
+                              <a href="../internal/api/_shared/spec-template.html"><code>_shared/spec-template.html</code></a>
+                              is the structural source of truth. The following list is a copy-pasteable reference for the
+                              <strong>21 sections</strong> a real spec must contain (in this order). Sections marked <em>required</em>
+                              must be present and non-empty; sections marked <em>optional</em> may be removed when not applicable, but
+                              never reordered.
+                            </p>
+                            <ol>
+                              <li><strong>Business context</strong> <em>(required)</em> — 2–4 sentences on the user problem and product outcome.</li>
+                              <li><strong>User stories</strong> <em>(required)</em> — “As a &lt;role&gt;, I want &lt;capability&gt;, so that &lt;outcome&gt;.”</li>
+                              <li><strong>Acceptance criteria</strong> <em>(required)</em> — Given / When / Then scenarios with IDs <code>AC-&lt;RESOURCE&gt;-&lt;NN&gt;</code>.</li>
+                              <li><strong>Functional requirements</strong> <em>(required)</em> — bullet list with IDs <code>FR-&lt;RESOURCE&gt;-&lt;NN&gt;</code>.</li>
+                              <li><strong>Non-functional requirements</strong> <em>(required)</em> — latency, throughput, availability, payload, concurrency, freshness, cacheability — each with a measurable threshold and ID <code>NFR-&lt;RESOURCE&gt;-&lt;NN&gt;</code>.</li>
+                              <li><strong>Authorization &amp; permissions</strong> <em>(required)</em> — link to <code>_shared/auth.html</code>; describe operation-specific deltas only.</li>
+                              <li><strong>Request contract</strong> <em>(required)</em> — field-level table (name · location · type · format · required · nullable · default · constraints · business meaning · PII class · OpenAPI mapping) plus a JSON example.</li>
+                              <li><strong>Response contract per success status</strong> <em>(required)</em> — same field-level table per <code>200 / 201 / 202 / 204</code>.</li>
+                              <li><strong>State transitions</strong> <em>(optional)</em> — PlantUML state diagram + transition table; required when the operation drives a state machine.</li>
+                              <li><strong>Side effects</strong> <em>(required)</em> — DB writes, events emitted, downstream calls, cache invalidations, audit entries, listed as <em>"on success / on failure / on idempotent replay"</em>.</li>
+                              <li><strong>Idempotency &amp; concurrency</strong> <em>(required)</em> — namespace, key composition, replay status code, concurrency strategy.</li>
+                              <li><strong>Error catalog</strong> <em>(required)</em> — table of <em>HTTP · code · key · when · log-event · envelope JSON</em>; cross-checked against <code>_shared/error-catalog.html</code>.</li>
+                              <li><strong>Edge cases checklist</strong> <em>(required)</em> — empty list, missing optional field, unicode, max-length, timezone crossover, concurrent writes, retry storm, soft-deleted/archived resource, partial failure.</li>
+                              <li><strong>Observability requirements</strong> <em>(required)</em> — log events (name + level + fields), metrics (name + labels), trace spans, alerts and thresholds.</li>
+                              <li><strong>Test plan</strong> <em>(required)</em> — unit · integration · contract (Schemathesis / Dredd) · end-to-end — each scenario links back to its <code>AC-…</code> ID.</li>
+                              <li><strong>OpenAPI authoring hints</strong> <em>(required)</em> — schemas to reuse, examples to attach, security scheme, tags, what to hide from external integrators.</li>
+                              <li><strong>Open questions</strong> <em>(required)</em> — bullet list with question · best guess · owner · deadline; or the literal word <em>None.</em></li>
+                              <li><strong>Out of scope</strong> <em>(required)</em> — explicit non-goals; or <em>None.</em></li>
+                              <li><strong>Traceability</strong> <em>(required)</em> — methodology, system-design, ADRs, tickets / RFCs, OpenAPI <code>operationId</code>.</li>
+                              <li><strong>Spec changelog</strong> <em>(required)</em> — reverse-chronological, per <em>contract intent</em> (breaking · additive · fix · doc-only).</li>
+                              <li><strong>Page history</strong> <em>(required)</em> — per-edit table (date · change · author).</li>
+                            </ol>
+                            <p class="small">
+                              The header strip carries the metadata visible to readers: HTTP method tablet, summary, status badge,
+                              availability (<code>v1 · Internal</code> / <code>v1 · External</code>), owner, <code>operationId</code>,
+                              last-reviewed date, and template version (<code>v1</code>). Body data attributes
+                              <code>data-spec-status</code>, <code>data-spec-owner</code>, <code>data-spec-operation-id</code> are
+                              machine-readable and consumed by the lint.
+                            </p>
+                          </section>
+
+                          <section class="card" id="appendix-b">
+                            <h2>Appendix B — Screen spec template, section catalogue</h2>
+                            <p>
+                              The live template at
+                              <a href="../internal/front/screens/docs-screen-template.html"><code>screens/docs-screen-template.html</code></a>
+                              is the structural source of truth. Required sections, in order:
+                            </p>
+                            <ol>
+                              <li><strong>Title block</strong> — page title with the <em>Screen</em> badge; clear noun phrase.</li>
+                              <li><strong>At-a-glance</strong> — status (<code>draft · in-progress · stable · deprecated</code>),
+                                primary URL, owner, audience, tracked features (<code>DFEAT-xxx</code>), last-verified date.</li>
+                                <li><strong>Visual gallery</strong> — real screenshots covering desktop-light, desktop-dark, tablet
+                                  (761–1024 px), mobile (≤760 px), and every transient state (intro, modal, loading, empty, error).
+                                  Tier names follow the
+                                  <a href="../internal/front/foundations/motion-and-adaptivity.html#canonical-breakpoints">canonical
+                                    viewport breakpoints</a>.
+                                    Files in <code>./assets/&lt;screen-id&gt;-&lt;variant&gt;.png</code>; each <code>&lt;figure&gt;</code>
+                                    gets a single-line <code>&lt;figcaption&gt;</code> and is wrapped in a link to the full-size PNG.</li>
+                                    <li><strong>Anatomy diagram</strong> — inline SVG with numbered callouts; legend below the figure;
+                                      <code>&lt;title&gt;</code> + <code>&lt;desc&gt;</code> + <code>&lt;figcaption&gt;</code>;
+                                      <code>viewBox</code>, no fixed dimensions; multi-phase screens stack two panels in one SVG.</li>
+                                      <li><strong>Layout map</strong> — text walk-through of every region; each region lists its CSS hook and purpose.</li>
+                                      <li><strong>Behaviour cards</strong> — one section per major behaviour (e.g. boot intro overlay, hero
+                                        region, card sections); ordered by user-perceived priority.</li>
+                                        <li><strong>Data contract</strong> — every <code>data-*</code> attribute and class state used by the
+                                          runtime; column shape: <em>attribute · element · meaning · runtime consumer</em>.</li>
+                                          <li><strong>Interaction logic</strong> — page lifecycle, event contract, timing budget, animation
+                                            sequencing.</li>
+                                            <li><strong>Responsive behaviour</strong> — breakpoints with the layout change at each.</li>
+                                            <li><strong>Accessibility &amp; motion policy</strong> — reduced motion, ARIA, focus, contrast, theme parity.</li>
+                                            <li><strong>Where to change what</strong> — file-by-file mapping from behaviour to source.</li>
+                                            <li><strong>Acceptance checklist</strong> — items a reviewer can tick post-change.</li>
+                                            <li><strong>Known edges and design decisions</strong> — non-obvious choices and historical fixes.</li>
+                                            <li><strong>Related internal docs</strong> — links to glossary, architecture map, sister specs.</li>
+                                            <li><strong>Page history</strong> — per-edit table.</li>
+                                          </ol>
+                                        </section>
+
+                                        <section class="card">
+                                          <h2>References</h2>
+                                          <ul>
+                                            <li>Related ADRs:
+                                              <a href="../adr/0001-docs-as-code.html">ADR 0001 — Adopt Docs as Code</a>,
+                                              <a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007 — OpenAPI governance</a>,
+                                              <a href="../adr/0016-python-docstrings-google-style-and-pdoc.html">ADR 0016 — Python docstrings &amp; pdoc</a>,
+                                              <a href="../adr/0018-adr-lifecycle-ratification-and-badges.html">ADR 0018 — ADR lifecycle &amp; ratification</a>,
+                                              <a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020 — PlantUML / C4 diagrams</a>,
+                                              <a href="../adr/0024-architecture-and-quality-assessment-documents.html">ADR 0024 — Architecture &amp; quality assessments</a>,
+                                              <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025 — External vs internal API docs</a>,
+                                              <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026 — Internal docs as source of truth</a>,
+                                              <a href="../adr/0027-client-side-docs-search-index-and-ranking.html">ADR 0027 — Docs search index &amp; ranking</a>.
+                                            </li>
+                                            <li>Related RFCs:
+                                              <a href="0001-docs-search-implementation.html">RFC 0001 — docs search implementation</a>,
+                                              <a href="0002-docs-search-kpi-policy-and-slo.html">RFC 0002 — docs search KPI &amp; SLO</a>.
+                                            </li>
+                                            <li>Process pages:
+                                              <a href="../internal/front/_shared/process.html">documentation maintenance process</a>,
+                                              <a href="../internal/front/_shared/style-guide.html">documentation style guide and audit standard</a>,
+                                              <a href="../howto/0002-internal-service-docs-layout.html">how-to: internal service docs layout</a>.
+                                            </li>
+                                            <li>Templates:
+                                              <a href="../internal/api/_shared/spec-template.html">API operation spec</a> (with
+                                              <a href="../internal/api/_shared/spec-definition-of-done.html">DoD checklist</a>),
+                                              <a href="../internal/front/screens/docs-screen-template.html">screen spec</a>,
+                                              <a href="../adr/0000-template.html">ADR</a>,
+                                              <a href="0000-template.html">RFC</a>.
+                                            </li>
+                                            <li>Shared API conventions referenced from every operation spec:
+                                              <a href="../internal/api/_shared/auth.html">auth</a>,
+                                              <a href="../internal/api/_shared/error-envelope.html">error envelope</a>,
+                                              <a href="../internal/api/_shared/error-catalog.html">error catalog</a>,
+                                              <a href="../internal/api/_shared/field-conventions.html">field conventions</a>,
+                                              <a href="../internal/api/_shared/idempotency.html">idempotency</a>,
+                                              <a href="../internal/api/_shared/observability-conventions.html">observability conventions</a>,
+                                              <a href="../internal/api/_shared/openapi-authoring-guide.html">OpenAPI authoring guide</a>,
+                                              <a href="../internal/api/_shared/pagination.html">pagination</a>,
+                                              <a href="../internal/api/_shared/versioning.html">versioning</a>.
+                                            </li>
+                                            <li>External sources (the named programs whose patterns this RFC adopts):
+                                              Stripe API reference and writing principles;
+                                              Atlassian Design System and REST API docs;
+                                              GitHub Primer and REST API docs;
+                                              Vercel <code>docs.vercel.com</code>;
+                                              Linear engineering blog;
+                                              IBM Carbon Design System;
+                                              Google Material Design;
+                                              Adobe Spectrum;
+                                              Salesforce Lightning Web Components docs;
+                                              Storybook stories model;
+                                              Mailchimp Voice &amp; Tone;
+                                              GOV.UK Service Manual;
+                                              Wikipedia "View history" / MDN "Page history" / Notion "Page updates";
+                                              Kubernetes <code>OWNERS</code> / Sentry <code>CODEOWNERS</code>;
+                                              Michael Nygard's ADR pattern;
+                                              IETF RFC series, Rust RFCs, Python PEPs;
+                                              Simon Brown's C4 model;
+                                              Google SRE Workbook;
+                                              Honeycomb observability handbook.
+                                            </li>
+                                          </ul>
+                                        </section>
+
+                                        <section id="page-history" class="card">
+                                          <h2>Page history</h2>
+                                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                            <table class="docs-page-history">
+                                              <thead>
+                                                <tr>
+                                                  <th scope="col">Date</th>
+                                                  <th scope="col">Change</th>
+                                                  <th scope="col">Author</th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                <tr>
+                                                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                                  <td>Created RFC 0003: consolidated documentation authoring model — taxonomy, API spec template,
+                                                    screen spec template, industry references, lint and audit gates, appendices with section
+                                                    catalogues for the two heavy templates.</td>
+                                                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </section>
+
+                                        </main>
+
+                                      </body></html>

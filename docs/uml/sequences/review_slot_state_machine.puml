@@ -1,0 +1,31 @@
+@startuml
+title ETR Study API — Slot transitions on review (reference SchedulePolicy etr_methodology_four_slot v1.0.0)
+
+' Conventions:
+'   tags: easy / hard / forgot
+'   easy   = advance one slot (and inside D, advance ladder rung)
+'   hard   = step back one slot (A stays at A)
+'   forgot = reset to A
+'   delays in the reference policy are listed in the spec page transition table
+'   (PT1H / P1D / P3D / P7D / P14D / P30D / P60D ...).
+
+[*] --> A : new conspectus\n(seeded by createConspectus)
+
+A : delay on entry: PT1H (first retrieve)
+B : delay on entry: P1D
+C : delay on entry: P3D
+D : delay on entry: ladder rung\nD[0]=P7D D[1]=P14D D[2]=P30D ...
+
+A --> B : easy
+A --> A : hard / forgot
+B --> C : easy
+B --> A : hard
+B --> A : forgot
+C --> D : easy / ladder_index = 0
+C --> B : hard
+C --> A : forgot
+D --> D : easy / ladder_index += 1
+D --> C : hard / ladder_index = 0
+D --> A : forgot / ladder_index = 0
+
+@enduml

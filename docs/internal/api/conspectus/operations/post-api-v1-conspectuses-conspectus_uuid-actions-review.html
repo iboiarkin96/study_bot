@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,151 +11,1559 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+  <script defer src="../../../../assets/docs-syntax.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation" data-spec-status="draft" data-spec-owner="ivan-boyarkin" data-spec-operation-id="reviewConspectus">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>POST /api/v1/conspectuses/{conspectus_uuid}/actions/review</h1>
+        <h1 class="internal-h1--accent-tail internal-http-tablet">
+          <span class="internal-http-tablet__method badge badge--method-post">POST</span>
+          <span class="internal-http-tablet__path code">/api/v1/conspectuses/{conspectus_uuid}/actions/review</span>
+        </h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">Conspectus</section>
-        <section class="card">
-          <span class="badge badge--method-post">POST</span>
-          <code class="internal-http-tablet__path">/api/v1/conspectuses/{conspectus_uuid}/actions/review</code>
-        </section>
-        <p class="lead">
-          <strong>Specification.</strong> Apply one retrieve outcome: <code>tag</code> is <code>easy</code>,
-          <code>hard</code>, or <code>forgot</code>. Intended to update <code>slot</code>, <code>slot_d_ladder_index</code>,
-          and <code>next_review_at</code> via a schedule policy (implementation TBD). Planned <code>operationId</code>:
-          <code>reviewConspectus</code>.
-        </p>
-        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>reviewConspectus</code></p>
+        <p class="internal-doc-entity">Conspectus</p>
 
-        <section class="card">
-          <h2>Path, body, and behavior</h2>
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Summary</span>
+            <span>Records a retrieve outcome and advances the slot ladder.</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Owner</span>
+            <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">operationId</span>
+            <code>reviewConspectus</code>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-04-29">2026-04-29</time>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Spec template</span>
+            <code>v1</code>
+          </span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Path parameter: <code>conspectus_uuid</code> (36-char UUID string). Body:
-            <code>system_user_id</code>, <code>system_uuid</code>, <code>tag</code> (<code>ReviewTag</code> enum).
+            Apply one <strong>retrieve outcome</strong> to a conspectus. The learner has tried to recall
+            the note (cover → rewrite → speak per
+            <a href="../../../analysis/methodology.html#retrieve-system">methodology · retrieve</a>) and
+            tags the attempt <code>easy</code> · <code>hard</code> · <code>forgot</code>. The server
+            advances the slot ladder per the active <code>SchedulePolicy</code>, recomputes
+            <code>next_review_at</code>, and writes an immutable review-log row.
+          </p>
+          <p class="small">
+            This is the reference spec for the analyst-spec template (Phase 2 of the documentation
+            upgrade). Read alongside <a href="../../../analysis/system-design.html#review-suggestion-logic">
+            system design · review suggestion and scheduling logic</a> and
+            <a href="../../_shared/spec-template.html">_shared/spec-template.html</a>.
+          </p>
+        </section>
+
+        <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+          <h2>1. Business context</h2>
+          <p>
+            Spaced retrieval is the load-bearing mechanism in the
+            <a href="../../../analysis/methodology.html">ETR methodology</a>: durable memory comes from
+            <em>effortful recall on a schedule</em>, not from re-reading. The learner needs one obvious
+            action — “I just recalled this; here is how it went” — that updates when the same conspectus
+            should surface next.
           </p>
           <p>
-            Service loads the row only if <code>conspectus_uuid</code> belongs to the resolved user’s
-            <code>client_uuid</code>. Otherwise <code>404</code> with <code>CONS_404</code>.
+            This endpoint is the only sanctioned way to mutate
+            <code>conspectus_schedules</code>. It guarantees three product invariants: <strong>(a)</strong>
+            every retrieval outcome lands in an append-only log
+            (<code>conspectus_review_logs</code>) with full before/after snapshots; <strong>(b)</strong>
+            slot transitions are deterministic for a given <code>(SchedulePolicy version, current slot,
+            tag)</code>; <strong>(c)</strong> two concurrent reviews on the same conspectus cannot both
+            silently win.
           </p>
-          <p>
-            <strong>Idempotency:</strong> required header. Key
-            <code>endpoint_path = "/api/v1/conspectuses/{conspectus_uuid}/actions/review"</code> with the concrete UUID in the path
-            (each conspectus has its own idempotency namespace).
-          </p>
-          <p><strong>Success:</strong> <code>200 OK</code> — full <code>ConspectusResponse</code> after update.</p>
         </section>
 
-        <section class="card">
-          <h2>Errors</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>HTTP</th>
-                <th>Code / key</th>
-                <th>When</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>400</code></td>
-                <td><code>COMMON_400</code></td>
-                <td>Missing <code>Idempotency-Key</code>.</td>
-              </tr>
-              <tr>
-                <td><code>404</code></td>
-                <td><code>USER_404</code></td>
-                <td>User not found.</td>
-              </tr>
-              <tr>
-                <td><code>404</code></td>
-                <td><code>CONS_404</code> / <code>CONSPECTUS_NOT_FOUND</code></td>
-                <td>No conspectus for this id + user (wrong id or other user’s row).</td>
-              </tr>
-              <tr>
-                <td><code>409</code></td>
-                <td><code>COMMON_409</code></td>
-                <td>Idempotency key conflict (different body).</td>
-              </tr>
-              <tr>
-                <td><code>422</code></td>
-                <td>Validation</td>
-                <td>Invalid <code>tag</code> or body fields.</td>
-              </tr>
-            </tbody>
-          </table>
+        <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+          <h2>2. User stories</h2>
+          <ul>
+            <li>
+              <strong>US-CONSP-REVIEW-1.</strong> As a <em>learner</em>, I want to record one retrieval
+              outcome (easy / hard / forgot), so that future due-lists reflect my current performance
+              instead of a fixed calendar.
+            </li>
+            <li>
+              <strong>US-CONSP-REVIEW-2.</strong> As an <em>integrator</em>, I want each review to
+              advance the schedule deterministically and idempotently, so that retries during flaky
+              network conditions cannot double-advance the ladder.
+            </li>
+            <li>
+              <strong>US-CONSP-REVIEW-3.</strong> As a <em>product owner</em>, I want every review
+              auditable with before/after schedule snapshots and the policy version used, so that I can
+              investigate retention regressions after a policy change.
+            </li>
+          </ul>
         </section>
 
-        <section class="card">
-          <h2>Logging</h2>
-          <p><code>conspectus_reviewed</code> at info with <code>conspectus_uuid</code>, <code>tag</code>, new <code>slot</code>.</p>
-        </section>
-
-        <section class="card">
-          <h2>Single-file deep spec</h2>
-          <p><a href="../index.html#conspectus-op-reviewConspectus">Conspectus hub — this operation</a></p>
-        </section>
-
-        <p class="small">
-          <a href="../index.html">← Conspectus resource hub</a>
-        </p>
-
-        <section id="page-history" class="card">
-
-          <h2>Page history</h2>
-
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-
-            <table class="docs-page-history">
-
+        <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+          <h2>3. Acceptance criteria (Given / When / Then)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+            <table>
               <thead>
-
                 <tr>
-
-                  <th scope="col">Date</th>
-
-                  <th scope="col">Change</th>
-
-                  <th scope="col">Author</th>
-
+                  <th scope="col">ID &amp; scenario</th>
+                  <th scope="col">Given</th>
+                  <th scope="col">When</th>
+                  <th scope="col">Then</th>
                 </tr>
-
               </thead>
-
               <tbody>
-
                 <tr>
-
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-
-                  <td>Added Page history section (repository baseline).</td>
-
-                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-
+                  <td>
+                    <code>AC-CONSP-REVIEW-001</code><br>
+                    <span class="small">Happy path — easy from A.</span>
+                  </td>
+                  <td>A conspectus owned by user U with <code>slot = A</code>.</td>
+                  <td>A review request arrives with <code>tag = easy</code> and a fresh
+                    <code>Idempotency-Key</code>.
+                  </td>
+                  <td>Response <code>200 OK</code>; <code>slot = B</code>;
+                    <code>next_review_at</code> set per active policy delay;
+                    <code>schedule_revision</code> incremented by 1.
+                  </td>
                 </tr>
+                <tr>
+                  <td>
+                    <code>AC-CONSP-REVIEW-002</code><br>
+                    <span class="small">Happy path — forgot from D.</span>
+                  </td>
+                  <td>Conspectus with <code>slot = D</code> and
+                    <code>slot_d_ladder_index = 2</code>.
+                  </td>
+                  <td>Review with <code>tag = forgot</code>.</td>
+                  <td>Response <code>200 OK</code>; <code>slot = A</code>;
+                    <code>slot_d_ladder_index = 0</code>; <code>schedule_revision</code>
+                    incremented.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <code>AC-CONSP-REVIEW-003</code><br>
+                    <span class="small">Idempotent replay.</span>
+                  </td>
+                  <td>A previously successful review with key <code>K</code> and identical body
+                    exists in <code>idempotency_keys</code>.</td>
+                    <td>The same request is replayed within the idempotency TTL.</td>
+                    <td>The original <code>200 OK</code> body is returned byte-for-byte; schedule
+                      unchanged; no new <code>conspectus_review_logs</code> row is created.</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <code>AC-CONSP-REVIEW-004</code><br>
+                        <span class="small">Idempotency-key conflict.</span>
+                      </td>
+                      <td>Key <code>K</code> previously used with payload <code>P1</code>.</td>
+                      <td>The same key is sent with payload <code>P2</code>.</td>
+                      <td>Response <code>409 COMMON_409</code>
+                        (<code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>); no DB write.</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>AC-CONSP-REVIEW-005</code><br>
+                          <span class="small">Missing idempotency-key.</span>
+                        </td>
+                        <td>Request without an <code>Idempotency-Key</code> header.</td>
+                        <td>The handler runs validation.</td>
+                        <td>Response <code>400 COMMON_400</code>
+                          (<code>IDEMPOTENCY_KEY_REQUIRED</code>); no DB write; warn-level log.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>AC-CONSP-REVIEW-006</code><br>
+                            <span class="small">Wrong owner.</span>
+                          </td>
+                          <td>Conspectus C owned by user <code>U1</code>.</td>
+                          <td>Review request resolves to user <code>U2</code>.</td>
+                          <td>Response <code>404 CONS_404</code> — <strong>not</strong>
+                            <code>403</code>; we do not leak existence to non-owners.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>AC-CONSP-REVIEW-007</code><br>
+                            <span class="small">Invalid tag.</span>
+                          </td>
+                          <td>Body with <code>tag = "maybe"</code>.</td>
+                          <td>Pydantic / FastAPI validation runs.</td>
+                          <td>Response <code>422 COMMON_000</code> with field-level validation detail
+                            pointing at <code>body.tag</code>.</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <code>AC-CONSP-REVIEW-008</code><br>
+                              <span class="small">Optimistic concurrency conflict.</span>
+                            </td>
+                            <td>Two concurrent reviews on the same conspectus, distinct idempotency keys,
+                              both reading <code>schedule_revision = R</code>.</td>
+                              <td>One commits first (revision becomes <code>R + 1</code>).</td>
+                              <td>The second receives <code>409 CONS_409</code>
+                                (<code>CONSPECTUS_REVIEW_REVISION_CONFLICT</code>); integrator may re-fetch
+                                and retry.</td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>AC-CONSP-REVIEW-009</code><br>
+                                  <span class="small">Policy version pinning.</span>
+                                </td>
+                                <td>A conspectus pinned to policy
+                                  <code>(etr_methodology_four_slot, 1.0.0)</code>.
+                                </td>
+                                <td>A new policy version <code>1.1.0</code> ships after the conspectus was
+                                  created, then a review arrives.</td>
+                                  <td>Review is computed against <code>1.0.0</code> (the version on the schedule
+                                    row); <code>conspectus_review_logs.algorithm_version = 1.0.0</code>.</td>
+                                  </tr>
+                                  <tr>
+                                    <td>
+                                      <code>AC-CONSP-REVIEW-010</code><br>
+                                      <span class="small">Observability emitted.</span>
+                                    </td>
+                                    <td>A successful review.</td>
+                                    <td>The transaction commits.</td>
+                                    <td>Log event <code>conspectus_reviewed</code> at info level with
+                                      <code>{conspectus_uuid, tag, slot_from, slot_to, schedule_revision_to}</code>;
+                                      metric <code>conspectus_review_duration_seconds</code> observed with
+                                      <code>{tag, slot_from, slot_to}</code>.
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </section>
 
-              </tbody>
+                          <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                            <h2>4. Functional requirements</h2>
+                            <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+                              <table>
+                                <thead>
+                                  <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Short description</th>
+                                    <th scope="col">Detailed characteristic</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td><code>FR-CONSP-REVIEW-001</code></td>
+                                    <td>Accept exactly one retrieve outcome per request.</td>
+                                    <td><code>tag ∈ {easy, hard, forgot}</code>. One outcome per call — no batch, no
+                                      multi-tag mode. Unknown values are rejected at validation (see §13 edge case for
+                                      upper-case <code>EASY</code>).</td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>FR-CONSP-REVIEW-002</code></td>
+                                      <td>Resolve resource via composite owner key; never leak existence.</td>
+                                      <td>Conspectus is loaded only via
+                                        <code>(conspectus_uuid, owner_client_uuid)</code> where
+                                        <code>owner_client_uuid</code> is derived from <code>(system_user_id,
+                                        system_uuid)</code> in the body. Cross-tenant access returns <code>404
+                                        CONS_404</code>, never <code>403</code> — see also §6 Authorization.
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>FR-CONSP-REVIEW-003</code></td>
+                                      <td>Pin transition to the policy version stored on the schedule row.</td>
+                                      <td>Apply the transition deterministically using the
+                                        <code>(schedule_policy_id, algorithm_version)</code> currently stored on the
+                                        <code>conspectus_schedules</code> row — <strong>not</strong> the latest published
+                                        policy version. Guarantees AC-009 (history replayability after policy bumps).
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>FR-CONSP-REVIEW-004</code></td>
+                                      <td>Atomic schedule update + append-only log insert in one transaction.</td>
+                                      <td>In a single DB transaction:
+                                        <ol>
+                                          <li><code>UPDATE conspectus_schedules</code> SET
+                                            <code>slot</code>, <code>slot_d_ladder_index</code>,
+                                            <code>next_review_at</code>,
+                                            <code>schedule_revision = current + 1</code>,
+                                            <code>schedule_updated_at = now()</code>.
+                                          </li>
+                                          <li><code>INSERT INTO conspectus_review_logs</code> with full
+                                            <code>(schedule_before, schedule_after)</code> JSON snapshots, the resolved
+                                            <code>algorithm_version</code>, and <code>reviewed_at</code>.
+                                          </li>
+                                        </ol>
+                                        No partial state on failure (see §10 side effects).
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>FR-CONSP-REVIEW-005</code></td>
+                                      <td>Enforce idempotency per shared rules.</td>
+                                      <td>See <a href="../../_shared/idempotency.html">_shared/idempotency.html</a>.
+                                        Namespace:
+                                        <code>POST /api/v1/conspectuses/{conspectus_uuid}/actions/review</code> with the
+                                        concrete UUID. Successful replay within TTL serves the original
+                                        <code>200</code> body byte-for-byte; no new DB writes.
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>FR-CONSP-REVIEW-006</code></td>
+                                      <td>Enforce optimistic concurrency on schedule_revision.</td>
+                                      <td>Two layers:
+                                        <ul>
+                                          <li>If body carries <code>expected_schedule_revision</code> and it differs from
+                                            the current row revision, return <code>409 CONS_409
+                                            CONSPECTUS_REVIEW_REVISION_CONFLICT</code> without writes.</li>
+                                            <li>If the field is absent, the same conflict is still detected by the
+                                              conditional <code>UPDATE … WHERE schedule_revision = ?</code> guard and
+                                              returns the same error.</li>
+                                            </ul>
+                                            Integrator should re-fetch the conspectus, re-decide, and submit a
+                                            <strong>new</strong> idempotency key.
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td><code>FR-CONSP-REVIEW-007</code></td>
+                                          <td>Server stamps <code>reviewed_at</code> in UTC.</td>
+                                          <td>Server stamps <code>reviewed_at = now()</code> using DB-server time (avoids
+                                            Python <code>datetime.utcnow()</code> drift — see §13 edge case). The body MAY
+                                            carry a client-side <code>reviewed_at</code> for display, but the server ignores
+                                            it for storage in v1 (see Open question Q1).</td>
+                                          </tr>
+                                          <tr>
+                                            <td><code>FR-CONSP-REVIEW-008</code></td>
+                                            <td>Return the full updated <code>ConspectusResponse</code> on success.</td>
+                                            <td>Response body matches the §8 schema, including the <strong>new</strong>
+                                              <code>slot</code>, <code>slot_d_ladder_index</code>, <code>next_review_at</code>,
+                                              and <code>schedule_revision</code>. Integrator does not need a follow-up
+                                              <code>GET</code> to learn the new state.
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </section>
 
-            </table>
+                                  <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                                    <h2>5. Non-functional requirements</h2>
+                                    <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+                                      <table>
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Short description</th>
+                                            <th scope="col">Detailed characteristic</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <tr>
+                                            <td><code>NFR-CONSP-REVIEW-001</code></td>
+                                            <td>Latency budget.</td>
+                                            <td>P95 server-side latency ≤ <strong>200 ms</strong>, P99 ≤ <strong>500 ms</strong>
+                                              (single-region deployment, warm DB connection pool, no cold-start). Measured
+                                              via <code>http_request_duration_seconds</code> with
+                                              <code>path_template = /api/v1/conspectuses/{conspectus_uuid}/actions/review</code>.
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td><code>NFR-CONSP-REVIEW-002</code></td>
+                                            <td>Durability.</td>
+                                            <td>A <code>200 OK</code> response is sent only <strong>after</strong> the
+                                              transaction is fsync’d to disk. Default DB durability — no explicit
+                                              <code>synchronous_commit = off</code>, no async write-behind. If the response
+                                              arrives, the row is durable.
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td><code>NFR-CONSP-REVIEW-003</code></td>
+                                            <td>Idempotency window.</td>
+                                            <td>Replays of the same <code>Idempotency-Key</code> with identical payload return
+                                              the original <code>200</code> body for <strong>24 hours</strong> after the first
+                                              success. Governed by <code>idempotency_keys</code> TTL — see
+                                              <a href="../../_shared/idempotency.html">shared idempotency rules</a>.
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td><code>NFR-CONSP-REVIEW-004</code></td>
+                                            <td>Payload limit.</td>
+                                            <td>Body ≤ <strong>4 KB</strong>. Enforced by the global body-size middleware
+                                              before the handler runs; oversize requests get <code>413 COMMON_413
+                                              SECURITY_REQUEST_BODY_TOO_LARGE</code>.</td>
+                                            </tr>
+                                            <tr>
+                                              <td><code>NFR-CONSP-REVIEW-005</code></td>
+                                              <td>Auditability.</td>
+                                              <td>100 % of successful reviews land in <code>conspectus_review_logs</code> with
+                                                full <code>schedule_before</code> / <code>schedule_after</code> snapshots and
+                                                the resolved <code>algorithm_version</code>. Verified by an integration test
+                                                that asserts <em>count of <code>200</code> responses equals count of inserted
+                                                log rows</em> for a generated workload.</td>
+                                              </tr>
+                                              <tr>
+                                                <td><code>NFR-CONSP-REVIEW-006</code></td>
+                                                <td>Backwards compatibility (enum stability).</td>
+                                                <td>Adding a new value to the <code>tag</code> enum is a <strong>breaking</strong>
+                                                  change and requires an ADR (existing clients break on unknown values from a
+                                                  response perspective). Renames of existing values are <strong>forbidden</strong>:
+                                                  existing rows in <code>conspectus_review_logs</code> would become
+                                                  unreadable.</td>
+                                                </tr>
+                                                <tr>
+                                                  <td><code>NFR-CONSP-REVIEW-007</code></td>
+                                                  <td>Observability completeness.</td>
+                                                  <td>Every success and every error path emits the corresponding log event listed in
+                                                    §14. No silent failures, no swallowed exceptions. Integration test captures the
+                                                    log stream and asserts presence + level for each scenario.</td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td><code>NFR-CONSP-REVIEW-008</code></td>
+                                                    <td>Rate limit.</td>
+                                                    <td>Inherits the global per-API-key rate limit from
+                                                      <a href="../../../../adr/0005-api-security-defaults.html">ADR 0005</a>. No
+                                                      per-endpoint override in v1. Exhaustion returns <code>429 COMMON_429
+                                                      SECURITY_RATE_LIMIT_EXCEEDED</code>.
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </section>
 
-          </div>
+                                          <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                            <h2>6. Authorization &amp; permissions</h2>
+                                            <p>
+                                              Auth scheme: API key in <code>X-API-Key</code> header (per
+                                              <a href="../../../../adr/0005-api-security-defaults.html">ADR 0005</a>; see also
+                                              <a href="../../_shared/auth.html">_shared/auth.html</a>).
+                                            </p>
+                                            <p>
+                                              <strong>Ownership rule:</strong> the user resolved from
+                                              <code>(system_user_id, system_uuid)</code> in the body must own the conspectus
+                                              (<code>conspectuses.owner_client_uuid = users.client_uuid</code>). If not, return
+                                              <code>404 CONS_404</code> — never leak existence to non-owners with a <code>403</code>.
+                                            </p>
+                                            <p>
+                                              <strong>No additional scope</strong> beyond the default integrator key. No admin override.
+                                            </p>
+                                          </section>
 
-        </section>
+                                          <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                            <h2>7. Request contract</h2>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
+                                            <h3>Path parameters</h3>
+                                            <dl class="internal-field-list">
+                                              <dt>
+                                                <code>conspectus_uuid</code>
+                                                <span class="badge badge--field-type">string · uuid</span>
+                                                <span class="badge badge--field-req">required</span>
+                                              </dt>
+                                              <dd>
+                                                <p>Identifies the conspectus to review.</p>
+                                                <dl class="internal-field-list__attrs">
+                                                  <dt>Constraints</dt>
+                                                  <dd>36-char canonical UUID (RFC 4122).</dd>
+                                                  <dt>OpenAPI</dt>
+                                                  <dd><code>parameters[in=path]</code>, <code>schema: $ref Uuid</code>.</dd>
+                                                </dl>
+                                              </dd>
+                                            </dl>
 
-</body></html>
+                                            <h3>Headers</h3>
+                                            <dl class="internal-field-list">
+                                              <dt>
+                                                <code>X-API-Key</code>
+                                                <span class="badge badge--field-type">string</span>
+                                                <span class="badge badge--field-req">required</span>
+                                              </dt>
+                                              <dd>
+                                                <p>Tenant API key.</p>
+                                                <dl class="internal-field-list__attrs">
+                                                  <dt>Format</dt>
+                                                  <dd>Opaque ASCII string per
+                                                    <a href="../../../../adr/0005-api-security-defaults.html">ADR 0005</a>.
+                                                  </dd>
+                                                </dl>
+                                              </dd>
+
+                                              <dt>
+                                                <code>Idempotency-Key</code>
+                                                <span class="badge badge--field-type">string</span>
+                                                <span class="badge badge--field-req">required</span>
+                                              </dt>
+                                              <dd>
+                                                <p>Idempotency token per
+                                                  <a href="../../_shared/idempotency.html">shared idempotency rules</a>.
+                                                </p>
+                                                <dl class="internal-field-list__attrs">
+                                                  <dt>Format</dt>
+                                                  <dd>Printable ASCII.</dd>
+                                                  <dt>Length</dt>
+                                                  <dd>1–128 chars.</dd>
+                                                </dl>
+                                              </dd>
+
+                                              <dt>
+                                                <code>X-Request-Id</code>
+                                                <span class="badge badge--field-type">string</span>
+                                                <span class="badge badge--field-opt">optional</span>
+                                              </dt>
+                                              <dd>
+                                                <p>Correlation ID propagated to logs and traces; server generates one when absent
+                                                  (<a href="../../../../adr/0023-structured-logging-and-local-elasticsearch.html">ADR
+                                                  0023</a>).</p>
+                                                  <dl class="internal-field-list__attrs">
+                                                    <dt>Length</dt>
+                                                    <dd>1–128 chars.</dd>
+                                                  </dl>
+                                                </dd>
+
+                                                <dt>
+                                                  <code>Content-Type</code>
+                                                  <span class="badge badge--field-type">string</span>
+                                                  <span class="badge badge--field-req">required</span>
+                                                </dt>
+                                                <dd>
+                                                  <p>Must be <code>application/json</code>.</p>
+                                                </dd>
+                                              </dl>
+
+                                              <h3>Body</h3>
+                                              <dl class="internal-field-list">
+                                                <dt>
+                                                  <code>system_user_id</code>
+                                                  <span class="badge badge--field-type">string</span>
+                                                  <span class="badge badge--field-req">required</span>
+                                                </dt>
+                                                <dd>
+                                                  <p>External user identifier from the integrator.</p>
+                                                  <dl class="internal-field-list__attrs">
+                                                    <dt>Length</dt>
+                                                    <dd>1–128 chars.</dd>
+                                                    <dt>PII class</dt>
+                                                    <dd>Low — opaque.</dd>
+                                                    <dt>OpenAPI</dt>
+                                                    <dd><code>$ref ReviewConspectusBody.system_user_id</code>.</dd>
+                                                  </dl>
+                                                </dd>
+
+                                                <dt>
+                                                  <code>system_uuid</code>
+                                                  <span class="badge badge--field-type">string · uuid</span>
+                                                  <span class="badge badge--field-req">required</span>
+                                                </dt>
+                                                <dd>
+                                                  <p>External tenant UUID.</p>
+                                                  <dl class="internal-field-list__attrs">
+                                                    <dt>Format</dt>
+                                                    <dd>RFC 4122.</dd>
+                                                    <dt>PII class</dt>
+                                                    <dd>Low — opaque.</dd>
+                                                    <dt>OpenAPI</dt>
+                                                    <dd><code>$ref Uuid</code>.</dd>
+                                                  </dl>
+                                                </dd>
+
+                                                <dt>
+                                                  <code>tag</code>
+                                                  <span class="badge badge--field-type">string · enum</span>
+                                                  <span class="badge badge--field-req">required</span>
+                                                </dt>
+                                                <dd>
+                                                  <p>The retrieve outcome the learner reports.</p>
+                                                  <dl class="internal-field-list__attrs">
+                                                    <dt>Allowed</dt>
+                                                    <dd><code>easy</code> · <code>hard</code> · <code>forgot</code>.</dd>
+                                                    <dt>OpenAPI</dt>
+                                                    <dd><code>$ref ReviewTag</code>.</dd>
+                                                  </dl>
+                                                </dd>
+
+                                                <dt>
+                                                  <code>expected_schedule_revision</code>
+                                                  <span class="badge badge--field-type">integer · int64</span>
+                                                  <span class="badge badge--field-opt">optional</span>
+                                                </dt>
+                                                <dd>
+                                                  <p>Optimistic-concurrency token. If present and ≠ current row revision → <code>409
+                                                    CONS_409</code>. Recommended: pass the value you read from the
+                                                    previous
+                                                    <code>ConspectusResponse</code>.
+                                                  </p>
+                                                  <dl class="internal-field-list__attrs">
+                                                    <dt>Constraints</dt>
+                                                    <dd>≥ 1.</dd>
+                                                    <dt>OpenAPI</dt>
+                                                    <dd><code>$ref ScheduleRevision</code>.</dd>
+                                                  </dl>
+                                                </dd>
+
+                                                <dt>
+                                                  <code>reviewed_at</code>
+                                                  <span class="badge badge--field-type">string · date-time</span>
+                                                  <span class="badge badge--field-opt">optional</span>
+                                                </dt>
+                                                <dd>
+                                                  <p>Client display timestamp. <strong>Ignored by the server in v1</strong> — server
+                                                    stamps its own UTC time (see Q1).</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>Format</dt>
+                                                      <dd>RFC 3339, UTC.</dd>
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref Timestamp</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+                                                </dl>
+
+                                                <h3>Example request</h3>
+                                                <pre><code>POST /api/v1/conspectuses/9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001/actions/review HTTP/1.1
+                                                  Host: api.study.example
+                                                  X-API-Key: sk_live_***
+                                                  Idempotency-Key: 9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001-2026-04-29T10:11:00Z-easy
+                                                  Content-Type: application/json
+
+                                                  {
+                                                  "system_user_id": "learner-01",
+                                                  "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                                                  "tag": "easy",
+                                                  "expected_schedule_revision": 7
+                                                  }
+                                                </code></pre>
+                                              </section>
+
+                                              <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                                <h2>8. Response contract</h2>
+
+                                                <h3>200 OK — review applied</h3>
+                                                <dl class="internal-field-list">
+                                                  <dt>
+                                                    <code>conspectus_uuid</code>
+                                                    <span class="badge badge--field-type">string · uuid</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Echo of the path parameter.</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref Uuid</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>title</code>
+                                                    <span class="badge badge--field-type">string</span>
+                                                    <span class="badge badge--field-opt">nullable</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Optional learner-supplied label.</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref ConspectusResponse.title</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>cue_sheet</code>
+                                                    <span class="badge badge--field-type">object</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Extract layer — three-column cue sheet (see <a href="../index.html">resource hub</a>).</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref CueSheet</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>cue_sheet_schema_version</code>
+                                                    <span class="badge badge--field-type">integer · int32</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Schema version pinned at create-time on the conspectus row.</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>Default</dt>
+                                                      <dd><code>1</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>dense_paragraph</code>
+                                                    <span class="badge badge--field-type">string</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Transform layer — single dense paragraph.</p>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>bullets</code>
+                                                    <span class="badge badge--field-type">array&lt;string&gt;</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Transform layer — bullet list (Feynman-style).</p>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>slot</code>
+                                                    <span class="badge badge--field-type">string · enum</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p><strong>New</strong> slot after this transition.</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>Allowed</dt>
+                                                      <dd><code>A</code> · <code>B</code> · <code>C</code> · <code>D</code>.</dd>
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref Slot</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>slot_d_ladder_index</code>
+                                                    <span class="badge badge--field-type">integer · int32</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Rung inside the D tier. Reset to <code>0</code> when slot is not D.</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>Constraints</dt>
+                                                      <dd>≥ 0.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>next_review_at</code>
+                                                    <span class="badge badge--field-type">string · date-time</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p><strong>New</strong> due time per active policy (UTC).</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref Timestamp</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>schedule_policy_id</code>
+                                                    <span class="badge badge--field-type">string</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Policy used for this transition (e.g. <code>etr_methodology_four_slot</code>).</p>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>algorithm_version</code>
+                                                    <span class="badge badge--field-type">string · semver</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Version of the policy used for this transition.</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>Pattern</dt>
+                                                      <dd><code>^\d+\.\d+\.\d+$</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>schedule_revision</code>
+                                                    <span class="badge badge--field-type">integer · int64</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Incremented to <code>previous + 1</code> on success. Pass back as
+                                                      <code>expected_schedule_revision</code> on the next review.
+                                                    </p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref ScheduleRevision</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+
+                                                  <dt>
+                                                    <code>schedule_updated_at</code>
+                                                    <span class="badge badge--field-type">string · date-time</span>
+                                                  </dt>
+                                                  <dd>
+                                                    <p>Server stamp of this transition (UTC).</p>
+                                                    <dl class="internal-field-list__attrs">
+                                                      <dt>OpenAPI</dt>
+                                                      <dd><code>$ref Timestamp</code>.</dd>
+                                                    </dl>
+                                                  </dd>
+                                                </dl>
+
+                                                <h3>Example 200 response</h3>
+                                                <pre><code>HTTP/1.1 200 OK
+                                                  Content-Type: application/json
+                                                  X-Request-Id: 1c0a-…
+
+                                                  {
+                                                  "conspectus_uuid": "9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001",
+                                                  "title": "The water cycle",
+                                                  "cue_sheet": { "topic": "Water cycle", "rows": [/*…*/] },
+                                                  "cue_sheet_schema_version": 1,
+                                                  "dense_paragraph": "The sun heats oceans …",
+                                                  "bullets": ["Evaporation moves …", "/* … */"],
+                                                  "slot": "B",
+                                                  "slot_d_ladder_index": 0,
+                                                  "next_review_at": "2026-04-30T10:11:00Z",
+                                                  "schedule_policy_id": "etr_methodology_four_slot",
+                                                  "algorithm_version": "1.0.0",
+                                                  "schedule_revision": 8,
+                                                  "schedule_updated_at": "2026-04-29T10:11:00Z"
+                                                  }
+                                                </code></pre>
+                                              </section>
+
+                                              <section class="card" id="state-transitions" data-spec-section="state-transitions" data-spec-required="true">
+                                                <h2>9. State transitions</h2>
+                                                <p>
+                                                  The reference policy
+                                                  <code>(etr_methodology_four_slot, 1.0.0)</code> defines the slot ladder. Other policies may
+                                                  ship later — history stays interpretable because each
+                                                  <code>conspectus_review_logs</code> row stores
+                                                  <code>(schedule_policy_id, algorithm_version)</code>.
+                                                </p>
+
+                                                <figure class="sys-diagram">
+                                                  <div class="sys-diagram__head">
+                                                    <span class="sys-diagram__badge">State</span>
+                                                    <div class="sys-diagram__titles">
+                                                      <h3>Slot ladder transitions on review</h3>
+                                                    </div>
+                                                  </div>
+                                                  <div class="sys-diagram__canvas">
+                                                    <img alt="State diagram: A↔B↔C↔D ladder driven by easy/hard/forgot tags" class="diagram diagram--uml" loading="lazy" src="../../../../uml/rendered/review_slot_state_machine.svg" onerror="this.closest('figure').classList.add('is-missing'); const d=this.closest('figure').parentElement.querySelector('details.docs-uml-source'); if(d){d.open=true;}">
+                                                  </div>
+                                                  <figcaption class="sys-diagram__foot"><strong>Source:</strong>
+                                                    <code>docs/uml/sequences/review_slot_state_machine.puml</code>
+                                                    · regenerate with <code>make docs-fix</code>.
+                                                  </figcaption>
+                                                </figure>
+
+                                                <h3>Sequence on the server</h3>
+                                                <figure class="sys-diagram">
+                                                  <div class="sys-diagram__head">
+                                                    <span class="sys-diagram__badge">Sequence</span>
+                                                    <div class="sys-diagram__titles">
+                                                      <h3>Apply review — handler → service → policy → DB</h3>
+                                                      <p class="sys-diagram__sub">Single transaction, append-only log, optimistic
+                                                        concurrency.</p>
+                                                      </div>
+                                                    </div>
+                                                    <div class="sys-diagram__canvas">
+                                                      <img alt="Sequence diagram: integrator → API → service → policy → DB" class="diagram diagram--uml" loading="lazy" src="../../../../uml/rendered/review_retrieve_sequence.svg" onerror="this.closest('figure').classList.add('is-missing'); const d=this.closest('figure').parentElement.querySelector('details.docs-uml-source'); if(d){d.open=true;}">
+                                                    </div>
+                                                    <figcaption class="sys-diagram__foot"><strong>Source:</strong>
+                                                      <code>docs/uml/sequences/review_retrieve_sequence.puml</code>.
+                                                    </figcaption>
+                                                  </figure>
+
+                                                  <h3>Transition table (reference policy v1.0.0)</h3>
+                                                  <div class="docs-table-scroll" role="region" aria-label="Slot transition table">
+                                                    <table>
+                                                      <thead>
+                                                        <tr>
+                                                          <th>From slot</th>
+                                                          <th>From rung</th>
+                                                          <th>Tag</th>
+                                                          <th>To slot</th>
+                                                          <th>To rung</th>
+                                                          <th>Delay applied to <code>next_review_at</code></th>
+                                                        </tr>
+                                                      </thead>
+                                                      <tbody>
+                                                        <tr>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>easy</td>
+                                                          <td>B</td>
+                                                          <td>—</td>
+                                                          <td>P1D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>hard</td>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>PT1H</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>forgot</td>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>PT1H</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>B</td>
+                                                          <td>—</td>
+                                                          <td>easy</td>
+                                                          <td>C</td>
+                                                          <td>—</td>
+                                                          <td>P3D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>B</td>
+                                                          <td>—</td>
+                                                          <td>hard</td>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>PT1H</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>B</td>
+                                                          <td>—</td>
+                                                          <td>forgot</td>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>PT1H</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>C</td>
+                                                          <td>—</td>
+                                                          <td>easy</td>
+                                                          <td>D</td>
+                                                          <td>0</td>
+                                                          <td>P7D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>C</td>
+                                                          <td>—</td>
+                                                          <td>hard</td>
+                                                          <td>B</td>
+                                                          <td>—</td>
+                                                          <td>P1D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>C</td>
+                                                          <td>—</td>
+                                                          <td>forgot</td>
+                                                          <td>A</td>
+                                                          <td>—</td>
+                                                          <td>PT1H</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>D</td>
+                                                          <td>0</td>
+                                                          <td>easy</td>
+                                                          <td>D</td>
+                                                          <td>1</td>
+                                                          <td>P14D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>D</td>
+                                                          <td>1</td>
+                                                          <td>easy</td>
+                                                          <td>D</td>
+                                                          <td>2</td>
+                                                          <td>P30D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>D</td>
+                                                          <td>2</td>
+                                                          <td>easy</td>
+                                                          <td>D</td>
+                                                          <td>3</td>
+                                                          <td>P60D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>D</td>
+                                                          <td><em>n</em></td>
+                                                          <td>hard</td>
+                                                          <td>C</td>
+                                                          <td>0</td>
+                                                          <td>P3D</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>D</td>
+                                                          <td><em>n</em></td>
+                                                          <td>forgot</td>
+                                                          <td>A</td>
+                                                          <td>0</td>
+                                                          <td>PT1H</td>
+                                                        </tr>
+                                                      </tbody>
+                                                    </table>
+                                                  </div>
+                                                  <p class="small">
+                                                    Delays follow ISO 8601 duration format. After <code>D[3]</code> the ladder caps at the
+                                                    same rung — the product decision to extend or stop is captured in the policy
+                                                    <code>rules</code> JSON, not in code.
+                                                  </p>
+                                                </section>
+
+                                                <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                                  <h2>10. Side effects</h2>
+                                                  <ul>
+                                                    <li>
+                                                      <strong>On success.</strong>
+                                                      <ol>
+                                                        <li><code>UPDATE conspectus_schedules</code> SET
+                                                          <code>(slot, slot_d_ladder_index, next_review_at, schedule_revision = current+1,
+                                                            schedule_updated_at = now())</code>
+                                                            WHERE <code>conspectus_uuid = ?</code> AND
+                                                            <code>schedule_revision = ?</code> (concurrency guard).
+                                                          </li>
+                                                          <li><code>INSERT INTO conspectus_review_logs</code>
+                                                            <code>(conspectus_uuid, tag, reviewed_at, schedule_before, schedule_after,
+                                                              schedule_policy_id, algorithm_version)</code>.
+                                                            </li>
+                                                            <li><code>INSERT INTO idempotency_keys</code> with the SHA-256 of the canonical body
+                                                              and the stored response (per <a href="../../_shared/idempotency.html">idempotency
+                                                              rules</a>).</li>
+                                                              <li>Emit log event <code>conspectus_reviewed</code> (info).</li>
+                                                              <li>Observe metric <code>conspectus_review_duration_seconds</code>.</li>
+                                                            </ol>
+                                                          </li>
+                                                          <li>
+                                                            <strong>On idempotent replay.</strong> No DB writes. Re-serve the stored 200 body. Emit
+                                                            log event <code>conspectus_review_idempotent_replay</code> (info).
+                                                          </li>
+                                                          <li>
+                                                            <strong>On any error.</strong> Transaction rolls back. No partial state. Emit the
+                                                            corresponding warn-level log event (see §14).
+                                                          </li>
+                                                          <li>
+                                                            <strong>No events outside the service.</strong> No outbound webhook, no message bus
+                                                            publish in v1. (See §18 for what is explicitly out of scope.)
+                                                          </li>
+                                                        </ul>
+                                                      </section>
+
+                                                      <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                                        <h2>11. Idempotency &amp; concurrency</h2>
+                                                        <p>
+                                                          Global rules: see <a href="../../_shared/idempotency.html">_shared/idempotency.html</a>.
+                                                          Operation-specific:
+                                                        </p>
+                                                        <ul>
+                                                          <li><strong>Namespace:</strong>
+                                                            <code>endpoint_path = "POST /api/v1/conspectuses/{conspectus_uuid}/actions/review"</code>
+                                                            with the concrete UUID substituted — each conspectus has its own idempotency namespace.
+                                                          </li>
+                                                          <li><strong>Key composition:</strong>
+                                                            <code>Idempotency-Key</code> header + SHA-256 of canonical JSON body. Path UUID is
+                                                            already in the namespace, so it does not enter the body hash.
+                                                          </li>
+                                                          <li><strong>Replay status:</strong> <code>200 OK</code> with the stored body byte-for-byte;
+                                                            same headers (<code>Content-Type</code>, server-generated timestamps preserved from the
+                                                            first response).</li>
+                                                            <li><strong>TTL:</strong> 24 h after the first successful response (NFR-CONSP-REVIEW-003).</li>
+                                                            <li><strong>Concurrency model:</strong> optimistic via <code>schedule_revision</code>.
+                                                              The conditional <code>UPDATE … WHERE schedule_revision = ?</code> is the canonical
+                                                              guard; the optional body field <code>expected_schedule_revision</code> lets clients
+                                                              detect mismatches before sending and fail fast.</li>
+                                                              <li><strong>Conflict response:</strong> <code>409 CONS_409
+                                                                CONSPECTUS_REVIEW_REVISION_CONFLICT</code>; integrator
+                                                                should re-fetch the conspectus,
+                                                                re-decide, and submit a <strong>new</strong> idempotency key.</li>
+                                                              </ul>
+                                                            </section>
+
+                                                            <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                                              <h2>12. Error catalog</h2>
+                                                              <p class="small">
+                                                                Envelope shape per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>:
+                                                                <code>{ code, key, message, source, details? }</code>. Every <code>code/key</code> below
+                                                                must also exist in <a href="../../_shared/error-catalog.html">_shared/error-catalog.html</a>
+                                                                (consistency lint enforces this).
+                                                              </p>
+                                                              <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+                                                                <table>
+                                                                  <thead>
+                                                                    <tr>
+                                                                      <th>HTTP</th>
+                                                                      <th>Code</th>
+                                                                      <th>Key</th>
+                                                                      <th>When</th>
+                                                                      <th>Log event (level)</th>
+                                                                    </tr>
+                                                                  </thead>
+                                                                  <tbody>
+                                                                    <tr>
+                                                                      <td><code>400</code></td>
+                                                                      <td><code>COMMON_400</code></td>
+                                                                      <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                                                                      <td>Missing or empty <code>Idempotency-Key</code> header.</td>
+                                                                      <td><code>request_idempotency_key_missing</code> (warn)</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>401</code></td>
+                                                                      <td><code>COMMON_401</code></td>
+                                                                      <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                                                      <td>Missing or invalid <code>X-API-Key</code>.</td>
+                                                                      <td>middleware</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>404</code></td>
+                                                                      <td><code>USER_404</code></td>
+                                                                      <td><code>USER_NOT_FOUND</code></td>
+                                                                      <td>No user for <code>(system_user_id, system_uuid)</code>.</td>
+                                                                      <td><code>conspectus_review_user_not_found</code> (info)</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>404</code></td>
+                                                                      <td><code>CONS_404</code></td>
+                                                                      <td><code>CONSPECTUS_NOT_FOUND</code></td>
+                                                                      <td>Conspectus does not exist <strong>or</strong> belongs to another user.</td>
+                                                                      <td><code>conspectus_review_not_owned</code> (info)</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>409</code></td>
+                                                                      <td><code>COMMON_409</code></td>
+                                                                      <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                                                                      <td>Same <code>Idempotency-Key</code>, different body hash.</td>
+                                                                      <td><code>idempotency_payload_mismatch</code> (warn)</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>409</code></td>
+                                                                      <td><code>CONS_409</code></td>
+                                                                      <td><code>CONSPECTUS_REVIEW_REVISION_CONFLICT</code></td>
+                                                                      <td>Optimistic concurrency check failed — schedule changed under us.</td>
+                                                                      <td><code>conspectus_review_revision_conflict</code> (warn)</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>413</code></td>
+                                                                      <td><code>COMMON_413</code></td>
+                                                                      <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+                                                                      <td>Body exceeds 4 KB.</td>
+                                                                      <td>middleware</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>422</code></td>
+                                                                      <td><code>COMMON_000</code></td>
+                                                                      <td><code>COMMON_VALIDATION_ERROR</code></td>
+                                                                      <td>Invalid <code>tag</code>, missing required field, malformed UUID.</td>
+                                                                      <td><code>validation_error</code> (warn)</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>429</code></td>
+                                                                      <td><code>COMMON_429</code></td>
+                                                                      <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                                                                      <td>Rate limit exceeded for the API key.</td>
+                                                                      <td>middleware</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                      <td><code>500</code></td>
+                                                                      <td>—</td>
+                                                                      <td>—</td>
+                                                                      <td>Unexpected exception (DB connectivity, invariant violation).</td>
+                                                                      <td><code>request_failed</code> (exception)</td>
+                                                                    </tr>
+                                                                  </tbody>
+                                                                </table>
+                                                              </div>
+
+                                                              <h3>Envelope examples</h3>
+                                                              <p><strong>409 — concurrency conflict:</strong></p>
+                                                              <pre><code>HTTP/1.1 409 Conflict
+                                                                Content-Type: application/json
+
+                                                                {
+                                                                "code": "CONS_409",
+                                                                "key": "CONSPECTUS_REVIEW_REVISION_CONFLICT",
+                                                                "message": "Schedule revision changed since you read it; re-fetch and retry.",
+                                                                "source": "conspectus.review",
+                                                                "details": {
+                                                                "expected_schedule_revision": 7,
+                                                                "actual_schedule_revision": 9
+                                                                }
+                                                                }
+                                                              </code></pre>
+
+                                                              <p><strong>404 — wrong owner (collapsed to not-found, intentional):</strong></p>
+                                                              <pre><code>HTTP/1.1 404 Not Found
+                                                                Content-Type: application/json
+
+                                                                {
+                                                                "code": "CONS_404",
+                                                                "key": "CONSPECTUS_NOT_FOUND",
+                                                                "message": "Conspectus not found.",
+                                                                "source": "conspectus.review"
+                                                                }
+                                                              </code></pre>
+
+                                                              <p><strong>422 — invalid tag:</strong></p>
+                                                              <pre><code>HTTP/1.1 422 Unprocessable Entity
+                                                                Content-Type: application/json
+
+                                                                {
+                                                                "code": "COMMON_000",
+                                                                "key": "COMMON_VALIDATION_ERROR",
+                                                                "message": "Request validation failed.",
+                                                                "source": "conspectus.review",
+                                                                "details": [
+                                                                {
+                                                                "loc": ["body", "tag"],
+                                                                "msg": "value is not a valid enumeration member; permitted: 'easy', 'hard', 'forgot'",
+                                                                "type": "type_error.enum"
+                                                                }
+                                                                ]
+                                                                }
+                                                              </code></pre>
+                                                            </section>
+
+                                                            <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                                              <h2>13. Edge cases checklist</h2>
+                                                              <ul>
+                                                                <li><strong>Replay across policy version bump.</strong> A successful review under policy
+                                                                  <code>1.0.0</code> is replayed after policy <code>1.1.0</code> is rolled out. Replay must
+                                                                  return the original response computed under <code>1.0.0</code>; no recomputation.
+                                                                </li>
+                                                                <li><strong>Two concurrent reviews on the same conspectus, distinct keys.</strong>
+                                                                  First commit wins (revision becomes R+1). Second receives <code>409 CONS_409</code>.
+                                                                  No partial writes.</li>
+                                                                  <li><strong>Tag in upper case (<code>EASY</code>).</strong> Reject as <code>422</code>;
+                                                                    do not silently lower-case.</li>
+                                                                    <li><strong>Conspectus is soft-deleted (future capability).</strong> Behave as not found
+                                                                      (<code>404 CONS_404</code>); document explicitly when soft-delete lands.</li>
+                                                                      <li><strong>Schedule row missing for an existing conspectus.</strong> Invariant violation
+                                                                        — log <code>conspectus_review_schedule_missing</code> at error level, return
+                                                                        <code>500</code>. This must not happen in production; integration test required.
+                                                                      </li>
+                                                                      <li><strong>Empty body or non-JSON body.</strong> <code>422</code> from FastAPI/Pydantic
+                                                                        before handler runs.</li>
+                                                                        <li><strong>Body with extra unknown fields.</strong> Reject (Pydantic <code>extra=forbid</code>)
+                                                                          with <code>422</code> — protects against client typos that would silently no-op.</li>
+                                                                          <li><strong>Idempotency-Key whitespace-only.</strong> Treat as missing —
+                                                                            <code>400 COMMON_400</code>.
+                                                                          </li>
+                                                                          <li><strong>Clock skew between handler and DB.</strong> Use DB-server <code>now()</code>
+                                                                            for <code>schedule_updated_at</code> and <code>reviewed_at</code> to avoid drift; do not
+                                                                            use Python <code>datetime.utcnow()</code>.</li>
+                                                                            <li><strong>Retry storm after a 5xx.</strong> Same idempotency key on retry returns the
+                                                                              stored response; if the original transaction never committed, the next attempt should
+                                                                              succeed and write — verified in integration test.</li>
+                                                                            </ul>
+                                                                          </section>
+
+                                                                          <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                                                            <h2>14. Observability requirements</h2>
+                                                                            <p>
+                                                                              Conventions: <a href="../../_shared/observability-conventions.html">
+                                                                              _shared/observability-conventions.html</a> · ADR 0023 (structured logging).
+                                                                            </p>
+
+                                                                            <h3>Log events</h3>
+                                                                            <div class="docs-table-scroll" role="region" aria-label="Log events">
+                                                                              <table>
+                                                                                <thead>
+                                                                                  <tr>
+                                                                                    <th>Event name</th>
+                                                                                    <th>Level</th>
+                                                                                    <th>When</th>
+                                                                                    <th>Required fields</th>
+                                                                                  </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                  <tr>
+                                                                                    <td><code>conspectus_reviewed</code></td>
+                                                                                    <td>info</td>
+                                                                                    <td>Successful review committed.</td>
+                                                                                    <td><code>conspectus_uuid, owner_client_uuid, tag, slot_from, slot_to,
+                                                                                      slot_d_ladder_index_from, slot_d_ladder_index_to, schedule_revision_to,
+                                                                                      algorithm_version</code></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                      <td><code>conspectus_review_idempotent_replay</code></td>
+                                                                                      <td>info</td>
+                                                                                      <td>Replay served from <code>idempotency_keys</code>.</td>
+                                                                                      <td><code>conspectus_uuid, idempotency_key_hash</code></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                      <td><code>conspectus_review_revision_conflict</code></td>
+                                                                                      <td>warn</td>
+                                                                                      <td>Optimistic CC failed.</td>
+                                                                                      <td><code>conspectus_uuid, expected_revision, actual_revision</code></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                      <td><code>conspectus_review_not_owned</code></td>
+                                                                                      <td>info</td>
+                                                                                      <td>404 returned for cross-tenant access.</td>
+                                                                                      <td><code>conspectus_uuid, requesting_client_uuid</code></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                      <td><code>conspectus_review_schedule_missing</code></td>
+                                                                                      <td>error</td>
+                                                                                      <td>Invariant violation: conspectus exists, schedule row does not.</td>
+                                                                                      <td><code>conspectus_uuid</code></td>
+                                                                                    </tr>
+                                                                                  </tbody>
+                                                                                </table>
+                                                                              </div>
+
+                                                                              <h3>Metrics</h3>
+                                                                              <ul>
+                                                                                <li><code>conspectus_review_duration_seconds</code> (histogram) — labels:
+                                                                                  <code>tag, slot_from, slot_to, status_code</code>. Buckets: 0.01, 0.025, 0.05, 0.1, 0.2,
+                                                                                  0.5, 1, 2.
+                                                                                </li>
+                                                                                <li><code>conspectus_review_total</code> (counter) — labels:
+                                                                                  <code>tag, slot_from, slot_to, status_code</code>.
+                                                                                </li>
+                                                                                <li>Inherits <code>http_requests_total</code> /
+                                                                                  <code>http_request_duration_seconds</code> from middleware with
+                                                                                  <code>path_template=/api/v1/conspectuses/{conspectus_uuid}/actions/review</code>.
+                                                                                </li>
+                                                                              </ul>
+
+                                                                              <h3>Traces</h3>
+                                                                              <ul>
+                                                                                <li>Span <code>conspectus.review.apply</code> with attributes
+                                                                                  <code>{conspectus_uuid, tag, schedule_policy_id, algorithm_version,
+                                                                                    schedule_revision_from}</code>.
+                                                                                    Child span for the DB transaction.
+                                                                                  </li>
+                                                                                </ul>
+
+                                                                                <h3>Alerts</h3>
+                                                                                <ul>
+                                                                                  <li><strong>Page:</strong> <code>conspectus_review_revision_conflict</code> rate
+                                                                                    &gt; 5 / minute sustained 10 minutes — indicates concurrent-session bug or client retry
+                                                                                    storm.</li>
+                                                                                    <li><strong>Ticket:</strong> <code>conspectus_review_schedule_missing</code> any
+                                                                                      occurrence — invariant violation.</li>
+                                                                                      <li><strong>Page:</strong> 5xx rate on this endpoint &gt; 1 % over 5 minutes (inherits
+                                                                                        global SLO from ADR 0011).</li>
+                                                                                      </ul>
+                                                                                    </section>
+
+                                                                                    <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                                                                      <h2>15. Test plan</h2>
+
+                                                                                      <h3>Unit (<code>tests/unit/services/test_conspectus_review_service.py</code>)</h3>
+                                                                                      <ul>
+                                                                                        <li>Each row of the §9 transition table: pure function over
+                                                                                          <code>(slot, ladder_index, tag) → (slot', ladder_index', delay)</code>. Covers
+                                                                                          AC-001, AC-002, AC-009.
+                                                                                        </li>
+                                                                                        <li>Policy resolver returns the pinned version, not the latest.</li>
+                                                                                      </ul>
+
+                                                                                      <h3>Integration (<code>tests/integration/api/test_review_endpoint.py</code>)</h3>
+                                                                                      <ul>
+                                                                                        <li>Happy path easy → AC-001. Verifies <code>200</code>, schedule update, log row insert,
+                                                                                          idempotency row insert.</li>
+                                                                                          <li>Idempotent replay returns identical body → AC-003.</li>
+                                                                                          <li>Idempotency conflict → AC-004.</li>
+                                                                                          <li>Missing <code>Idempotency-Key</code> → AC-005.</li>
+                                                                                          <li>Cross-tenant access → AC-006.</li>
+                                                                                          <li>Invalid tag → AC-007.</li>
+                                                                                          <li>Concurrent reviews simulated with two threads sharing a connection pool → AC-008.</li>
+                                                                                          <li>Observability: capture log events, assert <code>conspectus_reviewed</code> emitted
+                                                                                            with required fields → AC-010.</li>
+                                                                                            <li>Schedule-row-missing invariant: deliberately delete the schedule row, expect
+                                                                                              <code>500</code> + error-level log.
+                                                                                            </li>
+                                                                                          </ul>
+
+                                                                                          <h3>Contract (<code>tests/contract/test_openapi_review.py</code>)</h3>
+                                                                                          <ul>
+                                                                                            <li>Schemathesis fuzz over the OpenAPI for this <code>operationId</code>: no 5xx on any
+                                                                                              schema-conforming input.</li>
+                                                                                              <li>Response example in OpenAPI matches the live response shape.</li>
+                                                                                            </ul>
+
+                                                                                            <h3>End-to-end</h3>
+                                                                                            <ul>
+                                                                                              <li>Smoke: create user → create conspectus → review easy → assert
+                                                                                                <code>slot=B</code> in subsequent <code>GET /due</code> filtered response window.
+                                                                                              </li>
+                                                                                            </ul>
+                                                                                          </section>
+
+                                                                                          <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                                                            <h2>16. OpenAPI authoring hints</h2>
+                                                                                            <ul>
+                                                                                              <li><strong><code>operationId</code>:</strong> <code>reviewConspectus</code>.</li>
+                                                                                              <li><strong>Tags:</strong> <code>Conspectus</code>.</li>
+                                                                                              <li><strong>Security:</strong> <code>apiKeyAuth</code> scheme (per ADR 0005).</li>
+                                                                                              <li><strong>Reused components:</strong> <code>ConspectusResponse</code>,
+                                                                                                <code>ReviewTag</code>, <code>ScheduleRevision</code>, <code>Uuid</code>,
+                                                                                                <code>Timestamp</code>, <code>ErrorEnvelope</code>. Define
+                                                                                                <code>ReviewConspectusBody</code> here.
+                                                                                              </li>
+                                                                                              <li><strong>Examples to attach:</strong> the request and 200 response from §7 / §8 verbatim;
+                                                                                                the three envelope examples from §12 attached to <code>responses.404</code> /
+                                                                                                <code>409</code> / <code>422</code>.
+                                                                                              </li>
+                                                                                              <li><strong>Hide from external integrators:</strong> internal log-event names, metric label
+                                                                                                names, <code>schedule_policy_id</code> internal taxonomy details, ADR references — none of
+                                                                                                these belong in the public spec.</li>
+                                                                                                <li><strong>Document <code>Idempotency-Key</code> as a header parameter</strong> with
+                                                                                                  <code>required: true</code>, length 1–128, ASCII pattern. Same for <code>X-API-Key</code>
+                                                                                                  and (optional) <code>X-Request-Id</code>.
+                                                                                                </li>
+                                                                                                <li><strong>Do not</strong> document <code>schedule_revision</code> as
+                                                                                                  <code>readOnly</code> on the response — it’s a real field clients act on.
+                                                                                                </li>
+                                                                                                <li><strong>Do</strong> mark <code>expected_schedule_revision</code> and
+                                                                                                  <code>reviewed_at</code> as <code>nullable: false</code> + <code>required: false</code>;
+                                                                                                  note in description that <code>reviewed_at</code> is currently ignored server-side
+                                                                                                  (Q1).
+                                                                                                </li>
+                                                                                              </ul>
+                                                                                            </section>
+
+                                                                                            <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                                                              <h2>17. Open questions</h2>
+                                                                                              <ul>
+                                                                                                <li>
+                                                                                                  <strong>Q1 — client-supplied <code>reviewed_at</code>?</strong>
+                                                                                                  Current draft: server-stamps <code>reviewed_at = now()</code>; the body field is accepted
+                                                                                                  for API symmetry but ignored. Best guess: keep server-stamp only to prevent clock-skew
+                                                                                                  abuse and replay-time falsification. <em>Owner:</em> Ivan Boyarkin. <em>Deadline:</em>
+                                                                                                  before the review endpoint ships.
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                  <strong>Q2 — <code>hard</code> vs <code>forgot</code> semantics on slot A.</strong>
+                                                                                                  Reference policy currently has both reset to A with the same <code>PT1H</code> delay.
+                                                                                                  Should <code>forgot</code> additionally trigger a <code>learning_errors</code> insert
+                                                                                                  prompt in the client? <em>Owner:</em> product. <em>Deadline:</em> 2026-05-06.
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                  <strong>Q3 — D-ladder cap.</strong> The reference policy lists rungs 0..3
+                                                                                                  (P7D / P14D / P30D / P60D). After rung 3 — cap, or extend to P120D? Decision goes into
+                                                                                                  <code>schedule_policies.rules</code> JSON, not code. <em>Owner:</em> product.
+                                                                                                  <em>Deadline:</em> before the second SchedulePolicy version ships.
+                                                                                                </li>
+                                                                                              </ul>
+                                                                                            </section>
+
+                                                                                            <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                                                              <h2>18. Out of scope</h2>
+                                                                                              <ul>
+                                                                                                <li>Bulk review (multiple conspectuses in one request) — explicit non-goal in v1.</li>
+                                                                                                <li>Webhook / event-bus emission outside the service — no
+                                                                                                  <code>conspectus.reviewed</code> event published anywhere external in v1.
+                                                                                                </li>
+                                                                                                <li>“Twice in a row” success counts before advancing — methodology mentions this, but the
+                                                                                                  baseline schema does not store a streak counter
+                                                                                                  (<a href="../../../analysis/system-design.html#methodology-non-goals">system-design ·
+                                                                                                  non-goals</a>).</li>
+                                                                                                  <li>Random evening-drill selection — client-side; the API only lists due items.</li>
+                                                                                                  <li>Server-side teaching-quality scoring — no NLP on
+                                                                                                    <code>dense_paragraph</code>.
+                                                                                                  </li>
+                                                                                                  <li>Manual schedule overrides — those go through a separate endpoint and append
+                                                                                                    <code>SCHEDULE_ADJUSTED</code> to <code>conspectus_events</code>, not to
+                                                                                                    <code>conspectus_review_logs</code> (D6).
+                                                                                                  </li>
+                                                                                                </ul>
+                                                                                              </section>
+
+                                                                                              <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                                                                <h2>19. Traceability</h2>
+                                                                                                <ul>
+                                                                                                  <li><strong>Methodology:</strong>
+                                                                                                    <a href="../../../analysis/methodology.html#retrieve-system">Retrieve: slots, tags,
+                                                                                                      cadence</a>,
+                                                                                                      <a href="../../../analysis/methodology.html#etr-home">ETR at home (Retrieve step)</a>.
+                                                                                                    </li>
+                                                                                                    <li><strong>System design:</strong>
+                                                                                                      <a href="../../../analysis/system-design.html#review-suggestion-logic">Review
+                                                                                                        suggestion and scheduling logic</a>,
+                                                                                                        <a href="../../../analysis/system-design.html#reference-schedule-policy">Reference
+                                                                                                          SchedulePolicy</a>,
+                                                                                                          <a href="../../../analysis/system-design.html#persistence-model">Persistence model</a>,
+                                                                                                          decisions D1, D5, D6, D7.
+                                                                                                        </li>
+                                                                                                        <li><strong>ADRs:</strong>
+                                                                                                          <a href="../../../../adr/0003-error-contract-governance.html">0003 errors</a>,
+                                                                                                          <a href="../../../../adr/0005-api-security-defaults.html">0005 security</a>,
+                                                                                                          <a href="../../../../adr/0006-idempotency-write-operations.html">0006 idempotency</a>,
+                                                                                                          <a href="../../../../adr/0020-c4-plantuml-diagram-style-and-conventions.html">0020 PlantUML</a>,
+                                                                                                          <a href="../../../../adr/0023-structured-logging-and-local-elasticsearch.html">0023
+                                                                                                            logging</a>,
+                                                                                                            <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">0026
+                                                                                                              internal docs</a>.
+                                                                                                            </li>
+                                                                                                            <li><strong>OpenAPI:</strong> <code>operationId = reviewConspectus</code> in
+                                                                                                              <code>docs/openapi/openapi-baseline.json</code>.
+                                                                                                            </li>
+                                                                                                            <li><strong>Cross-cutting overlay (when authored in Phase 3):</strong>
+                                                                                                              <code>_shared/idempotency.html</code>, <code>_shared/error-envelope.html</code>,
+                                                                                                              <code>_shared/error-catalog.html</code>, <code>_shared/auth.html</code>,
+                                                                                                              <code>_shared/observability-conventions.html</code>.
+                                                                                                            </li>
+                                                                                                          </ul>
+                                                                                                        </section>
+
+                                                                                                        <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                                                                          <h2>20. Spec changelog</h2>
+                                                                                                          <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+                                                                                                            <table>
+                                                                                                              <thead>
+                                                                                                                <tr>
+                                                                                                                  <th>Date</th>
+                                                                                                                  <th>Type</th>
+                                                                                                                  <th>Change</th>
+                                                                                                                  <th>Author</th>
+                                                                                                                  <th>Reference</th>
+                                                                                                                </tr>
+                                                                                                              </thead>
+                                                                                                              <tbody>
+                                                                                                                <tr>
+                                                                                                                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                  <td>additive</td>
+                                                                                                                  <td>Initial production-grade spec (Phase 2 reference). Promoted from stub to full
+                                                                                                                    21-section analyst spec.</td>
+                                                                                                                    <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                    <td>spec-template v1</td>
+                                                                                                                  </tr>
+                                                                                                                </tbody>
+                                                                                                              </table>
+                                                                                                            </div>
+                                                                                                          </section>
+
+                                                                                                          <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                                                                            <h2>Page history</h2>
+                                                                                                            <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                                              <table class="docs-page-history">
+                                                                                                                <thead>
+                                                                                                                  <tr>
+                                                                                                                    <th scope="col">Date</th>
+                                                                                                                    <th scope="col">Change</th>
+                                                                                                                    <th scope="col">Author</th>
+                                                                                                                  </tr>
+                                                                                                                </thead>
+                                                                                                                <tbody>
+                                                                                                                  <tr>
+                                                                                                                    <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                    <td>Phase 2: rewritten as the reference analyst spec under the new template; added
+                                                                                                                      PlantUML state-machine for slot ladder; full request/response/error tables and
+                                                                                                                      examples.</td>
+                                                                                                                      <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                    </tr>
+                                                                                                                    <tr>
+                                                                                                                      <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                                                                                      <td>Added Page history section (repository baseline).</td>
+                                                                                                                      <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                    </tr>
+                                                                                                                  </tbody>
+                                                                                                                </table>
+                                                                                                              </div>
+                                                                                                            </section>
+
+                                                                                                          </main>
+                                                                                                        </div>
+                                                                                                      </div>
+
+                                                                                                    </body></html>

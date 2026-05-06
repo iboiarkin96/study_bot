@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>QA checklists — Documentation testing hub</title>
+  <title>QA portal — testing strategy, playbooks, templates, checklists</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <link rel="stylesheet" href="../assets/internal-layout.css">
@@ -12,6 +12,7 @@
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 </head>
 
@@ -23,64 +24,339 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>QA checklists</h1>
+        <h1 class="internal-h1--accent-tail">QA portal</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
 
-        <section class="card" id="overview">
-          <h2>Overview</h2>
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            This section contains practical checklists for QA verification of the documentation portal.
-            Each checklist is written in English and focuses on observable user-facing behavior.
+            This is the home of testing for the Study App. Everything a tester needs to verify
+            features, regress the system, document defects, and sign off a release lives here.
+            The portal is structured so a new tester can go from "first day" to "first verified
+            ticket" without asking anyone — and so a senior tester can find the exact template
+            or playbook for the situation in two clicks.
           </p>
+          <p>
+            The portal is organized as five layers, in increasing specificity:
+            <strong>Foundations</strong> (why we test, the pyramid, the process),
+            <strong>Templates</strong> (canonical artefacts to copy),
+            <strong>Playbooks</strong> (how-to guides for a kind of test),
+            <strong>Checklists</strong> (concrete pass/fail steps for a release or feature),
+            and <strong>Reference</strong> (severity matrix, lifecycle, environments).
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#start-here">Start here</a>
+            <a class="docs-page-hero__chip" href="#foundations">Foundations</a>
+            <a class="docs-page-hero__chip" href="#templates">Templates</a>
+            <a class="docs-page-hero__chip" href="#playbooks">Playbooks</a>
+            <a class="docs-page-hero__chip" href="#checklists">Checklists</a>
+            <a class="docs-page-hero__chip" href="#reference">Reference</a>
+            <a class="docs-page-hero__chip" href="#by-task">By task</a>
+            <a class="docs-page-hero__chip" href="#page-history">Page history</a>
+          </nav>
         </section>
 
-        <section class="card" id="available-checklists">
-          <h2>Available checklists</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Checklist</th>
-                <th>What it covers</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><a href="./0001-documentation-pages-visual-checklist.html">Documentation pages visual checklist</a></td>
-                <td>
-                  How to verify documentation pages by sections and UI controls
-                  (for example flashlight theme toggle and rocket back-to-top button).
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+        <div class="docs-section-divider" aria-hidden="true">Start here</div>
 
-        <section class="card" id="page-history">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Change</th>
-                  <th scope="col">Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-22">2026-04-22</time></td>
-                  <td>Added required Page history section to satisfy docs design baseline checks.</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <section class="card" id="start-here">
+          <h2>Start here</h2>
+          <ul>
+            <li>New to the team — read <a href="tester-onboarding.html">Tester onboarding</a>.
+              It walks from environment setup to filing your first defect.</li>
+              <li>Need to verify an API endpoint — open
+                <a href="playbooks/api-endpoint-testing.html">Playbook: API endpoint testing</a>
+                and the matching spec under
+                <a href="../internal/api/README.html">Internal API hub</a>.</li>
+                <li>Need to verify a documentation page or portal change — open
+                  <a href="playbooks/documentation-testing.html">Playbook: documentation testing</a>
+                  and the
+                  <a href="0001-documentation-pages-visual-checklist.html">visual checklist</a>.</li>
+                  <li>Cutting a release — work through
+                    <a href="playbooks/release-smoke.html">Playbook: release smoke</a> and the
+                    <a href="0003-release-smoke-checklist.html">release smoke checklist</a>.</li>
+                    <li>Filing a defect — copy
+                      <a href="templates/bug-report-template.html">Bug report template</a>
+                      and grade severity using the
+                      <a href="reference/bug-severity-and-priority.html">severity &amp; priority matrix</a>.</li>
+                    </ul>
+                  </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
+                  <div class="docs-section-divider" aria-hidden="true">Foundations</div>
 
-</body></html>
+                  <section class="card" id="foundations">
+                    <h2>Foundations</h2>
+                    <p class="small">
+                      The "why" of QA on this project. Read these once. They set expectations every other page assumes.
+                    </p>
+                    <div class="docs-table-scroll" role="region" aria-label="Foundations index">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Document</th>
+                            <th scope="col">What it answers</th>
+                            <th scope="col">Audience</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="test-strategy.html">Test strategy</a></td>
+                            <td>What we test, what we don't, why, and which risks we accept.</td>
+                            <td>QA, dev, manager</td>
+                          </tr>
+                          <tr>
+                            <td><a href="test-pyramid.html">Test pyramid &amp; layer ownership</a></td>
+                            <td>Unit, integration, contract, system, manual — who owns what, with examples from the codebase.</td>
+                            <td>QA, dev</td>
+                          </tr>
+                          <tr>
+                            <td><a href="qa-process.html">QA process &amp; SDLC integration</a></td>
+                            <td>How a feature flows from spec → test design → execution → sign-off, with RACI.</td>
+                            <td>QA, dev, manager</td>
+                          </tr>
+                          <tr>
+                            <td><a href="tester-onboarding.html">Tester onboarding (zero → first defect)</a></td>
+                            <td>Step-by-step path for a new tester: access, tools, first run, first ticket.</td>
+                            <td>New tester</td>
+                          </tr>
+                          <tr>
+                            <td><a href="glossary.html">Glossary</a></td>
+                            <td>Definitions of terms used across all QA docs (defect vs. bug, smoke vs. sanity, etc.).</td>
+                            <td>Everyone</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">Templates</div>
+
+                  <section class="card" id="templates">
+                    <h2>Templates</h2>
+                    <p class="small">
+                      Copy-and-fill artefacts. Every test case, bug, and plan in this project should
+                      descend from one of these. If a template doesn't fit, raise it before inventing a
+                      new shape — consistency in artefacts is what lets reviewers move fast.
+                    </p>
+                    <div class="docs-table-scroll" role="region" aria-label="Templates index">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Template</th>
+                            <th scope="col">When to use</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="templates/test-case-template.html">Test case template</a></td>
+                            <td>Designing a new test case (ID, preconditions, steps, expected, data, traceability).</td>
+                          </tr>
+                          <tr>
+                            <td><a href="templates/bug-report-template.html">Bug report template</a></td>
+                            <td>Filing a defect — title, environment, steps to reproduce, expected vs actual, severity, priority, evidence.</td>
+                          </tr>
+                          <tr>
+                            <td><a href="templates/test-plan-template.html">Test plan template</a></td>
+                            <td>Planning testing for a feature, release, or epic — scope, risks, entry/exit, schedule.</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">Playbooks</div>
+
+                  <section class="card" id="playbooks">
+                    <h2>Playbooks</h2>
+                    <p class="small">
+                      Step-by-step "how to test X" guides. Playbooks tell you how to think about a
+                      class of test; checklists give you the line-by-line pass/fail items.
+                    </p>
+                    <div class="docs-table-scroll" role="region" aria-label="Playbooks index">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Playbook</th>
+                            <th scope="col">Covers</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="playbooks/api-endpoint-testing.html">API endpoint testing</a></td>
+                            <td>How to verify an HTTP endpoint against its internal spec — schema, errors, idempotency, auth, observability.</td>
+                          </tr>
+                          <tr>
+                            <td><a href="playbooks/documentation-testing.html">Documentation testing</a></td>
+                            <td>How to verify a docs page is correct, complete, navigable, and accessible.</td>
+                          </tr>
+                          <tr>
+                            <td><a href="playbooks/release-smoke.html">Release smoke testing</a></td>
+                            <td>The minimal pass before a release tag is cut.</td>
+                          </tr>
+                          <tr>
+                            <td><a href="playbooks/exploratory-testing.html">Exploratory testing</a></td>
+                            <td>Charter-based exploration to find issues that scripted tests miss.</td>
+                          </tr>
+                          <tr>
+                            <td><a href="playbooks/accessibility-testing.html">Accessibility testing</a></td>
+                            <td>WCAG 2.1 AA checks for keyboard, contrast, focus, screen reader.</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">Checklists</div>
+
+                  <section class="card" id="checklists">
+                    <h2>Checklists</h2>
+                    <p class="small">
+                      Numbered, line-by-line pass/fail steps. Run a checklist as written, attach evidence,
+                      and record the result in the ticket. Each checklist is owned by exactly one playbook.
+                    </p>
+                    <div class="docs-table-scroll" role="region" aria-label="Full QA checklist index">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Checklist</th>
+                            <th scope="col">Summary</th>
+                            <th scope="col">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="0001-documentation-pages-visual-checklist.html">0001 — Documentation pages visual</a></td>
+                            <td>Manual visual and interaction verification for documentation pages: navigation, sections, responsive behavior, controls.</td>
+                            <td>Active</td>
+                          </tr>
+                          <tr>
+                            <td><a href="0002-api-endpoint-acceptance-checklist.html">0002 — API endpoint acceptance</a></td>
+                            <td>Per-endpoint acceptance: contract, success, errors, auth, idempotency, observability, evidence.</td>
+                            <td>Active</td>
+                          </tr>
+                          <tr>
+                            <td><a href="0003-release-smoke-checklist.html">0003 — Release smoke</a></td>
+                            <td>Minimum bar before cutting a release tag — health, golden-path API calls, docs portal, observability.</td>
+                            <td>Active</td>
+                          </tr>
+                          <tr>
+                            <td><a href="0004-regression-checklist.html">0004 — Regression</a></td>
+                            <td>End-to-end regression coverage of all golden paths and the top defect-prone areas.</td>
+                            <td>Active</td>
+                          </tr>
+                          <tr>
+                            <td><a href="0005-accessibility-checklist.html">0005 — Accessibility (WCAG 2.1 AA)</a></td>
+                            <td>Keyboard, focus order, contrast, semantics, ARIA, motion safety.</td>
+                            <td>Active</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">Reference</div>
+
+                  <section class="card" id="reference">
+                    <h2>Reference</h2>
+                    <div class="docs-table-scroll" role="region" aria-label="Reference index">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th scope="col">Page</th>
+                            <th scope="col">What it is</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><a href="reference/bug-severity-and-priority.html">Severity &amp; priority matrix</a></td>
+                            <td>Definitions and decision table for grading defects.</td>
+                          </tr>
+                          <tr>
+                            <td><a href="reference/defect-lifecycle.html">Defect lifecycle</a></td>
+                            <td>State machine for a defect — New, Triaged, In progress, Fixed, Verified, Closed, Reopened, Won't fix.</td>
+                          </tr>
+                          <tr>
+                            <td><a href="reference/test-environments.html">Test environments</a></td>
+                            <td>Local, staging, prod-like, CI — what each is for, what data lives there, what to expect.</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">By task</div>
+
+                  <section class="card" id="by-task">
+                    <h2>By task — quick links</h2>
+                    <ul>
+                      <li>"I'm verifying a new endpoint" →
+                        <a href="playbooks/api-endpoint-testing.html">API endpoint playbook</a> +
+                        <a href="0002-api-endpoint-acceptance-checklist.html">checklist 0002</a> +
+                        the matching spec under
+                        <a href="../internal/api/README.html">internal API hub</a>.</li>
+                        <li>"I'm reviewing the docs portal" →
+                          <a href="playbooks/documentation-testing.html">docs playbook</a> +
+                          <a href="0001-documentation-pages-visual-checklist.html">checklist 0001</a> +
+                          <a href="0005-accessibility-checklist.html">checklist 0005</a>.</li>
+                          <li>"We're cutting a release" →
+                            <a href="playbooks/release-smoke.html">release smoke playbook</a> +
+                            <a href="0003-release-smoke-checklist.html">checklist 0003</a>.</li>
+                            <li>"Big refactor merged, need regression" →
+                              <a href="0004-regression-checklist.html">regression checklist 0004</a>.</li>
+                              <li>"I found something weird, want to dig" →
+                                <a href="playbooks/exploratory-testing.html">exploratory testing</a>.</li>
+                                <li>"I'm filing a defect" →
+                                  <a href="templates/bug-report-template.html">bug report template</a> +
+                                  <a href="reference/bug-severity-and-priority.html">severity matrix</a> +
+                                  <a href="reference/defect-lifecycle.html">lifecycle</a>.</li>
+                                </ul>
+                              </section>
+
+                              <nav class="docs-next-steps" aria-label="Next steps">
+                                <p class="docs-next-steps__heading">See also</p>
+                                <ul class="docs-next-steps__list">
+                                  <li><a class="docs-next-steps__item" href="../runbooks/README.html">Runbooks</a></li>
+                                  <li><a class="docs-next-steps__item" href="../developer/README.html">Developer docs</a></li>
+                                  <li><a class="docs-next-steps__item" href="../audit/README.html">Audit reports</a></li>
+                                  <li><a class="docs-next-steps__item" href="../adr/0002-testing-policy.html">ADR 0002 — testing policy</a></li>
+                                  <li><a class="docs-next-steps__item" href="../adr/0012-testing-strategy-and-load-testing.html">ADR 0012 — testing strategy &amp; load testing</a></li>
+                                </ul>
+                              </nav>
+
+                              <section class="card" id="page-history">
+                                <h2>Page history</h2>
+                                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                  <table class="docs-page-history">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Change</th>
+                                        <th scope="col">Author</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                        <td>Expanded QA portal to first-class structure — foundations, templates, playbooks, checklists, reference. Reworked hub, added 17 pages.</td>
+                                        <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                      </tr>
+                                      <tr>
+                                        <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                        <td>Wired <code>docs-syntax.js</code> for code-block syntax highlighting.</td>
+                                        <td>Ivan Boyarkin</td>
+                                      </tr>
+                                      <tr>
+                                        <td><time datetime="2026-04-22">2026-04-22</time></td>
+                                        <td>Added required Page history section to satisfy docs design baseline checks.</td>
+                                        <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </section>
+
+                            </main>
+                          </div>
+                        </div>
+
+                      </body></html>

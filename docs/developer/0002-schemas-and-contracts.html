@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,12 +17,12 @@
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
 
   <main class="container">
-    <h1>Schemas and Contracts Guide</h1>
+    <h1 class="internal-h1--accent-tail">Schemas and Contracts Guide</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <section id="overview" class="card">
+    <section class="docs-page-hero" id="overview" aria-labelledby="overview">
       <h2>Overview</h2>
-      <p>Where request/response schemas live and how to change them without breaking callers.</p>
+      <p>Where request, response, and error schemas live, and how to change them without breaking callers.</p>
     </section>
 
     <section class="card">
@@ -37,19 +37,19 @@
     <section class="card">
       <h2>Contract rules</h2>
       <ul>
-        <li>API contract is a public interface.</li>
-        <li>Existing fields and semantics are backward-compatible within the same major.</li>
+        <li>The API contract is a public interface.</li>
+        <li>Existing fields and their semantics stay backward-compatible inside the same major version.</li>
         <li>Error <code>code</code> and <code>key</code> semantics are immutable.</li>
         <li>Changes are additive by default.</li>
-        <li>Critical write endpoints define idempotency contract via <code>Idempotency-Key</code> header.</li>
+        <li>Critical write endpoints declare their idempotency contract through the <code>Idempotency-Key</code> header.</li>
       </ul>
     </section>
     <section class="card">
       <h2>Idempotency contract for writes</h2>
       <ul>
-        <li>Same key + same body → return the same success response as the first call.</li>
-        <li>Same key + different body → return a clear conflict response.</li>
-        <li>Missing key when required → return a clear validation error.</li>
+        <li>Same key plus same body returns the same success response as the first call.</li>
+        <li>Same key plus a different body returns an explicit conflict response.</li>
+        <li>A missing key when one is required returns an explicit validation error.</li>
       </ul>
     </section>
     <section class="card">
@@ -65,7 +65,7 @@
       <p>Validation rules source:</p>
       <ul>
         <li><code>app/validation/</code></li>
-        <li>Status-first governance matrix: <a href="./0005-error-matrix-by-status.html">Error Matrix By Status</a></li>
+        <li>Status-first governance matrix: <a href="0005-error-matrix-by-status.html">Error Matrix By Status</a></li>
       </ul>
     </section>
     <section class="card">
@@ -102,6 +102,11 @@
           </thead>
           <tbody>
             <tr>
+              <td><time datetime="2026-05-03">2026-05-03</time></td>
+              <td>Tightened Overview, Contract rules, and Idempotency contract: replaced “same key + same body → …” arrow rows with full sentences and added articles where missing.</td>
+              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+            </tr>
+            <tr>
               <td><time datetime="2026-04-21">2026-04-21</time></td>
               <td>Added Page history section (repository baseline).</td>
               <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
@@ -111,7 +116,6 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
   </main>
 
 </body></html>

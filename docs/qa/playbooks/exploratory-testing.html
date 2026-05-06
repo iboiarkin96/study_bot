@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playbook: exploratory testing — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Playbook: exploratory testing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Playbooks</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Time-boxed, charter-driven sessions to find issues that scripted tests miss.
+            Exploratory testing is not "unscripted" or "ad-hoc" — it has a charter, a budget,
+            and a report. It is the highest-yield activity per minute for finding novel defects.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#charter">Charter</a>
+            <a class="docs-page-hero__chip" href="#heuristics">Heuristics</a>
+            <a class="docs-page-hero__chip" href="#tour-types">Tour types</a>
+            <a class="docs-page-hero__chip" href="#session">Session shape</a>
+            <a class="docs-page-hero__chip" href="#report">Report template</a>
+            <a class="docs-page-hero__chip" href="#charters-library">Charters to copy</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Charter</div>
+
+        <section class="card" id="charter">
+          <h2>Charter — the one-sentence mission</h2>
+          <p>
+            Pattern: <em>"Explore &lt;target&gt; with &lt;resources&gt;, looking for &lt;risk&gt;, in
+            &lt;duration&gt;."</em>
+          </p>
+          <ul>
+            <li><em>Explore POST /api/v1/conspectuses with realistic and adversarial bodies, looking for validation gaps
+              and 5xx leaks, in 60 minutes.</em></li>
+              <li><em>Explore docs portal search with multilingual queries and edge whitespace, looking for ranking and
+                crash bugs, in 30 minutes.</em></li>
+                <li><em>Explore the docs sidebar drawer on iOS Safari, looking for focus traps and orientation-change bugs,
+                  in 30 minutes.</em></li>
+                </ul>
+              </section>
+
+              <div class="docs-section-divider" aria-hidden="true">Heuristics</div>
+
+              <section class="card" id="heuristics">
+                <h2>Heuristics — what to test against when there's no spec</h2>
+                <p>HICCUPPS-F:</p>
+                <ul>
+                  <li><strong>H</strong>istory — does it work like the prior version?</li>
+                  <li><strong>I</strong>mage — does it look right (style guide, brand)?</li>
+                  <li><strong>C</strong>omparable products — does our docs portal behave like a known good one?</li>
+                  <li><strong>C</strong>laims — does it match our docs / spec / changelog?</li>
+                  <li><strong>U</strong>ser expectations — would a reasonable user be surprised?</li>
+                  <li><strong>P</strong>roduct — internal consistency (e.g. all pages should have a Page history block).</li>
+                  <li><strong>P</strong>urpose — does it serve the goal stated in the spec?</li>
+                  <li><strong>S</strong>tatutes — legal / accessibility (WCAG 2.1 AA).</li>
+                  <li><strong>F</strong>amiliarity — does it behave like other parts of this app?</li>
+                </ul>
+              </section>
+
+              <div class="docs-section-divider" aria-hidden="true">Tour types</div>
+
+              <section class="card" id="tour-types">
+                <h2>Tour types — pick a lens for the session</h2>
+                <ul>
+                  <li><strong>Money tour.</strong> Walk every step that a paying user would walk. (Here: every documented
+                    golden path in the API.)</li>
+                    <li><strong>Bad-data tour.</strong> Push every input field with garbage — empty, oversize, unicode, control
+                      characters, scripts.</li>
+                      <li><strong>Configuration tour.</strong> Vary settings — theme, viewport size, locale, slow network,
+                        throttled CPU.</li>
+                        <li><strong>Interruption tour.</strong> Start something, refresh / navigate away / lose connection mid-flow.
+                        </li>
+                        <li><strong>History tour.</strong> Replay defect-fix history — every regression class we have seen.</li>
+                        <li><strong>Land of the lost tour.</strong> Click the rarely-clicked: deep nav, footer links, error states,
+                          edge routes.</li>
+                        </ul>
+                      </section>
+
+                      <div class="docs-section-divider" aria-hidden="true">Session shape</div>
+
+                      <section class="card" id="session">
+                        <h2>Session shape</h2>
+                        <ol>
+                          <li><strong>Setup (5 min).</strong> Read the charter, prepare environment, open notebook.</li>
+                          <li><strong>Setup → execution split.</strong> Note the time you start probing in earnest.</li>
+                          <li><strong>Test design + execution (45–90 min).</strong> Alternate: think → try → observe → take note.
+                            Don't pause to file defects mid-flow — capture and move on.</li>
+                            <li><strong>Wrap-up (10 min).</strong> File defects from your notes, write the report.</li>
+                            <li><strong>Cool-down.</strong> Sessions are intense; budget 15 minutes of recovery before the next.</li>
+                          </ol>
+                          <p class="small">
+                            One session is one charter. If you find yourself drifting, end the session, write the
+                            report, start a new charter for the new lead.
+                          </p>
+                        </section>
+
+                        <div class="docs-section-divider" aria-hidden="true">Report template</div>
+
+                        <section class="card" id="report">
+                          <h2>Session report template</h2>
+                          <pre><code class="language-markdown">## Exploratory session report
+
+                            - Charter: &lt;text&gt;
+                            - Tester: &lt;name&gt;
+                            - Date: &lt;ISO&gt;
+                            - Duration: &lt;mins&gt;  (setup &lt;mins&gt; / test design &lt;mins&gt; / bug investigation &lt;mins&gt;)
+                            - Build / env: &lt;sha + env&gt;
+                            - Areas covered: &lt;list&gt;
+                            - Areas not covered (out of charter): &lt;list&gt;
+
+                            ### Findings
+                            - DEF-001 &lt;short title&gt; — link to ticket
+                            - DEF-002 &lt;short title&gt; — link
+
+                            ### Notes / hypotheses
+                            - &lt;observations that did not yet become defects&gt;
+
+                            ### Follow-up charters proposed
+                            - &lt;new charters surfaced from this session&gt;
+                          </code></pre>
+                        </section>
+
+                        <div class="docs-section-divider" aria-hidden="true">Charters to copy</div>
+
+                        <section class="card" id="charters-library">
+                          <h2>Charters to copy — a starter library</h2>
+                          <ul>
+                            <li>Bad-data tour against POST /user — empty, oversize, unicode, mixed whitespace, scripted input.</li>
+                            <li>Interruption tour on conspectus review — refresh / navigate / disconnect mid-PATCH.</li>
+                            <li>Configuration tour on docs portal — light/dark, 360px / 1280px, throttled 3G.</li>
+                            <li>Land-of-the-lost tour on rarely-followed sidebar branches — Audit, RFC drafts, runbooks.</li>
+                            <li>Search behaviour with non-Latin queries, very long queries, leading/trailing spaces, special chars.</li>
+                            <li>Auth boundary cases — expired token, malformed token, missing scheme, both query+header tokens.</li>
+                            <li>Pagination edges — limit=0, limit beyond max, malformed cursor, cursor reused across resources.</li>
+                            <li>Idempotency edges — same key + same body twice, same key + different body, key after window expires.
+                            </li>
+                          </ul>
+                        </section>
+
+                        <section class="card" id="page-history">
+                          <h2>Page history</h2>
+                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                            <table class="docs-page-history">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Change</th>
+                                  <th>Author</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                  <td>Initial exploratory testing playbook.</td>
+                                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+
+                      </main>
+                    </div>
+                  </div>
+
+                </body></html>

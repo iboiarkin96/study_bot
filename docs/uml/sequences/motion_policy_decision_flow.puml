@@ -1,0 +1,31 @@
+@startuml
+title Docs frontend — Motion policy decision flow
+
+' Every animated surface in the docs frontend resolves through this flow
+' before running. A single source of truth for the reduced-motion contract.
+
+start
+
+:Reader interacts with\nan animated surface;
+:read prefers-reduced-motion\n(media query at action time);
+
+if (reduced-motion = reduce ?) then (yes)
+  :skip animation;
+  :perform the underlying state change\n(scroll, open, dismiss) instantly;
+  :exit;
+  stop
+else (no)
+  if (animation type) then (decorative)
+    :run full animation;
+    :emit no announcement;
+  elseif (informational) then ()
+    :run animation\n+ aria-live announcement;
+  else (critical)
+    :animation may not gate input;
+    :run animation\nin parallel with state change;
+  endif
+  :resolve focus + state;
+  stop
+endif
+
+@enduml

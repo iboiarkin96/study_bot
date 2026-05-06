@@ -458,3 +458,69 @@ html[data-theme="dark"] {
     --docs-footer-veil-height: min(74vh, 860px);
   }
 }
+
+/* ── HTTP method badges — dark mode ─────────────────────────────────────────
+   Light-mode values (#dbeafe etc.) are unreadable on dark backgrounds.
+   Override with token-aware color-mix so they adapt to any future card color. */
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) .internal-layout .badge--method-get {
+    background: color-mix(in srgb, #1d4ed8 14%, var(--card));
+    border-color: color-mix(in srgb, #60a5fa 42%, var(--line));
+    color: #79c0ff;
+  }
+
+  html:not([data-theme]) .internal-layout .badge--method-post {
+    background: color-mix(in srgb, #15803d 14%, var(--card));
+    border-color: color-mix(in srgb, #4ade80 42%, var(--line));
+    color: #56d364;
+  }
+
+  html:not([data-theme]) .internal-layout .badge--method-put {
+    background: color-mix(in srgb, #c2410c 14%, var(--card));
+    border-color: color-mix(in srgb, #fb923c 42%, var(--line));
+    color: #ffa657;
+  }
+
+  html:not([data-theme]) .internal-layout .badge--method-patch {
+    background: color-mix(in srgb, #7c3aed 14%, var(--card));
+    border-color: color-mix(in srgb, #c4b5fd 42%, var(--line));
+    color: #d2a8ff;
+  }
+
+  html:not([data-theme]) .internal-layout .badge--method-delete {
+    background: color-mix(in srgb, #dc2626 14%, var(--card));
+    border-color: color-mix(in srgb, #f87171 42%, var(--line));
+    color: #ffa198;
+  }
+}
+
+html[data-theme="dark"] .internal-layout .badge--method-get {
+  background: color-mix(in srgb, #1d4ed8 14%, var(--card));
+  border-color: color-mix(in srgb, #60a5fa 42%, var(--line));
+  color: #79c0ff;
+}
+
+html[data-theme="dark"] .internal-layout .badge--method-post {
+  background: color-mix(in srgb, #15803d 14%, var(--card));
+  border-color: color-mix(in srgb, #4ade80 42%, var(--line));
+  color: #56d364;
+}
+
+html[data-theme="dark"] .internal-layout .badge--method-put {
+  background: color-mix(in srgb, #c2410c 14%, var(--card));
+  border-color: color-mix(in srgb, #fb923c 42%, var(--line));
+  color: #ffa657;
+}
+
+html[data-theme="dark"] .internal-layout .badge--method-patch {
+  background: color-mix(in srgb, #7c3aed 14%, var(--card));
+  border-color: color-mix(in srgb, #c4b5fd 42%, var(--line));
+  color: #d2a8ff;
+}
+
+html[data-theme="dark"] .internal-layout .badge--method-delete {
+  background: color-mix(in srgb, #dc2626 14%, var(--card));
+  border-color: color-mix(in srgb, #f87171 42%, var(--line));
+  color: #ffa198;
+}

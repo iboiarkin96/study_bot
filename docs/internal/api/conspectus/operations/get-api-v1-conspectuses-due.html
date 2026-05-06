@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GET /api/v1/conspectuses/due — Conspectus — Study App</title>
@@ -11,135 +10,491 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+  <script defer src="../../../../assets/docs-syntax.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation" data-spec-status="draft" data-spec-owner="ivan-boyarkin" data-spec-operation-id="listDueConspectuses">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>GET /api/v1/conspectuses/due</h1>
+        <h1 class="internal-h1--accent-tail internal-http-tablet">
+          <span class="internal-http-tablet__method badge badge--method-get">GET</span>
+          <span class="internal-http-tablet__path code">/api/v1/conspectuses/due</span>
+        </h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">Conspectus</section>
-        <section class="card">
-          <span class="badge badge--method-get">GET</span>
-          <code class="internal-http-tablet__path">/api/v1/conspectuses/due</code>
-        </section>
-        <section class="card">
-          <h2>Business context</h2>
+        <p class="internal-doc-entity">Conspectus</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Lists conspectuses due for retrieval, optionally filtered by slot.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">operationId</span>
+          <code>listDueConspectuses</code></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-29">2026-04-29</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Intended: list conspectuses for a user that are due on or before
-            <code>due_before</code> (defaults to UTC now), optionally filtered by <code>slot</code>
-            (<code>A</code>–<code>D</code>).
-            Planned <code>operationId</code>: <code>listDueConspectuses</code>.
+            List the learner's conspectuses whose <code>next_review_at</code> is at or before the
+            given instant (default: now UTC), optionally filtered by <code>slot</code>.
+            Read-only. Bounded result set per
+            <a href="../../_shared/pagination.html">shared pagination rules</a> (≤ 100 items,
+            no cursor in v1).
           </p>
         </section>
 
-        <section class="card">
-          <h2>Query parameters and behavior</h2>
+        <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+          <h2>1. Business context</h2>
           <p>
-            Required: <code>system_user_id</code>, <code>system_uuid</code> (query). Optional:
-            <code>due_before</code> (datetime, timezone-aware; default: now UTC), <code>slot</code> (enum
-            <code>A</code>|<code>B</code>|<code>C</code>|<code>D</code>).
-          </p>
-          <p>
-            Intended implementation: filter by <code>next_review_at &lt;= due_before</code>, optional equality on
-            <code>slot</code>; order by <code>next_review_at</code> ascending, then <code>conspectus_uuid</code>.
-          </p>
-          <p><strong>Success:</strong> <code>200 OK</code> — JSON array of <code>ConspectusResponse</code> (may be
-            empty).
-            <strong>No idempotency</strong> (read-only).
+            The retrieval-practice loop in the
+            <a href="../../../analysis/methodology.html#retrieve-system">methodology</a> hinges
+            on knowing what is due. This endpoint is the canonical answer to “what should I
+            review now?” — temporal ordering, no pedagogical ranking, deterministic tiebreakers
+            so the integrator's UI is reproducible
+            (<a href="../../../analysis/system-design.html#review-suggestion-logic">system-design
+            · review suggestion</a>).
           </p>
         </section>
 
-        <section class="card">
-          <h2>Errors</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>HTTP</th>
-                <th>When</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>404</code></td>
-                <td><code>USER_404</code> — user not found for composite key.</td>
-              </tr>
-              <tr>
-                <td><code>422</code></td>
-                <td>Invalid query types (e.g. bad <code>slot</code> if validation fails).</td>
-              </tr>
-              <tr>
-                <td><code>401</code> / <code>429</code></td>
-                <td>Middleware.</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+        <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+          <h2>2. User stories</h2>
+          <ul>
+            <li><strong>US-CONSP-DUE-1.</strong> As a <em>learner</em>, I want to see the notes
+              due for retrieval so I can pick the next session.</li>
+              <li><strong>US-CONSP-DUE-2.</strong> As an <em>integrator</em>, I want a stable
+                ordering so my pagination and UI rendering are deterministic.</li>
+                <li><strong>US-CONSP-DUE-3.</strong> As a <em>product owner</em>, I want the
+                  evening-drill UX (random sample from Slot A) to be a client concern, not a server
+                  one — keeping the API explainable.</li>
+                </ul>
+              </section>
 
-        <section class="card">
-          <h2>Single-file deep spec</h2>
-          <p>
-            <a href="../index.html#conspectus-op-listDueConspectuses">Conspectus hub — this operation</a>
-          </p>
-        </section>
+              <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+                <h2>3. Acceptance criteria (Given / When / Then)</h2>
+                <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+                  <table>
+                    <thead><tr><th>ID &amp; scenario</th><th>Given</th><th>When</th><th>Then</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><code>AC-CONSP-DUE-001</code><br>
+                          <span class="small">Default — due now.</span></td>
+                          <td>U has 3 conspectuses with <code>next_review_at</code> ≤ now.</td>
+                          <td>GET without <code>due_before</code>.</td>
+                          <td><code>200 OK</code> with 3 items, ordered by
+                            <code>next_review_at</code> asc, then
+                            <code>conspectus_uuid</code>.</td>
+                          </tr>
+                          <tr>
+                            <td><code>AC-CONSP-DUE-002</code><br>
+                              <span class="small">Slot filter.</span></td>
+                              <td>U has items in slots A, B, C.</td>
+                              <td>GET with <code>?slot=A</code>.</td>
+                              <td><code>200 OK</code> with only slot=A items.</td>
+                            </tr>
+                            <tr>
+                              <td><code>AC-CONSP-DUE-003</code><br>
+                                <span class="small">Empty list.</span></td>
+                                <td>U has no due items.</td>
+                                <td>GET.</td>
+                                <td><code>200 OK</code> with <code>[]</code>.</td>
+                              </tr>
+                              <tr>
+                                <td><code>AC-CONSP-DUE-004</code><br>
+                                  <span class="small">User not found.</span></td>
+                                  <td>No user matches the composite key.</td>
+                                  <td>GET.</td>
+                                  <td><code>404 USER_404</code>.</td>
+                                </tr>
+                                <tr>
+                                  <td><code>AC-CONSP-DUE-005</code><br>
+                                    <span class="small">Cap at 100.</span></td>
+                                    <td>U has 250 due items.</td>
+                                    <td>GET.</td>
+                                    <td>Exactly 100 items (oldest 100 by
+                                      <code>next_review_at</code>).</td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>AC-CONSP-DUE-006</code><br>
+                                        <span class="small">Invalid slot.</span></td>
+                                        <td>—.</td>
+                                        <td>GET <code>?slot=Z</code>.</td>
+                                        <td><code>422 COMMON_000</code>.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>AC-CONSP-DUE-007</code><br>
+                                          <span class="small">due_before in the future.</span></td>
+                                          <td>U has items due tomorrow.</td>
+                                          <td>GET <code>?due_before=2026-05-01T00:00:00Z</code>.</td>
+                                          <td><code>200 OK</code> with all items where
+                                            <code>next_review_at ≤ 2026-05-01T00:00:00Z</code>.</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </section>
 
-        <p class="small">
-          <a href="../index.html">← Conspectus resource hub</a>
-        </p>
+                                  <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                                    <h2>4. Functional requirements</h2>
+                                    <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+                                      <table>
+                                        <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                        <tbody>
+                                          <tr><td><code>FR-CONSP-DUE-001</code></td>
+                                            <td>Resolve owner from query.</td>
+                                            <td>Resolve <code>users.client_uuid</code> from
+                                              <code>(system_user_id, system_uuid)</code> in query;
+                                              <code>404 USER_404</code> when not found.</td></tr>
+                                              <tr><td><code>FR-CONSP-DUE-002</code></td>
+                                                <td>Filter by <code>next_review_at</code>.</td>
+                                                <td><code>WHERE next_review_at &lt;= due_before AND
+                                                  owner_client_uuid = ?</code>; default
+                                                  <code>due_before = now() UTC</code>.</td></tr>
+                                                  <tr><td><code>FR-CONSP-DUE-003</code></td>
+                                                    <td>Optional slot filter.</td>
+                                                    <td><code>AND slot = ?</code> when <code>slot</code> is present.</td></tr>
+                                                    <tr><td><code>FR-CONSP-DUE-004</code></td>
+                                                      <td>Deterministic ordering.</td>
+                                                      <td><code>ORDER BY next_review_at ASC, conspectuses.created_at ASC,
+                                                        conspectus_uuid ASC</code>
+                                                        (per
+                                                        <a href="../../../analysis/system-design.html#review-suggestion-logic">
+                                                          system-design</a>).</td></tr>
+                                                          <tr><td><code>FR-CONSP-DUE-005</code></td>
+                                                            <td>Cap at 100.</td>
+                                                            <td>Hard <code>LIMIT 100</code>; integrator can re-poll with a tighter
+                                                              <code>due_before</code> to fetch the next slice
+                                                              (<a href="../../_shared/pagination.html">pagination</a>).</td></tr>
+                                                              <tr><td><code>FR-CONSP-DUE-006</code></td>
+                                                                <td>Return bare array.</td>
+                                                                <td>Response is a JSON array of <code>ConspectusResponse</code>; no
+                                                                  envelope, no <code>total</code> count.</td></tr>
+                                                                  <tr><td><code>FR-CONSP-DUE-007</code></td>
+                                                                    <td>Read-only.</td>
+                                                                    <td>No DB writes; <code>Idempotency-Key</code> header silently ignored if
+                                                                      sent.</td></tr>
+                                                                    </tbody>
+                                                                  </table>
+                                                                </div>
+                                                              </section>
 
-        <section id="page-history" class="card">
+                                                              <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                                                                <h2>5. Non-functional requirements</h2>
+                                                                <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+                                                                  <table>
+                                                                    <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                                                    <tbody>
+                                                                      <tr><td><code>NFR-CONSP-DUE-001</code></td><td>Latency.</td>
+                                                                        <td>P95 ≤ 150 ms, P99 ≤ 400 ms.</td></tr>
+                                                                        <tr><td><code>NFR-CONSP-DUE-002</code></td><td>Index usage.</td>
+                                                                          <td>Query covered by composite index
+                                                                            <code>(owner_client_uuid, next_review_at)</code> on
+                                                                            <code>conspectus_schedules</code>.</td></tr>
+                                                                            <tr><td><code>NFR-CONSP-DUE-003</code></td><td>Cap.</td>
+                                                                              <td>Hard <code>LIMIT 100</code>; cap is non-negotiable.</td></tr>
+                                                                              <tr><td><code>NFR-CONSP-DUE-004</code></td><td>Read consistency.</td>
+                                                                                <td>Default DB isolation; brief lag vs a just-committed write is
+                                                                                  acceptable.</td></tr>
+                                                                                  <tr><td><code>NFR-CONSP-DUE-005</code></td><td>Backwards compatibility.</td>
+                                                                                    <td>Adding new optional query params is additive; tightening the cap is
+                                                                                      breaking.</td></tr>
+                                                                                      <tr><td><code>NFR-CONSP-DUE-006</code></td><td>Observability.</td>
+                                                                                        <td>Standard middleware <code>request_done</code>; no operation-specific
+                                                                                          business event for reads.</td></tr>
+                                                                                          <tr><td><code>NFR-CONSP-DUE-007</code></td><td>Rate limit.</td>
+                                                                                            <td>Inherits global limit.</td></tr>
+                                                                                            <tr><td><code>NFR-CONSP-DUE-008</code></td><td>Cacheability.</td>
+                                                                                              <td>No cache headers in v1; due-lists change rapidly after a review.</td></tr>
+                                                                                            </tbody>
+                                                                                          </table>
+                                                                                        </div>
+                                                                                      </section>
 
-          <h2>Page history</h2>
+                                                                                      <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                                                                        <h2>6. Authorization &amp; permissions</h2>
+                                                                                        <p>
+                                                                                          API key per <a href="../../_shared/auth.html">shared auth</a>. Learner resolved
+                                                                                          from query. Result is implicitly scoped to <code>owner_client_uuid</code>;
+                                                                                          cross-tenant data cannot leak.
+                                                                                        </p>
+                                                                                      </section>
 
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                      <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                                                                        <h2>7. Request contract</h2>
 
-            <table class="docs-page-history">
+                                                                                        <h3>Headers</h3>
+                                                                                        <dl class="internal-field-list">
+                                                                                          <dt><code>X-API-Key</code>
+                                                                                            <span class="badge badge--field-type">string</span>
+                                                                                            <span class="badge badge--field-req">required</span></dt>
+                                                                                            <dd><p>Tenant API key.</p></dd>
+                                                                                          </dl>
 
-              <thead>
+                                                                                          <h3>Query parameters</h3>
+                                                                                          <dl class="internal-field-list">
+                                                                                            <dt><code>system_user_id</code>
+                                                                                              <span class="badge badge--field-type">string</span>
+                                                                                              <span class="badge badge--field-req">required</span></dt>
+                                                                                              <dd><p>External user identifier.</p></dd>
+                                                                                              <dt><code>system_uuid</code>
+                                                                                                <span class="badge badge--field-type">string · uuid</span>
+                                                                                                <span class="badge badge--field-req">required</span></dt>
+                                                                                                <dd><p>External tenant UUID.</p></dd>
+                                                                                                <dt><code>due_before</code>
+                                                                                                  <span class="badge badge--field-type">string · date-time</span>
+                                                                                                  <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                  <dd>
+                                                                                                    <p>Upper bound for <code>next_review_at</code>; UTC. Default: server
+                                                                                                      <code>now()</code>.</p>
+                                                                                                      <dl class="internal-field-list__attrs">
+                                                                                                        <dt>Format</dt><dd>RFC 3339, must end with <code>Z</code>.</dd>
+                                                                                                      </dl>
+                                                                                                    </dd>
+                                                                                                    <dt><code>slot</code>
+                                                                                                      <span class="badge badge--field-type">string · enum</span>
+                                                                                                      <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                      <dd>
+                                                                                                        <p>Restrict to one slot.</p>
+                                                                                                        <dl class="internal-field-list__attrs">
+                                                                                                          <dt>Allowed</dt><dd><code>A</code> · <code>B</code> · <code>C</code> ·
+                                                                                                          <code>D</code>.</dd>
+                                                                                                        </dl>
+                                                                                                      </dd>
+                                                                                                    </dl>
 
-                <tr>
+                                                                                                    <h3>Example request</h3>
+                                                                                                    <pre><code>GET /api/v1/conspectuses/due?system_user_id=learner-01&amp;system_uuid=b2c3d4e5-0002-4000-8000-000000000002&amp;slot=A HTTP/1.1
+                                                                                                      X-API-Key: sk_live_***
+                                                                                                    </code></pre>
+                                                                                                  </section>
 
-                  <th scope="col">Date</th>
+                                                                                                  <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                                                                                    <h2>8. Response contract</h2>
+                                                                                                    <h3>200 OK — array of <code>ConspectusResponse</code></h3>
+                                                                                                    <p>
+                                                                                                      Bare JSON array (no envelope). Items follow the shape from
+                                                                                                      <a href="post-api-v1-conspectuses-conspectus_uuid-actions-review.html#response-contract">
+                                                                                                        <code>ConspectusResponse</code></a>. Empty array is a valid response.
+                                                                                                      </p>
+                                                                                                      <pre><code>HTTP/1.1 200 OK
+                                                                                                        Content-Type: application/json
 
-                  <th scope="col">Change</th>
+                                                                                                        [
+                                                                                                        {
+                                                                                                        "conspectus_uuid": "9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001",
+                                                                                                        "title": "The water cycle",
+                                                                                                        "slot": "A",
+                                                                                                        "slot_d_ladder_index": 0,
+                                                                                                        "next_review_at": "2026-04-29T11:00:00Z",
+                                                                                                        "schedule_revision": 3,
+                                                                                                        "schedule_policy_id": "etr_methodology_four_slot",
+                                                                                                        "algorithm_version": "1.0.0",
+                                                                                                        "cue_sheet_schema_version": 1,
+                                                                                                        "cue_sheet": { /*…*/ },
+                                                                                                        "dense_paragraph": "…",
+                                                                                                        "bullets": ["…"],
+                                                                                                        "created_at": "2026-04-29T10:00:00Z",
+                                                                                                        "updated_at": "2026-04-29T10:00:00Z",
+                                                                                                        "schedule_updated_at": "2026-04-29T10:00:00Z"
+                                                                                                        }
+                                                                                                        ]
+                                                                                                      </code></pre>
+                                                                                                    </section>
 
-                  <th scope="col">Author</th>
+                                                                                                    <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                                                                                      <h2>10. Side effects</h2>
+                                                                                                      <p>None. Read-only.</p>
+                                                                                                    </section>
 
-                </tr>
+                                                                                                    <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                                                                                      <h2>11. Idempotency &amp; concurrency</h2>
+                                                                                                      <p>Not applicable — read-only.</p>
+                                                                                                    </section>
 
-              </thead>
+                                                                                                    <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                                                                                      <h2>12. Error catalog</h2>
+                                                                                                      <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+                                                                                                        <table>
+                                                                                                          <thead><tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th>
+                                                                                                            <th>Log event (level)</th></tr></thead>
+                                                                                                            <tbody>
+                                                                                                              <tr><td><code>401</code></td><td><code>COMMON_401</code></td>
+                                                                                                                <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                                                                                                <td>Missing/invalid API key.</td><td>middleware</td></tr>
+                                                                                                                <tr><td><code>404</code></td><td><code>USER_404</code></td>
+                                                                                                                  <td><code>USER_NOT_FOUND</code></td>
+                                                                                                                  <td>No user for query composite key.</td>
+                                                                                                                  <td><code>conspectus_due_user_not_found</code> (info)</td></tr>
+                                                                                                                  <tr><td><code>422</code></td><td><code>COMMON_000</code></td>
+                                                                                                                    <td><code>COMMON_VALIDATION_ERROR</code></td>
+                                                                                                                    <td>Invalid slot, malformed
+                                                                                                                      <code>due_before</code>, missing required query.</td>
+                                                                                                                      <td><code>validation_error</code> (warn)</td></tr>
+                                                                                                                      <tr><td><code>429</code></td><td><code>COMMON_429</code></td>
+                                                                                                                        <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                                                                                                                        <td>Rate limit.</td><td>middleware</td></tr>
+                                                                                                                      </tbody>
+                                                                                                                    </table>
+                                                                                                                  </div>
+                                                                                                                </section>
 
-              <tbody>
+                                                                                                                <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                                                                                                  <h2>13. Edge cases checklist</h2>
+                                                                                                                  <ul>
+                                                                                                                    <li><strong>User has zero conspectuses.</strong> <code>200 []</code>.</li>
+                                                                                                                    <li><strong><code>due_before</code> in the past.</strong> Accept; returns items
+                                                                                                                      due before that point.</li>
+                                                                                                                      <li><strong>Calendar-day "today" semantics.</strong> Out of scope in v1; client
+                                                                                                                        computes its own day boundary using
+                                                                                                                        <code>users.timezone</code> if needed.</li>
+                                                                                                                        <li><strong>Slot=D filter with rung-specific query.</strong> Out of scope —
+                                                                                                                          only slot-level filter in v1.</li>
+                                                                                                                          <li><strong>250 due items.</strong> Cap at 100; integrator polls again with a
+                                                                                                                            tighter <code>due_before</code>.</li>
+                                                                                                                            <li><strong>System clock skew.</strong> Server uses DB <code>now()</code>;
+                                                                                                                              not Python clock.</li>
+                                                                                                                              <li><strong>Idempotency-Key sent on this read.</strong> Silently ignored.</li>
+                                                                                                                            </ul>
+                                                                                                                          </section>
 
-                <tr>
+                                                                                                                          <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                                                                                                            <h2>14. Observability requirements</h2>
+                                                                                                                            <h3>Log events</h3>
+                                                                                                                            <ul>
+                                                                                                                              <li>Standard middleware <code>request_done</code>.</li>
+                                                                                                                              <li><code>conspectus_due_user_not_found</code> (info) on <code>404</code>.</li>
+                                                                                                                            </ul>
+                                                                                                                            <h3>Metrics</h3>
+                                                                                                                            <ul>
+                                                                                                                              <li><code>conspectus_due_total</code> (counter).</li>
+                                                                                                                              <li><code>conspectus_due_duration_seconds</code> (histogram).</li>
+                                                                                                                              <li><code>conspectus_due_returned_count</code> (histogram, observed result-set
+                                                                                                                                size).</li>
+                                                                                                                              </ul>
+                                                                                                                              <h3>Alerts</h3>
+                                                                                                                              <ul>
+                                                                                                                                <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+                                                                                                                                <li><strong>Ticket:</strong> P95 &gt; 300 ms over 30 min — index regression.</li>
+                                                                                                                              </ul>
+                                                                                                                            </section>
 
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                                                                                            <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                                                                                                              <h2>15. Test plan</h2>
+                                                                                                                              <ul>
+                                                                                                                                <li><strong>Unit:</strong> query-builder produces the expected SQL with index
+                                                                                                                                  hints.</li>
+                                                                                                                                  <li><strong>Integration:</strong> AC-001..AC-007.</li>
+                                                                                                                                  <li><strong>Contract:</strong> Schemathesis on
+                                                                                                                                    <code>listDueConspectuses</code>.</li>
+                                                                                                                                    <li><strong>End-to-end:</strong> create → due (advance time) → review easy → due
+                                                                                                                                      (item gone from A, present in B's window).</li>
+                                                                                                                                    </ul>
+                                                                                                                                  </section>
 
-                  <td>Added Page history section (repository baseline).</td>
+                                                                                                                                  <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                                                                                                    <h2>16. OpenAPI authoring hints</h2>
+                                                                                                                                    <ul>
+                                                                                                                                      <li><strong>operationId:</strong> <code>listDueConspectuses</code>.</li>
+                                                                                                                                      <li><strong>Tags:</strong> <code>Conspectus</code>.</li>
+                                                                                                                                      <li><strong>Reused:</strong> <code>ConspectusResponse</code>, <code>Slot</code>,
+                                                                                                                                        <code>Timestamp</code>, <code>ErrorEnvelope</code>.</li>
+                                                                                                                                        <li><strong>Response schema:</strong>
+                                                                                                                                          <code>type: array, items: $ref ConspectusResponse</code>; document the
+                                                                                                                                          <code>maxItems: 100</code> cap.</li>
+                                                                                                                                          <li><strong>Examples:</strong> empty list, single-item, full page.</li>
+                                                                                                                                        </ul>
+                                                                                                                                      </section>
 
-                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                                      <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                                                                                                        <h2>17. Open questions</h2>
+                                                                                                                                        <ul>
+                                                                                                                                          <li><strong>Q1.</strong> Cursor pagination — when do we add it? Trigger: a single
+                                                                                                                                            learner having &gt; 100 due items in production.
+                                                                                                                                            <em>Owner:</em> product.</li>
+                                                                                                                                            <li><strong>Q2.</strong> Calendar-day "due today" filter — server-side or
+                                                                                                                                              client-side? v1: client-side. Revisit if multiple integrators ask.</li>
+                                                                                                                                            </ul>
+                                                                                                                                          </section>
 
-                </tr>
+                                                                                                                                          <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                                                                                                            <h2>18. Out of scope</h2>
+                                                                                                                                            <ul>
+                                                                                                                                              <li>Random sampling — client picks (Slot A evening drill).</li>
+                                                                                                                                              <li>Full-text search inside cue sheets — separate endpoint when needed.</li>
+                                                                                                                                              <li>Cross-tenant admin queries — never via this endpoint.</li>
+                                                                                                                                              <li>Cursor pagination (Q1).</li>
+                                                                                                                                            </ul>
+                                                                                                                                          </section>
 
-              </tbody>
+                                                                                                                                          <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                                                                                                            <h2>19. Traceability</h2>
+                                                                                                                                            <ul>
+                                                                                                                                              <li><strong>Methodology:</strong>
+                                                                                                                                                <a href="../../../analysis/methodology.html#retrieve-system">retrieve cadence</a>.</li>
+                                                                                                                                                <li><strong>System design:</strong>
+                                                                                                                                                  <a href="../../../analysis/system-design.html#review-suggestion-logic">review
+                                                                                                                                                    suggestion / due ordering</a>.</li>
+                                                                                                                                                    <li><strong>ADRs:</strong>
+                                                                                                                                                      <a href="../../../../adr/0003-error-contract-governance.html">0003</a>,
+                                                                                                                                                      <a href="../../../../adr/0005-api-security-defaults.html">0005</a>.</li>
+                                                                                                                                                      <li><strong>OpenAPI:</strong> <code>listDueConspectuses</code>.</li>
+                                                                                                                                                    </ul>
+                                                                                                                                                  </section>
 
-            </table>
+                                                                                                                                                  <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                                                                                                                    <h2>20. Spec changelog</h2>
+                                                                                                                                                    <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+                                                                                                                                                      <table>
+                                                                                                                                                        <thead><tr><th>Date</th><th>Type</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                        <tbody>
+                                                                                                                                                          <tr>
+                                                                                                                                                            <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                            <td>additive</td>
+                                                                                                                                                            <td>Phase 5 rollout: full analyst spec.</td>
+                                                                                                                                                            <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                              Boyarkin</a></td>
+                                                                                                                                                            </tr>
+                                                                                                                                                          </tbody>
+                                                                                                                                                        </table>
+                                                                                                                                                      </div>
+                                                                                                                                                    </section>
 
-          </div>
+                                                                                                                                                    <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                                                                                                                      <h2>Page history</h2>
+                                                                                                                                                      <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                                                                                        <table class="docs-page-history">
+                                                                                                                                                          <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                          <tbody>
+                                                                                                                                                            <tr>
+                                                                                                                                                              <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                              <td>Phase 5: full rewrite.</td>
+                                                                                                                                                              <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                Boyarkin</a></td>
+                                                                                                                                                              </tr>
+                                                                                                                                                            </tbody>
+                                                                                                                                                          </table>
+                                                                                                                                                        </div>
+                                                                                                                                                      </section>
 
-        </section>
+                                                                                                                                                    </main>
+                                                                                                                                                  </div>
+                                                                                                                                                </div>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
-
-</body></html>
+                                                                                                                                              </body></html>

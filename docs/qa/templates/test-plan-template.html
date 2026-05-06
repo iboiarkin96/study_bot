@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test plan template — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Test plan template</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Templates</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            A lightweight, IEEE-829-inspired test plan tailored to this project. Use it for any
+            non-trivial feature or release. For routine work, link to an existing checklist
+            instead.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#when">When to use</a>
+            <a class="docs-page-hero__chip" href="#fields">Sections</a>
+            <a class="docs-page-hero__chip" href="#template">Template</a>
+            <a class="docs-page-hero__chip" href="#worked-example">Worked example</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">When</div>
+
+        <section class="card" id="when">
+          <h2>When to use a test plan</h2>
+          <ul>
+            <li>New feature touching multiple endpoints or pages.</li>
+            <li>Release ticket spanning &gt; 1 area.</li>
+            <li>Migration affecting persisted data.</li>
+            <li>External-facing contract change.</li>
+          </ul>
+          <p class="small">
+            For tiny single-PR fixes or doc edits, skip the plan and reference a checklist.
+          </p>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Sections</div>
+
+        <section class="card" id="fields">
+          <h2>Sections — what each contains</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Plan sections">
+            <table>
+              <thead>
+                <tr>
+                  <th>Section</th>
+                  <th>Required</th>
+                  <th>Content</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1. Identifier</td>
+                  <td>Yes</td>
+                  <td>Plan ID + version + date.</td>
+                </tr>
+                <tr>
+                  <td>2. Scope</td>
+                  <td>Yes</td>
+                  <td>What's in, what's out, with explicit exclusions.</td>
+                </tr>
+                <tr>
+                  <td>3. References</td>
+                  <td>Yes</td>
+                  <td>Links to spec, tickets, ADRs, related plans.</td>
+                </tr>
+                <tr>
+                  <td>4. Risks</td>
+                  <td>Yes</td>
+                  <td>Top 3–7 risks with impact × likelihood and mitigations.</td>
+                </tr>
+                <tr>
+                  <td>5. Test items &amp; types</td>
+                  <td>Yes</td>
+                  <td>List of items × test types planned (contract, system, exploratory, …).</td>
+                </tr>
+                <tr>
+                  <td>6. Approach</td>
+                  <td>Yes</td>
+                  <td>Tooling, environments, data, layers from the pyramid.</td>
+                </tr>
+                <tr>
+                  <td>7. Pass / fail criteria</td>
+                  <td>Yes</td>
+                  <td>Per checklist and overall — anchors to severity matrix.</td>
+                </tr>
+                <tr>
+                  <td>8. Entry / exit criteria</td>
+                  <td>Yes</td>
+                  <td>What must be true to start / stop testing.</td>
+                </tr>
+                <tr>
+                  <td>9. Schedule</td>
+                  <td>Yes</td>
+                  <td>Calendar dates with single-owner responsibility.</td>
+                </tr>
+                <tr>
+                  <td>10. Deliverables</td>
+                  <td>Yes</td>
+                  <td>Annotated checklists, defects, sign-off note.</td>
+                </tr>
+                <tr>
+                  <td>11. Roles</td>
+                  <td>Yes</td>
+                  <td>Single accountable owner per row, RACI optional.</td>
+                </tr>
+                <tr>
+                  <td>12. Open questions</td>
+                  <td>Yes</td>
+                  <td>Use the literal word <em>None.</em> if empty.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Template</div>
+
+        <section class="card" id="template">
+          <h2>Template — copy this block</h2>
+          <pre><code class="language-markdown"># Test plan: &lt;feature or release name&gt;
+
+            - **Plan ID:** TP-&lt;area&gt;-&lt;number&gt;-v1
+            - **Date:** &lt;ISO&gt;
+            - **Author:** &lt;name&gt;
+            - **Status:** Draft | In review | Approved
+
+            ## 1. Scope
+            - In: &lt;list&gt;
+            - Out: &lt;list&gt;
+
+            ## 2. References
+            - Spec: &lt;link&gt;
+            - Tickets: &lt;ids&gt;
+            - ADRs: &lt;ids&gt;
+
+            ## 3. Risks
+            | # | Risk | Impact | Likelihood | Mitigation |
+            |---|------|--------|------------|------------|
+
+            ## 4. Test items and types
+            | Item | Contract | System | Manual UI | Exploratory | A11y |
+            |------|----------|--------|-----------|-------------|------|
+
+            ## 5. Approach
+            - Layers used (per test pyramid): …
+            - Tooling: pytest, httpx, browser …
+            - Environments: local, staging.
+            - Data fixtures: …
+
+            ## 6. Pass / fail criteria
+            - Pass: all P1 cases pass; no S1/S2 open.
+            - Fail: any S1/S2 open at exit.
+
+            ## 7. Entry criteria
+            - Spec passes DoD; CI green; build deployable.
+
+            ## 8. Exit criteria
+            - All in-scope cases executed; defects triaged; sign-off recorded.
+
+            ## 9. Schedule
+            | Date | Activity | Owner |
+            |------|----------|-------|
+
+            ## 10. Deliverables
+            - Annotated checklist runs.
+            - Defect tickets (linked).
+            - Sign-off note on the release ticket.
+
+            ## 11. Roles
+            | Activity | R | A | C | I |
+            |----------|---|---|---|---|
+
+            ## 12. Open questions
+            - &lt;list&gt; or "None."
+          </code></pre>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Worked example</div>
+
+        <section class="card" id="worked-example">
+          <h2>Worked example — abbreviated</h2>
+          <pre><code class="language-markdown"># Test plan: POST /api/v1/conspectuses idempotency
+
+            - Plan ID: TP-API-CONSPECTUS-007-v1
+            - Date: 2026-04-30
+            - Author: Ivan B.
+
+            ## 1. Scope
+            - In: POST /api/v1/conspectuses with Idempotency-Key header — first call,
+            retry within window, retry after window, conflict on different body.
+            - Out: GET / PATCH / authentication scenarios (covered by TP-…-002).
+
+            ## 3. Risks
+            | # | Risk | Impact | Likelihood | Mitigation |
+            |---|------|--------|------------|------------|
+            | 1 | Replay attack creates duplicates | High | Med | Contract test on retry within window |
+            | 2 | DB unique-constraint violation surfaces as 500 | Med | Low | Manual repro + log inspection |
+
+            ## 4. Test items
+            | Item | Contract | System | Manual UI | Exploratory | A11y |
+            |------|----------|--------|-----------|-------------|------|
+            | Idempotency key path | ✓ | ✓ |  | ✓ |  |
+
+            ## 8. Exit criteria
+            - All P1 cases pass.
+            - No open S1/S2 defects.
+            - OpenAPI baseline updated and contract test green.
+          </code></pre>
+        </section>
+
+        <section class="card" id="page-history">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Change</th>
+                  <th>Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                  <td>Initial test plan template.</td>
+                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

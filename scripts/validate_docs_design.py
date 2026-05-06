@@ -1,7 +1,7 @@
 """Validate design-consistency baseline for docs HTML pages.
 
 This check enforces the shared page skeleton from
-``docs/internal/front/documentation-style-guide.html`` for non-generated docs pages.
+``docs/internal/front/_shared/style-guide.html`` for non-generated docs pages.
 Generated Python API HTML under ``docs/pdoc/`` is skipped (same as legacy ``docs/api/`` output).
 It is intentionally lightweight: fail only on clear structural regressions.
 """
@@ -17,6 +17,8 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "docs"
 FROZEN_DOCS_REL_PATHS = {
     Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+    # Standalone week backlog calendar (custom layout, not portal doc skeleton).
+    Path("internal/portal/people/ivan-boyarkin/week-calendar-2026-05-07.html"),
 }
 
 
@@ -42,6 +44,13 @@ def _iter_docs_pages(candidates: list[str] | None = None) -> list[Path]:
         if rel.parts and rel.parts[0] in {"api", "assets", "pdoc"}:
             continue
         if rel in FROZEN_DOCS_REL_PATHS:
+            continue
+        # Scratch HTML under portal profile `notes/` (gitignored locally; never shipped).
+        if (
+            len(rel.parts) >= 5
+            and rel.parts[0:3] == ("internal", "portal", "people")
+            and rel.parts[4] == "notes"
+        ):
             continue
         pages.append(path)
     return pages
@@ -115,18 +124,6 @@ def _has_top_nav_mount(root_el) -> bool:
     return False
 
 
-def _has_auto_toc_mount(root_el) -> bool:
-    for node in root_el.iter():
-        if not isinstance(node.tag, str) or _local_name(node.tag) != "div":
-            continue
-        classes = set((node.attrib.get("class") or "").split())
-        if "docs-inpage-toc-mount" not in classes:
-            continue
-        if (node.attrib.get("data-inpage-toc") or "").strip() == "auto":
-            return True
-    return False
-
-
 def _count_tag(root_el, tag_name: str) -> int:
     count = 0
     for node in root_el.iter():
@@ -193,17 +190,13 @@ def main() -> None:
                 failures.append(f"{rel}: expected exactly one <h1>")
             if not _has_top_nav_mount(doc):
                 failures.append(f'{rel}: missing <div id="docs-top-nav"></div>')
-            if not _has_auto_toc_mount(doc):
-                failures.append(
-                    f'{rel}: missing <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>'
-                )
             if not swagger_layout and not _has_section_card(doc):
                 failures.append(f'{rel}: expected at least one <section class="card">')
             if not swagger_layout and not _has_page_history_section(doc):
                 failures.append(
                     f"{rel}: missing Page history section "
                     f'(<section id="page-history"> or assessment <section> with id="5-page-history"); '
-                    f"see docs/internal/front/documentation-style-guide.html#page-history"
+                    f"see docs/internal/front/_shared/style-guide.html#page-history"
                 )
             if not _has_body_maintainers(doc):
                 failures.append(

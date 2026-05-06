@@ -15,14 +15,13 @@
 </head>
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="7">
-    <h1>ADR 0011: SLOs, SLAs, Error Budget, and Monitoring Alerts</h1>
+    <h1 class="internal-h1--accent-tail">ADR 0011: SLOs, SLAs, Error Budget, and Monitoring Alerts</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        Adopted before <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. There was no separate ratification process. Git history for this file on <code>main</code> is the record.
+        Adopted before <a href="0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. There was no separate ratification process. Git history for this file on <code>main</code> is the record.
       </p>
       <ul>
         <li>Discussion Issue: <em>not recorded (before ADR 0018)</em></li>
@@ -41,7 +40,7 @@
         industry.
       </p>
       <p>
-        <a href="./0009-health-readiness-and-observability.html">ADR 0009</a> added metrics and probes. This ADR adds
+        <a href="0009-health-readiness-and-observability.html">ADR 0009</a> added metrics and probes. This ADR adds
         explicit SLIs/SLOs, budget-style burn signals, and alerts so on-call responds to customer-impacting risk, not
         arbitrary thresholds.
       </p>
@@ -70,32 +69,34 @@
 
       <h3>Service level objectives (SLOs)</h3>
       <p>Targets are evaluated over a <strong>rolling 30-day</strong> window unless stated otherwise.</p>
-      <table>
-        <thead>
-          <tr>
-            <th><span tabindex="0" data-tooltip="Service level indicator: measurable signal (e.g. success ratio, latency percentile, probe health).">SLI</span></th>
-            <th><span tabindex="0" data-tooltip="SLO target for this SLI over the rolling evaluation window.">Objective</span></th>
-            <th><span tabindex="0" data-tooltip="Measurement nuance, scope exclusions, or how to read this row.">Notes</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>HTTP availability (non-5xx)</td>
-            <td>99.9% of requests succeed without 5xx</td>
-            <td>Complementary view: 5xx ratio must stay within 0.1% of traffic over the window.</td>
-          </tr>
-          <tr>
-            <td>API latency (p95)</td>
-            <td>95% of in-scope requests complete in under 500 ms</td>
-            <td>Measured as histogram p95 over 5 min rate windows for alerting; SLO is a monthly/rolling intent.</td>
-          </tr>
-          <tr>
-            <td>Readiness probe</td>
-            <td><code>/ready</code> returns HTTP 200 at least 99.9% of probe intervals</td>
-            <td>Blackbox-based; indicates DB and dependency health from outside the process.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <thead>
+            <tr>
+              <th><span tabindex="0" data-tooltip="Service level indicator: measurable signal (e.g. success ratio, latency percentile, probe health).">SLI</span></th>
+              <th><span tabindex="0" data-tooltip="SLO target for this SLI over the rolling evaluation window.">Objective</span></th>
+              <th><span tabindex="0" data-tooltip="Measurement nuance, scope exclusions, or how to read this row.">Notes</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>HTTP availability (non-5xx)</td>
+              <td>99.9% of requests succeed without 5xx</td>
+              <td>Complementary view: 5xx ratio must stay within 0.1% of traffic over the window.</td>
+            </tr>
+            <tr>
+              <td>API latency (p95)</td>
+              <td>95% of in-scope requests complete in under 500 ms</td>
+              <td>Measured as histogram p95 over 5 min rate windows for alerting; SLO is a monthly/rolling intent.</td>
+            </tr>
+            <tr>
+              <td>Readiness probe</td>
+              <td><code>/ready</code> returns HTTP 200 at least 99.9% of probe intervals</td>
+              <td>Blackbox-based; indicates DB and dependency health from outside the process.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h3>Error budget</h3>
       <p>
@@ -176,7 +177,6 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
   </main>
 
 </body></html>

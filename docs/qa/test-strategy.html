@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test strategy — QA portal — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Test strategy</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Foundations</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            This page is the contract that says <em>what we test, why, and to what depth</em>. It is the
+            single high-level reference; other QA pages refine it. If a page anywhere in the QA portal
+            contradicts this strategy, this page wins until updated.
+          </p>
+          <p>
+            The strategy is intentionally narrow: it covers <strong>only the Study App</strong>
+            (FastAPI service + docs portal). Cross-product testing standards do not apply here.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#mission">Mission</a>
+            <a class="docs-page-hero__chip" href="#scope">Scope</a>
+            <a class="docs-page-hero__chip" href="#test-types">Test types</a>
+            <a class="docs-page-hero__chip" href="#risk-model">Risk model</a>
+            <a class="docs-page-hero__chip" href="#entry-exit">Entry/exit criteria</a>
+            <a class="docs-page-hero__chip" href="#oracles">Oracles</a>
+            <a class="docs-page-hero__chip" href="#metrics">Metrics</a>
+            <a class="docs-page-hero__chip" href="#out-of-scope">Out of scope</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Mission &amp; principles</div>
+
+        <section class="card" id="mission">
+          <h2>Mission</h2>
+          <p>
+            QA exists to <strong>shorten the feedback loop between the team and reality</strong>:
+            we catch defects before users do, surface unknowns early, and give the team confidence
+            to release without drama.
+          </p>
+          <h3>Principles</h3>
+          <ul>
+            <li><strong>Shift-left.</strong> Testing starts at the spec. A test plan is written
+              against the API spec under <code>docs/internal/api/</code> before code lands.</li>
+              <li><strong>Risk-based.</strong> We do not test everything equally. Coverage follows
+                risk (impact × likelihood), not feature count.</li>
+                <li><strong>Automation first, manual where it pays.</strong> If a check repeats, it is
+                  automated. Manual time is reserved for exploration and UX.</li>
+                  <li><strong>Evidence-driven.</strong> Every "pass" must be reproducible. Screenshots,
+                    request/response captures, or log lines accompany manual checks.</li>
+                    <li><strong>One source of truth.</strong> A spec page in <code>docs/internal/api/</code>
+                      is the contract. If the API behaves differently, the API is wrong, the spec is wrong,
+                      or the test is wrong — never "all three are right and disagree".</li>
+                    </ul>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">Scope</div>
+
+                  <section class="card" id="scope">
+                    <h2>What we test</h2>
+                    <ul>
+                      <li><strong>Public HTTP API</strong> — every operation under <code>/api/v1/…</code>.
+                        See <a href="../internal/api/README.html">internal API hub</a>.</li>
+                        <li><strong>Documentation portal</strong> — pages under <code>docs/</code>: rendering,
+                          navigation, search, accessibility, theme, responsiveness.</li>
+                          <li><strong>Operational behavior</strong> — health/readiness, observability surfaces,
+                            error envelopes, structured logging.</li>
+                            <li><strong>Migrations</strong> — Alembic up/down on a representative dataset.</li>
+                            <li><strong>OpenAPI contract</strong> — the spec served at <code>/openapi.json</code>
+                              matches code and the baseline.</li>
+                            </ul>
+
+                            <h3 id="out-of-scope">What we explicitly do not test</h3>
+                            <ul>
+                              <li>Third-party SaaS internals (only our integration boundaries).</li>
+                              <li>Network/infrastructure beyond the container (DNS, upstream LBs, cloud platform).</li>
+                              <li>Browsers older than the latest two major versions of Chromium and WebKit, unless
+                                an audit explicitly requests it.</li>
+                                <li>Localization beyond English (the product is English-only).</li>
+                              </ul>
+                            </section>
+
+                            <div class="docs-section-divider" aria-hidden="true">Test types</div>
+
+                            <section class="card" id="test-types">
+                              <h2>Test types and where each lives</h2>
+                              <p>
+                                The detailed pyramid with code-level examples is on
+                                <a href="test-pyramid.html">Test pyramid</a>. The summary:
+                              </p>
+                              <div class="docs-table-scroll" role="region" aria-label="Test types table">
+                                <table>
+                                  <thead>
+                                    <tr>
+                                      <th>Type</th>
+                                      <th>Owner</th>
+                                      <th>Tooling</th>
+                                      <th>Where</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>Unit</td>
+                                      <td>Developer</td>
+                                      <td>pytest</td>
+                                      <td><code>tests/core/</code>, <code>tests/domain/</code></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Integration (DB, repository)</td>
+                                      <td>Developer</td>
+                                      <td>pytest + SQLite/Postgres</td>
+                                      <td><code>tests/repositories/</code></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Contract (HTTP / OpenAPI)</td>
+                                      <td>Developer + QA</td>
+                                      <td>pytest + httpx + OpenAPI baseline</td>
+                                      <td><code>tests/api/v1/</code>, <code>tests/openapi/</code></td>
+                                    </tr>
+                                    <tr>
+                                      <td>System / end-to-end</td>
+                                      <td>QA</td>
+                                      <td>Manual + scripted httpx flows</td>
+                                      <td><a href="playbooks/api-endpoint-testing.html">API playbook</a></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Documentation</td>
+                                      <td>QA</td>
+                                      <td>Browser + checklists</td>
+                                      <td><a href="playbooks/documentation-testing.html">Docs playbook</a></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Accessibility</td>
+                                      <td>QA</td>
+                                      <td>Keyboard, axe, screen reader</td>
+                                      <td><a href="playbooks/accessibility-testing.html">A11y playbook</a></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Exploratory</td>
+                                      <td>QA</td>
+                                      <td>Charters, time-boxed sessions</td>
+                                      <td><a href="playbooks/exploratory-testing.html">Exploratory playbook</a></td>
+                                    </tr>
+                                    <tr>
+                                      <td>Load (smoke)</td>
+                                      <td>Developer</td>
+                                      <td>k6 / Locust</td>
+                                      <td><a href="../developer/0006-api-load-testing.html">API load testing</a></td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </section>
+
+                            <div class="docs-section-divider" aria-hidden="true">Risk model</div>
+
+                            <section class="card" id="risk-model">
+                              <h2>Risk model</h2>
+                              <p>
+                                We classify each feature on two axes — <strong>impact</strong> if it fails and
+                                <strong>likelihood</strong> of it failing — and pick coverage depth from a 3×3 grid.
+                              </p>
+                              <div class="docs-table-scroll" role="region" aria-label="Risk grid">
+                                <table>
+                                  <thead>
+                                    <tr>
+                                      <th></th>
+                                      <th>Low likelihood</th>
+                                      <th>Medium likelihood</th>
+                                      <th>High likelihood</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <th>High impact</th>
+                                      <td>Contract + manual happy path</td>
+                                      <td>Contract + checklist + exploratory</td>
+                                      <td>Contract + checklist + exploratory + regression baseline</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Medium impact</th>
+                                      <td>Contract only</td>
+                                      <td>Contract + manual happy path</td>
+                                      <td>Contract + checklist</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Low impact</th>
+                                      <td>Spot-check</td>
+                                      <td>Contract only</td>
+                                      <td>Contract + manual happy path</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <p class="small">
+                                Examples. Auth, payments, persistent writes ⇒ high-impact. New free-form descriptive
+                                field on an internal admin page ⇒ low-impact. A region with frequent recent change
+                                (rapid commits, recent incidents) is high-likelihood by default.
+                              </p>
+                            </section>
+
+                            <div class="docs-section-divider" aria-hidden="true">Entry / exit</div>
+
+                            <section class="card" id="entry-exit">
+                              <h2>Entry &amp; exit criteria</h2>
+                              <h3>Entry to QA execution</h3>
+                              <ul>
+                                <li>Spec page exists under <code>docs/internal/api/&lt;resource&gt;/</code> (or the equivalent
+                                  for non-API features) and the
+                                  <a href="../internal/api/_shared/spec-definition-of-done.html">spec DoD</a> passes.
+                                </li>
+                                <li>CI is green on the feature branch (unit, integration, contract, lint).</li>
+                                <li>The feature is deployable to a test environment and reachable.</li>
+                                <li>A test plan (or checklist reference) is written and reviewed.</li>
+                              </ul>
+                              <h3>Exit from QA (sign-off)</h3>
+                              <ul>
+                                <li>All in-scope checklist items pass; failures are linked to defect tickets.</li>
+                                <li>No open defect at <strong>Severity 1</strong> or <strong>Severity 2</strong>.</li>
+                                <li>All defects below S2 either fixed, deferred with rationale, or accepted by the
+                                  feature owner.</li>
+                                  <li>Evidence (screenshots, request/response captures, logs) is attached to the ticket.</li>
+                                  <li>The OpenAPI baseline is updated if the contract changed.</li>
+                                </ul>
+                              </section>
+
+                              <div class="docs-section-divider" aria-hidden="true">Oracles</div>
+
+                              <section class="card" id="oracles">
+                                <h2>Test oracles — how we decide pass vs fail</h2>
+                                <p>An oracle is the source of truth a test compares against. In priority order:</p>
+                                <ol>
+                                  <li><strong>The spec page</strong> under <code>docs/internal/api/&lt;resource&gt;/</code>
+                                    — it is the contract. The OpenAPI document is generated from code; the spec is the human contract.</li>
+                                    <li><strong>The OpenAPI baseline</strong> — for shape/schema. Drift is a contract change.</li>
+                                    <li><strong>Field conventions, error envelope, idempotency, pagination, versioning, observability
+                                      conventions</strong>
+                                      — see <a href="../internal/api/_shared">shared standards</a>.</li>
+                                      <li><strong>Heuristics</strong> — when nothing else applies (HICCUPPS-F: History, Image, Comparable
+                                        products, Claims, User expectations, Product, Purpose, Statutes, Familiarity).</li>
+                                      </ol>
+                                      <p class="small">
+                                        If two oracles disagree, escalate — do not silently choose. Document the resolution as a
+                                        spec change or a defect.
+                                      </p>
+                                    </section>
+
+                                    <div class="docs-section-divider" aria-hidden="true">Metrics</div>
+
+                                    <section class="card" id="metrics">
+                                      <h2>Metrics we track</h2>
+                                      <ul>
+                                        <li><strong>Defect escape rate</strong> — defects found post-release ÷ total defects on the release.
+                                          Goal: trend down.</li>
+                                          <li><strong>Coverage on golden paths</strong> — every API operation has at least one
+                                            automated contract test and one acceptance checklist line.</li>
+                                            <li><strong>Time to verify a fix</strong> — wall-clock from "Fixed" to "Verified" on a defect ticket.</li>
+                                            <li><strong>Reopen rate</strong> — % of defects that returned to "In progress" after "Fixed".
+                                              Target: &lt; 10%.</li>
+                                              <li><strong>Flaky test count</strong> — automated tests that fail intermittently in CI.
+                                                Target: 0 outside an explicit allowlist.</li>
+                                              </ul>
+                                            </section>
+
+                                            <section class="card" id="page-history">
+                                              <h2>Page history</h2>
+                                              <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                <table class="docs-page-history">
+                                                  <thead>
+                                                    <tr>
+                                                      <th scope="col">Date</th>
+                                                      <th scope="col">Change</th>
+                                                      <th scope="col">Author</th>
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    <tr>
+                                                      <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                                      <td>Initial publication of the QA test strategy.</td>
+                                                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                    </tr>
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                            </section>
+
+                                          </main>
+                                        </div>
+                                      </div>
+
+                                    </body></html>

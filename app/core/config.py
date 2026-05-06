@@ -64,7 +64,7 @@ def _normalize_log_format(raw: str) -> str:
 
 
 # Variables already set in the environment before import (e.g. `export` before uvicorn)
-# must not be overwritten by `env/<APP_ENV>` — otherwise `make run-loadtest-api` loses
+# must not be overwritten by `env/<APP_ENV>` — otherwise local load-testing script loses
 # API_RATE_LIMIT_REQUESTS_LOADTEST when env/dev sets 60 again.
 _PARENT_WINS_KEYS = (
     "API_RATE_LIMIT_REQUESTS",

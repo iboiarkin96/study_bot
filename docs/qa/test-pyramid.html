@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test pyramid — QA portal — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Test pyramid &amp; layer ownership</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Foundations</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            The pyramid models <strong>where each kind of check lives</strong> in this codebase.
+            Each layer answers a specific question — fastest at the bottom, broadest at the top.
+            A test belongs to exactly one layer; if you can't decide, push it down.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#shape">Shape</a>
+            <a class="docs-page-hero__chip" href="#unit">Unit</a>
+            <a class="docs-page-hero__chip" href="#integration">Integration</a>
+            <a class="docs-page-hero__chip" href="#contract">Contract</a>
+            <a class="docs-page-hero__chip" href="#system">System</a>
+            <a class="docs-page-hero__chip" href="#manual">Manual / exploratory</a>
+            <a class="docs-page-hero__chip" href="#anti-patterns">Anti-patterns</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Shape of the pyramid</div>
+
+        <section class="card" id="shape">
+          <h2>Shape</h2>
+          <pre><code class="language-text">                  ┌──────────────────────────────┐
+            │   Manual / exploratory       │   minutes per session, charter-based
+            ├──────────────────────────────┤
+            │   System / E2E (manual+API)  │   golden paths only, run on releases
+            ├──────────────────────────────┤
+            │   Contract (HTTP / OpenAPI)  │   every endpoint, schema + errors
+            ├──────────────────────────────┤
+            │   Integration (DB, repo)     │   every repository &amp; migration
+            ├──────────────────────────────┤
+            │   Unit (pure functions)      │   the bulk; fast, isolated
+            └──────────────────────────────┘</code></pre>
+            <p class="small">
+              Read top-down for "what does the user feel" or bottom-up for "where do we get fast feedback".
+            </p>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Unit</div>
+
+          <section class="card" id="unit">
+            <h2>Unit</h2>
+            <p>
+              <strong>Owner:</strong> developer. <strong>QA reads but rarely writes</strong> — uses unit
+              tests as documentation of intended behavior.
+            </p>
+            <p>
+              Tests one function or one small class with no I/O. No DB, no HTTP, no filesystem (except a
+              tmp_path), no time, no randomness.
+            </p>
+            <ul>
+              <li><strong>What we expect:</strong> exhaustive on logic; one test per branch; one test per error path.</li>
+              <li><strong>Where in this repo:</strong>
+                <code>tests/core/</code>, <code>tests/domain/</code>.
+              </li>
+              <li><strong>Run:</strong> <code>pytest tests/core tests/domain</code> — should be sub-second per module.
+              </li>
+              <li><strong>QA signal:</strong> if a unit test is missing for a defect you found, file a follow-up
+                referencing the test that <em>should</em> have caught it.</li>
+              </ul>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">Integration</div>
+
+            <section class="card" id="integration">
+              <h2>Integration (DB, repository, infra adapters)</h2>
+              <p>
+                <strong>Owner:</strong> developer. <strong>QA reviews</strong> for missing coverage.
+              </p>
+              <p>
+                Tests a real component with one real adapter — usually the database. We keep the
+                transaction scope tight and roll back per test. We do not mock the database in this layer
+                on principle: mocked tests passed in the past while a migration broke production.
+              </p>
+              <ul>
+                <li><strong>Where:</strong> <code>tests/repositories/</code> and migration tests.</li>
+                <li><strong>Test data:</strong> created in fixtures; never relies on prior test order.</li>
+                <li><strong>QA signal:</strong> if a defect is rooted in SQL behavior or migration order,
+                  the regression test belongs here, not on the API layer.</li>
+                </ul>
+              </section>
+
+              <div class="docs-section-divider" aria-hidden="true">Contract</div>
+
+              <section class="card" id="contract">
+                <h2>Contract (HTTP / OpenAPI)</h2>
+                <p>
+                  <strong>Owner:</strong> developer + QA. This is the layer QA actively co-owns.
+                </p>
+                <p>
+                  Tests every public endpoint against the documented contract. Verifies status codes,
+                  response schema, error envelope, idempotency keys, headers (<code>X-Request-ID</code>),
+                  pagination, and known error catalog entries. The OpenAPI baseline is verified as a single
+                  test so contract drift fails CI.
+                </p>
+                <ul>
+                  <li><strong>Where:</strong> <code>tests/api/v1/</code>, <code>tests/openapi/</code>.</li>
+                  <li><strong>Oracle:</strong> the spec page under <code>docs/internal/api/&lt;resource&gt;/</code>
+                    and the shared docs under <code>_shared/</code>.</li>
+                    <li><strong>Per endpoint, expect:</strong>
+                      one happy-path success, one or more validation-error cases, one auth-failure case, and
+                      schema validation against the OpenAPI document.</li>
+                      <li><strong>QA signal:</strong> any defect with a status-code or schema dimension lands here.</li>
+                    </ul>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">System</div>
+
+                  <section class="card" id="system">
+                    <h2>System / end-to-end</h2>
+                    <p>
+                      <strong>Owner:</strong> QA, with developer pairing on flow design.
+                    </p>
+                    <p>
+                      Tests a user-visible flow across multiple endpoints or pages. We keep this layer small —
+                      only golden paths and one or two failure modes per flow. Every E2E test you add is a new
+                      tax forever; pay it only for high-impact paths.
+                    </p>
+                    <ul>
+                      <li><strong>Examples:</strong> "create user → create conspectus → mark reviewed → appears in due list".</li>
+                      <li><strong>How we run them:</strong> manual via the
+                        <a href="playbooks/api-endpoint-testing.html">API playbook</a> for now;
+                        candidate flows for automation are tracked in <a href="../backlog/README.html">backlog</a>.
+                      </li>
+                      <li><strong>Evidence:</strong> request/response captures attached to the run report.</li>
+                    </ul>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">Manual</div>
+
+                  <section class="card" id="manual">
+                    <h2>Manual &amp; exploratory</h2>
+                    <p>
+                      <strong>Owner:</strong> QA.
+                    </p>
+                    <p>
+                      Two flavours:
+                    </p>
+                    <ul>
+                      <li><strong>Scripted manual</strong> — running a checklist line by line.
+                        See <a href="0001-documentation-pages-visual-checklist.html">checklist 0001</a>.</li>
+                        <li><strong>Exploratory</strong> — chartered, time-boxed sessions to find what scripted tests miss.
+                          See <a href="playbooks/exploratory-testing.html">exploratory playbook</a>.</li>
+                        </ul>
+                        <p>
+                          We deliberately keep manual scripted runs short — anything that repeats every release
+                          should be a candidate for the contract layer.
+                        </p>
+                      </section>
+
+                      <div class="docs-section-divider" aria-hidden="true">Anti-patterns</div>
+
+                      <section class="card" id="anti-patterns">
+                        <h2>Anti-patterns to avoid</h2>
+                        <ul>
+                          <li><strong>Inverted pyramid (ice-cream cone).</strong> Heavy E2E, thin unit. Slow CI,
+                            flaky signal. If our pyramid leans this way, push tests down.</li>
+                            <li><strong>Mocking the database in integration tests.</strong> A historical incident is
+                              the reason we don't. Use a real DB or skip the test.</li>
+                              <li><strong>Asserting on log strings as a proxy for behavior.</strong> Assert on the
+                                behavior; logs are diagnostics.</li>
+                                <li><strong>Tests that depend on test order.</strong> Use independent fixtures.</li>
+                                <li><strong>Snapshot tests on rapidly changing UI.</strong> They become "press accept"
+                                  tests. Reserve snapshots for stable contracts.</li>
+                                  <li><strong>Manual checks for things a contract test would catch.</strong> If the rule is
+                                    "field X must be UUID", that is contract-layer, not a checklist line.</li>
+                                  </ul>
+                                </section>
+
+                                <section class="card" id="page-history">
+                                  <h2>Page history</h2>
+                                  <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                    <table class="docs-page-history">
+                                      <thead>
+                                        <tr>
+                                          <th scope="col">Date</th>
+                                          <th scope="col">Change</th>
+                                          <th scope="col">Author</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                          <td>Initial publication of the test pyramid.</td>
+                                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </section>
+
+                              </main>
+                            </div>
+                          </div>
+
+                        </body></html>

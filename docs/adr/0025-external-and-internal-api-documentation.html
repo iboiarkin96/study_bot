@@ -16,10 +16,9 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="1">
-    <h1>ADR 0025: External and internal API documentation</h1>
+    <h1 class="internal-h1--accent-tail">ADR 0025: External and internal API documentation</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
 
     <section class="card">
       <h2>Ratification</h2>
@@ -45,11 +44,11 @@
       </p>
       <p>
         We already govern HTTP quality via
-        <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a> (OpenAPI snapshot, examples, CI) and
-        public change history via <a href="./0013-changelog-and-release-notes.html">ADR 0013</a>. This ADR does not change
+        <a href="0007-openapi-governance-and-usability-standard.html">ADR 0007</a> (OpenAPI snapshot, examples, CI) and
+        public change history via <a href="0013-changelog-and-release-notes.html">ADR 0013</a>. This ADR does not change
         those rules. It only <strong>names</strong> which artifact is official for which audience and where internal
         narrative lives (<a href="../internal/README.html"><code>docs/internal/</code></a>; see
-        <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>).
+        <a href="0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>).
       </p>
 
     </section>
@@ -63,14 +62,14 @@
           external development: paths, methods, schemas, declared errors, examples, and documented headers. Partners and
           third-party clients should treat it as <strong>immutable truth</strong> for <em>what we publish</em> at a given
           release; changes flow through versioning and changelog policy
-          (<a href="./0004-api-versioning-policy.html">ADR 0004</a>, <a href="./0013-changelog-and-release-notes.html">ADR
+          (<a href="0004-api-versioning-policy.html">ADR 0004</a>, <a href="0013-changelog-and-release-notes.html">ADR
           0013</a>).
         </li>
         <li>
           <strong>External discovery aids.</strong> Swagger UI at <code>/docs</code> (when the app runs) and the static
           <code>docs/openapi/index.html</code> page are <strong>views</strong> on that contract; they are not
           independent sources of truth. If explorer text disagrees with the committed baseline after a merge, the fix is to
-          align code and baseline (<a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>), not to
+          align code and baseline (<a href="0007-openapi-governance-and-usability-standard.html">ADR 0007</a>), not to
           treat the browser copy as authoritative.
         </li>
         <li>
@@ -78,16 +77,16 @@
           it does, <strong>business invariants</strong>, <strong>cross-cutting processes</strong> (idempotency, error
           monitoring expectations, messaging topics), and <strong>traceability of decisions</strong> over time lives under
           <code>docs/internal/</code> as HTML, governed by
-          <a href="./0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>. Layout is multi-page: a
+          <a href="0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>. Layout is multi-page: a
           landing page, service overview, an HTTP API hub under <code>docs/internal/api/</code>, and per-resource folders
           with a <strong>single hub</strong> (<code>index.html</code>) plus optional per-endpoint pages — see ADR 0026
-          and <a href="../howto/internal-service-docs-layout.html"><code>docs/howto/internal-service-docs-layout.html</code></a>
-          (contributor layout; <a href="../internal/STRUCTURE.md"><code>STRUCTURE.md</code></a> links there). It does not replace OpenAPI
+          and <a href="../howto/0002-internal-service-docs-layout.html"><code>docs/howto/0002-internal-service-docs-layout.html</code></a>
+          (contributor layout; <a href="../howto/0002-internal-service-docs-layout.html"><code>STRUCTURE.md</code></a> links there). It does not replace OpenAPI
           for external consumers.
         </li>
         <li>
           <strong>Python API reference.</strong> Generated HTML under <code>docs/pdoc/</code> remains the reference for
-          <strong>in-repo Python modules</strong> (per <a href="./0016-python-docstrings-google-style-and-pdoc.html">ADR
+          <strong>in-repo Python modules</strong> (per <a href="0016-python-docstrings-google-style-and-pdoc.html">ADR
           0016</a>), distinct from HTTP OpenAPI and from <code>docs/internal/</code>.
         </li>
       </ol>
@@ -109,37 +108,39 @@
     </section>
     <section class="card">
       <h2>Relationship to other artifacts</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Artifact</th>
-            <th>Primary audience</th>
-            <th>Authoritative for</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>OpenAPI baseline + runtime</td>
-            <td>External integrators</td>
-            <td>HTTP request/response contract at a version</td>
-          </tr>
-          <tr>
-            <td>Root <code>CHANGELOG.md</code></td>
-            <td>Integrators &amp; release readers</td>
-            <td>What changed between releases (API surface, behavior)</td>
-          </tr>
-          <tr>
-            <td><code>docs/internal/</code> (HTML) + <a href="../howto/internal-service-docs-layout.html">how-to layout</a> / <code>STRUCTURE.md</code> stub</td>
-            <td>Engineers in this repo</td>
-            <td>Behavioral semantics, business rules, ops expectations, per-resource hubs and method pages (per ADR 0026)</td>
-          </tr>
-          <tr>
-            <td><code>docs/pdoc/</code> (pdoc)</td>
-            <td>Contributors</td>
-            <td>Python package internals</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <thead>
+            <tr>
+              <th>Artifact</th>
+              <th>Primary audience</th>
+              <th>Authoritative for</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>OpenAPI baseline + runtime</td>
+              <td>External integrators</td>
+              <td>HTTP request/response contract at a version</td>
+            </tr>
+            <tr>
+              <td>Root <code>CHANGELOG.md</code></td>
+              <td>Integrators &amp; release readers</td>
+              <td>What changed between releases (API surface, behavior)</td>
+            </tr>
+            <tr>
+              <td><code>docs/internal/</code> (HTML) + <a href="../howto/0002-internal-service-docs-layout.html">how-to layout</a> / <code>STRUCTURE.md</code> stub</td>
+              <td>Engineers in this repo</td>
+              <td>Behavioral semantics, business rules, ops expectations, per-resource hubs and method pages (per ADR 0026)</td>
+            </tr>
+            <tr>
+              <td><code>docs/pdoc/</code> (pdoc)</td>
+              <td>Contributors</td>
+              <td>Python package internals</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     </section>
     <section class="card">
@@ -196,7 +197,6 @@
       </div>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
   </main>
 
 </body></html>

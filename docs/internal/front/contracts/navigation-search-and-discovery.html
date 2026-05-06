@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend navigation, search, and discovery</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-diagram-lightbox.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="contract" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Docs frontend navigation, search, and discovery <span class="docs-page-type docs-page-type--contract">Contract</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Docs portal · Navigation &amp; search</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Top nav, command palette, breadcrumbs, in-page TOC, and search.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-30">2026-04-30</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page documents how readers discover content in docs frontend: global navigation, sidebar/drawer
+            navigation,
+            search, command palette, and section-level navigation aids.
+          </p>
+        </section>
+
+        <section id="global-navigation" class="card">
+          <h2>Global navigation architecture</h2>
+          <ul>
+            <li><strong>Top nav mount:</strong> <code>&lt;div id="docs-top-nav"&gt;&lt;/div&gt;</code> is required for
+              runtime injection.</li>
+              <li><strong>Top nav renderer:</strong> <code>renderTopNav()</code> in <code>docs/assets/docs-nav.js</code>
+                builds groups, theme bar, search, and breadcrumbs.</li>
+                <li><strong>Groups model:</strong> Project and Code links are generated with active-state logic from
+                  <code>activeTarget()</code>.</li>
+                  <li><strong>Responsive policy:</strong> <code>docs/assets/docs-site-nav.css</code> hides top groups for
+                    internal pages on tablet/phone and keeps them on desktop.</li>
+                  </ul>
+                </section>
+
+                <section id="internal-sidebar-drawer" class="card">
+                  <h2>Internal sidebar and drawer navigation</h2>
+                  <ul>
+                    <li><strong>Tree source:</strong> <code>INTERNAL_SIDEBAR_NAV</code> in
+                      <code>docs/assets/internal-sidebar.js</code> is the single source of nav entries.</li>
+                      <li><strong>Desktop mode:</strong> collapsible sidebar with stored preference
+                        (<code>docs.internal.sidebar.collapsed</code>).</li>
+                        <li><strong>Tablet/phone mode:</strong> drawer from left edge with dialog semantics and backdrop close
+                          behavior.</li>
+                          <li><strong>Menu button:</strong> mounted near page <code>h1</code> by
+                            <code>mountInternalDrawerMenuButton()</code> in <code>docs/assets/docs-nav.js</code>.</li>
+                            <li><strong>ARIA sync:</strong> <code>internal-sidebar:drawer-state</code> custom event updates
+                              <code>aria-expanded</code>/<code>aria-controls</code> on Menu launcher.</li>
+                              <li><strong>Project/Code in drawer:</strong> top drawer sections are injected from
+                                <code>DRAWER_TOP_NAV_SECTIONS</code>.</li>
+                              </ul>
+                            </section>
+
+                            <section id="docs-search" class="card">
+                              <h2>Client-side docs search</h2>
+                              <ul>
+                                <li><strong>Index source:</strong> <code>docs/assets/search-index.json</code> loaded lazily by
+                                  <code>loadDocsSearchIndex()</code>.</li>
+                                  <li><strong>Ranking model:</strong> weighted fields + IDF + boosts for exact/prefix matches
+                                    (<code>runDocsSearch()</code>).</li>
+                                    <li><strong>Query UX:</strong> debounce, keyboard combobox, highlighted matches, did-you-mean, related
+                                      queries, and empty-state quick links.</li>
+                                      <li><strong>Error handling:</strong> explicit <code>file://</code> warning when index cannot be loaded
+                                        outside HTTP(S).</li>
+                                        <li><strong>Telemetry:</strong> emits <code>search_query</code>, <code>search_result_click</code>,
+                                          <code>search_success</code>, and error events.</li>
+                                        </ul>
+                                        <p class="small">
+                                          Implementation: <code>mountDocsSearch()</code>, <code>runDocsSearch()</code>,
+                                          <code>emitDocsSearchTelemetry()</code> in
+                                          <code>docs/assets/docs-nav.js</code>.
+                                        </p>
+                                      </section>
+
+                                      <section id="search-index-lifecycle" class="card">
+                                        <h2>Search index lifecycle and change workflow</h2>
+                                        <ol>
+                                          <li><strong>Source of truth:</strong> index data lives in generated <code>docs/assets/search-index.json</code>.</li>
+                                          <li><strong>When to regenerate:</strong> after material content additions, heading changes, or IA rewrites that impact discoverability.</li>
+                                          <li><strong>Validation pass:</strong> run a query smoke set (entity names, API terms, internal page titles) and confirm ranking and highlights.</li>
+                                          <li><strong>Failure behavior:</strong> if index fails to load, runtime shows explicit fallback guidance (including <code>file://</code> constraints).</li>
+                                          <li><strong>Documentation sync:</strong> update this page and <a href="../../../howto/0005-how-to-change-docs-frontend-safely.html">frontend playbooks</a> when index generation process changes.</li>
+                                        </ol>
+                                      </section>
+
+                                      <section id="command-palette" class="card">
+                                        <h2>Command palette (quick actions)</h2>
+                                        <figure class="sys-diagram">
+                                          <div class="sys-diagram__head">
+                                            <span class="sys-diagram__badge">Diagram · State machine</span>
+                                            <div class="sys-diagram__titles">
+                                              <h3>Palette finite-state machine</h3>
+                                              <p class="sys-diagram__sub">Closed and Open are steady states; Filtering, Selected, and Closing capture in-flight transitions. All input modalities resolve through this machine.</p>
+                                            </div>
+                                          </div>
+                                          <div class="sys-diagram__canvas">
+                                            <img alt="Command palette state machine: from Closed, Cmd-K opens to Open; typing transitions to Filtering; arrow keys or hover transitions to Selected; Enter on Selected runs the row's command via Closing back to Closed; Escape from any open state goes through Closing back to Closed." class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/command_palette_state_machine.svg">
+                                          </div>
+                                          <figcaption class="sys-diagram__foot"><strong>Source:</strong>
+                                            <code>docs/uml/sequences/command_palette_state_machine.puml</code>
+                                          </figcaption>
+                                        </figure>
+                                        <ul>
+                                          <li><strong>Desktop scope:</strong> enabled for <code>min-width: 761px</code>, disabled on smaller
+                                            viewports.</li>
+                                            <li><strong>Open shortcuts:</strong> <kbd>Cmd/Ctrl</kbd>+<kbd>K</kbd>,
+                                              <kbd>Cmd/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>, <kbd>Cmd/Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>,
+                                              <kbd>Shift</kbd>+<kbd>P</kbd>, <kbd>/</kbd>.</li>
+                                              <li><strong>Command source:</strong> page actions + section-jump actions generated from
+                                                <code>buildDocsPageActions()</code> and <code>buildDocsSectionActions()</code>.</li>
+                                                <li><strong>Execution modes:</strong> enter to execute, meta-enter to open links in new tab.</li>
+                                                <li><strong>Accessibility:</strong> dialog semantics, focus trap, keyboard navigation, and focus return to
+                                                  launcher.</li>
+                                                </ul>
+                                              </section>
+
+                                              <section id="palette-visual-reference" class="card">
+                                                <h2>Visual reference · palette UI stages</h2>
+                                                <p>
+                                                  The state machine above describes <em>how</em> the palette
+                                                  transitions. This section describes <em>what readers see</em>
+                                                  at three of those states: <strong>Closed</strong> (the
+                                                  launcher waiting on the toolbar), <strong>Open</strong> (the
+                                                  dialog has appeared, focus is in the input, no query yet),
+                                                  and <strong>Filtering + Selected</strong> (a query is typed
+                                                  and the first matching row is highlighted, ready for
+                                                  <kbd>Enter</kbd>).
+                                                </p>
+
+                                                <figure class="sys-diagram" aria-label="Command palette UI at three stages: closed, open, filtering with selected row">
+                                                  <div class="sys-diagram__head">
+                                                    <span class="sys-diagram__badge">Mock · Visual reference</span>
+                                                    <div class="sys-diagram__titles">
+                                                      <h3>Three palette stages, side-by-side</h3>
+                                                      <p class="sys-diagram__sub">Closed → Open → Filtering. Each mock is the same dialog at a different state; transitions correspond to the edges of the FSM diagram above.</p>
+                                                    </div>
+                                                  </div>
+                                                  <div class="sys-diagram__canvas" style="background:#fafbfd;">
+                                                    <svg viewBox="0 0 760 480" role="img" aria-labelledby="pal-vis-title pal-vis-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+                                                      <title id="pal-vis-title">Command palette UI at three stages</title>
+                                                      <desc id="pal-vis-desc">Three side-by-side mockups. The first shows a docs page toolbar with a launcher button and a Command-K hint, no dialog visible. The second shows the page dimmed with a centered modal dialog containing a search input, a Sections group with four rows, a Page actions group with two rows, and a keyboard hint strip at the bottom. The third shows the same dialog with the word rocket typed in the input, three filtered rows visible, and the first row highlighted with an accent background and a return-key hint.</desc>
+                                                      <defs>
+                                                        <filter id="pal-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                                          <fedropshadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.22"></fedropshadow>
+                                                        </filter>
+                                                      </defs>
+
+                                                      <rect x="4" y="4" width="752" height="472" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                                                      <!-- ============ STATE 1: CLOSED ============ -->
+                                                      <g transform="translate(20 56)">
+                                                        <!-- viewport -->
+                                                        <rect x="0" y="0" width="220" height="290" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"></rect>
+                                                        <!-- toolbar -->
+                                                        <rect x="0" y="0" width="220" height="22" rx="8" fill="#1e3a8a"></rect>
+                                                        <text x="10" y="15" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="600" fill="#ffffff">Docs</text>
+                                                        <!-- launcher button (highlighted) -->
+                                                        <rect x="138" y="6" width="56" height="11" rx="5" fill="#eff6ff" stroke="#3b82f6" stroke-width="1"></rect>
+                                                        <text x="146" y="14" font-family="ui-sans-serif,system-ui,sans-serif" font-size="7" fill="#1d4ed8">⌘K</text>
+                                                        <text x="158" y="14" font-family="ui-sans-serif,system-ui,sans-serif" font-size="7" fill="#475569">Quick actions</text>
+                                                        <circle cx="206" cy="11" r="5" fill="#fde047"></circle>
+                                                        <!-- title -->
+                                                        <rect x="14" y="34" width="120" height="8" rx="3" fill="#1f2937"></rect>
+                                                        <!-- body content -->
+                                                        <rect x="14" y="56" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="66" width="160" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="76" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="86" width="140" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="100" width="180" height="32" rx="3" fill="#f8fafc" stroke="#e2e8f0"></rect>
+                                                        <rect x="20" y="108" width="80" height="5" rx="2" fill="#94a3b8"></rect>
+                                                        <rect x="20" y="120" width="160" height="3" rx="1.5" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="140" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="150" width="160" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="160" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="170" width="170" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="180" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="190" width="120" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <!-- annotation arrow to launcher -->
+                                                        <line x1="166" y1="22" x2="166" y2="34" stroke="#2563eb" stroke-width="0.8" stroke-dasharray="2 2"></line>
+                                                      </g>
+                                                      <text x="130" y="48" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1f2937">CLOSED</text>
+                                                      <text x="130" y="368" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#475569">Launcher visible · ⌘K to open</text>
+
+                                                      <!-- ============ STATE 2: OPEN (empty) ============ -->
+                                                      <g transform="translate(270 56)">
+                                                        <!-- dimmed page underneath -->
+                                                        <rect x="0" y="0" width="220" height="290" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"></rect>
+                                                        <rect x="0" y="0" width="220" height="22" rx="8" fill="#1e3a8a"></rect>
+                                                        <text x="10" y="15" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="600" fill="#ffffff">Docs</text>
+                                                        <rect x="14" y="34" width="120" height="8" rx="3" fill="#1f2937"></rect>
+                                                        <rect x="14" y="56" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="66" width="160" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <!-- backdrop -->
+                                                        <rect x="0" y="22" width="220" height="268" fill="#0f172a" opacity="0.42"></rect>
+
+                                                        <!-- centered dialog -->
+                                                        <rect x="20" y="48" width="180" height="220" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" filter="url(#pal-shadow)"></rect>
+                                                        <!-- search input -->
+                                                        <rect x="32" y="62" width="156" height="26" rx="6" fill="#f8fafc" stroke="#3b82f6" stroke-width="1.4"></rect>
+                                                        <text x="40" y="79" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#94a3b8" font-style="italic">Type to search…</text>
+                                                        <!-- input cursor -->
+                                                        <line x1="40" y1="68" x2="40" y2="83" stroke="#3b82f6" stroke-width="1.5"></line>
+                                                        <!-- group: Sections -->
+                                                        <text x="32" y="104" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.5">SECTIONS</text>
+                                                        <rect x="32" y="110" width="156" height="14" rx="3" fill="#f8fafc"></rect>
+                                                        <rect x="38" y="115" width="80" height="5" rx="2" fill="#1e293b"></rect>
+                                                        <rect x="32" y="126" width="156" height="14" rx="3" fill="#ffffff"></rect>
+                                                        <rect x="38" y="131" width="92" height="5" rx="2" fill="#475569"></rect>
+                                                        <rect x="32" y="142" width="156" height="14" rx="3" fill="#ffffff"></rect>
+                                                        <rect x="38" y="147" width="74" height="5" rx="2" fill="#475569"></rect>
+                                                        <!-- group: Page actions -->
+                                                        <text x="32" y="170" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.5">PAGE ACTIONS</text>
+                                                        <rect x="32" y="176" width="156" height="14" rx="3" fill="#ffffff"></rect>
+                                                        <rect x="38" y="181" width="68" height="5" rx="2" fill="#475569"></rect>
+                                                        <rect x="32" y="192" width="156" height="14" rx="3" fill="#ffffff"></rect>
+                                                        <rect x="38" y="197" width="86" height="5" rx="2" fill="#475569"></rect>
+                                                        <!-- hint strip at bottom of dialog -->
+                                                        <rect x="20" y="236" width="180" height="22" rx="0 0 10 10" fill="#f1f5f9"></rect>
+                                                        <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="7.5" fill="#64748b">
+                                                          <text x="32" y="251"><tspan font-weight="700" fill="#1e3a8a">↑↓</tspan> navigate</text>
+                                                          <text x="92" y="251"><tspan font-weight="700" fill="#1e3a8a">↵</tspan> run</text>
+                                                          <text x="142" y="251"><tspan font-weight="700" fill="#1e3a8a">esc</tspan> close</text>
+                                                        </g>
+                                                      </g>
+                                                      <text x="380" y="48" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1f2937">OPEN</text>
+                                                      <text x="380" y="368" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#475569">Dialog mounted · focus in input · no query</text>
+
+                                                      <!-- ============ STATE 3: FILTERING + SELECTED ============ -->
+                                                      <g transform="translate(520 56)">
+                                                        <rect x="0" y="0" width="220" height="290" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"></rect>
+                                                        <rect x="0" y="0" width="220" height="22" rx="8" fill="#1e3a8a"></rect>
+                                                        <text x="10" y="15" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="600" fill="#ffffff">Docs</text>
+                                                        <rect x="14" y="34" width="120" height="8" rx="3" fill="#1f2937"></rect>
+                                                        <rect x="14" y="56" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="14" y="66" width="160" height="4" rx="2" fill="#cbd5e1"></rect>
+                                                        <rect x="0" y="22" width="220" height="268" fill="#0f172a" opacity="0.42"></rect>
+
+                                                        <!-- dialog -->
+                                                        <rect x="20" y="48" width="180" height="220" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" filter="url(#pal-shadow)"></rect>
+                                                        <!-- input with query -->
+                                                        <rect x="32" y="62" width="156" height="26" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="1.6"></rect>
+                                                        <text x="40" y="79" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#0f172a" font-weight="600">rocket</text>
+                                                        <line x1="78" y1="68" x2="78" y2="83" stroke="#3b82f6" stroke-width="1.5"></line>
+                                                        <!-- clear × -->
+                                                        <text x="178" y="80" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#94a3b8">×</text>
+
+                                                        <!-- group heading (filtered) -->
+                                                        <text x="32" y="104" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#64748b" letter-spacing="0.5">3 RESULTS</text>
+
+                                                        <!-- selected row (highlighted) -->
+                                                        <rect x="32" y="110" width="156" height="22" rx="4" fill="#2563eb" filter="url(#pal-shadow)"></rect>
+                                                        <!-- icon -->
+                                                        <g transform="translate(40 117)" stroke="#ffffff" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                          <path d="M5 0c1.7 1, 2.8 2.8, 2.8 4.8v0.6L5 8L2.2 5.4V4.8C2.2 2.8 3.3 1 5 0z"></path>
+                                                        </g>
+                                                        <text x="56" y="125" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9.5" font-weight="700" fill="#ffffff"><tspan font-weight="900">Rocket</tspan> launch animation</text>
+                                                        <!-- Enter affordance on selected -->
+                                                        <rect x="160" y="116" width="22" height="11" rx="3" fill="#ffffff" opacity="0.85"></rect>
+                                                        <text x="171" y="124" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" font-weight="700" fill="#1e3a8a">↵</text>
+
+                                                        <!-- non-selected rows -->
+                                                        <rect x="32" y="136" width="156" height="20" rx="4" fill="#ffffff"></rect>
+                                                        <text x="40" y="150" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9.5" fill="#475569">§ <tspan font-weight="700" fill="#0f172a">Rocket</tspan> back-to-top</text>
+                                                        <rect x="32" y="158" width="156" height="20" rx="4" fill="#ffffff"></rect>
+                                                        <text x="40" y="172" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9.5" fill="#475569">§ FAB visibility (<tspan font-weight="700" fill="#0f172a">rocket</tspan> threshold)</text>
+
+                                                        <!-- empty space -->
+                                                        <text x="110" y="216" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#94a3b8" font-style="italic">no further matches</text>
+
+                                                        <!-- hint strip -->
+                                                        <rect x="20" y="236" width="180" height="22" rx="0 0 10 10" fill="#f1f5f9"></rect>
+                                                        <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="7.5" fill="#64748b">
+                                                          <text x="32" y="251"><tspan font-weight="700" fill="#1e3a8a">↑↓</tspan> navigate</text>
+                                                          <text x="92" y="251"><tspan font-weight="700" fill="#1e3a8a">↵</tspan> run</text>
+                                                          <text x="138" y="251"><tspan font-weight="700" fill="#1e3a8a">⌘↵</tspan> new tab</text>
+                                                        </g>
+                                                      </g>
+                                                      <text x="630" y="48" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1f2937">FILTERING + SELECTED</text>
+                                                      <text x="630" y="368" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#475569">Query active · first row highlighted · ↵ runs</text>
+
+                                                      <!-- ============ TRANSITION ARROWS ============ -->
+                                                      <line x1="244" y1="200" x2="266" y2="200" stroke="#3b82f6" stroke-width="1.6" marker-end="url(#pal-arrow)"></line>
+                                                      <text x="255" y="194" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#1d4ed8" font-weight="700">⌘K</text>
+                                                      <text x="255" y="216" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#64748b">open</text>
+
+                                                      <line x1="494" y1="200" x2="516" y2="200" stroke="#3b82f6" stroke-width="1.6" marker-end="url(#pal-arrow)"></line>
+                                                      <text x="505" y="194" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#1d4ed8" font-weight="700">type</text>
+                                                      <text x="505" y="216" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#64748b">filter</text>
+
+                                                      <!-- footer caption -->
+                                                      <line x1="40" y1="396" x2="720" y2="396" stroke="#cbd5e1" stroke-dasharray="3 3"></line>
+                                                      <text x="380" y="420" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1e3a8a">Hotkeys at every stage</text>
+                                                      <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#475569">
+                                                        <text x="80" y="442"><tspan font-weight="700" fill="#1e3a8a">⌘K · ⌘⇧K · ⌘⇧P · ⇧P · /</tspan> open</text>
+                                                        <text x="320" y="442"><tspan font-weight="700" fill="#1e3a8a">↑ ↓</tspan> move selection</text>
+                                                        <text x="500" y="442"><tspan font-weight="700" fill="#1e3a8a">↵</tspan> run · <tspan font-weight="700" fill="#1e3a8a">⌘↵</tspan> new tab</text>
+                                                        <text x="80" y="462"><tspan font-weight="700" fill="#1e3a8a">esc</tspan> close → restores focus to launcher</text>
+                                                        <text x="380" y="462" font-style="italic">Disabled at <tspan font-weight="700" fill="#1e3a8a">≤ 760 px</tspan> · drawer is the mobile entry</text>
+                                                      </g>
+
+                                                      <defs>
+                                                        <marker id="pal-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                                          <path d="M0,0 L10,5 L0,10 z" fill="#3b82f6"></path>
+                                                        </marker>
+                                                      </defs>
+                                                    </svg>
+                                                  </div>
+                                                  <figcaption class="sys-diagram__foot">
+                                                    <strong>Source:</strong> inline SVG mock (no external asset). Mirrors the dialog markup built by the palette runtime in <code>docs/assets/docs-nav.js</code>; states correspond to the FSM diagram above; hotkeys per <a href="../foundations/hotkeys.html">hotkeys reference</a>.
+                                                  </figcaption>
+                                                </figure>
+
+                                                <p class="small">
+                                                  <strong>Why three stages, not five.</strong> The state machine has five states (Closed, Open,
+                                                  Filtering, Selected, Closing); only three of them produce <em>distinct visuals</em>. Selected
+                                                  is a sub-state of Open or Filtering — the only difference is which row carries the accent
+                                                  background. Closing is a 220 ms pillow leave with no semantic content. So the palette UI
+                                                  reduces to: launcher, dialog-empty, dialog-with-query.
+                                                </p>
+                                              </section>
+
+                                              <section id="command-palette-implementation-details" class="card">
+                                                <h2>Command Palette implementation details</h2>
+                                                <div class="docs-table-scroll" role="region" aria-label="Table">
+                                                  <table>
+                                                    <thead>
+                                                      <tr>
+                                                        <th>Area</th>
+                                                        <th>Implementation details</th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr>
+                                                        <td>Runtime lifecycle</td>
+                                                        <td><code>syncDocsPageActionsForViewport()</code> enables or removes palette runtime depending on media
+                                                          query, using <code>installDocsQuickActionsUi()</code> and <code>destroyDocsQuickActionsUi()</code>.
+                                                        </td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Global shortcuts</td>
+                                                        <td><code>handleDocsQuickActionsGlobalKeydown()</code> handles primary and fallback hotkeys, toggles
+                                                          open/close, and ignores slash/shift+P while typing in inputs.</td>
+                                                        </tr>
+                                                        <tr>
+                                                          <td>Filtering model</td>
+                                                          <td>Items are filtered from combined action sources via label, hint, group, and keyword matching in
+                                                            <code>filterActions()</code>, then rendered in grouped lists by <code>renderActions()</code>.</td>
+                                                          </tr>
+                                                          <tr>
+                                                            <td>Keyboard model</td>
+                                                            <td><kbd>ArrowUp</kbd>/<kbd>ArrowDown</kbd> move active item, <kbd>Enter</kbd> executes, <kbd>Esc</kbd>
+                                                              closes; list and filter input each maintain expected focus behavior.</td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>New-tab behavior</td>
+                                                              <td><kbd>Cmd/Ctrl</kbd> + <kbd>Enter</kbd> executes selected link through
+                                                                <code>window.open(..., "_blank", "noopener")</code> and emits execution telemetry with
+                                                                <code>new_tab: true</code>.</td>
+                                                              </tr>
+                                                              <tr>
+                                                                <td>Telemetry</td>
+                                                                <td>Palette emits <code>palette_open</code>, <code>palette_close</code>, <code>palette_filter</code>,
+                                                                  and <code>palette_execute</code> events via <code>emitDocsPaletteTelemetry()</code>.</td>
+                                                                </tr>
+                                                              </tbody>
+                                                            </table>
+                                                          </div>
+                                                          <p class="small">
+                                                            Main implementation file: <code>docs/assets/docs-nav.js</code>; style selectors:
+                                                            <code>.docs-quick-actions*</code> in <code>docs/assets/docs.css</code>.
+                                                          </p>
+                                                        </section>
+
+                                                        <section id="section-navigation" class="card">
+                                                          <h2>In-page navigation and section discovery</h2>
+                                                          <ul>
+                                                            <li><strong>Auto TOC:</strong> generated from <code>h2</code>/<code>h3</code> by
+                                                              <code>initAutoInPageToc()</code>.</li>
+                                                              <li><strong>Anchor normalization:</strong> missing heading ids are generated by
+                                                                <code>ensureTocAnchorIds()</code>.</li>
+                                                                <li><strong>Legacy cleanup:</strong> old manual “Contents” blocks are removed by
+                                                                  <code>removeLegacyManualContents()</code>.</li>
+                                                                  <li><strong>Scroll spy:</strong> current section link is highlighted by
+                                                                    <code>initInPageTocScrollSpy()</code>; the rail's inner <code>nav</code> auto-scrolls to keep the active link in view via <code>keepActiveLinkVisibleInNav()</code> (window scroll is never moved). Full contract — activation line, near-bottom guard, detached-target filter, page-history exclusion — in the dedicated spec
+                                                                    <a href="../components/sticky-toc.html">Sticky On this page TOC and scroll-spy</a>.</li>
+                                                                    <li><strong>Desktop collapse control:</strong> On desktop, TOC includes a toggle button
+                                                                      (<code>&lt;</code> collapse, <code>&gt;</code> expand).</li>
+                                                                      <li><strong>Viewport policy:</strong> rendered TOC aside is desktop-only in CSS.</li>
+                                                                    </ul>
+                                                                  </section>
+
+                                                                  <section id="on-this-page-collapse-control" class="card">
+                                                                    <h2>On this page collapse control (desktop-only)</h2>
+                                                                    <div class="docs-table-scroll" role="region" aria-label="Table">
+                                                                      <table>
+                                                                        <thead>
+                                                                          <tr>
+                                                                            <th>Aspect</th>
+                                                                            <th>Details</th>
+                                                                          </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                          <tr>
+                                                                            <td>Control behavior</td>
+                                                                            <td>When expanded, toggle shows <code>&lt;</code> and collapses TOC. When collapsed, toggle shows <code>&gt;</code> and expands TOC.</td>
+                                                                          </tr>
+                                                                          <tr>
+                                                                            <td>Desktop-only scope</td>
+                                                                            <td>Feature exists only where TOC exists: desktop viewports. On tablet/phone, TOC is hidden by responsive CSS and toggle is not visible.</td>
+                                                                          </tr>
+                                                                          <tr>
+                                                                            <td>Runtime implementation</td>
+                                                                            <td><code>initAutoInPageToc()</code> creates the toggle button and applies collapsed state classes on click.</td>
+                                                                          </tr>
+                                                                          <tr>
+                                                                            <td>CSS state classes</td>
+                                                                            <td><code>.docs-inpage-toc--collapsed</code> hides TOC nav; <code>.docs-page-layout__inner--toc-collapsed</code> keeps compact left rail width for the collapsed control.</td>
+                                                                          </tr>
+                                                                          <tr>
+                                                                            <td>Accessibility</td>
+                                                                            <td>Toggle updates <code>aria-expanded</code>, <code>aria-controls</code>, and <code>aria-label</code> ("Hide On this page" / "Show On this page").</td>
+                                                                          </tr>
+                                                                          <tr>
+                                                                            <td>Visual style</td>
+                                                                            <td>Uses premium surface and chip tokens in <code>docs/assets/docs.css</code> to stay consistent with the project design language.</td>
+                                                                          </tr>
+                                                                        </tbody>
+                                                                      </table>
+                                                                    </div>
+
+                                                                    <figure class="docs-popup-mock">
+                                                                      <figcaption>Sticky TOC — default vs collapsed (desktop). Promo toast pattern is documented separately in <a href="../components/popups-and-overlays.html#stacking">popups and overlays</a>.</figcaption>
+                                                                      <svg viewBox="0 0 540 220" role="img" aria-labelledby="toc-anatomy-title toc-anatomy-desc" xmlns="http://www.w3.org/2000/svg">
+                                                                        <title id="toc-anatomy-title">Sticky TOC anatomy — default and collapsed</title>
+                                                                        <desc id="toc-anatomy-desc">Two side-by-side panels showing the sticky On this page navigation. The left panel is the default expanded state with a heading, four anchor links and a collapse toggle. The right panel is the collapsed state showing only the toggle as a vertical pill.</desc>
+                                                                        <rect x="0" y="0" width="540" height="220" fill="#f7f9fc" stroke="#e2e8f0"></rect>
+                                                                        <!-- Default state -->
+                                                                        <g transform="translate(20,20)">
+                                                                          <rect width="240" height="180" rx="12" fill="#ffffff" stroke="#cbd5e1"></rect>
+                                                                          <text x="14" y="24" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1f2937">On this page</text>
+                                                                          <rect x="220" y="14" width="14" height="14" rx="4" fill="#7c5cff"></rect>
+                                                                          <text x="227" y="25" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">&lt;</text>
+                                                                          <line x1="14" x2="220" y1="34" y2="34" stroke="#e2e8f0"></line>
+                                                                          <text x="14" y="56" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#7c5cff" font-weight="700">Overview</text>
+                                                                          <text x="14" y="80" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#475569">Behavior contract</text>
+                                                                          <text x="24" y="100" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Stacking and lifecycle</text>
+                                                                          <text x="24" y="118" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">Layout map</text>
+                                                                          <text x="14" y="142" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#475569">Page history</text>
+                                                                          <text x="14" y="170" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#94a3b8">.docs-inpage-toc (default)</text>
+                                                                        </g>
+                                                                        <!-- Collapsed state -->
+                                                                        <g transform="translate(290,20)">
+                                                                          <rect width="40" height="180" rx="12" fill="#ffffff" stroke="#cbd5e1"></rect>
+                                                                          <rect x="13" y="14" width="14" height="14" rx="4" fill="#7c5cff"></rect>
+                                                                          <text x="20" y="25" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">&gt;</text>
+                                                                          <text x="20" y="170" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#94a3b8" text-anchor="middle">collapsed</text>
+                                                                        </g>
+                                                                        <!-- Callout text -->
+                                                                        <g transform="translate(350,40)" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#0f172a">
+                                                                          <text y="0" font-weight="700">1. Heading row</text>
+                                                                          <text y="20" fill="#475569">title + collapse toggle</text>
+                                                                          <text y="48" font-weight="700">2. Active link</text>
+                                                                          <text y="68" fill="#475569">.docs-inpage-toc__link--active</text>
+                                                                          <text y="96" font-weight="700">3. Nested h3 link</text>
+                                                                          <text y="116" fill="#475569">.docs-inpage-toc__item--nested</text>
+                                                                          <text y="144" font-weight="700">4. Collapsed pill</text>
+                                                                          <text y="164" fill="#475569">.docs-inpage-toc--collapsed</text>
+                                                                        </g>
+                                                                      </svg>
+                                                                    </figure>
+                                                                  </section>
+
+                                                                  <section id="supporting-discovery-features" class="card">
+                                                                    <h2>Supporting discovery features</h2>
+                                                                    <ul>
+                                                                      <li><strong>Breadcrumbs:</strong> built from path prefixes and hub mapping in
+                                                                        <code>buildDocsBreadcrumbItems()</code>.</li>
+                                                                        <li><strong>Skip link:</strong> <code>injectDocsSkipToContentLink()</code> adds keyboard-first jump to main
+                                                                          content.</li>
+                                                                          <li><strong>Continue reading:</strong> prompts readers to resume previous section and scroll position.</li>
+                                                                        </ul>
+                                                                      </section>
+
+                                                                      <section id="continue-reading-details" class="card">
+                                                                        <h2>Continue reading details (for example: Continue from § Guides catalog)</h2>
+                                                                        <ul>
+                                                                          <li><strong>Storage key:</strong> reading progress map is stored in local storage at
+                                                                            <code>docs-reading-progress-v1</code>.</li>
+                                                                            <li><strong>Persistence logic:</strong> <code>initDocsContinueReadingPrompt()</code> saves position and
+                                                                              heading snapshot with throttled updates.</li>
+                                                                              <li><strong>Anchor snapshot:</strong> <code>currentContinueAnchorSnapshot()</code> captures nearest active
+                                                                                heading <code>h2/h3</code> id and label.</li>
+                                                                                <li><strong>Prompt title:</strong> if label exists, UI shows <code>Continue from § {label}</code>; for
+                                                                                  example, when the label is <code>Guides catalog</code>, users see <strong>Continue from § Guides
+                                                                                  catalog</strong>.</li>
+                                                                                  <li><strong>TTL policy:</strong> old entries expire after 14 days
+                                                                                    (<code>DOCS_CONTINUE_READING_TTL_MS</code>).</li>
+                                                                                    <li><strong>Actions:</strong> <strong>Continue</strong> restores hash/scroll position; <strong>Start from
+                                                                                      top</strong> clears saved progress and scrolls to top.</li>
+                                                                                    </ul>
+                                                                                  </section>
+
+                                                                                  <section id="acceptance-checklist" class="card">
+                                                                                    <h2>Acceptance checklist for navigation and discovery changes</h2>
+                                                                                    <ol>
+                                                                                      <li>Desktop: top groups visible, sidebar available, search and quick actions working.</li>
+                                                                                      <li>Tablet/phone: drawer works with Menu button, quick actions disabled by design.</li>
+                                                                                      <li>Search returns relevant results and keyboard navigation activates the selected hit.</li>
+                                                                                      <li>In-page TOC renders from headings and active link tracks scroll.</li>
+                                                                                      <li>No keyboard shortcut collisions while typing in form fields.</li>
+                                                                                    </ol>
+                                                                                  </section>
+
+                                                                                  <section id="component-states" class="card">
+                                                                                    <h2>Per-component states and accessibility</h2>
+                                                                                    <p class="small">Every navigation surface on the page satisfies this matrix. Verify with <kbd>Tab</kbd> traversal and a screen reader on every release of <code>docs-nav.js</code> or <code>internal-sidebar.js</code>.</p>
+                                                                                    <div class="docs-table-scroll" role="region" aria-label="Navigation surfaces — states and accessibility">
+                                                                                      <table>
+                                                                                        <thead>
+                                                                                          <tr>
+                                                                                            <th scope="col">Surface</th>
+                                                                                            <th scope="col">States</th>
+                                                                                            <th scope="col">Role / ARIA</th>
+                                                                                            <th scope="col">Keyboard</th>
+                                                                                            <th scope="col">Reduced motion</th>
+                                                                                            <th scope="col">Screen-reader announcement</th>
+                                                                                          </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                          <tr>
+                                                                                            <td>Top navigation bar</td>
+                                                                                            <td>default, scrolled (sticky), drawer-mode, theme-changing</td>
+                                                                                            <td><code>role="banner"</code> wrapping <code>role="navigation"</code></td>
+                                                                                            <td><kbd>Tab</kbd> through links; theme toggle activatable with <kbd>Enter</kbd></td>
+                                                                                            <td>Skip backdrop-blur fade on scroll</td>
+                                                                                            <td>"Site navigation"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Internal sidebar (tree)</td>
+                                                                                            <td>collapsed, expanded, active-page-highlighted, drawer-mode, sidebar-collapsed (icon rail)</td>
+                                                                                            <td><code>role="navigation"</code> with nested <code>&lt;details&gt;</code> for groups</td>
+                                                                                            <td><kbd>Tab</kbd> to summary; <kbd>Enter</kbd> expands; arrow keys traverse children</td>
+                                                                                            <td>Skip details-expand animation</td>
+                                                                                            <td>"Documentation navigation, N groups"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Drawer (tablet/phone)</td>
+                                                                                            <td>closed, opening, open, closing</td>
+                                                                                            <td><code>role="dialog"</code> + <code>aria-modal="true"</code>; focus trap; backdrop dismissable</td>
+                                                                                            <td>Menu launcher opens; <kbd>Esc</kbd> or backdrop click closes</td>
+                                                                                            <td>Skip slide-in; show flat</td>
+                                                                                            <td>"Internal docs menu opened"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Search input + results</td>
+                                                                                            <td>empty, typing, loaded, no-results, navigating, error</td>
+                                                                                            <td><code>role="combobox"</code> on input + <code>role="listbox"</code> on panel</td>
+                                                                                            <td><kbd>/</kbd> focuses input; <kbd>↑</kbd>/<kbd>↓</kbd> navigates; <kbd>Enter</kbd> activates; <kbd>Esc</kbd> closes</td>
+                                                                                            <td>Skip results fade-in</td>
+                                                                                            <td>"N search results, item 1 of N"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Command palette (quick actions)</td>
+                                                                                            <td>closed, open, filtering, navigating</td>
+                                                                                            <td><code>role="dialog"</code> + <code>aria-modal="true"</code> with focus trap</td>
+                                                                                            <td><kbd>Cmd</kbd>+<kbd>K</kbd> / <kbd>/</kbd> opens; <kbd>Esc</kbd> closes; <kbd>↑</kbd>/<kbd>↓</kbd>/<kbd>Enter</kbd></td>
+                                                                                            <td>Open instantly</td>
+                                                                                            <td>"Quick actions palette open, type to search"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>In-page TOC ("On this page")</td>
+                                                                                            <td>desktop-aside, collapsed, expanded, active-section-highlighted</td>
+                                                                                            <td><code>role="navigation"</code> with <code>aria-label="On this page"</code></td>
+                                                                                            <td><kbd>Tab</kbd> traverses; <kbd>Enter</kbd> jumps; <kbd>&lt;</kbd>/<kbd>&gt;</kbd> collapse on desktop</td>
+                                                                                            <td>Skip smooth scroll on jump</td>
+                                                                                            <td>"On this page, N sections"</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Continue reading prompt</td>
+                                                                                            <td>hidden, visible, dismissed, expired</td>
+                                                                                            <td><code>role="status"</code></td>
+                                                                                            <td><kbd>Esc</kbd> dismisses; <kbd>Enter</kbd> on jump button</td>
+                                                                                            <td>Skip slide-in</td>
+                                                                                            <td>"Resume from section X"</td>
+                                                                                          </tr>
+                                                                                        </tbody>
+                                                                                      </table>
+                                                                                    </div>
+                                                                                  </section>
+
+                                                                                  <section id="dos-and-donts" class="card">
+                                                                                    <h2>Do's and Don'ts</h2>
+                                                                                    <div class="docs-table-scroll" role="region" aria-label="Table">
+                                                                                      <table>
+                                                                                        <thead>
+                                                                                          <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                          <tr>
+                                                                                            <td>Add new sidebar entries to <code>INTERNAL_SIDEBAR_NAV</code> in <code>internal-sidebar.js</code> — the single source of truth.</td>
+                                                                                            <td>Duplicate links into the drawer top-nav config — both surfaces derive from the same array.</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Verify the command palette opens with both <kbd>Cmd</kbd>+<kbd>K</kbd> and <kbd>/</kbd> after any keyboard-shortcut change.</td>
+                                                                                            <td>Repurpose either shortcut — both are documented contracts users rely on (see <a href="../foundations/hotkeys.html">hotkeys</a>).</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Update <code>assets/search-index.json</code> when adding a new top-level page so search results stay complete.</td>
+                                                                                            <td>Expect the index to auto-regenerate — it is currently committed by hand.</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td>Group related sub-sections under <code>&lt;details&gt;</code> so the in-page TOC stays scannable on long pages.</td>
+                                                                                            <td>Flatten a page into 30 sibling <code>&lt;h2&gt;</code> headings — the TOC becomes a wall of links and orientation collapses.</td>
+                                                                                          </tr>
+                                                                                        </tbody>
+                                                                                      </table>
+                                                                                    </div>
+                                                                                  </section>
+
+                                                                                  <section id="page-history" class="card">
+                                                                                    <h2>Page history</h2>
+                                                                                    <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                      <table class="docs-page-history">
+                                                                                        <thead>
+                                                                                          <tr>
+                                                                                            <th scope="col">Date</th>
+                                                                                            <th scope="col">Change</th>
+                                                                                            <th scope="col">Author</th>
+                                                                                          </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-05-01">2026-05-01</time></td>
+                                                                                            <td>Added the <a href="#palette-visual-reference">Visual reference · palette UI stages</a> section: three side-by-side mocks (Closed launcher, Open empty dialog with grouped suggestions, Filtering with the first row highlighted in accent) plus transition arrows tied to the FSM diagram and a hotkey reference strip at the bottom.</td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                                                                            <td>Added inline-SVG anatomy of the sticky On-this-page TOC (default vs collapsed, with numbered callouts). Sticky-TOC promo toast moved to the popups stack — see <a href="../components/popups-and-overlays.html#stacking">popups and overlays § Stacking and lifecycle</a>.</td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                            <td>Added Per-component states and accessibility section (7 navigation surfaces).</td>
+                                                                                            <td>Ivan Boyarkin</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                            <td>Added Component badge to H1; added Do's and Don'ts section (single source of truth, hotkey contracts, search-index hand-edit, TOC density).</td>
+                                                                                            <td>Ivan Boyarkin</td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                                                            <td>Added search-index lifecycle workflow and validation guidance for discoverability changes.</td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                                                            <td>Documented desktop-only On this page collapse control (<code>&lt;</code> collapse, <code>&gt;</code> expand), including runtime, CSS, and accessibility details.</td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                            <td><time datetime="2026-04-23">2026-04-23</time></td>
+                                                                                            <td>Added detailed implementation map for navigation, search, command palette, and in-page discovery.
+                                                                                            </td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                          </tr>
+                                                                                        </tbody>
+                                                                                      </table>
+                                                                                    </div>
+                                                                                  </section>
+
+                                                                                </main>
+                                                                              </div>
+                                                                            </div>
+
+                                                                          </body></html>

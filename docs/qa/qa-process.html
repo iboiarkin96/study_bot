@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QA process &amp; SDLC integration — QA portal — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">QA process &amp; SDLC integration</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Foundations</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            How a feature flows from <em>idea</em> to <em>signed-off release</em>, who does what at
+            each stage, and what artefact is produced. This page is the choreography; the playbooks
+            and templates are the steps.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#stages">Stages</a>
+            <a class="docs-page-hero__chip" href="#raci">RACI</a>
+            <a class="docs-page-hero__chip" href="#artifacts">Artefacts</a>
+            <a class="docs-page-hero__chip" href="#cadence">Cadence</a>
+            <a class="docs-page-hero__chip" href="#release">Release sign-off</a>
+            <a class="docs-page-hero__chip" href="#hotfix">Hotfix path</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Stages</div>
+
+        <section class="card" id="stages">
+          <h2>Stages of the SDLC and what QA does at each</h2>
+          <ol>
+            <li><strong>Discovery / spec.</strong> Manager and developer draft a spec under
+              <code>docs/internal/api/&lt;resource&gt;/</code>.
+              QA reads the draft, asks questions, and identifies test risks before code is written.
+              <em>Output:</em> spec page passing the
+              <a href="../internal/api/_shared/spec-definition-of-done.html">spec DoD</a>;
+              risk notes attached to the ticket.
+            </li>
+            <li><strong>Test planning.</strong> QA writes a test plan
+              (<a href="templates/test-plan-template.html">template</a>) for non-trivial features,
+              or selects an existing checklist for routine work.
+              <em>Output:</em> linked test plan or checklist with explicit scope and exit criteria.
+            </li>
+            <li><strong>Implementation.</strong> Developer writes unit, integration, and contract tests
+              alongside code. QA pairs on contract test design when the API surface is new.
+              <em>Output:</em> green CI on the feature branch.
+            </li>
+            <li><strong>QA execution.</strong> QA runs the test plan on a deployable build
+              (staging or local). Defects are filed using the
+              <a href="templates/bug-report-template.html">bug report template</a>.
+              <em>Output:</em> annotated test plan, defect tickets, evidence.
+            </li>
+            <li><strong>Triage &amp; fix.</strong> Defects are graded against the
+              <a href="reference/bug-severity-and-priority.html">severity matrix</a>;
+              fixes reuse the <a href="reference/defect-lifecycle.html">defect lifecycle</a>.
+            </li>
+            <li><strong>Sign-off &amp; release.</strong> QA confirms exit criteria are met, runs
+              the <a href="0003-release-smoke-checklist.html">release smoke checklist</a>, and
+              records the sign-off in the release ticket.</li>
+              <li><strong>Post-release.</strong> Track defect escapes; feed lessons back into the
+                checklists and tests.</li>
+              </ol>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">RACI</div>
+
+            <section class="card" id="raci">
+              <h2>RACI — who is Responsible / Accountable / Consulted / Informed</h2>
+              <div class="docs-table-scroll" role="region" aria-label="QA RACI table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Activity</th>
+                      <th>Manager</th>
+                      <th>Developer</th>
+                      <th>QA</th>
+                      <th>Tech writer</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Spec authoring</td>
+                      <td>A</td>
+                      <td>R</td>
+                      <td>C</td>
+                      <td>C</td>
+                    </tr>
+                    <tr>
+                      <td>Test plan</td>
+                      <td>I</td>
+                      <td>C</td>
+                      <td>R / A</td>
+                      <td>I</td>
+                    </tr>
+                    <tr>
+                      <td>Unit + integration tests</td>
+                      <td>I</td>
+                      <td>R / A</td>
+                      <td>C</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>Contract tests</td>
+                      <td>I</td>
+                      <td>R</td>
+                      <td>C / A</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>Manual QA execution</td>
+                      <td>I</td>
+                      <td>C</td>
+                      <td>R / A</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>Defect triage</td>
+                      <td>A</td>
+                      <td>C</td>
+                      <td>R</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>Defect fix</td>
+                      <td>I</td>
+                      <td>R / A</td>
+                      <td>C</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>Defect verification</td>
+                      <td>I</td>
+                      <td>C</td>
+                      <td>R / A</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>Release smoke</td>
+                      <td>A</td>
+                      <td>C</td>
+                      <td>R</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>Release sign-off</td>
+                      <td>A</td>
+                      <td>C</td>
+                      <td>R</td>
+                      <td>I</td>
+                    </tr>
+                    <tr>
+                      <td>Docs accuracy review</td>
+                      <td>I</td>
+                      <td>C</td>
+                      <td>R</td>
+                      <td>A</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="small">R = Responsible (does the work), A = Accountable (single owner), C = Consulted, I = Informed.
+              </p>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">Artefacts</div>
+
+            <section class="card" id="artifacts">
+              <h2>Artefacts produced by QA</h2>
+              <ul>
+                <li><strong>Test plan</strong> — per non-trivial feature; links to checklists and risks.</li>
+                <li><strong>Test cases</strong> — per scenario; descend from
+                  <a href="templates/test-case-template.html">test case template</a>.
+                </li>
+                <li><strong>Annotated checklist run</strong> — pass/fail per row plus evidence.</li>
+                <li><strong>Defect ticket</strong> — using <a href="templates/bug-report-template.html">bug report
+                  template</a>.</li>
+                  <li><strong>Release sign-off note</strong> — short summary attached to the release ticket.</li>
+                  <li><strong>Audit report</strong> (when scheduled) — see <a href="../audit/README.html">audit hub</a>.</li>
+                </ul>
+              </section>
+
+              <div class="docs-section-divider" aria-hidden="true">Cadence</div>
+
+              <section class="card" id="cadence">
+                <h2>Cadence</h2>
+                <ul>
+                  <li><strong>Per pull request</strong> — automated CI runs unit + integration + contract; QA reviews
+                    the PR if it touches public API or docs.</li>
+                    <li><strong>Per feature</strong> — full test plan + manual checklist run.</li>
+                    <li><strong>Per release</strong> — release smoke checklist + regression of impacted areas.</li>
+                    <li><strong>Quarterly</strong> — audit pass (UX/DX or REST API) recorded under
+                      <a href="../audit/README.html">audit hub</a>.
+                    </li>
+                  </ul>
+                </section>
+
+                <div class="docs-section-divider" aria-hidden="true">Release sign-off</div>
+
+                <section class="card" id="release">
+                  <h2>Release sign-off</h2>
+                  <p>
+                    QA's sign-off note on a release ticket must answer four questions:
+                  </p>
+                  <ol>
+                    <li>What scope was tested? (link to the test plan or checklists)</li>
+                    <li>What was found? (counts by severity, links to defects)</li>
+                    <li>What was deferred and why? (S3+ that won't ship as fixed)</li>
+                    <li>Recommendation: <em>Go</em>, <em>Conditional go</em> (with constraints), or <em>No-go</em>.</li>
+                  </ol>
+                </section>
+
+                <div class="docs-section-divider" aria-hidden="true">Hotfix path</div>
+
+                <section class="card" id="hotfix">
+                  <h2>Hotfix path</h2>
+                  <p>
+                    For an incident-driven hotfix the ceremonies compress, but the gates do not disappear:
+                  </p>
+                  <ol>
+                    <li>Reproduce on the affected environment; capture evidence.</li>
+                    <li>Add a failing test (contract or integration) before the fix.</li>
+                    <li>Apply the fix; the previously failing test passes.</li>
+                    <li>Run the
+                      <a href="0003-release-smoke-checklist.html">release smoke checklist</a> on a build of the
+                      hotfix branch.
+                    </li>
+                    <li>QA records sign-off on the incident ticket.</li>
+                  </ol>
+                </section>
+
+                <section class="card" id="page-history">
+                  <h2>Page history</h2>
+                  <div class="docs-table-scroll" role="region" aria-label="Page history">
+                    <table class="docs-page-history">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Change</th>
+                          <th>Author</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><time datetime="2026-04-30">2026-04-30</time></td>
+                          <td>Initial publication of the QA process page.</td>
+                          <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+              </main>
+            </div>
+          </div>
+
+        </body></html>

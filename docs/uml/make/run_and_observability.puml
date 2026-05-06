@@ -3,21 +3,18 @@ title API run and optional Docker observability
 
 top to bottom direction
 
-rectangle "make run-project" as rproj
-
 package "Host (venv)" {
   rectangle "make run" as run
-  rectangle "make container-start" as cstart
 }
 
 package "Docker Compose" {
-  rectangle "make observability-up" as obup
-  rectangle "make observability-down" as obdown
-  rectangle "make observability-smoke" as obsmoke
+  rectangle "docker compose -f docker-compose.observability.yml up -d" as obup
+  rectangle "docker compose -f docker-compose.observability.yml down" as obdown
+  rectangle "python scripts/check_observability_links.py" as obsmoke
 }
 
-rproj -down-> obup : starts
-rproj -down-> run : starts
 obup .. run : optional\nalongside
+obup -down-> obsmoke : check
+obsmoke -down-> obdown : stop
 
 @enduml

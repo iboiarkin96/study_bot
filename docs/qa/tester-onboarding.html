@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tester onboarding — QA portal — Study App</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Tester onboarding — zero to first verified ticket</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Foundations</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Day-by-day path for a new tester. Follow it in order. By the end you will have
+            run the app locally, exercised the API, verified a docs page, and filed a defect
+            using the standard template.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#day-0">Day 0 — access</a>
+            <a class="docs-page-hero__chip" href="#day-1">Day 1 — read</a>
+            <a class="docs-page-hero__chip" href="#day-2">Day 2 — run</a>
+            <a class="docs-page-hero__chip" href="#day-3">Day 3 — first run</a>
+            <a class="docs-page-hero__chip" href="#day-4">Day 4 — first defect</a>
+            <a class="docs-page-hero__chip" href="#day-5">Day 5 — sign-off</a>
+            <a class="docs-page-hero__chip" href="#bookmarks">Bookmarks</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Day 0 — access</div>
+
+        <section class="card" id="day-0">
+          <h2>Day 0 — access &amp; tools</h2>
+          <ul>
+            <li>Get repo access (read at minimum, contributor for filing PRs).</li>
+            <li>Install the local toolchain — see
+              <a href="../developer/0007-local-development.html">local development</a>.
+              Confirm <code>make</code>, Python 3.x, Docker, and a Chromium-based browser are present.
+            </li>
+            <li>Pick a defect tracker (GitHub Issues by default) and confirm you can create issues.</li>
+            <li>Install browser helpers: a JSON-formatted view, an HTTP client (Postman / Insomnia /
+              <code>httpie</code>), and a screenshot tool that lets you annotate.
+            </li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Day 1 — read</div>
+
+        <section class="card" id="day-1">
+          <h2>Day 1 — read the foundations</h2>
+          <p>Read in this order. Each is short.</p>
+          <ol>
+            <li><a href="test-strategy.html">Test strategy</a> — what we test and why.</li>
+            <li><a href="test-pyramid.html">Test pyramid</a> — where each kind of check lives.</li>
+            <li><a href="qa-process.html">QA process</a> — how a feature flows end-to-end.</li>
+            <li><a href="glossary.html">Glossary</a> — keep open in a tab.</li>
+            <li><a href="reference/bug-severity-and-priority.html">Severity matrix</a> +
+              <a href="reference/defect-lifecycle.html">defect lifecycle</a>.
+            </li>
+            <li><a href="../internal/api/README.html">Internal API hub</a> — skim each shared page
+              under <code>_shared/</code> (error envelope, auth, idempotency, pagination, versioning).</li>
+            </ol>
+            <p class="small">
+              After this, you should be able to answer: "where do I find the contract for endpoint X?",
+              "what does Severity 2 mean here?", and "what is the difference between smoke and
+              sanity testing?".
+            </p>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Day 2 — run</div>
+
+          <section class="card" id="day-2">
+            <h2>Day 2 — run the app locally</h2>
+            <ol>
+              <li>Follow <a href="../developer/0007-local-development.html">local development</a>
+                to start the API on its default port.</li>
+                <li>Open Swagger UI at <code>/openapi/index.html</code> (served by the docs portal) and
+                  issue a <code>GET</code> to a read endpoint.</li>
+                  <li>Open the docs portal index and click around — use the search box, switch theme,
+                    open the drawer, scroll to bottom and use the back-to-top button.</li>
+                    <li>Run the test suite once: <code>make test</code> (or <code>pytest</code>). Note how
+                      long it takes; you'll come back to this baseline.</li>
+                    </ol>
+                  </section>
+
+                  <div class="docs-section-divider" aria-hidden="true">Day 3 — first run</div>
+
+                  <section class="card" id="day-3">
+                    <h2>Day 3 — first checklist run</h2>
+                    <p>Pick the smallest active checklist and run it on your local build:</p>
+                    <ol>
+                      <li>Open <a href="0001-documentation-pages-visual-checklist.html">checklist 0001</a>.</li>
+                      <li>Walk through every row. Take a screenshot for each section the checklist requires.</li>
+                      <li>Record pass / fail / needs-follow-up against each row in a notebook or ticket.</li>
+                      <li>Stop and ask if you find a row that is ambiguous — ambiguity in a checklist is a
+                        defect against the checklist itself.</li>
+                      </ol>
+                    </section>
+
+                    <div class="docs-section-divider" aria-hidden="true">Day 4 — first defect</div>
+
+                    <section class="card" id="day-4">
+                      <h2>Day 4 — file your first defect</h2>
+                      <ol>
+                        <li>Find or seed a defect — if checklist 0001 came back clean, run
+                          <a href="playbooks/exploratory-testing.html">exploratory testing</a> for 60 minutes
+                          against the docs portal under "tab order and keyboard reachability".
+                        </li>
+                        <li>Reproduce the defect three times. If you cannot reproduce it,
+                          note the conditions and either keep digging or file as
+                          <em>Severity 3 — intermittent, needs reproduction</em>.
+                        </li>
+                        <li>Copy <a href="templates/bug-report-template.html">bug report template</a>.</li>
+                        <li>Grade severity using the
+                          <a href="reference/bug-severity-and-priority.html">severity matrix</a>.
+                        </li>
+                        <li>Attach evidence — screenshot with annotation, console log, request/response capture.</li>
+                        <li>File the defect; tag the area owner.</li>
+                      </ol>
+                    </section>
+
+                    <div class="docs-section-divider" aria-hidden="true">Day 5 — sign-off</div>
+
+                    <section class="card" id="day-5">
+                      <h2>Day 5 — verify a fix and shadow a sign-off</h2>
+                      <ol>
+                        <li>When a developer marks your defect <em>Fixed</em>, follow the
+                          <a href="reference/defect-lifecycle.html">defect lifecycle</a> to verify.
+                        </li>
+                        <li>Run the same reproduction on the new build. Pass → set
+                          <em>Verified</em>; fail → set <em>Reopened</em> with new evidence.
+                        </li>
+                        <li>Shadow a senior tester through a release sign-off using
+                          <a href="0003-release-smoke-checklist.html">checklist 0003</a> so you see the cadence
+                          end-to-end.
+                        </li>
+                      </ol>
+                    </section>
+
+                    <div class="docs-section-divider" aria-hidden="true">Bookmarks</div>
+
+                    <section class="card" id="bookmarks">
+                      <h2>Bookmarks to keep open</h2>
+                      <ul>
+                        <li><a href="README.html">QA portal hub</a></li>
+                        <li><a href="../internal/api/README.html">Internal API hub</a></li>
+                        <li><a href="../internal/api/_shared/error-envelope.html">Error envelope</a> — paste-ready when grading API
+                          responses</li>
+                          <li><a href="../internal/api/_shared/error-catalog.html">Error catalog</a></li>
+                          <li><a href="../runbooks/README.html">Runbooks</a> — when something on your local build won't start</li>
+                          <li><a href="../openapi/index.html">OpenAPI / Swagger UI</a></li>
+                        </ul>
+                      </section>
+
+                      <section class="card" id="page-history">
+                        <h2>Page history</h2>
+                        <div class="docs-table-scroll" role="region" aria-label="Page history">
+                          <table class="docs-page-history">
+                            <thead>
+                              <tr>
+                                <th>Date</th>
+                                <th>Change</th>
+                                <th>Author</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                <td>Initial onboarding guide.</td>
+                                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+
+                    </main>
+                  </div>
+                </div>
+
+              </body></html>

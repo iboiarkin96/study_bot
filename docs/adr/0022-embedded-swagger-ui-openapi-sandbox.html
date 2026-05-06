@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ADR 0022: Embedded Swagger — static validation (superseded)</title>
+  <title>ADR 0022: Embedded Swagger UI — interactive API sandbox</title>
   <link rel="stylesheet" href="../assets/docs.css" />
   <link rel="stylesheet" href="../assets/docs-theme.css">
   <script defer src="../assets/docs-nav.js"></script>
@@ -15,119 +15,387 @@
 </head>
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
-  <main class="container" data-adr-weight="2">
-    <h1>ADR 0022: Embedded Swagger — static OpenAPI validation (superseded)</h1>
+  <main class="container" data-adr-weight="5">
+    <h1 class="internal-h1--accent-tail">ADR 0022: Embedded Swagger UI — interactive API sandbox</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
+
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        This ADR records a <strong>superseded</strong> decision (see below). The latest merge updated that story;
-        ratification follows <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.
+        Lifecycle governed by <a href="0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.
+        The decision went through two stages: the original approach was placed <strong>on hold</strong>
+        (2026-04-12); the final approach was adopted after investigation (2026-04-24).
       </p>
       <ul>
-        <li>Discussion Issue: <em>none linked for this merge</em></li>
+        <li>Discussion Issue: <em>open with <code>[ADR]</code> title per ADR 0018</em></li>
         <li>Merge PR: <em>see git history for this file</em></li>
-        <li>Accepted: 2026-04-12</li>
+        <li>Original accepted: 2026-04-12 (placed on hold)</li>
+        <li>Final decision: 2026-04-24</li>
       </ul>
-
     </section>
+
     <section class="card">
-      <h2>Context (historical)</h2>
+      <h2>Context</h2>
       <p>
-        <strong>Why this record exists:</strong> We tried static Swagger UI plus browser JSON validation so the docs site
-        could act like a small “Postman” without a server. That helps onboarding in theory; in practice CORS, Swagger
-        versions from a CDN, <code>file://</code> browsing, and OpenAPI <code>$ref</code> handling made the page brittle
-        and hard to keep working.
+        The HTTP contract for integrators is the committed OpenAPI snapshot and the runtime spec
+        (<a href="0025-external-and-internal-api-documentation.html">ADR 0025</a>,
+        <a href="0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Browsing the spec
+        in a static site is not enough: partners and internal providers need
+        <strong>round trips against a real process and persistent storage</strong> to build confidence
+        before production.
       </p>
       <p>
-        The original goal was to embed <strong>Swagger UI</strong> against
-        <code>docs/openapi/openapi-baseline.json</code> (see
-        <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>) and add <strong>browser-side
-        validation</strong> of JSON bodies (Ajv, interceptors, no live HTTP from that page).
+        The first approach tried to deliver validation <strong>without a cooperating server</strong>
+        (Ajv, interceptors, no real HTTP). It proved brittle. What was missing sat on the server side:
+        a <strong>reachable sandbox backend</strong>, <strong>correct CORS</strong> for the public docs
+        origin, and <strong>sandbox-scoped credentials</strong> — not more client-side plumbing.
       </p>
-
     </section>
-    <section class="card">
-      <h2>Superseded decision</h2>
-      <p>
-        The approach described in earlier drafts of this ADR — <strong>static validation</strong> of
-        <code>application/json</code> bodies in the browser via Ajv, Swagger <code>requestInterceptor</code> /
-        <code>responseInterceptor</code>, and related client-side wiring — is <strong>cancelled</strong> as a product
-        commitment. It proved brittle (CDN loading, <code>file://</code>, Swagger UI versions, ref resolution) and did
-        not deliver a reliable experience.
-      </p>
 
-    </section>
     <section class="card">
-      <h2>What was implemented instead</h2>
+      <h2>Goal</h2>
       <p>
-        <code>docs/openapi/index.html</code> is labeled <strong>OpenAPI / Swagger UI</strong> in the docs nav (legacy <code>openapi-explorer.html</code> in the same folder redirects). It loads
-        <strong>Swagger UI</strong> from the CDN and points at <code>docs/openapi/openapi-baseline.json</code> for
-        <strong>visual exploration only</strong>: operations, schemas, and documentation text. <strong>Try it out</strong>
-        is <strong>disabled</strong> on this page. <strong>No validation</strong> runs in the browser; there is no
-        Ajv/ref-parser bundle and no <code>openapi-sandbox.js</code>.
+        Offer a single public URL — for example
+        <code>https://iboiarkin96.github.io/etr_study_api/openapi/index.html</code> — where a developer
+        (internal provider or <strong>external partner</strong>) can open the API reference, use
+        <strong>Try it out</strong>, and execute <strong>real HTTP</strong> requests against a
+        <strong>sandbox</strong> deployment: real validation, real status codes, real side effects in a
+        <strong>non-production</strong> database. No local clone, no Postman install, no waiting on
+        someone else to run a server.
       </p>
       <p>
-        For real HTTP <strong>Try it out</strong> against a running server, use the application’s interactive docs at
-        <code>/docs</code> (configure CORS for your browser origin).
+        The page is an <strong>integration validation</strong> surface, not a substitute for
+        <code>make contract-test</code> / CI: the OpenAPI file remains the normative contract; the sandbox
+        exercises it against live code and storage.
       </p>
-
     </section>
+
     <section class="card">
-      <h2>On hold</h2>
+      <h2>Why the first approach did not work</h2>
       <p>
-        A future iteration may revisit <strong>browser-side or docs-integrated contract validation</strong> (static or
-        against a mock), with clearer scope and tooling. Until then the task is <strong>on hold</strong>. Contract
-        correctness remains enforced by <code>make contract-test</code> / CI on <code>openapi-baseline.json</code>, not by
-        this page.
+        The original approach tried to deliver validation <strong>without a cooperating server</strong>:
+        Ajv in the browser, <code>requestInterceptor</code> / <code>responseInterceptor</code>, and
+        <code>tryItOutEnabled: false</code> on real fetches. Three issues dominated:
       </p>
-
-    </section>
-    <section class="card">
-      <h2>Consequences</h2>
-      <ul>
-        <li>Readers still get a quick visual view of the OpenAPI snapshot from the static site.</li>
-        <li>No claim of client-side validation; no maintenance burden for the previous interceptor/Ajv stack.</li>
-        <li>ADR 0007 / governance of the baseline file is unchanged.</li>
-      </ul>
-
-    </section>
-    <section class="card">
-      <h2>References</h2>
-      <ul>
+      <ol>
         <li>
-          Related:
-          <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>,
-          <a href="./0001-docs-as-code.html">ADR 0001</a>.
+          <strong>CORS.</strong> The GitHub Pages origin (<code>iboiarkin96.github.io</code>) was not an
+          allowed browser origin for the API. Preflight failed; any true cross-origin call was blocked.
+          Interceptors avoided real calls, so no useful signal reached the network.
         </li>
-        <li>Page: <code>docs/openapi/index.html</code> (OpenAPI test / Swagger UI browse-only).</li>
-      </ul>
+        <li>
+          <strong>Fragile client coupling.</strong> Swagger UI <code>requestInterceptor</code> /
+          <code>responseInterceptor</code> are tied to a specific bundle; CDN version drift can break the
+          wiring independently of this repo.
+        </li>
+        <li>
+          <strong>Wrong layer.</strong> JSON shape checks answer "valid JSON schema?"; integrators need
+          "does the service accept, persist, and return what we expect?" That requires server-side
+          validation and a real store — a <em>sandbox</em>, not a static linter.
+        </li>
+      </ol>
+      <p>
+        <strong>Conclusion:</strong> fix the environment (sandbox + CORS + auth), not the interceptors.
+      </p>
     </section>
-    <section id="page-history" class="card">
-      <h2>Page history</h2>
-      <div class="docs-table-scroll" role="region" aria-label="Page history">
-        <table class="docs-page-history">
+
+    <section class="card">
+      <h2>How large API programs handle the same problem</h2>
+      <p>
+        Public docs often stay <strong>static</strong> (HTML + OpenAPI) while <strong>Try it out</strong>
+        or console tools send traffic to a <strong>separate</strong> test or sandbox stack. Isolation,
+        credentials, and CORS for the docs origin are first-class product concerns, not an afterthought.
+        Representative public models:
+      </p>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
           <thead>
             <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Change</th>
-              <th scope="col">Author</th>
+              <th>Provider (example)</th>
+              <th>What they document</th>
+              <th>Link</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><time datetime="2026-04-21">2026-04-21</time></td>
-              <td>Added Page history section (repository baseline).</td>
-              <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              <td>Stripe</td>
+              <td>Isolated test environments ("sandboxes"), test API keys; live vs test data separation</td>
+              <td>
+                <a href="https://docs.stripe.com/sandboxes">docs.stripe.com/sandboxes</a>,
+                <a href="https://docs.stripe.com/testing-use-cases">testing use cases</a>
+              </td>
+            </tr>
+            <tr>
+              <td>PayPal</td>
+              <td>Virtual sandbox, sandbox endpoints, sandbox accounts and credentials separate from live</td>
+              <td><a href="https://developer.paypal.com/tools/sandbox/">PayPal sandbox testing guide</a></td>
+            </tr>
+            <tr>
+              <td>Amazon SP-API</td>
+              <td>Dedicated sandbox hosts; static and dynamic mock behaviors; explicit sandbox operations where needed
+              </td>
+              <td><a href="https://developer-docs.amazon.com/sp-api/docs/sp-api-sandbox">SP-API sandbox</a></td>
             </tr>
           </tbody>
         </table>
       </div>
+      <p>
+        <strong>Common structure:</strong> a dedicated or logically isolated test environment; credentials
+        that are only valid there; the docs origin <strong>allowed by CORS</strong> (or a hosted proxy
+        owned by the product); the browser as a thin client; the <strong>server as validator</strong>.
+        This ADR follows that pattern: <strong>GitHub Pages for the spec + Swagger UI</strong>,
+        <strong>sandbox API for execution</strong>.
+      </p>
     </section>
 
-    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-  </main>
+    <section class="card">
+      <h2>Decision</h2>
+      <ol>
+        <li>
+          <strong>Dedicated sandbox deployment.</strong> Run a separate app instance at a stable HTTPS
+          base URL (e.g. a PaaS with a fixed hostname, per
+          <a href="0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a> for the image).
+          It uses its <strong>own</strong> persistent database — not production, not shared with ad-hoc
+          local runs. The sandbox is long-lived enough for integration work (not a throwaway
+          <code>pytest</code> process).
+        </li>
+        <li>
+          <strong>CORS allow-list for the public docs site.</strong> The sandbox's CORS configuration
+          includes <code>https://iboiarkin96.github.io</code> (and only origins we explicitly approve).
+          This makes browser <code>fetch</code> from GitHub Pages first-class, without a public CORS proxy.
+        </li>
+        <li>
+          <strong>Swagger UI: Try it out against the sandbox only.</strong> Update
+          <code>docs/openapi/index.html</code> to <code>tryItOutEnabled: true</code>, with a
+          <code>servers</code> override (or clear default) that points to the <strong>sandbox</strong>
+          base URL — never production. Use <code>persistAuthorization: true</code> so the Authorize step
+          is not lost on every refresh.
+        </li>
+        <li>
+          <strong>Pin Swagger UI assets.</strong> Vendor the Swagger UI CSS/JS under <code>docs/</code>
+          or load a <strong>version-pinned</strong> CDN build with <code>integrity</code> (SRI). The
+          version is chosen and bumped in-repo, not by whatever the CDN returns today.
+        </li>
+        <li>
+          <strong>No Ajv / interceptor validation layer in the static site.</strong> Reject resurrecting
+          <code>openapi-sandbox.js</code> and request interceptors. The service validates; errors follow
+          <a href="0003-error-contract-governance.html">ADR 0003</a> and the OpenAPI.
+        </li>
+        <li>
+          <strong>Credential model: scoped API keys for the sandbox only.</strong> Integrators use
+          <strong>sandbox-issued, scoped API keys</strong> (or equivalent headers) in Swagger
+          <strong>Authorize</strong> — not production keys. Keys are revocable, least-privilege for the
+          sandbox, and must not be committed to the repo. Production credentials must never be pasted into
+          a public static page; environment separation and policy are part of the security story
+          (<a href="0005-api-security-defaults.html">ADR 0005</a>).
+        </li>
+        <li>
+          <strong>Sandbox is explicitly non-production.</strong> UI copy and runbooks state that data is
+          test data and may be reset. Contract parity with production is a goal; data and blast radius are
+          not.
+        </li>
+      </ol>
+    </section>
 
-</body></html>
+    <section class="card">
+      <h2>Architecture (high level)</h2>
+      <pre>integrator browser
+        │ loads HTML + OpenAPI (GitHub Pages: spec + Swagger UI)
+        ▼
+        Swagger UI  ──Try it out (CORS)──►  sandbox API  ──►  sandbox database
+      </pre>
+      <p class="small">
+        The static site serves the contract and UI only; <strong>validation, business logic, and
+        persistence</strong> run in the sandbox service.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Scope</h2>
+      <ul>
+        <li>
+          <strong>In scope:</strong> <code>docs/openapi/index.html</code> and Swagger options; sandbox
+          deployment URL; CORS on the sandbox; key issuance/rotation <em>process</em> for sandbox keys
+          at a high level; SRI or vendored assets.
+        </li>
+        <li>
+          <strong>Out of scope:</strong> production deployment and production CORS policy; full partner
+          billing or a separate "developer platform" product; per-key rate limits, quotas, and 24/7 SLOs
+          for the sandbox (best-effort and operational follow-up are acceptable). Those may be added later
+          in runbooks or a follow-up ADR without changing this direction.
+        </li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Alternatives considered</h2>
+      <ol>
+        <li>
+          <strong>Postman collection / "Run in Postman".</strong>
+          <ul>
+            <li>Pros: no extra server; familiar to many integrators.</li>
+            <li>Cons: not a single zero-install URL in a normal browser; weaker fit for "open the public doc and try".
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Mock server (Prism, WireMock, MSW).</strong>
+          <ul>
+            <li>Pros: cheap; example-shaped responses.</li>
+            <li>Cons: does not prove persistence, idempotency, or real error paths; fails the core purpose here.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Public CORS proxy.</strong>
+          <ul>
+            <li>Pros: avoids server CORS changes.</li>
+            <li>Cons: secrets and payloads cross a third party; security and trust boundary are unacceptable.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Browser-only validation (first attempt, on hold).</strong>
+          <ul>
+            <li>Cons: still no authoritative round trip; no substitute for a sandbox service (see above).</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Point Try it out at production.</strong>
+          <ul>
+            <li>Cons: test traffic mutates or reads real data; rejected.</li>
+          </ul>
+        </li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Consequences</h2>
+      <h3>Positive</h3>
+      <ul>
+        <li>Integrators validate payloads and read real responses and persistence from a stable public URL.</li>
+        <li>Same industry pattern as Stripe, PayPal, Amazon SP-API at a small-team scale: isolate environment, separate
+          credentials, explicit CORS.</li>
+          <li>No Ajv/interceptor stack to maintain on the static site; fewer moving parts than the browser-only path.</li>
+          <li>Readers still get a quick visual view of the OpenAPI snapshot even before the sandbox is up.</li>
+        </ul>
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>
+            <strong>Running cost and ops.</strong> A sandbox must stay deployed; cold starts on free tiers
+            are tolerable or mitigated.
+          </li>
+          <li>
+            <strong>Data hygiene.</strong> The sandbox database fills with test data; plan resets or TTL
+            where needed.
+          </li>
+          <li>
+            <strong>Secrets in the browser.</strong> Sandbox keys in Authorize are expected; treat them as
+            high-value-because-scoped, rotate and revoke, and never reuse production material.
+          </li>
+          <li>
+            <strong>Coupling.</strong> Sandbox base URL, CORS, and the OpenAPI <code>servers</code> override
+            must move together on redeploys.
+          </li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Implementation plan</h2>
+        <ol>
+          <li>
+            Deploy the sandbox: image from ADR 0021, own DB, record the public base URL
+            (placeholder example: <code>https://etr-study-api-sandbox.example</code>).
+          </li>
+          <li>
+            Configure CORS on the sandbox (e.g. <code>CORS_ORIGINS</code> per
+            <a href="0005-api-security-defaults.html">ADR 0005</a>) to include
+            <code>https://iboiarkin96.github.io</code>. Verify with
+            <code>OPTIONS</code> and a browser from that origin.
+          </li>
+          <li>
+            Define how sandbox API keys are created, scoped, and rotated; document for integrators
+            (not in OpenAPI text alone).
+          </li>
+          <li>
+            Update <code>docs/openapi/index.html</code>: <code>tryItOutEnabled: true</code>,
+            <code>persistAuthorization: true</code>, <code>servers</code> → sandbox only, pinned Swagger
+            UI + SRI or vendored assets. Prose: "Try it out targets the <strong>sandbox</strong> —
+            not production."
+          </li>
+          <li>
+            Smoke: from the GitHub Pages URL, Authorize, execute a write, then read back to confirm
+            persistence.
+          </li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>Validation</h2>
+        <ul>
+          <li>
+            <strong>Preflight:</strong>
+            <code>curl -s -X OPTIONS &lt;sandbox&gt;/&lt;path&gt; -H "Origin: https://iboiarkin96.github.io" -H "Access-Control-Request-Method: POST" -i</code>
+            — must reflect an allowed origin for the docs site.
+          </li>
+          <li>
+            <strong>Browser E2E:</strong> <code>POST</code> then <code>GET</code> (or equivalent) with
+            sandbox credentials; assert non-production markers if you expose them (e.g. environment header).
+          </li>
+          <li>
+            <strong>SRI:</strong> if using CDN, script/link <code>integrity</code> matches the pinned file.
+          </li>
+          <li>
+            <strong>Contract:</strong> CI still runs <code>make contract-test</code> on the OpenAPI
+            baseline; the sandbox does not replace that gate.
+          </li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Compatibility and migration</h2>
+        <ul>
+          <li>
+            Browsing the spec without executing remains possible; <strong>Try it out</strong> becomes
+            available once <code>index.html</code> is updated and the sandbox is up.
+          </li>
+          <li>
+            Rollback: set <code>tryItOutEnabled: false</code> and remove the sandbox server from defaults;
+            pause the sandbox app independently.
+          </li>
+        </ul>
+      </section>
+
+      <section id="page-history" class="card">
+        <h2>Page history</h2>
+        <div class="docs-table-scroll" role="region" aria-label="Page history">
+          <table class="docs-page-history">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Change</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><time datetime="2026-04-25">2026-04-25</time></td>
+                <td>
+                  Merged with ADR 0028 content: removed "superseded" framing; added full decision,
+                  architecture, scope, alternatives, implementation plan, validation, and migration
+                  sections; industry comparison table; consolidated into single authoritative ADR.
+                </td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+              <tr>
+                <td><time datetime="2026-04-21">2026-04-21</time></td>
+                <td>Added Page history section (repository baseline).</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+  </body></html>

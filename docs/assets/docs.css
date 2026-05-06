@@ -1,5 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("docs-site-nav.css");
 @import url("internal-layout.css");
+@import url("docs-premium.css");
+@import url("docs-syntax-theme.css");
 
 /* Shared documentation styles */
 
@@ -133,6 +136,68 @@
   --audit-score-needs-border: #c82333;
   --audit-score-legend-border: #dee2e6;
   --audit-score-legend-bg: #f8f9fa;
+  /* Typography tokens */
+  --font-sans: Inter, Segoe UI, Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-xs: 0.75rem;
+  --font-size-label: 0.82rem;   /* UI labels, badges, meta text           */
+  --font-size-2xs: 0.72rem;     /* Eyebrows, section caps, tiny badges     */
+  /*
+   * Canonical font ladder — SINGLE SOURCE OF TRUTH.
+   *
+   * Every page on the docs portal (public, internal, hub, ADR, RFC, runbook,
+   * audit, screen spec) derives its text sizes from the eight tokens below.
+   * Authors must pick the closest tier rather than introduce a new rem value;
+   * one-off sizes are how the portal drifted into 18+ inconsistent values.
+   *
+   *   tier              rem      computed @ 17 px html root
+   *   --fs-h1           1.6rem   27.20 px  page title (display / hero)
+   *   --fs-h2           1.2rem   20.40 px  section heading
+   *   --fs-h3           1.05rem  17.85 px  subsection heading
+   *   --fs-h4           0.95rem  16.15 px  card heading / dense block (above body — same size, bold weight)
+   *   --fs-h5           0.9rem   15.30 px  small heading (= body, bold weight makes the difference)
+   *   --fs-body         0.9rem   15.30 px  body prose, lists, table cells, callouts
+   *   --fs-meta         0.75rem  12.75 px  badges, breadcrumbs, hints, sidebar nav
+   *   --fs-eyebrow      0.68rem  11.56 px  uppercase eyebrow / section cap
+   *
+   * Uniform across viewports — every tier renders identically on desktop,
+   * tablet, and mobile. No mobile-specific override; the ladder is the
+   * contract. iOS auto-shrink is disabled via text-size-adjust on <html>,
+   * so the authored size is rendered as-is on iPhone.
+   */
+  --fs-h1: 1.6rem;
+  --fs-h2: 1.2rem;
+  --fs-h3: 1.05rem;
+  --fs-h4: 0.95rem;
+  --fs-h5: 0.9rem;
+  --fs-body: 0.9rem;
+  --fs-meta: 0.75rem;
+  --fs-eyebrow: 0.68rem;
+  --line-height-base: 1.55;
+  --line-height-heading: 1.25;
+  /* Spacing scale — 8 px base rhythm (matches Stripe / Linear grid) */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  /* Border-radius scale */
+  --radius-sm:   6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-full: 999px;
+  /* Breakpoint reference (cannot use var() in @media — use these as doc tokens)
+     sm: 640px  |  md: 768px  |  lg: 1024px  |  xl: 1280px              */
+  --bp-sm:   640;
+  --bp-md:   768;
+  --bp-lg:  1024;
+  --bp-xl:  1280;
+  /* Motion tokens */
   --motion-fast: 150ms;
   --motion-base: 220ms;
   --motion-ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
@@ -167,6 +232,17 @@
       color-mix(in srgb, var(--search-result-hover-bg) 58%, var(--card)) 100%);
   --docs-premium-focus-glow-soft: color-mix(in srgb, var(--accent) 10%, transparent);
   --docs-premium-focus-glow-strong: color-mix(in srgb, var(--accent) 24%, transparent);
+  /* Unified popup/overlay surface language. */
+  --docs-overlay-border: color-mix(in srgb, var(--line) 64%, var(--accent) 36%);
+  --docs-overlay-bg:
+    linear-gradient(165deg,
+      color-mix(in srgb, var(--card) 97%, #fff) 0%,
+      color-mix(in srgb, var(--card) 93%, var(--bg)) 52%,
+      color-mix(in srgb, var(--card) 90%, var(--bg)) 100%);
+  --docs-overlay-shadow:
+    0 18px 42px rgba(2, 6, 23, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.44) inset;
+  --docs-overlay-blur: 10px;
   /* Inline glossary tooltips (.docs-tooltip) */
   --docs-tooltip-bg: #1e293b;
   --docs-tooltip-fg: #f8fafc;
@@ -203,12 +279,28 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 17px;
+  scroll-behavior: smooth;
+  /* Disable iOS Safari auto-shrink fallback when content overflows the viewport.
+     Without this, any small horizontal overflow (e.g. an unwrapped table) causes
+     Safari to shrink the entire document text, which the reader perceives as
+     "everything became unreadably small". See foundations/motion-and-adaptivity
+     #mobile-contract for the readability ladder. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
   background: linear-gradient(180deg, var(--bg-gradient-top) 0%, var(--bg) 220px);
   color: var(--text);
-  line-height: 1.55;
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv11", "ss01";
   isolation: isolate;
 }
 
@@ -449,7 +541,7 @@ video {
 
 main.container,
 .container {
-  max-width: 1080px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 28px 20px 80px;
   min-width: 0;
@@ -462,11 +554,43 @@ h4,
 h5,
 h6 {
   line-height: 1.25;
+  scroll-margin-top: 1.5rem;
 }
 
 h1 {
   margin: 0 0 12px;
-  font-size: 2rem;
+  font-size: var(--fs-h1);
+  /* Mirror the Internal Docs Hub title treatment across all docs pages. */
+  background: linear-gradient(
+    140deg,
+    var(--text) 20%,
+    color-mix(in srgb, var(--accent) 68%, var(--text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Unify the "accent tail" H1 treatment across regular docs pages. */
+main.container > h1:first-of-type,
+.internal-layout__main main.container > h1:first-of-type {
+  background: linear-gradient(
+    90deg,
+    var(--text) 0%,
+    var(--text) 74%,
+    color-mix(in srgb, var(--accent) 88%, var(--text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  h1, h2, h3, h4 {
+    background: none;
+    color: var(--text);
+  }
 }
 
 .docs-page-title-row {
@@ -489,16 +613,65 @@ h1 {
 }
 
 h2 {
-  margin: 28px 0 12px;
-  font-size: 1.35rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 8px;
+  margin: 36px 0 14px;
+  font-size: var(--fs-h2);
+  letter-spacing: -0.015em;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  padding-bottom: 6px;
+  background: linear-gradient(
+    140deg,
+    var(--text) 30%,
+    color-mix(in srgb, var(--accent) 52%, var(--text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 h3 {
-  margin: 22px 0 8px;
-  font-size: 1.05rem;
-  color: var(--accent);
+  margin: 24px 0 8px;
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: linear-gradient(
+    140deg,
+    var(--text) 40%,
+    color-mix(in srgb, var(--accent) 38%, var(--text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+h4 {
+  margin: 20px 0 6px;
+  font-size: var(--fs-h4);
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  background: linear-gradient(
+    140deg,
+    var(--text) 50%,
+    color-mix(in srgb, var(--accent) 26%, var(--text)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+h5 {
+  margin: 16px 0 4px;
+  font-size: var(--fs-h5);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+h6 {
+  margin: 14px 0 4px;
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 p,
@@ -508,6 +681,16 @@ li {
 
 p {
   margin: 10px 0;
+}
+
+/* Primary article prose scale.
+   Single tier from the canonical font ladder (--fs-body = 0.9rem ≈ 15.3 px on
+   the 17 px html root). Identical on every page and every viewport — the
+   ladder is uniform across desktop, tablet, and mobile. iOS auto-shrink is
+   disabled via text-size-adjust on <html>, so the authored size renders as-is
+   on iPhone. */
+main.container :is(p, li, blockquote, dd) {
+  font-size: var(--fs-body);
 }
 
 ul,
@@ -522,6 +705,8 @@ a {
 
 a:hover {
   text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 a:focus-visible,
@@ -551,11 +736,11 @@ summary:focus-visible {
   background: color-mix(in srgb, var(--card) 96%, #ffffff);
   color: var(--text);
   padding: 7px 12px;
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   font-weight: 700;
   text-decoration: none;
   box-shadow: 0 10px 22px rgba(2, 6, 23, 0.2);
-  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1), opacity 120ms ease;
+  transition: transform var(--motion-fast) var(--motion-ease-premium), opacity var(--motion-fast) ease;
 }
 
 .docs-skip-link:focus-visible {
@@ -572,18 +757,57 @@ summary:focus-visible {
   font-size: 0.92em;
 }
 
+/* Mobile wrapping policy: long URLs and long token names in body prose must
+   wrap inside the content column. Without this, a single long inline <code>
+   or <a href> overflows .container, dragging the page into horizontal scroll
+   and triggering iOS auto-shrink. */
+@media (max-width: 760px) {
+  main.container :not(pre) > code,
+  main.container p > a,
+  main.container li > a,
+  main.container dd > a {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+/* Headings use background-clip: text + color: transparent (gradient effect),
+   which would make any inline <code> inside them invisible by inheritance.
+   Force a solid text color and text-fill on code inside headings so the
+   token reads on top of its grey pill background. */
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+  background: var(--inline-code-bg);
+  font-size: 0.86em;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 6px;
+  vertical-align: 0.04em;
+}
+
 pre {
   margin: 12px 0;
   padding: 14px 16px;
   border-radius: 10px;
   overflow: auto;
   line-height: 1.5;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   tab-size: 2;
   background: var(--pre-bg);
   color: var(--pre-fg);
   border: 1px solid var(--line);
   box-shadow: inset 0 1px 0 var(--pre-inset-shadow);
+}
+
+/* Mobile pre keeps the desktop scale; only the padding tightens slightly so
+   code samples claim less of the narrow content column. Font-size stays at
+   0.9rem (matches desktop) — iOS auto-shrink is disabled via text-size-adjust
+   on <html>, so a separate mobile increase is not needed. */
+@media (max-width: 760px) {
+  pre {
+    padding: 12px 12px;
+  }
 }
 
 /* Avoid nested <code> fighting with pre (was: light box on dark pre → unreadable). */
@@ -593,7 +817,8 @@ pre code {
   padding: 0;
   border-radius: 0;
   font-size: inherit;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-mono);
+  white-space: pre;
 }
 
 .lead {
@@ -602,19 +827,128 @@ pre code {
 }
 
 .small {
-  font-size: 0.9rem;
+  font-size: var(--fs-meta);
   color: var(--muted);
 }
 
 .card {
+  position: relative;
+  overflow: hidden;
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px 18px;
-  margin: 12px 0;
-  box-shadow: var(--card-shadow);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) 18px;
+  margin: var(--space-3) 0;
+  box-shadow:
+    var(--card-shadow),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
   min-width: 0;
   max-width: 100%;
+  transition:
+    border-color var(--motion-base) var(--motion-ease-premium),
+    box-shadow   var(--motion-base) var(--motion-ease-premium),
+    transform    var(--motion-base) var(--motion-ease-premium);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  main.container > .card {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: docs-card-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--docs-card-enter-delay, 0ms);
+  }
+
+  main.container > .card:nth-of-type(1) { --docs-card-enter-delay: 24ms; }
+  main.container > .card:nth-of-type(2) { --docs-card-enter-delay: 54ms; }
+  main.container > .card:nth-of-type(3) { --docs-card-enter-delay: 82ms; }
+  main.container > .card:nth-of-type(4) { --docs-card-enter-delay: 108ms; }
+  main.container > .card:nth-of-type(5) { --docs-card-enter-delay: 132ms; }
+  main.container > .card:nth-of-type(6) { --docs-card-enter-delay: 154ms; }
+  main.container > .card:nth-of-type(7) { --docs-card-enter-delay: 174ms; }
+  main.container > .card:nth-of-type(8) { --docs-card-enter-delay: 192ms; }
+}
+
+@media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+  main.container > .card {
+    animation-duration: 240ms;
+  }
+
+  main.container > .card:nth-of-type(1) { --docs-card-enter-delay: 12ms; }
+  main.container > .card:nth-of-type(2) { --docs-card-enter-delay: 28ms; }
+  main.container > .card:nth-of-type(3) { --docs-card-enter-delay: 42ms; }
+  main.container > .card:nth-of-type(4) { --docs-card-enter-delay: 56ms; }
+  main.container > .card:nth-of-type(5) { --docs-card-enter-delay: 70ms; }
+  main.container > .card:nth-of-type(6) { --docs-card-enter-delay: 82ms; }
+  main.container > .card:nth-of-type(7) { --docs-card-enter-delay: 94ms; }
+  main.container > .card:nth-of-type(8) { --docs-card-enter-delay: 104ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main.container > .card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes docs-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: color-mix(in srgb, var(--accent) 58%, var(--line));
+  opacity: 0;
+  transform: scaleY(0.7);
+  transition:
+    opacity   var(--motion-base) ease,
+    transform var(--motion-base) var(--motion-ease-premium);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    border-color: color-mix(in srgb, var(--accent) 36%, var(--line));
+    box-shadow:
+      0 10px 28px color-mix(in srgb, var(--accent) 10%, transparent),
+      0 2px 8px rgba(15, 23, 42, 0.06);
+    transform: translateY(-2px);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+/* Touch-device active state — gives tap feedback that matches the desktop
+   hover language (left accent stripe + subtle lift) without translateY which
+   feels janky under a finger. */
+@media (hover: none) and (pointer: coarse) {
+  .card:active {
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+    background: color-mix(in srgb, var(--accent) 4%, var(--card));
+    box-shadow:
+      0 6px 18px color-mix(in srgb, var(--accent) 8%, transparent),
+      0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  }
+
+  .card:active::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 
 .badge {
@@ -623,7 +957,7 @@ pre code {
   border-radius: 999px;
   padding: 3px 10px;
   margin: 2px 6px 2px 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-meta);
   background: var(--badge-default-bg);
 }
 
@@ -650,6 +984,237 @@ pre code {
   background: var(--badge-danger-bg);
   border-color: var(--badge-danger-border);
   color: var(--badge-danger-text);
+}
+
+/* ── Card variants ───────────────────────────────────────────────────────────
+   Extend the base .card with a modifier.
+   .card--flat     no shadow, just the border
+   .card--raised   stronger depth shadow
+   .card--sm       tighter padding for dense contexts
+   .card--inset    recessed appearance for secondary info                     */
+
+.card--flat {
+  box-shadow: none;
+}
+
+.card--raised {
+  box-shadow:
+    var(--card-shadow),
+    0 8px 28px color-mix(in srgb, var(--accent) 7%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+}
+
+.card--sm {
+  padding: var(--space-3) var(--space-4);
+}
+
+.card--inset {
+  background: color-mix(in srgb, var(--bg) 55%, var(--card));
+  border-color: color-mix(in srgb, var(--line) 65%, transparent);
+  box-shadow: none;
+}
+
+/* ── Unified button system ───────────────────────────────────────────────────
+   Usage: <a class="btn btn--primary" href="…">Label</a>
+          <button class="btn btn--secondary">Label</button>
+          <button class="btn btn--ghost btn--sm">Label</button>
+   Variants: --primary  --secondary  --ghost
+   Sizes:    (default)  --sm         --lg                                      */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px var(--space-5);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  transition:
+    transform    var(--motion-fast) var(--motion-ease-premium),
+    box-shadow   var(--motion-fast) var(--motion-ease-premium),
+    border-color var(--motion-fast) ease,
+    background   var(--motion-fast) ease,
+    color        var(--motion-fast) ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  text-decoration: none !important;
+}
+
+.btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  outline-offset: 2px;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Sizes */
+.btn--sm {
+  padding: 6px var(--space-3);
+  font-size: var(--font-size-label);
+}
+
+.btn--lg {
+  padding: 12px var(--space-6);
+  font-size: 1rem;
+}
+
+/* Variants */
+.btn--primary {
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    color-mix(in srgb, var(--accent) 82%, #6d28d9 18%) 100%
+  );
+  color: #fff;
+  border-color: color-mix(in srgb, var(--accent) 88%, #6d28d9 12%);
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.2) inset;
+}
+
+.btn--primary:hover {
+  box-shadow:
+    0 8px 24px color-mix(in srgb, var(--accent) 40%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  color: #fff;
+}
+
+.btn--secondary {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--line);
+  box-shadow: var(--shadow-premium-sm);
+}
+
+.btn--secondary:hover {
+  border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
+  color: var(--accent);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent);
+  border-color: transparent;
+}
+
+.btn--ghost:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+    transform: none;
+  }
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
+}
+
+/* ── Generic collapsible: details / summary ─────────────────────────────────
+   Usage: <details class="docs-collapse">
+            <summary>Section title</summary>
+            <div class="docs-collapse__body">…content…</div>
+          </details>
+
+   Variants: .docs-collapse--flat  (no border, subtle bg)
+             .docs-collapse--inset (recessed)                                  */
+
+.docs-collapse {
+  margin: var(--space-3) 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  overflow: hidden;
+  transition:
+    border-color var(--motion-fast) ease,
+    box-shadow   var(--motion-fast) ease;
+}
+
+.docs-collapse > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text);
+  user-select: none;
+  transition: background var(--motion-fast) ease;
+}
+
+.docs-collapse > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron indicator */
+.docs-collapse > summary::before {
+  content: "";
+  display: inline-block;
+  width: 0.38em;
+  height: 0.38em;
+  border-right: 1.75px solid currentColor;
+  border-bottom: 1.75px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--motion-fast) var(--motion-ease-premium);
+  flex-shrink: 0;
+  opacity: 0.55;
+  margin-right: 2px;
+}
+
+.docs-collapse[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.docs-collapse[open] > summary {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .docs-collapse > summary:hover {
+    background: color-mix(in srgb, var(--accent) 5%, var(--card));
+  }
+}
+
+.docs-collapse__body {
+  padding: var(--space-4);
+}
+
+.docs-collapse__body > *:first-child { margin-top: 0; }
+.docs-collapse__body > *:last-child  { margin-bottom: 0; }
+
+/* Variants */
+.docs-collapse--flat {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--bg) 40%, var(--card));
+  border-color: color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.docs-collapse--inset {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--bg) 65%, var(--card));
+  border-color: color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-collapse > summary::before {
+    transition: none;
+  }
 }
 
 .adr-meta {
@@ -687,7 +1252,7 @@ p.adr-track-branch-note {
 
 .adr-track-label {
   flex: 0 0 8.5rem;
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
   font-weight: 600;
   color: var(--adr-track-label-color);
   text-transform: uppercase;
@@ -707,14 +1272,14 @@ p.adr-track-branch-note {
 .adr-steps>li {
   display: inline-flex;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: var(--fs-body);
   line-height: 1.3;
 }
 
 .adr-steps>li+li::before {
   content: "→";
   color: var(--adr-step-arrow);
-  font-size: 0.75rem;
+  font-size: var(--fs-eyebrow);
   margin: 0 0.45rem;
   font-weight: normal;
 }
@@ -789,7 +1354,7 @@ p.adr-track-branch-note {
   position: sticky;
   top: 0;
   z-index: 6;
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
   animation: adr-status-border-sweep 10s linear infinite;
 }
 
@@ -891,7 +1456,7 @@ details.adr-status-log {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--card);
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -902,7 +1467,7 @@ details.adr-status-log {
 .adr-status-log__summary::before {
   content: "▾";
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
 }
 
 details.adr-status-log[open] > .adr-status-log__summary::before {
@@ -924,7 +1489,7 @@ details.adr-status-log[open] > .adr-status-log__summary {
   border-left: 4px solid #f59e0b;
   border-radius: 8px;
   background: color-mix(in srgb, var(--card) 80%, #fef3c7 20%);
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
   line-height: 1.45;
 }
 
@@ -982,7 +1547,7 @@ details.adr-status-log[open] > .adr-status-log__summary {
 }
 
 .adr-status-log__row .adr-step {
-  font-size: 0.88rem;
+  font-size: var(--fs-body);
   line-height: 1.35;
 }
 
@@ -991,10 +1556,7 @@ details.adr-status-log[open] > .adr-status-log__summary {
   font-weight: 600;
 }
 
-/* ADR template: collapsible weight instructions (<details> in 0000-template.html) */
-/* docs-theory-help: same chrome for optional “theory background” blocks (e.g. internal README). */
-details.adr-weight-help,
-details.rfc-weight-help,
+/* docs-theory-help: optional “theory background” blocks (e.g. internal README). */
 details.docs-theory-help {
   margin: 0 0 18px;
   border: 1px solid var(--line);
@@ -1003,16 +1565,12 @@ details.docs-theory-help {
   background: var(--card);
 }
 
-details.adr-weight-help summary,
-details.rfc-weight-help summary,
 details.docs-theory-help summary {
   cursor: pointer;
   font-weight: 600;
   color: var(--details-summary-fg);
 }
 
-details.adr-weight-help[open] summary,
-details.rfc-weight-help[open] summary,
 details.docs-theory-help[open] summary {
   margin-bottom: 8px;
   border-bottom: 1px solid var(--line);
@@ -1070,8 +1628,9 @@ details.docs-theory-help[open] summary {
   grid-row: 1;
   margin: 0;
   align-self: center;
-  font-size: 1.05rem;
+  font-size: var(--fs-h3);
   font-weight: 650;
+  background: none;
   color: var(--text);
   letter-spacing: -0.01em;
   line-height: 1.35;
@@ -1090,8 +1649,9 @@ details.docs-theory-help[open] summary {
   grid-row: 1;
   margin: 0;
   align-self: center;
-  font-size: 1.05rem;
+  font-size: var(--fs-h3);
   font-weight: 650;
+  background: none;
   color: var(--text);
   letter-spacing: -0.01em;
   line-height: 1.35;
@@ -1101,7 +1661,7 @@ details.docs-theory-help[open] summary {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  font-size: 0.7rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -1113,9 +1673,19 @@ details.docs-theory-help[open] summary {
 }
 
 .sys-diagram__sub {
-  font-size: 0.88rem;
+  font-size: var(--fs-body);
   color: var(--muted);
   line-height: 1.45;
+}
+
+/* Intro strip: same head chrome as C4/sequence diagrams, without an image canvas. */
+figure.sys-diagram.sys-diagram--head-only {
+  margin: 0 0 20px;
+}
+
+figure.sys-diagram.sys-diagram--head-only .sys-diagram__head {
+  border-bottom: none;
+  padding-bottom: 16px;
 }
 
 .sys-diagram__canvas {
@@ -1175,7 +1745,7 @@ details.docs-theory-help[open] summary {
   right: 8px;
   z-index: 1;
   padding: 6px 12px;
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
   line-height: 1.2;
   cursor: pointer;
   border-radius: 8px;
@@ -1240,7 +1810,7 @@ body.docs-diagram-lightbox-open {
   width: 40px;
   height: 40px;
   padding: 0;
-  font-size: 1.5rem;
+  font-size: var(--fs-h2);
   line-height: 1;
   cursor: pointer;
   border-radius: 999px;
@@ -1265,7 +1835,7 @@ body.docs-diagram-lightbox-open {
 
 .docs-diagram-lightbox__tool-btn {
   padding: 6px 12px;
-  font-size: 0.85rem;
+  font-size: var(--fs-body);
   line-height: 1.2;
   font-weight: 600;
   cursor: pointer;
@@ -1283,7 +1853,7 @@ body.docs-diagram-lightbox-open {
 }
 
 .docs-diagram-lightbox__hint {
-  font-size: 0.75rem;
+  font-size: var(--fs-eyebrow);
   color: var(--muted);
   margin-left: auto;
   user-select: none;
@@ -1331,7 +1901,7 @@ body.docs-diagram-lightbox-open {
 .sys-diagram__foot {
   margin: 0;
   padding: 12px 18px 14px;
-  font-size: 0.85rem;
+  font-size: var(--fs-body);
   color: var(--muted);
   border-top: 1px solid var(--line);
   background: var(--sys-diagram-foot-bg);
@@ -1402,7 +1972,7 @@ body.docs-diagram-lightbox-open {
 
 .api-endpoint__title {
   margin: 0 0 10px;
-  font-size: 1.02rem;
+  font-size: var(--fs-h4);
   font-weight: 650;
   line-height: 1.4;
   color: var(--text);
@@ -1419,7 +1989,7 @@ body.docs-diagram-lightbox-open {
   grid-template-columns: minmax(108px, 132px) minmax(0, 1fr);
   gap: 8px 14px;
   margin: 0;
-  font-size: 0.93rem;
+  font-size: var(--fs-body);
 }
 
 .api-endpoint__grid dt {
@@ -1450,12 +2020,26 @@ td {
   text-align: left;
   vertical-align: top;
   padding: 10px 12px;
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
 }
 
 th {
   background: var(--table-th-bg);
   font-weight: 600;
+  font-size: var(--fs-body);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* Mobile cell density: tighten padding so the visible width of each cell
+   carries more glyphs while staying ergonomic to tap-scroll. The font-size
+   stays at --fs-body (0.9rem ≈ 15.3 px on the 17 px root) — same as desktop
+   per the uniform ladder. */
+@media (max-width: 760px) {
+  th,
+  td {
+    padding: 8px 10px;
+  }
 }
 
 /*
@@ -1468,16 +2052,75 @@ main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audi
   max-width: 100%;
 }
 
-main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) th,
-main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) td {
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table):not(.spec-status-help__table) th,
+main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table):not(.spec-status-help__table) td {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+main.container:not(.container--swagger) .docs-table-scroll table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) th,
+main.container:not(.container--swagger) .docs-table-scroll table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) td {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
 }
 
 main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) :not(pre)>code {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+/*
+ * Mobile fallback for unwrapped tables:
+ * On the canonical mobile tier (<=760px), the desktop fixed-layout + word-break
+ * recipe collapses cells to ~100px and renders long tokens letter-by-letter
+ * ("noodle" effect). Switch to display:block + horizontal scroll so each row
+ * stays one line and the reader can swipe sideways. The right-edge inset
+ * shadow hints that horizontal scroll is available. Authors should still wrap
+ * wide tables in <div class="docs-table-scroll" role="region" aria-label="…">
+ * — this rule is only a safety net (see foundations/motion-and-adaptivity
+ * #mobile-contract).
+ */
+@media (max-width: 760px) {
+  main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    table-layout: auto;
+    /* Right-edge fade hints at horizontal scroll affordance. */
+    background:
+      linear-gradient(to right, var(--bg) 30%, transparent),
+      linear-gradient(to right, transparent, var(--bg) 70%) 100% 0,
+      radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), transparent),
+      radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), transparent) 100% 0;
+    background-repeat: no-repeat;
+    background-size: 28px 100%, 28px 100%, 14px 100%, 14px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+
+  main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) th,
+  main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) td {
+    /* Cancel the desktop break-anywhere recipe so cells flow naturally and
+       the table grows wide enough to require horizontal scroll. */
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: normal;
+    /* Keep cells from crushing to a single character; allow reasonable width. */
+    min-width: 8rem;
+  }
+
+  /* Inline <code> inside fallback tables: still allow wrapping because long
+     identifiers should not push the table to 2x viewport width. */
+  main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audit-ref-table):not(.audit-score-table):not(.audit-gap-table) :not(pre)>code {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* Assessment Table 2 — score column + legend layout (normative copy: audit-score-legend-fragment.html; ADR 0024). */
@@ -1508,6 +2151,48 @@ main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audi
   border-left-color: var(--audit-score-needs-border);
 }
 
+/* Table 2 (.audit-score-table) — collapse the ordinal-number (#) column to
+   shrink-to-fit, and pin the Score column to a small fixed width so the
+   "Score" header and the 1–2 digit number stay legible. The freed space
+   goes to the text-heavy columns (evidence / justification). */
+.audit-score-table th:first-child,
+.audit-score-table td:first-child {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  white-space: nowrap;
+  text-align: center;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+.audit-score-table th:last-child,
+.audit-score-table td:last-child {
+  width: 4.25rem;
+  min-width: 4.25rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Table 1 (.audit-ref-table) — same idea as Table 2: keep the ordinal
+   number column shrink-to-fit and cap the short-label Category column,
+   so Reference description and Typical benchmark get the breathing room. */
+.audit-ref-table th:first-child,
+.audit-ref-table td:first-child {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  white-space: nowrap;
+  text-align: center;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+.audit-ref-table th:nth-child(2),
+.audit-ref-table td:nth-child(2) {
+  width: 7rem;
+  min-width: 7rem;
+  white-space: nowrap;
+}
+
 aside.audit-score-legend {
   margin: 1rem 0 1.25rem;
   padding: 0.85rem 1rem 1rem;
@@ -1518,13 +2203,13 @@ aside.audit-score-legend {
 
 .audit-score-legend-title {
   margin: 0 0 0.5rem;
-  font-size: 1.05rem;
+  font-size: var(--fs-h3);
   color: var(--text);
 }
 
 .audit-score-legend-intro {
   margin: 0 0 0.65rem;
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
   color: var(--muted);
   line-height: 1.5;
 }
@@ -1541,7 +2226,7 @@ ul.audit-score-legend-bands {
   gap: 0.6rem;
   margin: 0.45rem 0 0;
   line-height: 1.45;
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
 }
 
 .audit-score-swatch {
@@ -1578,7 +2263,7 @@ p.audit-score-legend-noscript,
 p.audit-score-legend-error {
   margin: 0.75rem 0;
   padding: 0.65rem 0.85rem;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   color: var(--muted);
   background: var(--audit-legend-warn-bg);
   border: 1px solid var(--line);
@@ -1592,7 +2277,7 @@ p.audit-score-legend-error {
 
 /* Table 2 — optional justification column (why this score vs reference) */
 .audit-score-table td.audit-table-justification {
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
   line-height: 1.45;
   color: var(--muted);
   max-width: 22rem;
@@ -1602,8 +2287,8 @@ p.audit-score-legend-error {
 .audit-scoring-formula {
   margin: 0.75rem 0 1rem;
   padding: 0.85rem 1rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.88rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
   line-height: 1.55;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -1618,7 +2303,7 @@ p.audit-score-legend-error {
 table.audit-gap-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
 }
 
 table.audit-gap-table th,
@@ -1640,36 +2325,59 @@ table.audit-gap-table th {
 }
 
 .audit-gap-table td.audit-gap-status--todo {
-  background: #e9ecef;
-  border-left: 3px solid #6c757d;
-  color: #343a40;
+  background: var(--badge-muted-bg);
+  border-left: 3px solid var(--badge-muted-border);
+  color: var(--badge-muted-text);
 }
 
 .audit-gap-table td.audit-gap-status--inprogress {
-  background: #fff3cd;
-  border-left: 3px solid #e0a800;
-  color: #664d03;
+  background: var(--badge-warning-bg);
+  border-left: 3px solid var(--badge-warning-border);
+  color: var(--badge-warning-text);
 }
 
 .audit-gap-table td.audit-gap-status--done {
-  background: #d1e7dd;
-  border-left: 3px solid #198754;
-  color: #0a3622;
+  background: var(--badge-success-bg);
+  border-left: 3px solid var(--badge-success-border);
+  color: var(--badge-success-text);
 }
 
 /* docs/openapi/index.html — OpenAPI (test), Swagger UI browse-only */
 main.container--swagger {
-  max-width: min(1240px, 100%);
+  /* Keep Scalar in the "stacked controls" layout on desktop too. */
+  max-width: min(1120px, 100%);
+  padding-left: 0;
+  padding-right: 0;
 }
 
-main.container--swagger #swagger-ui {
-  min-height: 72vh;
-  margin-top: 16px;
+@media (max-width: 1200px) {
+  main.container--swagger {
+    /* Add breathing room in split/half-screen mode. */
+    max-width: min(1180px, 100%);
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  main.container--swagger {
+    padding-left: max(10px, env(safe-area-inset-left, 0px));
+    padding-right: max(10px, env(safe-area-inset-right, 0px));
+  }
+}
+
+main.container--swagger .docs-page-hero,
+main.container--swagger h1,
+main.container--swagger #docs-top-nav,
+main.container--swagger #docs-page-meta-mount {
+  /* Keep hero/header at normal docs padding */
+  padding-left: var(--container-pad, 24px);
+  padding-right: var(--container-pad, 24px);
 }
 
 /* Long-form docs: sticky “On this page” TOC (e.g. internal/analysis/system-design.html) */
 main.container.docs-page-layout {
-  max-width: min(1240px, 100%);
+  max-width: min(1520px, 100%);
 }
 
 /* Offset so in-page links don’t hide under browser UI */
@@ -1686,7 +2394,7 @@ main.docs-page-layout [id] {
 
 /* Desktop-only compact mode when "On this page" is collapsed by user. */
 .docs-page-layout__inner.docs-page-layout__inner--toc-collapsed {
-  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-columns: 42px minmax(0, 1fr);
 }
 
 /* Auto TOC: pages with only h1/lead (e.g. openapi/index.html) have no sidebar — use full width */
@@ -1705,13 +2413,13 @@ main.docs-page-layout [id] {
 .docs-inpage-toc {
   order: 1;
   position: sticky;
-  z-index: 1;
+  z-index: 3;
   top: 1rem;
   padding: 6px 0 0;
   background: transparent;
   border: 0;
   border-radius: 0;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -1719,7 +2427,7 @@ main.docs-page-layout [id] {
 
 .docs-inpage-toc__title {
   margin: 0 0 8px;
-  font-size: 0.74rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.045em;
@@ -1735,14 +2443,7 @@ main.docs-page-layout [id] {
   gap: 6px;
   cursor: pointer;
   margin: 0 0 10px;
-  padding: 4px 6px;
-  border: 1px solid var(--docs-premium-surface-border);
-  border-radius: 12px;
-  background: var(--docs-premium-surface-bg);
-  box-shadow: var(--docs-premium-surface-shadow);
-  transition:
-    border-color var(--motion-fast) var(--motion-ease-premium),
-    box-shadow var(--motion-fast) var(--motion-ease-premium);
+  padding: 0 2px 0 8px;
 }
 
 .docs-inpage-toc__head .docs-inpage-toc__title {
@@ -1753,32 +2454,23 @@ main.docs-page-layout [id] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   margin: 0;
   padding: 0;
-  border: 1px solid var(--docs-premium-chip-border);
-  border-radius: 8px;
-  background: var(--docs-premium-chip-bg);
-  color: color-mix(in srgb, var(--muted) 76%, var(--text));
-  font-size: 0.84rem;
-  font-weight: 700;
-  line-height: 1;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
   cursor: pointer;
   transition:
     color var(--motion-fast) var(--motion-ease-premium),
-    border-color var(--motion-fast) var(--motion-ease-premium),
-    background var(--motion-fast) var(--motion-ease-premium),
-    transform var(--motion-fast) var(--motion-ease-premium),
-    box-shadow var(--motion-fast) var(--motion-ease-premium);
+    background var(--motion-fast) var(--motion-ease-premium);
 }
 
 .docs-inpage-toc__toggle:hover {
   color: var(--text);
-  border-color: color-mix(in srgb, var(--docs-premium-chip-border) 45%, var(--accent));
-  background: color-mix(in srgb, var(--docs-premium-chip-bg) 84%, var(--accent) 16%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(11, 18, 32, 0.12);
+  background: color-mix(in srgb, var(--muted) 12%, transparent);
 }
 
 .docs-inpage-toc__toggle:focus-visible {
@@ -1806,7 +2498,9 @@ main.docs-page-layout [id] {
 .docs-inpage-toc.docs-inpage-toc--collapsed .docs-inpage-toc__head {
   margin-bottom: 0;
   justify-content: center;
+  min-height: 30px;
   padding: 4px;
+  border-radius: 8px;
 }
 
 .docs-inpage-toc.docs-inpage-toc--collapsed .docs-inpage-toc__title {
@@ -1851,11 +2545,230 @@ main.docs-page-layout [id] {
 }
 
 .docs-inpage-toc nav a.docs-inpage-toc__link--active {
-  font-weight: 650;
+  font-weight: 600;
   color: var(--accent);
   border-left-color: var(--accent);
   background: color-mix(in srgb, var(--docs-premium-item-active-bg) 80%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+/* Glossary tables that pair each term with an inline-SVG example. */
+.glossary-visuals td svg {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.glossary-visuals td:last-child {
+  vertical-align: middle;
+  padding: 8px;
+}
+
+/* Doc-page mockup figures used in the popups & tooltips reference pages. */
+.docs-popup-mock {
+  margin: 14px 0 18px;
+}
+
+.docs-popup-mock svg {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.docs-popup-mock figcaption {
+  margin-top: 6px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+.docs-popup-callouts {
+  margin: 6px 0 0;
+  padding-left: 1.1rem;
+  font-size: var(--fs-body);
+  line-height: 1.45;
+}
+
+/* Toast stack host — bottom-right column that stacks every docs toast. */
+.docs-toast-stack {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 130;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  pointer-events: none;
+  width: min(420px, calc(100vw - 28px));
+}
+
+.docs-toast-stack > * {
+  pointer-events: auto;
+}
+
+/* Sticky TOC promo toast (desktop) and continue-reading prompt — children of the stack. */
+.docs-inpage-toc-toast,
+.docs-continue-reading--toast {
+  position: relative;
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line) 62%);
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg,
+      color-mix(in srgb, var(--accent) 8%, var(--card)) 0%,
+      color-mix(in srgb, var(--card) 92%, var(--bg) 8%) 56%,
+      color-mix(in srgb, #8b5cf6 7%, var(--card)) 100%);
+  box-shadow:
+    0 22px 54px rgba(11, 18, 32, 0.24),
+    0 1px 0 color-mix(in srgb, #fff 48%, transparent) inset;
+  padding: 12px 14px 0;
+  overflow: hidden;
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
+  animation: docs-toc-toast-enter 200ms var(--motion-ease-premium) both;
+}
+
+.docs-inpage-toc-toast--closing,
+.docs-continue-reading--toast.docs-inpage-toc-toast--closing {
+  animation: docs-toc-toast-leave 180ms var(--motion-ease-premium) both;
+}
+
+.docs-inpage-toc-toast__title,
+.docs-continue-reading--toast .docs-inpage-toc-toast__title {
+  margin: 0 0 5px;
+  font-size: var(--fs-body);
+  font-weight: 760;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.docs-inpage-toc-toast__title::before,
+.docs-continue-reading--toast .docs-inpage-toc-toast__title::before {
+  content: "✨ ";
+}
+
+.docs-inpage-toc-toast__text,
+.docs-continue-reading--toast .docs-inpage-toc-toast__text {
+  margin: 0 0 11px;
+  font-size: var(--fs-meta);
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+}
+
+.docs-inpage-toc-toast__actions,
+.docs-continue-reading--toast .docs-inpage-toc-toast__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 11px;
+}
+
+.docs-inpage-toc-toast__btn,
+.docs-continue-reading--toast .docs-inpage-toc-toast__btn {
+  border-radius: 10px;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  line-height: 1;
+  padding: 8px 11px;
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--motion-ease-premium),
+    border-color var(--motion-fast) var(--motion-ease-premium),
+    color var(--motion-fast) var(--motion-ease-premium),
+    transform var(--motion-fast) var(--motion-ease-premium);
+}
+
+.docs-inpage-toc-toast__btn--ghost,
+.docs-continue-reading--toast .docs-inpage-toc-toast__btn--ghost {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 78%, var(--card));
+  color: color-mix(in srgb, var(--muted) 88%, var(--text));
+}
+
+.docs-inpage-toc-toast__btn--ghost:hover,
+.docs-continue-reading--toast .docs-inpage-toc-toast__btn--ghost:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--line) 56%, var(--accent) 44%);
+}
+
+.docs-inpage-toc-toast__btn--primary,
+.docs-continue-reading--toast .docs-inpage-toc-toast__btn--primary {
+  border: 1px solid color-mix(in srgb, var(--accent) 62%, var(--line));
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 28%, var(--card)) 0%,
+    color-mix(in srgb, #8b5cf6 18%, var(--card)) 100%
+  );
+  color: color-mix(in srgb, var(--accent) 82%, var(--text));
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.docs-inpage-toc-toast__btn--primary:hover,
+.docs-continue-reading--toast .docs-inpage-toc-toast__btn--primary:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 36%, var(--card)) 0%,
+    color-mix(in srgb, #8b5cf6 24%, var(--card)) 100%
+  );
+}
+
+.docs-inpage-toc-toast__btn:focus-visible,
+.docs-continue-reading--toast .docs-inpage-toc-toast__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.docs-inpage-toc-toast__progress,
+.docs-continue-reading--toast .docs-inpage-toc-toast__progress {
+  height: 4px;
+  margin: 0 -14px;
+  border-radius: 0 0 16px 16px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 92%, #38bdf8),
+    color-mix(in srgb, #8b5cf6 80%, var(--accent))
+  );
+  transform-origin: left center;
+  animation: docs-toc-toast-progress 3s linear forwards;
+}
+
+@keyframes docs-toc-toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes docs-toc-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes docs-toc-toast-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
 }
 
 /* Global docs search (docs-nav.js + docs/assets/search-index.json). */
@@ -1866,7 +2779,7 @@ main.docs-page-layout [id] {
 
 .docs-search__label {
   display: block;
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
   color: var(--muted);
   margin-bottom: 6px;
 }
@@ -1876,7 +2789,7 @@ main.docs-page-layout [id] {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px 12px;
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
   background: var(--search-panel-bg);
   color: var(--text);
   transition: border-color var(--motion-fast) var(--motion-ease-premium), box-shadow var(--motion-fast) var(--motion-ease-premium);
@@ -1904,7 +2817,7 @@ main.docs-page-layout [id] {
   border-radius: 999px;
   background: color-mix(in srgb, var(--search-panel-bg) 86%, var(--card));
   color: var(--muted);
-  font-size: 0.74rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 700;
   letter-spacing: 0.03em;
   padding: 4px 10px;
@@ -1966,7 +2879,7 @@ main.docs-page-layout [id] {
   align-items: center;
   border-radius: 999px;
   padding: 2px 8px;
-  font-size: 0.7rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--accent, #2563eb) 82%, #0f172a);
@@ -1977,14 +2890,14 @@ main.docs-page-layout [id] {
 .docs-search__result-meta {
   display: block;
   margin-top: 2px;
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   color: var(--muted);
 }
 
 .docs-search__result-preview {
   display: block;
   margin-top: 4px;
-  font-size: 0.85rem;
+  font-size: var(--fs-body);
   color: var(--search-result-preview);
   line-height: 1.35;
 }
@@ -2000,7 +2913,7 @@ main.docs-page-layout [id] {
 .docs-search__status {
   padding: 10px 12px;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
 }
 
 .docs-search__empty-title {
@@ -2017,7 +2930,7 @@ main.docs-page-layout [id] {
 
 .docs-search__didyoumean {
   margin: 8px 0 0;
-  font-size: 0.84rem;
+  font-size: var(--fs-meta);
   color: var(--muted);
 }
 
@@ -2027,7 +2940,7 @@ main.docs-page-layout [id] {
   border-radius: 999px;
   background: color-mix(in srgb, var(--search-panel-bg) 90%, var(--card));
   color: color-mix(in srgb, var(--accent) 70%, var(--text));
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   font-weight: 650;
   padding: 2px 9px;
   cursor: pointer;
@@ -2040,7 +2953,7 @@ main.docs-page-layout [id] {
 
 .docs-search__related-queries {
   margin: 10px 0 0;
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   color: var(--muted);
   display: flex;
   flex-wrap: wrap;
@@ -2066,7 +2979,7 @@ main.docs-page-layout [id] {
   background: color-mix(in srgb, var(--search-panel-bg) 82%, #ffffff 18%);
   color: var(--text);
   text-decoration: none;
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   font-weight: 600;
   cursor: pointer;
 }
@@ -2129,7 +3042,7 @@ main.docs-page-layout [id] {
 .docs-theme-toast--pillow {
   max-width: 100%;
   padding: 11px 20px 12px;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0.01em;
@@ -2187,6 +3100,16 @@ main.docs-page-layout [id] {
       color-mix(in srgb, var(--accent) 12%, var(--card)) 100%);
   --docs-premium-focus-glow-soft: color-mix(in srgb, var(--accent) 18%, transparent);
   --docs-premium-focus-glow-strong: color-mix(in srgb, var(--accent) 36%, transparent);
+  --docs-overlay-border: color-mix(in srgb, var(--line) 56%, var(--accent));
+  --docs-overlay-bg:
+    linear-gradient(168deg,
+      color-mix(in srgb, var(--card) 88%, #0b1220 12%) 0%,
+      color-mix(in srgb, var(--card) 82%, #070b14 18%) 52%,
+      color-mix(in srgb, var(--card) 76%, #050810 24%) 100%);
+  --docs-overlay-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.5),
+    0 1px 0 color-mix(in srgb, #fff 10%, transparent) inset;
+  --docs-overlay-blur: 10px;
 }
 
 /* Premium parity for dark theme: quick actions, tips, floating cards, and feedback UI. */
@@ -2379,6 +3302,23 @@ main.docs-page-layout [id] {
   }
 }
 
+/* Unified popup/overlay visual style for floating UI primitives. */
+.docs-theme-toast--pillow,
+.docs-inpage-toc-toast,
+.docs-search__results,
+.docs-quick-actions__panel,
+.docs-hotkey-tip,
+.docs-continue-reading,
+.docs-feedback-card__toast,
+.docs-diagram-lightbox__toolbar,
+.docs-diagram-lightbox__viewport {
+  border-color: var(--docs-overlay-border);
+  background: var(--docs-overlay-bg);
+  box-shadow: var(--docs-overlay-shadow);
+  backdrop-filter: blur(var(--docs-overlay-blur));
+  -webkit-backdrop-filter: blur(var(--docs-overlay-blur));
+}
+
 .docs-page-actions {
   margin: 0 0 10px;
   display: flex;
@@ -2388,7 +3328,7 @@ main.docs-page-layout [id] {
 }
 
 .docs-page-actions__hint {
-  font-size: 0.68rem;
+  font-size: var(--fs-eyebrow);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2399,7 +3339,7 @@ main.docs-page-layout [id] {
   border: 1px solid var(--docs-premium-chip-border);
   border-radius: 10px;
   padding: 4px 9px;
-  font-size: 0.76rem;
+  font-size: var(--fs-eyebrow);
   color: var(--text);
   text-decoration: none;
   background: var(--docs-premium-chip-bg);
@@ -2410,7 +3350,7 @@ main.docs-page-layout [id] {
   border: 1px solid var(--docs-premium-chip-border);
   border-radius: 10px;
   padding: 4px 9px;
-  font-size: 0.76rem;
+  font-size: var(--fs-eyebrow);
   color: var(--text);
   background: var(--docs-premium-chip-bg);
   cursor: pointer;
@@ -2507,7 +3447,7 @@ main.docs-page-layout [id] {
 .docs-quick-actions__title {
   margin: 0;
   font-weight: 740;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   color: color-mix(in srgb, var(--text) 80%, var(--muted));
   letter-spacing: 0.015em;
 }
@@ -2521,7 +3461,7 @@ main.docs-page-layout [id] {
 
 .docs-quick-actions__kbd-hint {
   margin: 0;
-  font-size: 0.69rem;
+  font-size: var(--fs-eyebrow);
   color: color-mix(in srgb, var(--muted) 88%, var(--text));
   opacity: 0.82;
 }
@@ -2549,7 +3489,7 @@ main.docs-page-layout [id] {
 
 .docs-hotkey-tip__text {
   margin: 0;
-  font-size: 0.76rem;
+  font-size: var(--fs-eyebrow);
   color: var(--text);
 }
 
@@ -2557,8 +3497,8 @@ main.docs-page-layout [id] {
   padding: 1px 5px;
   border: 1px solid var(--line);
   border-radius: 5px;
-  font-size: 0.72rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--fs-eyebrow);
+  font-family: var(--font-mono);
   background: var(--card);
 }
 
@@ -2567,7 +3507,7 @@ main.docs-page-layout [id] {
   border-radius: 8px;
   background: color-mix(in srgb, var(--card) 96%, #fff);
   color: var(--text);
-  font-size: 0.72rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 600;
   padding: 3px 8px;
   cursor: pointer;
@@ -2605,7 +3545,7 @@ main.docs-page-layout [id] {
 
 .docs-continue-reading__title {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   color: var(--text);
   font-weight: 600;
 }
@@ -2620,7 +3560,7 @@ main.docs-page-layout [id] {
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 3px 8px;
-  font-size: 0.72rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 600;
   background: var(--card);
   color: var(--text);
@@ -2650,7 +3590,7 @@ main.docs-page-layout [id] {
   color: var(--text);
   padding: 8px 10px;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   line-height: 1.3;
   transition:
     border-color var(--motion-fast) var(--motion-ease-premium),
@@ -2688,7 +3628,7 @@ main.docs-page-layout [id] {
   top: 0;
   z-index: 1;
   padding: 7px 4px 6px;
-  font-size: 0.71rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -2711,14 +3651,14 @@ main.docs-page-layout [id] {
   text-decoration: none;
   padding: 8px 10px;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   line-height: 1.35;
   text-align: left;
   cursor: pointer;
   transition:
-    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform    var(--motion-base) var(--motion-ease-premium),
     border-color var(--motion-fast) var(--motion-ease-premium),
-    box-shadow var(--motion-fast) var(--motion-ease-premium),
+    box-shadow   var(--motion-fast) var(--motion-ease-premium),
     background var(--motion-fast) var(--motion-ease-premium),
     filter var(--motion-fast) var(--motion-ease-premium);
 }
@@ -2749,7 +3689,7 @@ main.docs-page-layout [id] {
   width: 18px;
   height: 18px;
   border-radius: 6px;
-  font-size: 0.72rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 700;
   color: color-mix(in srgb, var(--accent) 78%, var(--text));
   background: color-mix(in srgb, var(--accent) 14%, transparent);
@@ -2762,7 +3702,7 @@ main.docs-page-layout [id] {
   border: 1px solid color-mix(in srgb, var(--line) 78%, var(--accent));
   border-radius: 8px;
   padding: 2px 7px;
-  font-size: 0.66rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: none;
@@ -2780,7 +3720,7 @@ main.docs-page-layout [id] {
 .docs-quick-actions__item-hint {
   display: block;
   margin-top: 4px;
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   color: var(--muted);
   opacity: 0.92;
 }
@@ -2801,8 +3741,8 @@ main.docs-page-layout [id] {
   border: 1px solid color-mix(in srgb, var(--line) 82%, var(--accent));
   border-bottom-width: 1px;
   border-radius: 5px;
-  font-size: 0.7rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--fs-eyebrow);
+  font-family: var(--font-mono);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--muted) 78%, var(--text));
@@ -2814,7 +3754,7 @@ main.docs-page-layout [id] {
   border-radius: 10px;
   padding: 12px;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
 }
 
 .docs-quick-actions__list a:hover,
@@ -2876,14 +3816,14 @@ body.docs-density-ultra-compact .docs-page-actions {
 }
 
 body.docs-density-ultra-compact .docs-page-actions__hint {
-  font-size: 0.64rem;
+  font-size: var(--fs-eyebrow);
   letter-spacing: 0.03em;
 }
 
 body.docs-density-ultra-compact .docs-page-actions__link,
 body.docs-density-ultra-compact .docs-page-actions__button {
   padding: 2px 8px;
-  font-size: 0.71rem;
+  font-size: var(--fs-eyebrow);
 }
 
 body.docs-density-ultra-compact .docs-quick-actions__panel {
@@ -2895,24 +3835,24 @@ body.docs-density-ultra-compact .docs-quick-actions__panel {
 }
 
 body.docs-density-ultra-compact .docs-quick-actions__title {
-  font-size: 0.84rem;
+  font-size: var(--fs-meta);
 }
 
 body.docs-density-ultra-compact .docs-quick-actions__kbd-hint {
-  font-size: 0.64rem;
+  font-size: var(--fs-eyebrow);
 }
 
 body.docs-density-ultra-compact .docs-quick-actions__filter {
   border-radius: 8px;
   padding: 7px 9px;
-  font-size: 0.84rem;
+  font-size: var(--fs-meta);
 }
 
 body.docs-density-ultra-compact .docs-quick-actions__list a,
 body.docs-density-ultra-compact .docs-quick-actions__list button {
   border-radius: 8px;
   padding: 7px 9px;
-  font-size: 0.84rem;
+  font-size: var(--fs-meta);
 }
 
 body.docs-density-ultra-compact .docs-hotkey-tip {
@@ -2922,11 +3862,11 @@ body.docs-density-ultra-compact .docs-hotkey-tip {
 }
 
 body.docs-density-ultra-compact .docs-hotkey-tip__text {
-  font-size: 0.7rem;
+  font-size: var(--fs-eyebrow);
 }
 
 body.docs-density-ultra-compact .docs-hotkey-tip__close {
-  font-size: 0.68rem;
+  font-size: var(--fs-eyebrow);
   padding: 2px 7px;
 }
 
@@ -2938,11 +3878,11 @@ body.docs-density-ultra-compact .docs-continue-reading {
 }
 
 body.docs-density-ultra-compact .docs-continue-reading__title {
-  font-size: 0.72rem;
+  font-size: var(--fs-eyebrow);
 }
 
 body.docs-density-ultra-compact .docs-continue-reading__btn {
-  font-size: 0.68rem;
+  font-size: var(--fs-eyebrow);
   padding: 2px 7px;
 }
 
@@ -2986,10 +3926,8 @@ body.docs-density-ultra-compact .docs-continue-reading__btn {
 
 /* Reading mode: focus content by reducing surrounding chrome. */
 body.docs-reading-mode .docs-page-actions,
-body.docs-reading-mode .docs-inpage-toc,
 body.docs-reading-mode .docs-hotkey-tip,
-body.docs-reading-mode .docs-continue-reading,
-body.docs-reading-mode .docs-site-footer {
+body.docs-reading-mode .docs-continue-reading {
   display: none !important;
 }
 
@@ -3009,17 +3947,7 @@ body.docs-reading-mode #docs-top-nav .top-nav {
 
 body.docs-reading-mode main.container,
 body.docs-reading-mode main.container.docs-page-layout {
-  max-width: min(900px, calc(100% - 20px));
-}
-
-body.docs-reading-mode .docs-page-layout__inner,
-body.docs-reading-mode .docs-page-layout__inner--single {
-  grid-template-columns: minmax(0, 1fr) !important;
-  gap: 1rem;
-}
-
-body.docs-reading-mode .docs-page-layout__article {
-  order: 1;
+  max-width: min(1400px, calc(100% - 20px));
 }
 
 body.docs-reading-mode main.container p,
@@ -3045,11 +3973,11 @@ body.docs-reading-mode main.container li {
   .docs-quick-actions__list a,
   .docs-quick-actions__list button {
     padding: 10px 11px;
-    font-size: 0.92rem;
+    font-size: var(--fs-body);
   }
 
   .docs-quick-actions__item-pill {
-    font-size: 0.63rem;
+    font-size: var(--fs-eyebrow);
     padding: 2px 7px;
   }
 
@@ -3059,18 +3987,22 @@ body.docs-reading-mode main.container li {
   }
 
   .docs-quick-actions__item-keycap {
-    font-size: 0.64rem;
+    font-size: var(--fs-eyebrow);
     padding: 1px 5px;
   }
 }
 
-/* Below desktop: hide “On this page” entirely; article is full-width (aligns with internal-layout ≥1025px desktop). */
-@media (max-width: 1024px) {
+/* Keep sticky TOC visible on tablet/compact desktop; hide only in true mobile layout. */
+@media (max-width: 900px) {
   .docs-page-layout__inner {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .docs-inpage-toc {
+    display: none;
+  }
+
+  .docs-inpage-toc-toast {
     display: none;
   }
 
@@ -3080,24 +4012,33 @@ body.docs-reading-mode main.container li {
 }
 
 /* Back to top — shown when viewport is near the document bottom (see docs-nav.js). */
+/* Default = compact (sleeping rocket): icon-only square pill in muted
+   colour. Becomes visible past the first viewport. The label and ambient
+   effects are dormant until --armed is added (within 320px of the footer).
+   All visual deltas between compact and armed are transition-driven so
+   the morph reads as a single continuous gesture. */
 .docs-back-to-top {
   position: fixed;
   right: max(1.25rem, env(safe-area-inset-right, 0px));
-  bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+  bottom: calc(max(1.25rem, env(safe-area-inset-bottom, 0px)) + var(--docs-footer-visible-h, 0px));
   z-index: 40;
-  width: 44px;
-  height: 44px;
   margin: 0;
+  /* Pin the launchpad to the same physical footprint as .docs-report-bug-fab
+     (52x52 button, 28x28 icon) so the two FABs read as a single visual pair. */
+  width: 52px;
+  height: 52px;
   padding: 0;
+  gap: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--card);
-  color: var(--accent);
+  color: var(--muted);
+  font: inherit;
   box-shadow: var(--card-shadow);
-  cursor: pointer;
+  cursor: default;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -3105,7 +4046,12 @@ body.docs-reading-mode main.container li {
   transition:
     opacity 0.22s ease,
     transform 0.22s ease,
-    visibility 0.22s ease;
+    visibility 0.22s ease,
+    bottom 0.12s ease,
+    color 0.32s ease,
+    border-color 0.32s ease,
+    padding 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    gap 0.36s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .docs-back-to-top.docs-back-to-top--visible {
@@ -3115,7 +4061,25 @@ body.docs-reading-mode main.container li {
   transform: translateY(0);
 }
 
+/* Hover in compact = subtle border tint only (no colour change — the
+   rocket isn't actionable yet). */
 .docs-back-to-top:hover {
+  border-color: color-mix(in srgb, var(--line) 55%, var(--muted) 45%);
+}
+
+/* Armed = unlock click + morph the visuals. The pill stays compact (the
+   inline text label is replaced visually by the spinning curved-text ring
+   around the rocket), so the transformation reads as the rocket "waking
+   up": colour brightens to accent, border accents, embers start bubbling,
+   and a marquee phrase orbits the icon. */
+.docs-back-to-top.docs-back-to-top--armed {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line) 60%);
+  cursor: pointer;
+}
+
+.docs-back-to-top.docs-back-to-top--armed:hover,
+.docs-back-to-top.docs-back-to-top--armed:focus-visible {
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -3124,19 +4088,111 @@ body.docs-reading-mode main.container li {
   opacity: 1;
   visibility: visible;
   pointer-events: none;
-  animation-duration: 1.52s;
-  /* Linear segments + distance-weighted keyframe times keep velocity steady; easing between
-     each keyframe pair (default ease) causes visible micro-stutters during scroll. */
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
+  padding: 0;
+  gap: 0;
+  /* As the rocket departs, the launchpad itself dissolves: background,
+     border, and drop-shadow all fade to transparent. By the time the
+     rocket reaches the loop apex (~1.4s in), nothing remains where the
+     pill used to be — only the flying rocket and its trail. The wrap
+     keeps opacity:1 so the rocket SVG stays fully visible. */
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  transition:
+    background-color 0.42s ease-out,
+    border-color 0.42s ease-out,
+    box-shadow 0.42s ease-out;
 }
 
-.docs-back-to-top.docs-back-to-top--launching.docs-back-to-top--launch-right {
-  animation-name: docs-rocket-launch-right;
+/* Inline label exists for screen-reader fallback only — visually hidden
+   on every state. The button's accessible name comes from aria-label. */
+.docs-back-to-top__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.docs-back-to-top.docs-back-to-top--launching.docs-back-to-top--launch-left {
-  animation-name: docs-rocket-launch-left;
+/* Fire embers — tiny warm particles that bubble up from the rocket's
+   base while idling on the launchpad. Each one has its own delay and
+   horizontal drift, so the swarm looks irregular instead of mechanical.
+   Active only in armed (idle) — during launch the flame/trail/smoke
+   takes over. */
+.docs-back-to-top__ember {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 32%, #fff7ed 0%, #fed7aa 22%, #fb923c 58%, #f97316 100%);
+  box-shadow: 0 0 6px rgba(251, 146, 60, 0.55);
+  opacity: 0;
+  transform: translate(-50%, 0) scale(0.3);
+  pointer-events: none;
+  /* CSS variable consumed by the keyframe to vary horizontal drift per particle */
+  --ember-drift: 0px;
+}
+
+.docs-back-to-top__ember--1 { animation-delay:    0ms; --ember-drift:  -7px; }
+.docs-back-to-top__ember--2 { animation-delay:  320ms; --ember-drift:   6px; }
+.docs-back-to-top__ember--3 { animation-delay:  640ms; --ember-drift:  -4px; }
+.docs-back-to-top__ember--4 { animation-delay:  960ms; --ember-drift:   8px; }
+.docs-back-to-top__ember--5 { animation-delay: 1280ms; --ember-drift:  -2px; }
+
+.docs-back-to-top--armed:not(.docs-back-to-top--launching) .docs-back-to-top__ember {
+  animation: docs-rocket-ember-rise 1.7s ease-out infinite;
+}
+
+@keyframes docs-rocket-ember-rise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 6px) scale(0.3);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, 2px) scale(0.75);
+  }
+  65% {
+    opacity: 0.78;
+    transform: translate(calc(-50% + var(--ember-drift) * 0.55), -3px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--ember-drift)), -9px) scale(1.25);
+  }
+}
+
+/* Ambient effects — flame, trail, smoke — stay dormant until armed.
+   speed-lines only run during the actual launch. */
+.docs-back-to-top:not(.docs-back-to-top--armed):not(.docs-back-to-top--launching) .docs-back-to-top__flame,
+.docs-back-to-top:not(.docs-back-to-top--armed):not(.docs-back-to-top--launching) .docs-back-to-top__trail,
+.docs-back-to-top:not(.docs-back-to-top--armed):not(.docs-back-to-top--launching) .docs-back-to-top__smoke {
+  opacity: 0;
+}
+
+/* Hover bobble + ambient idle only fire when armed. */
+.docs-back-to-top:not(.docs-back-to-top--armed) .docs-back-to-top__rocket {
+  animation: none;
+}
+
+/* Click while compact → small shake. Tells the user the click registered
+   but the rocket isn't ready yet. */
+.docs-back-to-top--nudge {
+  animation: docs-back-to-top-nudge 0.6s cubic-bezier(0.36, 0, 0.66, -0.56);
+}
+
+@keyframes docs-back-to-top-nudge {
+  0%, 100% { transform: translate(0, 0); }
+  18% { transform: translate(-4px, 0) rotate(-2deg); }
+  36% { transform: translate(4px, 0)  rotate(2deg);  }
+  54% { transform: translate(-3px, 0) rotate(-1deg); }
+  72% { transform: translate(3px, 0)  rotate(1deg);  }
 }
 
 .docs-back-to-top:focus-visible {
@@ -3235,7 +4291,7 @@ body.docs-reading-mode main.container li {
 
 .docs-feedback-card__status {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
   color: var(--muted);
   min-height: 1.2em;
 }
@@ -3258,7 +4314,7 @@ body.docs-reading-mode main.container li {
   border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line) 60%);
   background: color-mix(in srgb, var(--card) 84%, #ffffff 16%);
   color: color-mix(in srgb, var(--accent) 76%, #111827 24%);
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
   font-weight: 600;
   opacity: 0;
   transform: translateY(-4px);
@@ -3286,8 +4342,42 @@ body.docs-reading-mode main.container li {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  /* Match .docs-report-bug-fab__icon dimensions so the rocket and bug FAB
+     read as one visual pair (52×52 buttons, 28×28 icons). */
+  width: 28px;
+  height: 28px;
+}
+
+/* Fueling ring — visible only in compact state. The conic-gradient draws a
+   wedge from -90° (top) clockwise to (var(--rocket-progress) * 1%); the
+   radial mask keeps only a 2px outer band, so the wedge reads as a ring
+   that fills as the user approaches the footer. Fades out the moment the
+   button arms (ring's purpose is fulfilled — replaced by the full pill). */
+.docs-back-to-top__progress-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(
+    from -90deg,
+    color-mix(in srgb, var(--accent) 88%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 88%, transparent) calc(var(--rocket-progress, 0) * 1%),
+    color-mix(in srgb, var(--line) 60%, transparent)   calc(var(--rocket-progress, 0) * 1%),
+    color-mix(in srgb, var(--line) 60%, transparent)   100%
+  );
+  /* Explicit pixels instead of calc(50% - …): `circle` defaults to
+     farthest-corner; for a 58×58 square that is ≈41 px, so 50% lands inside
+     the box (29 px) rather than on the edge — the ring used to sit on the
+     icon stroke and looked faceted. 26 px / 28 px puts the ring exactly on
+     the outer edge of the 52×52 button. */
+  -webkit-mask: radial-gradient(circle, transparent 26px, #000 26px, #000 28px, transparent 28px);
+          mask: radial-gradient(circle, transparent 26px, #000 26px, #000 28px, transparent 28px);
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+
+.docs-back-to-top.docs-back-to-top--visible:not(.docs-back-to-top--armed):not(.docs-back-to-top--launching) .docs-back-to-top__progress-ring {
+  opacity: 0.85;
 }
 
 .docs-back-to-top__rocket {
@@ -3354,35 +4444,55 @@ body.docs-reading-mode main.container li {
   animation: docs-rocket-smoke-right 1.25s ease-out infinite 0.24s;
 }
 
+.docs-back-to-top__speed-line {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  width: 14px;
+  height: 2px;
+  border-radius: 999px;
+  opacity: 0;
+  transform: translate(-50%, 0) scaleX(0.5);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
+.docs-back-to-top__speed-line--a {
+  margin-left: -13px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 250, 230, 0.92) 100%);
+  filter: blur(0.4px);
+}
+
+.docs-back-to-top__speed-line--b {
+  margin-left: 13px;
+  background: linear-gradient(90deg, rgba(255, 250, 230, 0.92) 0%, rgba(255, 255, 255, 0) 100%);
+  filter: blur(0.4px);
+}
+
 .docs-back-to-top:hover .docs-back-to-top__rocket,
 .docs-back-to-top:focus-visible .docs-back-to-top__rocket {
   animation-duration: 1s;
 }
 
+/* JS rAF animation controls the rocket-wrap transform during launch.
+   CSS only manages idle/armed visual states; flight is fully handled in docs-nav.js. */
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__rocket {
-  animation: docs-rocket-thrust 0.72s ease-in-out infinite;
-}
-
-.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__rocket-wrap {
-  animation: docs-rocket-grow-near-top 1.52s linear forwards;
+  animation: none;
 }
 
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__flame {
   opacity: 1;
-  animation:
-    docs-rocket-flame 0.4s ease-in-out infinite,
-    docs-rocket-flame-grow-near-top 1.52s linear forwards;
+  animation: docs-rocket-flame 0.4s ease-in-out infinite;
 }
 
 .docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__trail {
-  opacity: 0.82;
-  animation: docs-rocket-trail 0.9s ease-in-out infinite;
+  opacity: 0;
+  animation: none;
 }
 
-.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__smoke--left,
-.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__smoke--mid,
-.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__smoke--right {
-  animation-duration: 0.9s;
+.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__speed-line--a,
+.docs-back-to-top.docs-back-to-top--launching .docs-back-to-top__speed-line--b {
+  display: none;
 }
 
 @keyframes docs-rocket-hover {
@@ -3395,86 +4505,6 @@ body.docs-reading-mode main.container li {
   }
 }
 
-@keyframes docs-rocket-launch-right {
-  0% {
-    transform: translate(0, 0) scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  /* Stops spaced by vertical distance so linear timing = near-constant upward speed (no easing “hops”). */
-  17.07% {
-    transform: translate(0, -14vh) scale(1.03) rotate(0deg);
-    opacity: 1;
-  }
-  46.34% {
-    transform: translate(0, -38vh) scale(1.09) rotate(0deg);
-    opacity: 1;
-  }
-  75.61% {
-    transform: translate(0, -62vh) scale(1.15) rotate(0deg);
-    opacity: 0.95;
-  }
-  92.68% {
-    transform: translate(0, -76vh) scale(1.2) rotate(0deg);
-    opacity: 0.4;
-  }
-  100% {
-    transform: translate(0, -82vh) scale(1.24) rotate(0deg);
-    opacity: 0;
-  }
-}
-
-@keyframes docs-rocket-launch-left {
-  0% {
-    transform: translate(0, 0) scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  17.07% {
-    transform: translate(0, -14vh) scale(1.03) rotate(0deg);
-    opacity: 1;
-  }
-  46.34% {
-    transform: translate(0, -38vh) scale(1.09) rotate(0deg);
-    opacity: 1;
-  }
-  75.61% {
-    transform: translate(0, -62vh) scale(1.15) rotate(0deg);
-    opacity: 0.95;
-  }
-  92.68% {
-    transform: translate(0, -76vh) scale(1.2) rotate(0deg);
-    opacity: 0.4;
-  }
-  100% {
-    transform: translate(0, -82vh) scale(1.24) rotate(0deg);
-    opacity: 0;
-  }
-}
-
-@keyframes docs-rocket-grow-near-top {
-  0% {
-    transform: scale(1);
-  }
-  46.34% {
-    transform: scale(1.08);
-  }
-  75.61% {
-    transform: scale(1.18);
-  }
-  100% {
-    transform: scale(1.28);
-  }
-}
-
-@keyframes docs-rocket-thrust {
-  0%,
-  100% {
-    transform: translateY(-0.18px) rotate(-0.24deg);
-  }
-  50% {
-    transform: translateY(0.18px) rotate(0.24deg);
-  }
-}
-
 @keyframes docs-rocket-flame {
   0%,
   100% {
@@ -3484,33 +4514,6 @@ body.docs-reading-mode main.container li {
   50% {
     transform: translateX(-50%) scale(0.98, 1.04);
     filter: blur(0.3px) drop-shadow(0 0 12px rgba(251, 146, 60, 0.62));
-  }
-}
-
-@keyframes docs-rocket-flame-grow-near-top {
-  0% {
-    transform: translateX(-50%) scale(0.95, 0.9);
-  }
-  46.34% {
-    transform: translateX(-50%) scale(1.12, 1.18);
-  }
-  75.61% {
-    transform: translateX(-50%) scale(1.28, 1.42);
-  }
-  100% {
-    transform: translateX(-50%) scale(1.36, 1.54);
-  }
-}
-
-@keyframes docs-rocket-trail {
-  0%,
-  100% {
-    transform: translateX(-50%) scale(0.82, 0.56);
-    opacity: 0.54;
-  }
-  50% {
-    transform: translateX(-50%) scale(0.95, 0.98);
-    opacity: 0.82;
   }
 }
 
@@ -3565,7 +4568,8 @@ body.docs-reading-mode main.container li {
   .docs-back-to-top__rocket,
   .docs-back-to-top__smoke,
   .docs-back-to-top__flame,
-  .docs-back-to-top__trail {
+  .docs-back-to-top__trail,
+  .docs-back-to-top__speed-line {
     animation: none;
   }
 
@@ -3594,12 +4598,12 @@ body.docs-reading-mode main.container li {
 
 .docs-page-meta__title {
   margin: 0 0 10px;
-  font-size: 1.05rem;
+  font-size: var(--fs-h3);
 }
 
 .docs-page-meta--premium .docs-page-meta__title {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   line-height: 1.2;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -3649,7 +4653,7 @@ body.docs-reading-mode main.container li {
 
 .docs-page-meta__stack-extra {
   margin-left: 6px;
-  font-size: 0.74rem;
+  font-size: var(--fs-eyebrow);
   color: var(--muted, #64748b);
 }
 
@@ -3677,18 +4681,39 @@ body.docs-reading-mode main.container li {
   display: none;
 }
 
-.docs-page-meta--premium .docs-page-meta__editor+.docs-page-meta__editor {
-  position: relative;
+.docs-page-meta__editor.docs-page-meta__editor--overflow {
+  display: none;
 }
 
-.docs-page-meta--premium .docs-page-meta__editor+.docs-page-meta__editor::before {
-  content: "·";
-  position: absolute;
-  left: -9px;
-  top: 50%;
-  transform: translateY(-50%);
+.docs-page-meta__editors--expanded .docs-page-meta__editor.docs-page-meta__editor--overflow {
+  display: flex;
+}
+
+.docs-page-meta__more {
+  display: flex;
+  align-items: center;
+}
+
+.docs-page-meta__more-btn {
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 999px;
+  background: transparent;
   color: var(--muted, #64748b);
-  font-weight: 600;
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  padding: 2px 10px;
+  cursor: pointer;
+  transition: color var(--motion-fast) ease, border-color var(--motion-fast) ease, background var(--motion-fast) ease;
+}
+
+.docs-page-meta__more-btn:hover {
+  color: var(--accent, #2563eb);
+  border-color: color-mix(in srgb, var(--accent, #2563eb) 40%, var(--line, #dbe3ef));
+  background: color-mix(in srgb, var(--accent, #2563eb) 6%, transparent);
+}
+
+.docs-page-meta--premium .docs-page-meta__editor+.docs-page-meta__editor {
+  position: relative;
 }
 
 .docs-page-meta__editor {
@@ -3699,12 +4724,7 @@ body.docs-reading-mode main.container li {
 }
 
 .docs-page-meta--premium .docs-page-meta__editor {
-  gap: 6px;
-  padding: 3px 9px 3px 3px;
-  border: 1px solid var(--line, #dbe3ef);
-  border-radius: 999px;
-  background: var(--card, #fff);
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  gap: 7px;
 }
 
 .docs-page-meta__avatar-link {
@@ -3719,18 +4739,11 @@ body.docs-reading-mode main.container li {
 }
 
 .docs-page-meta--premium .docs-page-meta__editor-name-link {
-  font-size: 0.84rem;
+  font-size: var(--fs-meta);
 }
 
-.docs-page-meta--premium .docs-page-meta__editor:hover {
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 35%, var(--line, #dbe3ef));
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
-}
-
-.docs-page-meta--premium .docs-page-meta__editor:focus-within {
-  border-color: var(--accent, #2563eb);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #2563eb) 18%, transparent);
+.docs-page-meta--premium .docs-page-meta__editor:hover .docs-page-meta__editor-name-link {
+  color: var(--accent, #2563eb);
 }
 
 .docs-page-meta__editor-name-link:hover {
@@ -3756,13 +4769,7 @@ body.docs-reading-mode main.container li {
 }
 
 .docs-page-meta--premium .docs-page-meta__editor:hover .docs-page-meta__avatar {
-  filter: saturate(1.06) contrast(1.03);
-  transform: translateY(-0.5px);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #2563eb) 28%, transparent);
-}
-
-.docs-page-meta--premium .docs-page-meta__editor:focus-within .docs-page-meta__avatar {
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #2563eb) 38%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #2563eb) 30%, transparent);
 }
 
 .docs-page-meta__warn {
@@ -3814,36 +4821,19 @@ body.docs-reading-mode main.container li {
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   .docs-page-meta--premium {
     gap: 6px 10px;
     align-items: flex-start;
   }
 
   .docs-page-meta--premium .docs-page-meta__title {
-    order: 1;
-    flex-basis: auto;
-    text-align: left;
-  }
-
-  .docs-page-meta--premium .docs-page-meta__stack {
-    order: 2;
-    margin-right: 0;
-  }
-
-  .docs-page-meta--premium .docs-page-meta__stack-item {
-    margin-left: 0;
-    margin-right: 6px;
+    flex-basis: 100%;
   }
 
   .docs-page-meta--premium .docs-page-meta__editors {
-    order: 3;
     flex-basis: 100%;
     width: 100%;
-  }
-
-  .docs-page-meta--premium .docs-page-meta__editor+.docs-page-meta__editor::before {
-    left: -8px;
   }
 }
 
@@ -3856,61 +4846,441 @@ body.docs-reading-mode main.container li {
   text-decoration: underline;
 }
 
-/* Breadcrumb trail (docs-nav.js) — first child inside #docs-top-nav */
-.docs-breadcrumbs {
-  margin: 0 0 12px;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: var(--muted);
+.docs-page-history-fold {
+  margin-top: 1rem;
 }
 
-.docs-breadcrumbs__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 0.35rem;
-  list-style: none;
-  margin: 0;
+.docs-page-history-fold__details {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
   padding: 0;
 }
 
-.docs-breadcrumbs__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+.docs-page-history-fold__details > summary {
+  font-size: var(--fs-h4);
+  font-weight: 700;
 }
 
-.docs-breadcrumbs__item+.docs-breadcrumbs__item::before {
-  content: "/";
-  color: var(--line);
-  font-weight: 500;
-  margin-right: 0.15rem;
-  user-select: none;
+.docs-page-history-fold__body {
+  margin-top: 0.35rem;
 }
 
-.docs-breadcrumbs a {
-  color: var(--accent);
-  text-decoration: none;
+.docs-page-resources {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  display: grid;
+  gap: 0.9rem;
 }
 
-.docs-breadcrumbs a:hover {
-  text-decoration: underline;
+.docs-page-resources__group {
+  min-width: 0;
 }
 
-.docs-breadcrumbs__current {
-  color: var(--text);
+.docs-page-resources__group + .docs-page-resources__group {
+  border-top: 1px solid color-mix(in srgb, var(--line) 88%, var(--accent) 12%);
+  padding-top: 0.75rem;
+}
+
+.docs-page-resources__group h2 {
+  margin: 0 0 0.4rem;
+  font-size: var(--fs-h4);
+}
+
+.docs-page-resources__links {
+  margin: 0;
+  padding-left: 1rem;
+  min-width: 0;
+}
+
+.docs-page-resources__links li + li {
+  margin-top: 0.3rem;
+}
+
+.docs-page-resources__links li,
+.docs-page-resources__links a,
+.docs-page-resources__history li,
+.docs-page-resources__history a,
+.docs-page-resources__history span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.docs-page-resources__history {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+.docs-page-resources__history > summary {
+  padding: 0.2rem 0 0.35rem;
+  font-size: var(--fs-h4);
   font-weight: 600;
 }
 
-.docs-breadcrumbs__text {
+.docs-page-resources__history ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.docs-page-resources__history li {
+  display: grid;
+  gap: 0.24rem;
+}
+
+.docs-page-resources__history time {
+  font-size: var(--fs-body);
   color: var(--muted);
 }
 
-@media (max-width: 760px) {
-  .docs-breadcrumbs {
-    margin-bottom: 8px;
+.docs-utility-bar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0.45rem 0 0.7rem;
+}
+
+.docs-utility-bar__hint {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+.docs-utility-pill {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, var(--accent) 22%);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--text);
+  border-radius: 999px;
+  font: inherit;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.34rem 0.68rem;
+}
+
+.docs-utility-pill:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line) 58%);
+  color: var(--accent);
+}
+
+.docs-utility-pill:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 48%, transparent);
+  outline-offset: 2px;
+}
+
+.docs-utility-pill--cta {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line) 45%);
+  color: color-mix(in srgb, var(--accent) 80%, var(--text) 20%);
+}
+
+/* ----- Report-bug FAB ------------------------------------------------------
+ * Sibling of the rocket back-to-top: same launchpad palette, but its
+ * personality is a "signal beacon" — gently pulsing radar rings that say
+ * "we're listening". Hover speeds the pulse and twitches the bug's antennae
+ * (the SVG has `bug-antenna--l/--r` classes). The pulse is purely cosmetic
+ * (box-shadow, no overflow concerns) and is disabled under reduced motion.
+ * ------------------------------------------------------------------------ */
+.docs-report-bug-fab {
+  position: fixed !important;
+  top: auto !important;
+  left: auto !important;
+  right: max(1.25rem, env(safe-area-inset-right, 0px)) !important;
+  bottom: calc(max(1.25rem, env(safe-area-inset-bottom, 0px)) + var(--docs-footer-visible-h, 0px) + 64px) !important;
+  z-index: 39;
+  appearance: none;
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted);
+  font: inherit;
+  padding: 0;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.22s ease,
+    bottom 0.12s ease,
+    color 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.docs-report-bug-fab__icon {
+  /* Matches .docs-back-to-top__rocket-wrap so the rocket and bug FAB form a
+     single visual pair (52×52 buttons, 28×28 icons). */
+  width: 28px;
+  height: 28px;
+  display: block;
+  pointer-events: none;
+}
+
+.docs-report-bug-fab__icon .bug-antenna {
+  transform-origin: 50% 100%;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.docs-report-bug-fab__icon .bug-body {
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: 50% 60%;
+}
+
+.docs-report-bug-fab__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible state = launchpad live: fade-in, then begin radar ping. The
+   ping uses a layered box-shadow whose outer ring expands and fades. */
+.docs-report-bug-fab.docs-report-bug-fab--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  animation: docs-fab-radar 3.2s cubic-bezier(0.22, 1, 0.36, 1) 0.4s infinite;
+}
+
+@keyframes docs-fab-radar {
+  0% {
+    box-shadow:
+      var(--card-shadow),
+      0 0 0 0 color-mix(in srgb, var(--accent) 38%, transparent);
+  }
+  55% {
+    box-shadow:
+      var(--card-shadow),
+      0 0 0 9px color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  100% {
+    box-shadow:
+      var(--card-shadow),
+      0 0 0 16px color-mix(in srgb, var(--accent) 0%, transparent);
   }
 }
+
+.docs-report-bug-fab:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--line) 52%);
+  transform: translateY(-2px);
+  animation-duration: 1.6s;
+}
+
+/* Ambient antenna twitch — each antenna has its own loop with twitches at
+   different phases, so left and right desync (durations are coprime-ish so
+   they don't lock into a pattern). 95%+ of the cycle is at rest; brief
+   excursions read as an insect flicking its antennae. Hover overrides
+   below; reduced-motion disables. */
+.docs-report-bug-fab.docs-report-bug-fab--visible .bug-antenna--l {
+  animation: docs-bug-antenna-l-idle 7.3s ease-in-out infinite;
+}
+
+.docs-report-bug-fab.docs-report-bug-fab--visible .bug-antenna--r {
+  animation: docs-bug-antenna-r-idle 9.1s ease-in-out infinite;
+}
+
+@keyframes docs-bug-antenna-l-idle {
+  0%, 32% { transform: rotate(0deg); }
+  34% { transform: rotate(-9deg); }
+  36% { transform: rotate(3deg); }
+  38%, 70% { transform: rotate(0deg); }
+  71% { transform: rotate(-5deg); }
+  73% { transform: rotate(1deg); }
+  75%, 100% { transform: rotate(0deg); }
+}
+
+@keyframes docs-bug-antenna-r-idle {
+  0%, 18% { transform: rotate(0deg); }
+  20% { transform: rotate(7deg); }
+  22% { transform: rotate(-3deg); }
+  24%, 60% { transform: rotate(0deg); }
+  62% { transform: rotate(4deg); }
+  64% { transform: rotate(-1deg); }
+  66%, 100% { transform: rotate(0deg); }
+}
+
+.docs-report-bug-fab:hover .bug-antenna--l,
+.docs-report-bug-fab:focus-visible .bug-antenna--l {
+  animation: none;
+  transform: rotate(-12deg);
+}
+
+.docs-report-bug-fab:hover .bug-antenna--r,
+.docs-report-bug-fab:focus-visible .bug-antenna--r {
+  animation: none;
+  transform: rotate(12deg);
+}
+
+.docs-report-bug-fab:hover .bug-body {
+  transform: translateY(-0.5px) scale(1.04);
+}
+
+.docs-report-bug-fab:active {
+  transform: translateY(-1px) scale(0.96);
+  transition-duration: 0.08s;
+}
+
+.docs-report-bug-fab:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 52%, transparent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-report-bug-fab.docs-report-bug-fab--visible {
+    animation: none;
+  }
+
+  .docs-report-bug-fab.docs-report-bug-fab--visible .bug-antenna--l,
+  .docs-report-bug-fab.docs-report-bug-fab--visible .bug-antenna--r {
+    animation: none;
+  }
+
+  .docs-report-bug-fab__icon .bug-antenna,
+  .docs-report-bug-fab__icon .bug-body {
+    transition: none;
+  }
+
+  .docs-report-bug-fab:hover {
+    transform: none;
+  }
+}
+
+/*
+ * FAB sits at the viewport's right edge, so the default centered tooltip
+ * (left: 50%; width: 11.5rem) overflows and gets clipped. Anchor to the
+ * button's right edge and shrink to content for clean pill edges.
+ */
+.docs-report-bug-fab[data-tooltip]::after {
+  left: auto;
+  right: 0;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  transform: translateX(0) translateY(4px);
+}
+
+.docs-report-bug-fab[data-tooltip]:hover::after,
+.docs-report-bug-fab[data-tooltip]:focus-visible::after {
+  transform: translateX(0) translateY(0);
+}
+
+.docs-feedback-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.docs-feedback-modal[hidden] {
+  display: none !important;
+}
+
+.docs-feedback-modal__panel {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.2);
+  padding: 0.95rem 1rem;
+}
+
+.docs-feedback-modal__close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  position: absolute;
+  top: 0.55rem;
+  right: 0.65rem;
+  z-index: 2;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.docs-feedback-modal__close:hover {
+  color: var(--text);
+}
+
+.docs-feedback-modal-open {
+  overflow: hidden;
+}
+
+.docs-feedback-modal .docs-feedback-card__form {
+  margin-top: 0.6rem;
+  gap: 0.5rem;
+}
+
+.docs-feedback-modal h2 {
+  margin: 0 0 0.3rem;
+  font-size: var(--fs-h4);
+}
+
+.docs-feedback-modal p {
+  font-size: var(--fs-body);
+}
+
+.docs-feedback-modal .docs-feedback-card__label {
+  font-size: var(--fs-body);
+}
+
+.docs-feedback-modal .docs-feedback-card__select,
+.docs-feedback-modal .docs-feedback-card__textarea,
+.docs-feedback-modal .docs-page-actions__button {
+  font-size: var(--fs-body);
+}
+
+.docs-feedback-modal .docs-feedback-card__textarea {
+  min-height: 104px;
+}
+
+@media (max-width: 760px) {
+  /* Bug FAB stays the same physical footprint as the rocket on mobile — both
+     52×52 with 28×28 icons. Keep right/bottom and offset on the desktop
+     baseline (1.25rem + 64 px) so the bug sits exactly 12 px above the
+     rocket top, identical to the desktop pair. Mobile-only overrides here
+     touch only the modal layout, not the FAB sizing. */
+  .docs-feedback-modal {
+    align-items: flex-end;
+    padding: 0.5rem;
+  }
+
+  .docs-feedback-modal__panel {
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 12px;
+  }
+}
+
+/* Breadcrumb trail: full implementation is in docs-premium.css (Level 3 §13).
+   Removed duplicate block to prevent ::before / ::after separator conflict. */
 
 @media (max-width: 520px) {
   .docs-breadcrumbs__item:not(:first-child):not(:last-child) {
@@ -3930,13 +5300,14 @@ body.docs-reading-mode main.container li {
 /* Site footer (docs-nav.js initDocsSiteFooter) — “tile” + subtle finish line above (pairs with dot veil). */
 .docs-site-footer {
   position: relative;
+  z-index: 1;
   margin-top: 2.5rem;
   padding: 1.25rem 0 2rem;
   border-top: 1px solid var(--line);
   box-shadow: 0 -1px 0 0 color-mix(in srgb, var(--accent) 16%, transparent);
   background: linear-gradient(180deg,
-      color-mix(in srgb, var(--card) 82%, transparent) 0%,
-      color-mix(in srgb, var(--card) 62%, transparent) 100%);
+      color-mix(in srgb, var(--card) 96%, var(--bg)) 0%,
+      color-mix(in srgb, var(--card) 90%, var(--bg)) 100%);
 }
 
 /* Soft glow wash behind footer text (opacity-only keyframes — interpolates everywhere). */
@@ -4034,7 +5405,7 @@ body.docs-reading-mode main.container li {
   align-items: center;
   gap: 0.35rem 0;
   margin: 0 0 0.65rem;
-  font-size: 0.88rem;
+  font-size: var(--fs-body);
 }
 
 .docs-site-footer__links>a {
@@ -4057,15 +5428,23 @@ body.docs-reading-mode main.container li {
 
 .docs-site-footer__meta {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
   line-height: 1.5;
   color: var(--muted);
   max-width: 52rem;
 }
 
 /*
- * Narrow viewports: comfortable reading width, safe areas (notched phones), slightly smaller type.
- * Wider layout rules: docs-site-nav.css (720px), .docs-page-layout in-page TOC (1025px+), ADR tracks (640px).
+ * Secondary mobile-compact cut-off (≤520 px) — NOT a separate device tier.
+ * Canonical device tiers are defined in
+ * docs/internal/front/foundations/motion-and-adaptivity.html#canonical-breakpoints
+ * (Desktop ≥1025 / Tablet 761–1024 / Mobile ≤760). This block applies inside
+ * the mobile tier when the viewport is also too narrow for the default
+ * heading/card/padding rhythm — comfortable reading width, safe areas
+ * (notched phones), tighter heading scale, smaller card padding.
+ *
+ * Wider layout cut-offs (component-level, not tiers):
+ *   docs-site-nav.css (760 px), .docs-page-layout in-page TOC (1025 px+), ADR tracks (640 px).
  */
 @media (max-width: 520px) {
 
@@ -4077,38 +5456,27 @@ body.docs-reading-mode main.container li {
     padding-bottom: max(72px, env(safe-area-inset-bottom, 0px));
   }
 
+  /* h1/h2/h3 sizes come from the canonical font ladder (uniform across all
+     viewports — no mobile-tier override). Only keep the long-title break rule
+     here so a 38-char h1 wraps cleanly on a 360 px viewport. */
   h1 {
-    font-size: 1.65rem;
     overflow-wrap: break-word;
   }
 
-  h2 {
-    font-size: 1.2rem;
-  }
-
-  h3 {
-    font-size: 1rem;
-  }
-
   .card {
-    padding: 14px 14px;
+    padding: 12px 12px;
     border-radius: 12px;
   }
 
+  /* pre font-size is set by the canonical mobile rule (<=760px); only tighten
+     padding here for the secondary mobile-compact cut-off (<=520px). */
   pre {
-    padding: 12px 12px;
-    font-size: 0.85rem;
+    padding: 10px 10px;
   }
 
   ul,
   ol {
     margin-left: 18px;
-  }
-}
-
-@media (max-width: 380px) {
-  h1 {
-    font-size: 1.45rem;
   }
 }
 
@@ -4146,7 +5514,7 @@ body.docs-reading-mode main.container li {
   align-items: start;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
   .cue-sheet-walkthrough {
     grid-template-columns: 1fr;
   }
@@ -4154,7 +5522,7 @@ body.docs-reading-mode main.container li {
 
 .cue-sheet-walkthrough__label {
   margin: 0 0 0.5rem;
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text);
 }
@@ -4162,7 +5530,7 @@ body.docs-reading-mode main.container li {
 .cue-sheet-walkthrough__cap {
   caption-side: top;
   text-align: left;
-  font-size: 0.8rem;
+  font-size: var(--fs-meta);
   font-weight: 500;
   color: var(--muted);
   padding: 0 0 0.5rem;
@@ -4172,7 +5540,7 @@ body.docs-reading-mode main.container li {
 .cue-sheet-walkthrough__paper {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.88rem;
+  font-size: var(--fs-body);
   line-height: 1.4;
   background: var(--card);
 }
@@ -4188,7 +5556,7 @@ body.docs-reading-mode main.container li {
 .cue-sheet-walkthrough__paper thead th {
   background: rgba(37, 99, 235, 0.08);
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--muted);
@@ -4197,7 +5565,7 @@ body.docs-reading-mode main.container li {
 .cue-sheet-walkthrough__pre {
   margin: 0;
   padding: 12px 14px;
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   line-height: 1.45;
   overflow-x: auto;
   border-radius: 8px;
@@ -4218,7 +5586,7 @@ body.docs-reading-mode main.container li {
 /* -------------------------------------------------------------------------- */
 /* Data-tooltip hints (backlog cockpit style): no dotted underline on host.   */
 /* Usage: <span data-tooltip="…" tabindex="0">label</span> or <button data-tooltip="…"> */
-/* Normative doc: docs/internal/front/docs-frontend-tooltips.html            */
+/* Normative doc: docs/internal/front/components/tooltips.html            */
 /* -------------------------------------------------------------------------- */
 
 [data-tooltip] {
@@ -4245,7 +5613,7 @@ body.docs-reading-mode main.container li {
   color: var(--text);
   padding: 5px 8px;
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 400;
   font-style: normal;
   font-variant: normal;
@@ -4291,7 +5659,7 @@ body.docs-reading-mode main.container li {
   border: 1px solid var(--docs-tooltip-border);
   background: var(--docs-tooltip-bg);
   color: var(--docs-tooltip-fg);
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   font-weight: 400;
   line-height: 1.4;
   text-align: left;

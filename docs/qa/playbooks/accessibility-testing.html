@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playbook: accessibility testing — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Playbook: accessibility testing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Playbooks</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Target: <strong>WCAG 2.1 Level AA</strong>. This playbook is how to verify that target
+            on a docs page or portal feature. Line-by-line outcomes live in
+            <a href="../0005-accessibility-checklist.html">checklist 0005</a>.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#tools">Tools</a>
+            <a class="docs-page-hero__chip" href="#keyboard">Keyboard</a>
+            <a class="docs-page-hero__chip" href="#focus">Focus</a>
+            <a class="docs-page-hero__chip" href="#contrast">Contrast</a>
+            <a class="docs-page-hero__chip" href="#semantics">Semantics</a>
+            <a class="docs-page-hero__chip" href="#aria">ARIA</a>
+            <a class="docs-page-hero__chip" href="#screen-reader">Screen reader</a>
+            <a class="docs-page-hero__chip" href="#motion">Motion</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Tools</div>
+
+        <section class="card" id="tools">
+          <h2>Tools</h2>
+          <ul>
+            <li><strong>Browser DevTools</strong> — Lighthouse accessibility audit, color picker for contrast.</li>
+            <li><strong>axe DevTools</strong> (extension) — automated rule scan; not a replacement for manual checks.
+            </li>
+            <li><strong>Keyboard only.</strong> Disconnect or ignore the mouse for the session.</li>
+            <li><strong>Screen reader.</strong> macOS VoiceOver (Cmd+F5) or NVDA on Windows.</li>
+            <li><strong>Zoom.</strong> Browser zoom to 200% and 400%; test reflow.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Keyboard</div>
+
+        <section class="card" id="keyboard">
+          <h2>Keyboard reachability</h2>
+          <ul>
+            <li>Every interactive control reachable by Tab. No control reachable only by mouse hover.</li>
+            <li>Tab order matches reading order; Shift+Tab reverses cleanly.</li>
+            <li>Buttons activate on Space and Enter. Links activate on Enter only.</li>
+            <li>Escape closes any modal, drawer, lightbox, or popover.</li>
+            <li>Inside the search panel, ↑ / ↓ move through results, Enter follows, Esc closes.</li>
+            <li>Skip-link (if present) is the first Tab stop and visibly focuses on activation.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Focus</div>
+
+        <section class="card" id="focus">
+          <h2>Focus management</h2>
+          <ul>
+            <li>Focus indicator is visible — at least 3:1 contrast against adjacent colors and at least 2 CSS pixels
+              thick.</li>
+              <li>Modal opens → focus moves into the modal. Modal closes → focus returns to the launcher.</li>
+              <li>No focus trap on regular pages. Focus is trapped in modals and drawers only while open.</li>
+              <li>Programmatic focus moves announce sensibly (e.g. an error summary that receives focus reads its
+                heading).</li>
+              </ul>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">Contrast</div>
+
+            <section class="card" id="contrast">
+              <h2>Contrast</h2>
+              <ul>
+                <li>Normal body text: contrast ≥ 4.5:1 in both light and dark themes.</li>
+                <li>Large text (18.66px bold or 24px regular): ≥ 3:1.</li>
+                <li>Non-text UI components (form borders, focus rings, icons that convey state): ≥ 3:1.</li>
+                <li>Links are distinguishable from body text without relying on color alone (underline, weight, or
+                  persistent indicator).</li>
+                  <li>Disabled controls do not need to meet contrast, but should be unambiguously disabled.</li>
+                </ul>
+              </section>
+
+              <div class="docs-section-divider" aria-hidden="true">Semantics</div>
+
+              <section class="card" id="semantics">
+                <h2>Semantics &amp; structure</h2>
+                <ul>
+                  <li>One <code>&lt;h1&gt;</code> per page.</li>
+                  <li>Heading levels descend without skipping (h1 → h2 → h3).</li>
+                  <li>Landmarks present: <code>&lt;header&gt;</code> / <code>&lt;nav&gt;</code> / <code>&lt;main&gt;</code> /
+                    <code>&lt;footer&gt;</code>, each with appropriate <code>aria-label</code> if multiple.</li>
+                    <li>Lists use <code>&lt;ul&gt;</code> / <code>&lt;ol&gt;</code>, not <code>div</code>s.</li>
+                    <li>Tables have <code>&lt;th scope&gt;</code> for header cells.</li>
+                    <li>Form fields have associated <code>&lt;label&gt;</code> elements.</li>
+                  </ul>
+                </section>
+
+                <div class="docs-section-divider" aria-hidden="true">ARIA</div>
+
+                <section class="card" id="aria">
+                  <h2>ARIA — only when native semantics fall short</h2>
+                  <ul>
+                    <li>Native HTML wins. Don't add <code>role="button"</code> to a <code>&lt;div&gt;</code> when you can just
+                      use <code>&lt;button&gt;</code>.</li>
+                      <li>State attributes (<code>aria-expanded</code>, <code>aria-current</code>, <code>aria-pressed</code>)
+                        update when the state changes.</li>
+                        <li>Modals: <code>role="dialog"</code>, <code>aria-modal="true"</code>, labelled by a heading via
+                          <code>aria-labelledby</code>.</li>
+                          <li>Live regions (<code>aria-live</code>) used for transient announcements (form errors, search progress);
+                            avoid spam.</li>
+                          </ul>
+                        </section>
+
+                        <div class="docs-section-divider" aria-hidden="true">Screen reader</div>
+
+                        <section class="card" id="screen-reader">
+                          <h2>Screen reader pass</h2>
+                          <ul>
+                            <li>Page title (browser tab) communicates page identity and product.</li>
+                            <li>Landmarks list shows expected regions (banner, navigation, main, contentinfo).</li>
+                            <li>Headings list reads as a useful outline.</li>
+                            <li>Read in order — does the page make sense top-to-bottom?</li>
+                            <li>Activate every interactive control once with the screen reader running; verify the announced state.</li>
+                          </ul>
+                        </section>
+
+                        <div class="docs-section-divider" aria-hidden="true">Motion</div>
+
+                        <section class="card" id="motion">
+                          <h2>Motion &amp; animation</h2>
+                          <ul>
+                            <li>Honour <code>prefers-reduced-motion: reduce</code>: animations stop or shorten significantly.</li>
+                            <li>No content flashes more than 3 times per second.</li>
+                            <li>Auto-playing motion (carousels, parallax) has a pause control.</li>
+                            <li>Hero / WebGL effects respect the reduced-motion media query.</li>
+                          </ul>
+                        </section>
+
+                        <section class="card" id="page-history">
+                          <h2>Page history</h2>
+                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                            <table class="docs-page-history">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Change</th>
+                                  <th>Author</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                  <td>Initial accessibility testing playbook.</td>
+                                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+
+                      </main>
+                    </div>
+                  </div>
+
+                </body></html>

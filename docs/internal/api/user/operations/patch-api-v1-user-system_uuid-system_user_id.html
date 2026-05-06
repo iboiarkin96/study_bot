@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
-
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PATCH /api/v1/user/{system_uuid}/{system_user_id} — User — Study App</title>
@@ -11,176 +10,481 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+  <script defer src="../../../../assets/docs-syntax.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation" data-spec-status="implemented" data-spec-owner="ivan-boyarkin" data-spec-operation-id="patchUserBySystemUserId">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>PATCH /api/v1/user/{system_uuid}/{system_user_id}</h1>
+        <h1 class="internal-h1--accent-tail internal-http-tablet">
+          <span class="internal-http-tablet__method badge badge--method-patch">PATCH</span>
+          <span class="internal-http-tablet__path code">/api/v1/user/{system_uuid}/{system_user_id}</span>
+        </h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">User</section>
-        <section class="card">
-          <span class="badge badge--method-patch">PATCH</span>
-          <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
-        </section>
-        <p class="lead">
-          Partial update (e.g. JSON Merge Patch): only present fields change. Per ADR 0026; OpenAPI
-          <code>operationId</code>: <code>patchUserBySystemUserId</code>.
-        </p>
-        <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>patchUserBySystemUserId</code></p>
+        <p class="internal-doc-entity">User</p>
 
-        <section class="card">
-          <h2>Request path and behavior</h2>
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Partially updates a user's editable fields.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">operationId</span>
+          <code>patchUserBySystemUserId</code></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-29">2026-04-29</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Middleware per ADR 0005. Handler applies partial body with <code>exclude_unset=True</code> semantics; empty
-            body after stripping → <code>400</code> <code>USER_102</code> / <code>USER_PATCH_BODY_EMPTY</code>. Success:
-            <code>200 OK</code>.
+            Partial update of a user. The body carries any subset of the editable user fields
+            (<code>full_name</code>, <code>username</code>, <code>timezone</code>,
+            <code>invalidation_reason_uuid</code>, <code>is_row_invalid</code>); composite
+            identity fields are immutable.
           </p>
         </section>
 
-        <section class="card">
-          <h2>Idempotency</h2>
+        <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+          <h2>1. Business context</h2>
           <p>
-            <code>Idempotency-Key</code> <strong>required</strong>. Idempotency record key uses
-            <code>PATCH /api/v1/user/{system_uuid}/{system_user_id}</code> (including the <code>PATCH </code> prefix) so
-            PUT and PATCH on the same URL do not share rows. Hash uses only set fields. Details:
-            <a href="../index.html#idempotency">Unified spec — Idempotency</a>.
+            Lets the integrator update the learner's display name, switch timezone, or flip the
+            soft-invalidation flag without affecting downstream
+            ownership relationships (the learner's
+            <code>client_uuid</code> never changes).
           </p>
         </section>
 
-        <section class="card">
-          <h2>Errors</h2>
-          <p class="small">Envelope per ADR 0003.</p>
-          <table>
-            <thead>
-              <tr>
-                <th>HTTP</th>
-                <th>Code / key</th>
-                <th>When</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>400</code></td>
-                <td><code>USER_102</code> / <code>USER_PATCH_BODY_EMPTY</code></td>
-                <td>No fields left after unset stripping — <code>patch_user_empty_body</code> at <strong>warning</strong> in
-                  <code>UserService.patch</code>.</td>
-                </tr>
-                <tr>
-                  <td><code>404</code></td>
-                  <td><code>USER_404</code> / <code>USER_NOT_FOUND</code></td>
-                  <td>User missing for key.</td>
-                </tr>
-                <tr>
-                  <td><code>400</code></td>
-                  <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
-                  <td>Missing idempotency header.</td>
-                </tr>
-                <tr>
-                  <td><code>409</code></td>
-                  <td><code>COMMON_409</code></td>
-                  <td>Idempotency payload mismatch.</td>
-                </tr>
-                <tr>
-                  <td><code>422</code></td>
-                  <td>Validation</td>
-                  <td>Schema validation.</td>
-                </tr>
-                <tr>
-                  <td><code>401</code> / <code>429</code></td>
-                  <td>—</td>
-                  <td>Middleware.</td>
-                </tr>
-                <tr>
-                  <td><code>500</code></td>
-                  <td>—</td>
-                  <td>Uncaught errors.</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+        <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+          <h2>2. User stories</h2>
+          <ul>
+            <li><strong>US-USER-PATCH-1.</strong> As an <em>integrator</em>, I want to update
+              the learner's timezone after they relocate.</li>
+              <li><strong>US-USER-PATCH-2.</strong> As an <em>integrator</em>, I want to soft-
+                invalidate a row when an account is offboarded, without losing study history.</li>
+              </ul>
+            </section>
 
-          <section class="card">
-            <h2>Logging</h2>
-            <p>
-              <code>patch_user_idempotent_replay</code>, <code>patch_user_requested</code> at <strong>info</strong>;
-              <code>request_done</code> line; <code>request_id</code> per ADR 0023. Empty-body path logged at
-              <strong>warning</strong> before <code>400</code>.
-            </p>
-          </section>
+            <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+              <h2>3. Acceptance criteria (Given / When / Then)</h2>
+              <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+                <table>
+                  <thead><tr><th>ID &amp; scenario</th><th>Given</th><th>When</th><th>Then</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><code>AC-USER-PATCH-001</code><br>
+                        <span class="small">Happy path.</span></td>
+                        <td>User exists.</td>
+                        <td>PATCH with
+                          <code>{timezone:"Europe/Berlin"}</code> and fresh Idempotency-Key.</td>
+                          <td><code>200 OK</code> with updated <code>UserResponse</code>;
+                            <code>updated_at</code> moves.</td>
+                          </tr>
+                          <tr>
+                            <td><code>AC-USER-PATCH-002</code><br>
+                              <span class="small">Empty body.</span></td>
+                              <td>Body has no editable field.</td>
+                              <td>PATCH.</td>
+                              <td><code>400 USER_102 USER_PATCH_BODY_EMPTY</code>.</td>
+                            </tr>
+                            <tr>
+                              <td><code>AC-USER-PATCH-003</code><br>
+                                <span class="small">Not found.</span></td>
+                                <td>No user matches the path key.</td>
+                                <td>PATCH.</td>
+                                <td><code>404 USER_404</code>.</td>
+                              </tr>
+                              <tr>
+                                <td><code>AC-USER-PATCH-004</code><br>
+                                  <span class="small">Idempotent replay.</span></td>
+                                  <td>Successful PATCH with key K and body B.</td>
+                                  <td>Same key + body within TTL.</td>
+                                  <td>Stored <code>200</code> body.</td>
+                                </tr>
+                                <tr>
+                                  <td><code>AC-USER-PATCH-005</code><br>
+                                    <span class="small">Invalid timezone.</span></td>
+                                    <td>Body has bad IANA value.</td>
+                                    <td>PATCH.</td>
+                                    <td><code>422</code> with
+                                      <code>USER_018 USER_UPDATE_TIMEZONE_INVALID</code>.</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </section>
 
-          <section class="card">
-            <h2>Metrics</h2>
-            <p>
-              Same route template as PUT; distinguish by <code>method=PATCH</code>.
-              <a href="../index.html#observability">Unified spec — Metrics</a>.
-            </p>
-          </section>
+                            <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                              <h2>4. Functional requirements</h2>
+                              <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+                                <table>
+                                  <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                  <tbody>
+                                    <tr><td><code>FR-USER-PATCH-001</code></td>
+                                      <td>Lookup by composite path key.</td>
+                                      <td><code>404 USER_404</code> when not found.</td></tr>
+                                      <tr><td><code>FR-USER-PATCH-002</code></td>
+                                        <td>Reject empty body.</td>
+                                        <td><code>400 USER_102</code>.</td></tr>
+                                        <tr><td><code>FR-USER-PATCH-003</code></td>
+                                          <td>Update only editable fields.</td>
+                                          <td>Composite key, <code>client_uuid</code>, timestamps are immutable.</td></tr>
+                                          <tr><td><code>FR-USER-PATCH-004</code></td>
+                                            <td>Stamp <code>updated_at</code>.</td>
+                                            <td>DB <code>now()</code>.</td></tr>
+                                            <tr><td><code>FR-USER-PATCH-005</code></td>
+                                              <td>Enforce idempotency.</td>
+                                              <td>Per <a href="../../_shared/idempotency.html">shared rules</a>; namespace
+                                                <code>PATCH /api/v1/user/{system_uuid}/{system_user_id}</code> with
+                                                concrete path values.</td></tr>
+                                                <tr><td><code>FR-USER-PATCH-006</code></td>
+                                                  <td>Validate per-field.</td>
+                                                  <td>USER_001..025 covers update validators
+                                                    (length, IANA, types).</td></tr>
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                            </section>
 
-          <section class="card">
-            <h2>Single-file deep spec</h2>
-            <p>
-              <a href="../index.html#user-op-patchUserBySystemUserId">Unified internal spec — this operation</a>.
-            </p>
-          </section>
+                                            <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                                              <h2>5. Non-functional requirements</h2>
+                                              <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+                                                <table>
+                                                  <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                                  <tbody>
+                                                    <tr><td><code>NFR-USER-PATCH-001</code></td><td>Latency.</td>
+                                                      <td>P95 ≤ 200 ms.</td></tr>
+                                                      <tr><td><code>NFR-USER-PATCH-002</code></td><td>Durability.</td>
+                                                        <td><code>200</code> only after fsync.</td></tr>
+                                                        <tr><td><code>NFR-USER-PATCH-003</code></td><td>Idempotency window.</td>
+                                                          <td>24 h.</td></tr>
+                                                          <tr><td><code>NFR-USER-PATCH-004</code></td><td>Payload limit.</td>
+                                                            <td>Body ≤ 4 KB.</td></tr>
+                                                            <tr><td><code>NFR-USER-PATCH-005</code></td><td>Backwards compatibility.</td>
+                                                              <td>Adding optional fields is additive.</td></tr>
+                                                              <tr><td><code>NFR-USER-PATCH-006</code></td><td>Observability.</td>
+                                                                <td>Log events listed in §14.</td></tr>
+                                                                <tr><td><code>NFR-USER-PATCH-007</code></td><td>Rate limit.</td>
+                                                                  <td>Inherits global limit.</td></tr>
+                                                                  <tr><td><code>NFR-USER-PATCH-008</code></td><td>PII.</td>
+                                                                    <td>Same as create.</td></tr>
+                                                                  </tbody>
+                                                                </table>
+                                                              </div>
+                                                            </section>
 
-          <p class="small">
-            <a href="../index.html">← User resource hub</a>
-          </p>
+                                                            <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                                              <h2>6. Authorization &amp; permissions</h2>
+                                                              <p>API key per <a href="../../_shared/auth.html">shared auth</a>. Path key uniquely
+                                                                identifies the row within the integrator's tenant.</p>
+                                                              </section>
 
-          <section id="page-history" class="card">
+                                                              <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                                                <h2>7. Request contract</h2>
+                                                                <h3>Path parameters</h3>
+                                                                <dl class="internal-field-list">
+                                                                  <dt><code>system_uuid</code>
+                                                                    <span class="badge badge--field-type">string · uuid</span>
+                                                                    <span class="badge badge--field-req">required</span></dt>
+                                                                    <dd><p>External tenant UUID.</p></dd>
+                                                                    <dt><code>system_user_id</code>
+                                                                      <span class="badge badge--field-type">string</span>
+                                                                      <span class="badge badge--field-req">required</span></dt>
+                                                                      <dd><p>External user identifier.</p></dd>
+                                                                    </dl>
 
-            <h2>Page history</h2>
+                                                                    <h3>Headers</h3>
+                                                                    <dl class="internal-field-list">
+                                                                      <dt><code>X-API-Key</code>
+                                                                        <span class="badge badge--field-type">string</span>
+                                                                        <span class="badge badge--field-req">required</span></dt>
+                                                                        <dd><p>Tenant API key.</p></dd>
+                                                                        <dt><code>Idempotency-Key</code>
+                                                                          <span class="badge badge--field-type">string</span>
+                                                                          <span class="badge badge--field-req">required</span></dt>
+                                                                          <dd>
+                                                                            <p>Per <a href="../../_shared/idempotency.html">shared rules</a>.</p>
+                                                                            <dl class="internal-field-list__attrs">
+                                                                              <dt>Length</dt><dd>1–128 chars.</dd>
+                                                                            </dl>
+                                                                          </dd>
+                                                                          <dt><code>Content-Type</code>
+                                                                            <span class="badge badge--field-type">string</span>
+                                                                            <span class="badge badge--field-req">required</span></dt>
+                                                                            <dd><p>Must be <code>application/json</code>.</p></dd>
+                                                                          </dl>
 
-            <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                          <h3>Body</h3>
+                                                                          <dl class="internal-field-list">
+                                                                            <dt><code>full_name</code>
+                                                                              <span class="badge badge--field-type">string</span>
+                                                                              <span class="badge badge--field-opt">optional</span></dt>
+                                                                              <dd><p>1–256 chars.</p></dd>
+                                                                              <dt><code>username</code>
+                                                                                <span class="badge badge--field-type">string</span>
+                                                                                <span class="badge badge--field-opt">optional</span></dt>
+                                                                                <dd><p>0–64 chars.</p></dd>
+                                                                                <dt><code>timezone</code>
+                                                                                  <span class="badge badge--field-type">string</span>
+                                                                                  <span class="badge badge--field-opt">optional</span></dt>
+                                                                                  <dd><p>IANA zone (≤ 64 chars).</p></dd>
+                                                                                  <dt><code>invalidation_reason_uuid</code>
+                                                                                    <span class="badge badge--field-type">string · uuid</span>
+                                                                                    <span class="badge badge--field-opt">optional</span></dt>
+                                                                                    <dd><p>UUIDv4.</p></dd>
+                                                                                    <dt><code>is_row_invalid</code>
+                                                                                      <span class="badge badge--field-type">integer · int32</span>
+                                                                                      <span class="badge badge--field-opt">optional</span></dt>
+                                                                                      <dd><p>0 or 1.</p></dd>
+                                                                                    </dl>
+                                                                                    <p class="small"><strong>Constraint.</strong> Body must contain at least one editable
+                                                                                      field; otherwise <code>400 USER_102</code>.</p>
 
-              <table class="docs-page-history">
+                                                                                      <h3>Example request</h3>
+                                                                                      <pre><code>PATCH /api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/learner-01 HTTP/1.1
+                                                                                        X-API-Key: sk_live_***
+                                                                                        Idempotency-Key: user-patch-2026-04-29T12:00:00Z
+                                                                                        Content-Type: application/json
 
-                <thead>
+                                                                                        { "timezone": "Europe/Madrid" }
+                                                                                      </code></pre>
+                                                                                    </section>
 
-                  <tr>
+                                                                                    <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                                                                      <h2>8. Response contract</h2>
+                                                                                      <h3>200 OK — patched</h3>
+                                                                                      <p>Body matches <code>UserResponse</code>; all unchanged fields are echoed.
+                                                                                        <code>updated_at</code> is fresh.</p>
+                                                                                        <pre><code>HTTP/1.1 200 OK
+                                                                                          Content-Type: application/json
 
-                    <th scope="col">Date</th>
+                                                                                          {
+                                                                                          "client_uuid": "c1c1c1c1-1111-4111-8111-111111111111",
+                                                                                          "system_user_id": "learner-01",
+                                                                                          "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                                                                                          "full_name": "Alex Learner",
+                                                                                          "username": null,
+                                                                                          "timezone": "Europe/Madrid",
+                                                                                          "invalidation_reason_uuid": null,
+                                                                                          "is_row_invalid": 0,
+                                                                                          "created_at": "2026-04-29T09:00:00Z",
+                                                                                          "updated_at": "2026-04-29T12:00:00Z"
+                                                                                          }
+                                                                                        </code></pre>
+                                                                                      </section>
 
-                    <th scope="col">Change</th>
+                                                                                      <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                                                                        <h2>10. Side effects</h2>
+                                                                                        <ul>
+                                                                                          <li><strong>On success.</strong> One transaction:
+                                                                                            <code>UPDATE users</code> SET fields, <code>updated_at = now()</code>;
+                                                                                            <code>INSERT INTO idempotency_keys</code>; emit
+                                                                                            <code>patch_user_succeeded</code> (info).</li>
+                                                                                            <li><strong>On idempotent replay.</strong> No DB writes; emit
+                                                                                              <code>patch_user_idempotent_replay</code> (info).</li>
+                                                                                              <li><strong>On error.</strong> Rollback.</li>
+                                                                                            </ul>
+                                                                                          </section>
 
-                    <th scope="col">Author</th>
+                                                                                          <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                                                                            <h2>11. Idempotency &amp; concurrency</h2>
+                                                                                            <ul>
+                                                                                              <li><strong>Namespace:</strong>
+                                                                                                <code>PATCH /api/v1/user/{system_uuid}/{system_user_id}</code> with concrete
+                                                                                                path values.</li>
+                                                                                                <li><strong>Key composition:</strong>
+                                                                                                  <code>Idempotency-Key</code> + SHA-256 of canonical body.</li>
+                                                                                                  <li><strong>Replay status:</strong> <code>200</code> with stored body.</li>
+                                                                                                  <li><strong>TTL:</strong> 24 h.</li>
+                                                                                                  <li><strong>Concurrency:</strong> v1 — last writer wins.</li>
+                                                                                                </ul>
+                                                                                              </section>
 
-                  </tr>
+                                                                                              <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                                                                                <h2>12. Error catalog</h2>
+                                                                                                <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+                                                                                                  <table>
+                                                                                                    <thead><tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th>
+                                                                                                      <th>Log event (level)</th></tr></thead>
+                                                                                                      <tbody>
+                                                                                                        <tr><td><code>400</code></td><td><code>COMMON_400</code></td>
+                                                                                                          <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                                                                                                          <td>Missing header.</td>
+                                                                                                          <td><code>request_idempotency_key_missing</code> (warn)</td></tr>
+                                                                                                          <tr><td><code>400</code></td><td><code>USER_102</code></td>
+                                                                                                            <td><code>USER_PATCH_BODY_EMPTY</code></td>
+                                                                                                            <td>No editable field in body.</td>
+                                                                                                            <td><code>patch_user_body_empty</code> (info)</td></tr>
+                                                                                                            <tr><td><code>401</code></td><td><code>COMMON_401</code></td>
+                                                                                                              <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                                                                                              <td>Missing/invalid API key.</td><td>middleware</td></tr>
+                                                                                                              <tr><td><code>404</code></td><td><code>USER_404</code></td>
+                                                                                                                <td><code>USER_NOT_FOUND</code></td>
+                                                                                                                <td>No user for path key.</td>
+                                                                                                                <td><code>patch_user_not_found</code> (info)</td></tr>
+                                                                                                                <tr><td><code>409</code></td><td><code>COMMON_409</code></td>
+                                                                                                                  <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                                                                                                                  <td>Same key, different body.</td>
+                                                                                                                  <td><code>idempotency_payload_mismatch</code> (warn)</td></tr>
+                                                                                                                  <tr><td><code>413</code></td><td><code>COMMON_413</code></td>
+                                                                                                                    <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+                                                                                                                    <td>Body &gt; 4 KB.</td><td>middleware</td></tr>
+                                                                                                                    <tr><td><code>422</code></td><td><code>COMMON_000</code></td>
+                                                                                                                      <td><code>COMMON_VALIDATION_ERROR</code></td>
+                                                                                                                      <td>USER_001..025 detail keys.</td>
+                                                                                                                      <td><code>validation_error</code> (warn)</td></tr>
+                                                                                                                      <tr><td><code>429</code></td><td><code>COMMON_429</code></td>
+                                                                                                                        <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                                                                                                                        <td>Rate limit.</td><td>middleware</td></tr>
+                                                                                                                      </tbody>
+                                                                                                                    </table>
+                                                                                                                  </div>
+                                                                                                                </section>
 
-                </thead>
+                                                                                                                <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                                                                                                  <h2>13. Edge cases checklist</h2>
+                                                                                                                  <ul>
+                                                                                                                    <li><strong>Patch sets <code>username</code> to empty string.</strong> Accept
+                                                                                                                      (clears the username).</li>
+                                                                                                                      <li><strong>Patch with unknown field.</strong> Pydantic
+                                                                                                                        <code>extra=forbid</code> → <code>422</code>.</li>
+                                                                                                                        <li><strong>Patch ID-fields.</strong> Identity fields are read-only via this
+                                                                                                                          endpoint; ignored if sent.</li>
+                                                                                                                          <li><strong>Concurrent PATCH on same row.</strong> Last writer wins;
+                                                                                                                            <code>updated_at</code> reflects the last commit.</li>
+                                                                                                                            <li><strong>Idempotency replay across a later edit.</strong> Returns the original
+                                                                                                                              stored body; not the current row.</li>
+                                                                                                                            </ul>
+                                                                                                                          </section>
 
-                <tbody>
+                                                                                                                          <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                                                                                                            <h2>14. Observability requirements</h2>
+                                                                                                                            <h3>Log events</h3>
+                                                                                                                            <ul>
+                                                                                                                              <li><code>patch_user_succeeded</code> (info) —
+                                                                                                                                <code>{client_uuid, fields_updated[]}</code>.</li>
+                                                                                                                                <li><code>patch_user_idempotent_replay</code> (info).</li>
+                                                                                                                                <li><code>patch_user_body_empty</code> (info).</li>
+                                                                                                                                <li><code>patch_user_not_found</code> (info).</li>
+                                                                                                                              </ul>
+                                                                                                                              <h3>Metrics</h3>
+                                                                                                                              <ul>
+                                                                                                                                <li><code>http_requests_total{path_template, method="PATCH"}</code>.</li>
+                                                                                                                                <li><code>http_request_duration_seconds</code>.</li>
+                                                                                                                              </ul>
+                                                                                                                              <h3>Alerts</h3>
+                                                                                                                              <ul>
+                                                                                                                                <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+                                                                                                                              </ul>
+                                                                                                                            </section>
 
-                  <tr>
+                                                                                                                            <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                                                                                                              <h2>15. Test plan</h2>
+                                                                                                                              <ul>
+                                                                                                                                <li><strong>Unit:</strong> body validators (USER_001..025), empty-body check.</li>
+                                                                                                                                <li><strong>Integration:</strong> AC-001..AC-005.</li>
+                                                                                                                                <li><strong>Contract:</strong> Schemathesis on
+                                                                                                                                  <code>patchUserBySystemUserId</code>.</li>
+                                                                                                                                  <li><strong>End-to-end:</strong> create → patch → get → match.</li>
+                                                                                                                                </ul>
+                                                                                                                              </section>
 
-                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                                                                                              <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                                                                                                <h2>16. OpenAPI authoring hints</h2>
+                                                                                                                                <ul>
+                                                                                                                                  <li><strong>operationId:</strong>
+                                                                                                                                    <code>patchUserBySystemUserId</code> (already in OpenAPI).</li>
+                                                                                                                                    <li><strong>Tags:</strong> <code>User</code>.</li>
+                                                                                                                                    <li><strong>Reused:</strong> <code>UserResponse</code>; define
+                                                                                                                                      <code>PatchUserBody</code> (all fields optional).</li>
+                                                                                                                                    </ul>
+                                                                                                                                  </section>
 
-                    <td>Added Page history section (repository baseline).</td>
+                                                                                                                                  <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                                                                                                    <h2>17. Open questions</h2>
+                                                                                                                                    <ul>
+                                                                                                                                      <li><strong>Q1.</strong> Add
+                                                                                                                                        <code>expected_updated_at</code> for explicit conflict detection? v1: no — last
+                                                                                                                                        writer wins is fine for profile fields.</li>
+                                                                                                                                      </ul>
+                                                                                                                                    </section>
 
-                    <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                                    <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                                                                                                      <h2>18. Out of scope</h2>
+                                                                                                                                      <ul>
+                                                                                                                                        <li>Rotating composite identity keys (would change
+                                                                                                                                          <code>client_uuid</code>).</li>
+                                                                                                                                          <li>Bulk patch.</li>
+                                                                                                                                          <li>JSON-Patch / RFC 6902 syntax.</li>
+                                                                                                                                        </ul>
+                                                                                                                                      </section>
 
-                  </tr>
+                                                                                                                                      <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                                                                                                        <h2>19. Traceability</h2>
+                                                                                                                                        <ul>
+                                                                                                                                          <li><strong>System design:</strong>
+                                                                                                                                            <a href="../../../analysis/system-design.html#scope">scope &amp; identity</a>.</li>
+                                                                                                                                            <li><strong>ADRs:</strong>
+                                                                                                                                              <a href="../../../../adr/0003-error-contract-governance.html">0003</a>,
+                                                                                                                                              <a href="../../../../adr/0005-api-security-defaults.html">0005</a>,
+                                                                                                                                              <a href="../../../../adr/0006-idempotency-write-operations.html">0006</a>.</li>
+                                                                                                                                              <li><strong>OpenAPI:</strong>
+                                                                                                                                                <code>patchUserBySystemUserId</code>.</li>
+                                                                                                                                              </ul>
+                                                                                                                                            </section>
 
-                </tbody>
+                                                                                                                                            <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                                                                                                              <h2>20. Spec changelog</h2>
+                                                                                                                                              <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+                                                                                                                                                <table>
+                                                                                                                                                  <thead><tr><th>Date</th><th>Type</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                  <tbody>
+                                                                                                                                                    <tr>
+                                                                                                                                                      <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                      <td>doc-only</td>
+                                                                                                                                                      <td>Phase 5 rollout: full analyst spec; status=implemented.</td>
+                                                                                                                                                      <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                        Boyarkin</a></td>
+                                                                                                                                                      </tr>
+                                                                                                                                                    </tbody>
+                                                                                                                                                  </table>
+                                                                                                                                                </div>
+                                                                                                                                              </section>
 
-              </table>
+                                                                                                                                              <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                                                                                                                <h2>Page history</h2>
+                                                                                                                                                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                                                                                  <table class="docs-page-history">
+                                                                                                                                                    <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                    <tbody>
+                                                                                                                                                      <tr>
+                                                                                                                                                        <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                        <td>Phase 5: full rewrite; status=implemented.</td>
+                                                                                                                                                        <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                          Boyarkin</a></td>
+                                                                                                                                                        </tr>
+                                                                                                                                                      </tbody>
+                                                                                                                                                    </table>
+                                                                                                                                                  </div>
+                                                                                                                                                </section>
 
-            </div>
+                                                                                                                                              </main>
+                                                                                                                                            </div>
+                                                                                                                                          </div>
 
-          </section>
-
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-        </main>
-      </div>
-    </div>
-
-  </body></html>
+                                                                                                                                        </body></html>

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,66 +12,72 @@
   <script defer src="../assets/docs-internal-meta.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <script defer src="../assets/docs-syntax.js"></script>
 </head>
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Docker image and container</h1>
+    <h1 class="internal-h1--accent-tail">Docker image and container</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <section id="overview" class="card">
       <h2>Overview</h2>
       <p>Build the API as an OCI image and run it with Docker for packaging checks and demos.</p>
     </section>
-    <p class="lead">
-      How we build the API image and run it locally. Production hardening is not covered here; see
-      <a href="../adr/0015-container-image.html">ADR 0015</a>. Automated build and push to GitHub Container Registry after CI is in
-      <a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a>.
-    </p>
+
     <section class="card">
 
       <h2 id="optional-and-daily-workflow">Optional tooling and daily development</h2>
       <p>
-        <strong>Docker</strong> is <strong>optional</strong> for day-to-day work. Use a venv,
-        <code>make run</code>, and tests — see <a href="./0007-local-development.html">Local development</a>. You do not
-        need an image for every change.
+        <strong>Docker is optional</strong> for day-to-day work. The usual loop is venv,
+        <code>make run</code>, and tests; see
+        <a href="0007-local-development.html">Local development</a>. You do not need an
+        image for every change.
       </p>
       <p>
-        The usual loop (code → test → <code>make verify</code> → commit) stays the same. A container image is how many
-        teams ship the same bits that passed CI to a registry and then run them in a target environment.
+        The local loop (code → test → <code>make verify</code> → commit) stays the same.
+        A container image is how teams ship the exact bits that passed CI to a registry,
+        and then run them in a target environment.
       </p>
       <p>
-        <strong>Real deployments</strong> usually expect a <strong>container image</strong>: something builds the image,
-        pushes it to a <strong>registry</strong> (Docker Hub, GitHub Container Registry, a cloud vendor registry, etc.), and
-        the target environment <strong>pulls</strong> that image and runs it with production configuration and secrets.
-        The repo’s <code>Dockerfile</code> is the starting point for that image.
+        Real deployments usually expect a container image. Some build step produces the
+        image and pushes it to a <strong>registry</strong> (Docker Hub, GitHub Container
+        Registry, a cloud-vendor registry). The target environment then <strong>pulls</strong>
+        that image and runs it with production configuration and secrets. The repo's
+        <code>Dockerfile</code> is the starting point.
       </p>
 
       <h3 id="what-real-deployment-looks-like">What a real deployment looks like (high level)</h3>
       <p>
-        A full production setup is unique to each team, but the pattern is almost always:
+        A full production setup is unique to each team, but the pattern is almost always
+        the same:
       </p>
       <ol>
         <li>
-          <strong>Build and test in CI</strong> — pipeline runs lint, tests, and (often) builds the Docker image and tags it
-          (for example <code>:1.4.2</code> or <code>:&lt;git-sha&gt;</code>).
+          <strong>Build and test in CI.</strong> The pipeline runs lint and tests, and
+          usually builds the Docker image and tags it (for example
+          <code>:1.4.2</code> or <code>:&lt;git-sha&gt;</code>).
         </li>
         <li>
-          <strong>Push to a registry</strong> — <code>docker push</code> to a URL your servers can read (authentication required).
-          Nothing is “sent” automatically from <code>git push</code> unless you wire a workflow.
+          <strong>Push to a registry.</strong> <code>docker push</code> uploads the image
+          to a URL your servers can read (authentication required). Nothing is uploaded
+          automatically by <code>git push</code> unless a workflow is wired up.
         </li>
         <li>
-          <strong>Roll out to an environment</strong> — your platform or ops process updates running services to the new
-          image tag (for example on a VM with Docker, or a managed container service).
+          <strong>Roll out to an environment.</strong> The platform or the ops process
+          updates running services to the new image tag (for example, on a VM with Docker
+          or on a managed container service).
         </li>
         <li>
-          <strong>Configuration and data</strong> — production <code>APP_ENV</code>, secrets, database URL, and scaling are set
-          in that environment (not in the image). SQLite is fine for demos; multi-instance setups typically use a
-          shared database (for example PostgreSQL).
+          <strong>Configuration and data.</strong> Production
+          <code>APP_ENV</code>, secrets, database URL, and scaling are set in the
+          environment, not in the image. SQLite is fine for demos. Multi-instance setups
+          typically use a shared database such as PostgreSQL.
         </li>
         <li>
-          <strong>Traffic</strong> — DNS points to a load balancer or reverse proxy; TLS terminates at the edge; requests reach
-          your service on port 8000 (or behind a reverse proxy).
+          <strong>Traffic.</strong> DNS points at a load balancer or a reverse proxy, TLS
+          terminates at the edge, and requests reach the service on port 8000 (or behind
+          a reverse proxy).
         </li>
       </ol>
     </section>
@@ -86,17 +92,18 @@
 
       <h2 id="docker-in-one-minute">Docker in one minute</h2>
       <p>
-        <strong>Docker</strong> builds an <em>image</em> (a filesystem snapshot + metadata) and runs it as a
-        <em>container</em> (an isolated process on your machine). The API image installs dependencies from the
-        same <code>requirements.txt</code> as <code>make install</code>, copies <code>app/</code> and
-        <code>alembic/</code>, and starts the app via <code>scripts/container_entrypoint.sh</code>
-        (<code>alembic upgrade head</code>, then Uvicorn). On the host, <code>make container-start</code> runs the
-        same script (with your <code>.venv</code>); the image does not invoke <code>make</code> — there is no
-        <code>.venv</code> inside the container.
+        Docker builds an <em>image</em> (a filesystem snapshot plus metadata) and runs it
+        as a <em>container</em> (an isolated process on the host). The API image installs
+        dependencies from the same <code>requirements.txt</code> as
+        <code>make install</code>, copies <code>app/</code> and <code>alembic/</code>,
+        and starts the app through <code>scripts/container_entrypoint.sh</code>: it runs
+        <code>alembic upgrade head</code> and then Uvicorn. The same script runs on the
+        host through your <code>.venv</code>; the image does not invoke <code>make</code>,
+        and there is no <code>.venv</code> inside the container.
       </p>
       <ul>
         <li><strong>Image name</strong> used in this repo: <code>study-app-api:local</code> (tag is arbitrary).</li>
-        <li><strong>Build</strong>: <code>make docker-build</code> or <code>docker build -t study-app-api:local .</code></li>
+        <li><strong>Build</strong>: <code>docker build -t study-app-api:local .</code></li>
         <li>
           <strong>Run</strong> (example): mount a volume for SQLite so data survives container removal:
           <pre><code>docker run --rm -p 8000:8000 \
@@ -106,7 +113,8 @@
             -v study-app-data:/data \
             study-app-api:local</code></pre>
             Then open <code>http://127.0.0.1:8000/live</code>. For <code>qa</code>/<code>prod</code> rules,
-            non-default API keys and stricter CORS apply (<code>app/core/config.py</code>). Pass secrets via <code>-e</code>
+            non-default API keys and stricter CORS apply (<code>app/core/config.py</code>). Pass secrets via
+            <code>-e</code>
             or your platform’s secret mechanism — not committed files.
           </li>
         </ul>
@@ -115,22 +123,13 @@
 
         <h2 id="sqlite-and-replicas">SQLite and replicas</h2>
         <p>
-          This API uses SQLite. A single container with a mounted data directory is fine for demos. Do not assume multiple
-          replicas can share one SQLite file; for horizontal scaling you would move to a shared database
-          (for example PostgreSQL) — a future architectural change.
+          This API uses SQLite. A single container with a mounted data directory is fine
+          for demos. Do not assume multiple replicas can share one SQLite file. Horizontal
+          scaling moves the data to a shared database such as PostgreSQL, which is a
+          future architectural change.
         </p>
       </section>
-      <section class="card">
 
-        <h2>See also</h2>
-        <ul>
-          <li><a href="../adr/0015-container-image.html">ADR 0015 — Container image</a></li>
-          <li><a href="../adr/0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021 — Continuous delivery (GitHub Actions → GHCR)</a></li>
-          <li><a href="./0007-local-development.html">Local development (venv, make run, observability)</a></li>
-          <li><a href="../adr/0009-health-readiness-and-observability.html">ADR 0009 — Health and readiness</a></li>
-          <li><a href="./README.html#developer-guides">Developer guides index</a></li>
-        </ul>
-      </section>
       <section id="page-history" class="card">
         <h2>Page history</h2>
         <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -144,6 +143,11 @@
             </thead>
             <tbody>
               <tr>
+                <td><time datetime="2026-05-03">2026-05-03</time></td>
+                <td>Rewrote prose at C1 level: replaced em-dash connectors in “What a real deployment looks like” and the SQLite-and-replicas card with full sentences; tightened the “Docker in one minute” paragraph.</td>
+                <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+              </tr>
+              <tr>
                 <td><time datetime="2026-04-21">2026-04-21</time></td>
                 <td>Added Page history section (repository baseline).</td>
                 <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
@@ -153,7 +157,6 @@
         </div>
       </section>
 
-      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
     </main>
 
   </body></html>

@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend diagrams and lightbox</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-diagram-lightbox.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Docs frontend diagrams and lightbox <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Docs portal · Diagrams &amp; lightbox</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Embed contract for PlantUML diagrams and the expand-to-zoom UX.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-30">2026-04-30</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page describes the frontend implementation contract for technical diagrams in docs pages:
+            how PlantUML images are embedded, how the expand-to-lightbox flow works, and what must be verified
+            when contributors change diagram behavior.
+          </p>
+        </section>
+
+        <section id="scope" class="card">
+          <h2>Scope and integration model</h2>
+          <ul>
+            <li><strong>Runtime file:</strong> <code>docs/assets/docs-diagram-lightbox.js</code>.</li>
+            <li><strong>Style layer:</strong> <code>docs/assets/docs.css</code> selectors <code>.diagram-uml-wrap</code>, <code>.diagram-expand-btn</code>, and <code>.docs-diagram-lightbox*</code>.</li>
+            <li><strong>Binding target:</strong> all <code>img.diagram--uml</code> in page content.</li>
+            <li><strong>Progressive enhancement:</strong> the image remains readable without JavaScript; JS adds wrapper and expand control.</li>
+            <li><strong>Feature ID:</strong> <code>DFEAT-017</code> in <a href="../architecture-map.html#feature-implementation-ledger">architecture map ledger</a>.</li>
+          </ul>
+        </section>
+
+        <section id="runtime-behavior" class="card">
+          <h2>Runtime behavior</h2>
+          <figure class="sys-diagram">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Diagram · Sequence</span>
+              <div class="sys-diagram__titles">
+                <h3>Lightbox open and close flow</h3>
+                <p class="sys-diagram__sub">From bootstrap to focus-restoration on close. Uses the contract documented below.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas">
+              <img alt="Sequence diagram of the diagram lightbox: bootstrap creates the lightbox surface and wraps every img.diagram--uml with an Expand button; on click, the runtime copies src and alt into the lightbox, resets zoom and pan, locks body scroll, and moves focus to the close button; zoom and pan are processed via wheel, keyboard, and pointer drag; close clears src and alt, removes the body lock, and restores focus to the previously active element." class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/lightbox_open_close_sequence.svg">
+            </div>
+            <figcaption class="sys-diagram__foot"><strong>Source:</strong>
+              <code>docs/uml/sequences/lightbox_open_close_sequence.puml</code>
+            </figcaption>
+          </figure>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>Implementation details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Bootstrap</td>
+                  <td>On load, runtime creates lightbox DOM once (<code>createLightbox()</code>) and appends it to <code>&lt;body&gt;</code>.</td>
+                </tr>
+                <tr>
+                  <td>Target discovery</td>
+                  <td>At <code>DOMContentLoaded</code>, runtime scans <code>img.diagram--uml</code>, wraps each with <code>.diagram-uml-wrap</code>, and appends <code>Expand</code> button.</td>
+                </tr>
+                <tr>
+                  <td>Open flow</td>
+                  <td><code>open()</code> copies image source/alt into lightbox image, resets zoom/pan, stores previous focus, and moves focus to close button.</td>
+                </tr>
+                <tr>
+                  <td>Close flow</td>
+                  <td><code>close()</code> clears source/alt, removes body lock class, and restores focus to the previously active element.</td>
+                </tr>
+                <tr>
+                  <td>Zoom controls</td>
+                  <td>Wheel zoom and toolbar buttons use clamped scale between <code>MIN_SCALE=1</code> and <code>MAX_SCALE=6</code>, then apply CSS transform on stage.</td>
+                </tr>
+                <tr>
+                  <td>Pan controls</td>
+                  <td>When zoomed above 1x, drag pan is enabled for mouse and touch; viewport toggles <code>is-panning</code> class for cursor feedback.</td>
+                </tr>
+                <tr>
+                  <td>Keyboard</td>
+                  <td><kbd>Escape</kbd> closes; <kbd>+</kbd>/<kbd>=</kbd> zoom in; <kbd>-</kbd>/<kbd>_</kbd> zoom out; <kbd>Cmd/Ctrl</kbd>+<kbd>0</kbd> resets.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="visual-reference" class="card">
+          <h2>Visual reference</h2>
+          <p>
+            The sequence diagram above describes <em>how</em> the lightbox boots and closes. This section
+            describes <em>what readers see</em>: the surface controls (close × button, zoom toolbar, image stage)
+            and what happens at each zoom step. The same image renders at three clamped zoom levels —
+            <code>1×</code> (rest), <code>3×</code> (mid-zoom, pan engaged), <code>6×</code> (<code>MAX_SCALE</code>).
+          </p>
+
+          <figure class="sys-diagram" aria-label="Lightbox UI anatomy and zoom level series">
+            <div class="sys-diagram__head">
+              <span class="sys-diagram__badge">Mock · Visual reference</span>
+              <div class="sys-diagram__titles">
+                <h3>Lightbox surface controls and zoom levels</h3>
+                <p class="sys-diagram__sub">Top: full-scale anatomy with annotations for the close button, zoom toolbar, image stage, and keyboard hint strip. Bottom: three thumbnails showing what the reader sees at <code>1×</code>, <code>3×</code>, and <code>6×</code> with a pan reticle.</p>
+              </div>
+            </div>
+            <div class="sys-diagram__canvas" style="background:#fafbfd;">
+              <svg viewBox="0 0 760 500" role="img" aria-labelledby="lbx-vis-title lbx-vis-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+                <title id="lbx-vis-title">Lightbox UI anatomy and zoom level series</title>
+                <desc id="lbx-vis-desc">Top panel: a full-screen lightbox surface with a dark overlay, a close button at the top-right, a zoom toolbar at the top-left with zoom-in plus, zoom-out minus, and reset zero buttons, a centered diagram image stage, and a keyboard hint strip at the bottom listing Escape, plus and minus, and Command-zero. Bottom panel: three thumbnails showing the same diagram at one-times, three-times, and six-times zoom levels, with a small pan reticle indicating which part of the diagram is visible at each zoom.</desc>
+                <defs>
+                  <filter id="lbx-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <fedropshadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.45"></fedropshadow>
+                  </filter>
+                  <pattern id="lbx-grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#94a3b8" stroke-width="0.5" stroke-opacity="0.5"></path>
+                  </pattern>
+                </defs>
+
+                <rect x="4" y="4" width="752" height="492" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                <!-- ============ TOP: FULL LIGHTBOX UI ANATOMY ============ -->
+                <text x="380" y="32" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Lightbox surface — full anatomy</text>
+
+                <!-- backdrop (dark overlay covering page) -->
+                <rect x="40" y="50" width="680" height="240" rx="8" fill="#0f172a" filter="url(#lbx-shadow)"></rect>
+                <!-- subtle page content showing through -->
+                <rect x="40" y="50" width="680" height="240" rx="8" fill="#1e293b" opacity="0.85"></rect>
+
+                <!-- close button (top-right) -->
+                <rect x="676" y="62" width="32" height="32" rx="16" fill="#1e293b" stroke="#475569" stroke-width="1"></rect>
+                <line x1="685" y1="71" x2="699" y2="85" stroke="#e2e8f0" stroke-width="1.8" stroke-linecap="round"></line>
+                <line x1="699" y1="71" x2="685" y2="85" stroke="#e2e8f0" stroke-width="1.8" stroke-linecap="round"></line>
+
+                <!-- zoom toolbar (top-left) -->
+                <rect x="56" y="62" width="124" height="32" rx="16" fill="#1e293b" stroke="#475569" stroke-width="1"></rect>
+                <!-- zoom in -->
+                <g transform="translate(76 78)">
+                  <line x1="-7" y1="0" x2="7" y2="0" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"></line>
+                  <line x1="0" y1="-7" x2="0" y2="7" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"></line>
+                </g>
+                <line x1="98" y1="68" x2="98" y2="88" stroke="#475569" stroke-width="0.8"></line>
+                <!-- zoom out -->
+                <line x1="111" y1="78" x2="125" y2="78" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"></line>
+                <line x1="138" y1="68" x2="138" y2="88" stroke="#475569" stroke-width="0.8"></line>
+                <!-- reset (0 / fit) -->
+                <text x="156" y="83" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#e2e8f0">⊙</text>
+
+                <!-- image stage (sample diagram) -->
+                <rect x="180" y="118" width="400" height="140" rx="6" fill="#ffffff" stroke="#cbd5e1"></rect>
+                <rect x="180" y="118" width="400" height="140" rx="6" fill="url(#lbx-grid)"></rect>
+                <!-- sample "diagram" boxes -->
+                <rect x="210" y="140" width="80" height="32" rx="4" fill="#bfdbfe" stroke="#3b82f6"></rect>
+                <text x="250" y="160" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#1e3a8a" font-weight="700">Component</text>
+                <rect x="330" y="140" width="80" height="32" rx="4" fill="#fed7aa" stroke="#f97316"></rect>
+                <text x="370" y="160" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#7c2d12" font-weight="700">Service</text>
+                <rect x="450" y="140" width="80" height="32" rx="4" fill="#bbf7d0" stroke="#22c55e"></rect>
+                <text x="490" y="160" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#14532d" font-weight="700">Database</text>
+                <line x1="290" y1="156" x2="330" y2="156" stroke="#475569" stroke-width="1.5" marker-end="url(#lbx-arrow)"></line>
+                <line x1="410" y1="156" x2="450" y2="156" stroke="#475569" stroke-width="1.5"></line>
+                <rect x="270" y="200" width="220" height="32" rx="4" fill="#e0e7ff" stroke="#6366f1"></rect>
+                <text x="380" y="220" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#312e81" font-weight="700">Diagram boundary</text>
+
+                <!-- keyboard hint strip at bottom of lightbox -->
+                <rect x="240" y="262" width="280" height="22" rx="11" fill="#1e293b" opacity="0.85"></rect>
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#cbd5e1">
+                  <text x="258" y="277"><tspan font-weight="700" fill="#fde047">Esc</tspan> close</text>
+                  <text x="312" y="277"><tspan font-weight="700" fill="#fde047">+ /</tspan> zoom</text>
+                  <text x="372" y="277"><tspan font-weight="700" fill="#fde047">−</tspan> zoom out</text>
+                  <text x="438" y="277"><tspan font-weight="700" fill="#fde047">⌘0</tspan> reset</text>
+                </g>
+
+                <!-- annotations -->
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#0f172a">
+                  <line x1="118" y1="100" x2="120" y2="120" stroke="#1d4ed8" stroke-width="0.8"></line>
+                  <text x="40" y="116" font-weight="700" fill="#1d4ed8">A · Zoom toolbar</text>
+                  <text x="40" y="128" font-size="9" fill="#475569">in / out / fit · clamps to 1–6</text>
+
+                  <line x1="692" y1="100" x2="690" y2="118" stroke="#1d4ed8" stroke-width="0.8"></line>
+                  <text x="720" y="116" text-anchor="end" font-weight="700" fill="#1d4ed8">B · Close (×)</text>
+                  <text x="720" y="128" text-anchor="end" font-size="9" fill="#475569">restores prior focus</text>
+
+                  <line x1="380" y1="246" x2="380" y2="258" stroke="#1d4ed8" stroke-width="0.8" stroke-dasharray="2 2"></line>
+                  <text x="380" y="298" text-anchor="middle" font-weight="700" fill="#1d4ed8">C · Image stage · transform: scale + translate</text>
+                </g>
+
+                <!-- ============ DIVIDER ============ -->
+                <line x1="40" y1="320" x2="720" y2="320" stroke="#cbd5e1" stroke-dasharray="3 3"></line>
+
+                <!-- ============ BOTTOM: ZOOM SERIES ============ -->
+                <text x="380" y="344" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Zoom level series · MIN_SCALE 1 · MAX_SCALE 6</text>
+
+                <!-- 1× (rest) -->
+                <g transform="translate(60 360)">
+                  <rect x="0" y="0" width="200" height="120" rx="6" fill="#1e293b"></rect>
+                  <!-- inner content stage at 1× — shows full diagram -->
+                  <g transform="translate(40 30)">
+                    <rect x="0" y="0" width="120" height="60" rx="3" fill="#ffffff" stroke="#cbd5e1"></rect>
+                    <rect x="6" y="8" width="28" height="14" rx="2" fill="#bfdbfe" stroke="#3b82f6"></rect>
+                    <rect x="46" y="8" width="28" height="14" rx="2" fill="#fed7aa" stroke="#f97316"></rect>
+                    <rect x="86" y="8" width="28" height="14" rx="2" fill="#bbf7d0" stroke="#22c55e"></rect>
+                    <rect x="38" y="36" width="44" height="14" rx="2" fill="#e0e7ff" stroke="#6366f1"></rect>
+                  </g>
+                  <!-- pan reticle (full coverage at 1×) -->
+                  <rect x="160" y="6" width="32" height="22" rx="3" fill="#0f172a" stroke="#475569"></rect>
+                  <rect x="162" y="8" width="28" height="18" rx="1" fill="#3b82f6" opacity="0.4"></rect>
+                </g>
+                <text x="160" y="370" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#fde047" font-weight="700">pan reticle</text>
+                <text x="160" y="494" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1f2937">1× · rest · drag disabled</text>
+
+                <!-- 3× (mid) -->
+                <g transform="translate(280 360)">
+                  <rect x="0" y="0" width="200" height="120" rx="6" fill="#1e293b"></rect>
+                  <!-- inner content cropped at 3× — show only 2 boxes -->
+                  <g transform="translate(-30 12) scale(2.0)">
+                    <rect x="0" y="0" width="120" height="60" rx="3" fill="#ffffff" stroke="#cbd5e1"></rect>
+                    <rect x="6" y="8" width="28" height="14" rx="2" fill="#bfdbfe" stroke="#3b82f6"></rect>
+                    <rect x="46" y="8" width="28" height="14" rx="2" fill="#fed7aa" stroke="#f97316"></rect>
+                    <rect x="86" y="8" width="28" height="14" rx="2" fill="#bbf7d0" stroke="#22c55e"></rect>
+                    <rect x="38" y="36" width="44" height="14" rx="2" fill="#e0e7ff" stroke="#6366f1"></rect>
+                  </g>
+                  <!-- mask edges to crop -->
+                  <rect x="0" y="0" width="200" height="120" rx="6" fill="none" stroke="#475569" stroke-width="1"></rect>
+                  <!-- pan reticle (partial) -->
+                  <rect x="160" y="6" width="32" height="22" rx="3" fill="#0f172a" stroke="#475569"></rect>
+                  <rect x="160" y="6" width="32" height="22" rx="3" fill="#475569" opacity="0.3"></rect>
+                  <rect x="162" y="10" width="14" height="10" rx="1" fill="#3b82f6"></rect>
+                </g>
+                <text x="380" y="494" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1f2937">3× · mid-zoom · drag-pan engaged</text>
+
+                <!-- 6× (max) -->
+                <g transform="translate(500 360)">
+                  <rect x="0" y="0" width="200" height="120" rx="6" fill="#1e293b"></rect>
+                  <!-- one box visible at 6× -->
+                  <g transform="translate(-130 -120) scale(4.5)">
+                    <rect x="46" y="8" width="28" height="14" rx="2" fill="#fed7aa" stroke="#f97316" stroke-width="0.4"></rect>
+                    <text x="60" y="18" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="3" fill="#7c2d12" font-weight="700">Service</text>
+                  </g>
+                  <rect x="0" y="0" width="200" height="120" rx="6" fill="none" stroke="#475569" stroke-width="1"></rect>
+                  <!-- reticle (small dot) -->
+                  <rect x="160" y="6" width="32" height="22" rx="3" fill="#0f172a" stroke="#475569"></rect>
+                  <rect x="160" y="6" width="32" height="22" rx="3" fill="#475569" opacity="0.55"></rect>
+                  <rect x="172" y="13" width="6" height="6" rx="1" fill="#3b82f6"></rect>
+                </g>
+                <text x="600" y="494" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#1f2937">6× · MAX_SCALE · single label legible</text>
+
+                <!-- arrows showing transitions -->
+                <path d="M 262 420 L 278 420" stroke="#3b82f6" stroke-width="1.4" marker-end="url(#lbx-arrow-end)"></path>
+                <text x="270" y="412" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#1d4ed8">scroll · +</text>
+                <path d="M 482 420 L 498 420" stroke="#3b82f6" stroke-width="1.4" marker-end="url(#lbx-arrow-end)"></path>
+                <text x="490" y="412" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#1d4ed8">scroll · +</text>
+
+                <defs>
+                  <marker id="lbx-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M0,0 L10,5 L0,10 z" fill="#475569"></path>
+                  </marker>
+                  <marker id="lbx-arrow-end" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M0,0 L10,5 L0,10 z" fill="#3b82f6"></path>
+                  </marker>
+                </defs>
+              </svg>
+            </div>
+            <figcaption class="sys-diagram__foot">
+              <strong>Source:</strong> inline SVG mock (no external asset). Mirrors the surface contract from
+              <a href="#runtime-behavior">Runtime behavior</a> and the bounds from
+              <a href="#config-and-tuning">Configuration and tuning constants</a>
+              (<code>MIN_SCALE = 1</code>, <code>MAX_SCALE = 6</code>).
+            </figcaption>
+          </figure>
+
+          <p class="small">
+            <strong>Why the pan reticle.</strong> At <code>1×</code> the entire diagram is visible, so dragging is
+            disabled and the reticle covers the whole frame. As zoom climbs, the reticle shrinks to show what
+            slice is in view; the runtime toggles the <code>is-panning</code> class only when zoom is above
+            <code>1×</code>, so the cursor swaps to grab/grabbing only when panning is meaningful.
+          </p>
+          <p class="small">
+            <strong>Why the keyboard strip lives in the surface.</strong> The lightbox is a focus trap; making the
+            shortcut hints visible on-screen means the reader doesn't have to recall them from a separate
+            reference. The strip uses neutral on-dark contrast so it doesn't compete with the diagram itself.
+          </p>
+        </section>
+
+        <section id="config-and-tuning" class="card">
+          <h2>Configuration and tuning constants</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Constant</th>
+                  <th>Default</th>
+                  <th>Impact</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>MIN_SCALE</code></td>
+                  <td><code>1</code></td>
+                  <td>Minimum zoom level and baseline for resetting pan offsets.</td>
+                </tr>
+                <tr>
+                  <td><code>MAX_SCALE</code></td>
+                  <td><code>6</code></td>
+                  <td>Upper zoom bound; higher values increase precision but also risk usability/performance issues.</td>
+                </tr>
+                <tr>
+                  <td><code>WHEEL_FACTOR</code></td>
+                  <td><code>0.002</code></td>
+                  <td>Mouse wheel sensitivity.</td>
+                </tr>
+                <tr>
+                  <td><code>BTN_FACTOR</code></td>
+                  <td><code>1.25</code></td>
+                  <td>Step multiplier for toolbar and keyboard zoom actions.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="html-authoring-contract" class="card">
+          <h2>HTML authoring contract</h2>
+          <ul>
+            <li>Use <code>img.diagram--uml</code> for diagrams that should support expand and lightbox interaction.</li>
+            <li>Keep meaningful <code>alt</code> text on diagram images: it is propagated to the lightbox image.</li>
+            <li>Do not pre-wrap diagrams with custom wrappers that conflict with runtime wrapper logic.</li>
+            <li>Do not duplicate expand controls in static HTML: runtime appends the official button.</li>
+          </ul>
+        </section>
+
+        <section id="safety-checklist" class="card">
+          <h2>Safety checklist for changes</h2>
+          <ol>
+            <li>Verify open/close flow with keyboard and mouse; focus must return to the original trigger after close.</li>
+            <li>Verify wheel zoom, button zoom, and keyboard zoom in light and dark themes.</li>
+            <li>Verify drag pan only starts when zoomed above baseline and works for both pointer and touch.</li>
+            <li>Verify body scroll lock while lightbox is open and release after close.</li>
+            <li>Verify all target pages still render diagrams correctly without JS errors.</li>
+            <li>When constants are changed, document the rationale in <code>docs/CHANGELOG.md</code> and update this page.</li>
+          </ol>
+        </section>
+
+        <section id="component-states" class="card">
+          <h2>Per-component states and accessibility</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Lightbox states and accessibility">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Component</th>
+                  <th scope="col">States</th>
+                  <th scope="col">Role / ARIA</th>
+                  <th scope="col">Keyboard</th>
+                  <th scope="col">Reduced motion</th>
+                  <th scope="col">Screen-reader announcement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Diagram trigger (<code>&lt;img&gt;</code>)</td>
+                  <td>default, hover (cursor: zoom-in), focus, activated</td>
+                  <td>Image with descriptive <code>alt</code>; wrapping <code>&lt;button&gt;</code>-styled link.</td>
+                  <td><kbd>Enter</kbd>/<kbd>Space</kbd> activates and opens lightbox</td>
+                  <td>Skip zoom-in cursor animation</td>
+                  <td>The image's <code>alt</code> text, then "press Enter to expand"</td>
+                </tr>
+                <tr>
+                  <td>Lightbox dialog</td>
+                  <td>opening, open (1×), zoomed, panning, closing</td>
+                  <td><code>role="dialog"</code> + <code>aria-modal="true"</code>; <code>aria-labelledby</code> points to the diagram caption; focus trap; restores focus to launcher on close</td>
+                  <td><kbd>Esc</kbd> closes; <kbd>+</kbd>/<kbd>−</kbd> zoom; arrow keys pan; <kbd>Tab</kbd> traps inside the dialog</td>
+                  <td>Skip zoom and pan transitions; open / close instantly</td>
+                  <td>"Diagram opened in fullscreen, press Escape to close"</td>
+                </tr>
+                <tr>
+                  <td>Lightbox close button</td>
+                  <td>default, hover, focus</td>
+                  <td><code>aria-label="Close diagram viewer"</code></td>
+                  <td><kbd>Tab</kbd> reaches it inside the trap; <kbd>Enter</kbd> closes</td>
+                  <td>No motion</td>
+                  <td>"Close diagram viewer, button"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="dos-and-donts" class="card">
+          <h2>Do's and Don'ts</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Embed diagrams as <code>&lt;figure&gt;</code> with a rendered <code>&lt;img&gt;</code> from a PlantUML source — small payload, lightbox-friendly.</td>
+                  <td>Inline SVG large enough to need a lightbox — slows page paint and defeats the purpose of the viewer.</td>
+                </tr>
+                <tr>
+                  <td>Author diagrams in PlantUML per <a href="../../../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>.</td>
+                  <td>Use Mermaid or any other diagramming syntax — portal style is PlantUML-only.</td>
+                </tr>
+                <tr>
+                  <td>Load <code>docs-diagram-lightbox.js</code> only on pages that ship diagrams.</td>
+                  <td>Add it to the global template — paying the runtime cost on every page is wasteful.</td>
+                </tr>
+                <tr>
+                  <td>Verify keyboard close (<kbd>Esc</kbd>) and focus restoration to the launching <code>&lt;img&gt;</code>.</td>
+                  <td>Leave focus stranded on <code>document.body</code> after closing — screen-reader users lose place.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="related-pages" class="card">
+          <h2>Related pages</h2>
+          <ul>
+            <li><a href="../architecture-map.html">Docs frontend architecture map and feature inventory</a></li>
+            <li><a href="../foundations/motion-and-adaptivity.html">Docs frontend UI system, motion, and adaptivity</a></li>
+            <li><a href="../../../howto/0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely</a></li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-01">2026-05-01</time></td>
+                  <td>Added the <a href="#visual-reference">Visual reference</a> section: full-scale anatomy of the lightbox surface (close button, zoom toolbar with +/−/⊙ controls, image stage with a sample diagram, keyboard hint strip) plus a three-thumbnail zoom-level series at <code>1×</code>, <code>3×</code>, and <code>6×</code> with a pan reticle that shrinks as scale climbs.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Per-component states and accessibility section (trigger, dialog, close button).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Added Component badge to H1; added Do's and Don'ts section (PNG vs inline SVG, PlantUML-only, opt-in loading, focus restore).</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Added implementation contract for diagrams and <code>docs-diagram-lightbox.js</code> behavior.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

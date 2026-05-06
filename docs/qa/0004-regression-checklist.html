@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QA checklist 0004 — Regression</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">QA checklist 0004: Regression</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Checklists</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Run this when the change set is wide (refactor, dependency bump, infra swap) or when
+            the smoke checklist alone isn't enough confidence. This is broader than smoke and
+            shallower than feature-level acceptance.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#scope">Scope</a>
+            <a class="docs-page-hero__chip" href="#api-coverage">API coverage</a>
+            <a class="docs-page-hero__chip" href="#docs-coverage">Docs coverage</a>
+            <a class="docs-page-hero__chip" href="#defect-prone">Defect-prone areas</a>
+            <a class="docs-page-hero__chip" href="#cross-cutting">Cross-cutting</a>
+            <a class="docs-page-hero__chip" href="#pass-fail">Pass/fail</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Scope</div>
+
+        <section class="card" id="scope">
+          <h2>When to run</h2>
+          <ul>
+            <li>Major refactor merged (touches &gt; 1 module).</li>
+            <li>Dependency upgrade across the stack (FastAPI / Pydantic / SQLAlchemy / Alembic).</li>
+            <li>Container or runtime image change.</li>
+            <li>Database engine, indexing, or migration change.</li>
+            <li>Docs portal frontend change touching shared assets (sidebar, nav, theme).</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">API coverage</div>
+
+        <section class="card" id="api-coverage">
+          <h2>API coverage — golden paths for every resource</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1.1</td>
+                  <td>User: POST → GET → PUT → PATCH → GET</td>
+                  <td>Each call matches its spec; final GET reflects all changes.</td>
+                </tr>
+                <tr>
+                  <td>1.2</td>
+                  <td>Conspectus: POST → GET due → POST review → PATCH</td>
+                  <td>Each call matches its spec; review action transitions state per spec.</td>
+                </tr>
+                <tr>
+                  <td>1.3</td>
+                  <td>Schedule summary GET</td>
+                  <td>Aggregates data correctly for the seeded set.</td>
+                </tr>
+                <tr>
+                  <td>1.4</td>
+                  <td>Error log: POST → GET</td>
+                  <td>Listing returns the just-posted error with correct shape.</td>
+                </tr>
+                <tr>
+                  <td>1.5</td>
+                  <td>OpenAPI baseline test</td>
+                  <td>Green; no contract drift.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Docs coverage</div>
+
+        <section class="card" id="docs-coverage">
+          <h2>Docs coverage</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2.1</td>
+                  <td>Open one page from each top-level section: ADR, RFC, How-to, Runbooks, Audit, Internal API, QA,
+                    Front docs.</td>
+                    <td>All render without console errors; sidebar active highlight correct.</td>
+                  </tr>
+                  <tr>
+                    <td>2.2</td>
+                    <td>Search index covers new pages added since last regression.</td>
+                    <td>Search returns each new page by title.</td>
+                  </tr>
+                  <tr>
+                    <td>2.3</td>
+                    <td>Theme + responsive matrix on one representative page.</td>
+                    <td>Light, dark, 360px, 768px, 1280px all render correctly.</td>
+                  </tr>
+                  <tr>
+                    <td>2.4</td>
+                    <td>Diagrams: open one PlantUML diagram in the lightbox.</td>
+                    <td>Renders; closes on Escape.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Defect-prone areas</div>
+
+          <section class="card" id="defect-prone">
+            <h2>Defect-prone areas — re-test these on every regression</h2>
+            <p class="small">
+              Add to this list whenever a defect is closed. Sources: post-incident review, defect
+              history, audit findings.
+            </p>
+            <div class="docs-table-scroll" role="region" aria-label="Table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Area</th>
+                    <th>Reason</th>
+                    <th>Re-test</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>3.1</td>
+                    <td>Sidebar drawer focus trap</td>
+                    <td>Past a11y regression on Safari</td>
+                    <td>Open drawer, Tab through, confirm trap; Esc closes.</td>
+                  </tr>
+                  <tr>
+                    <td>3.2</td>
+                    <td>Search results panel close behavior</td>
+                    <td>Reopened twice after refactors</td>
+                    <td>Open results, click outside, Esc, navigate — all close cleanly.</td>
+                  </tr>
+                  <tr>
+                    <td>3.3</td>
+                    <td>Idempotency window edge</td>
+                    <td>Window math has been wrong before</td>
+                    <td>Replay just-after-window; treated as new request.</td>
+                  </tr>
+                  <tr>
+                    <td>3.4</td>
+                    <td>OpenAPI baseline drift</td>
+                    <td>Easy to forget when adding/changing fields</td>
+                    <td>Run baseline test; commit regenerated file if intentional.</td>
+                  </tr>
+                  <tr>
+                    <td>3.5</td>
+                    <td>Theme persistence on cross-page navigation</td>
+                    <td>localStorage key changes have caused reset bugs</td>
+                    <td>Set dark, navigate three pages, confirm dark persists.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Cross-cutting</div>
+
+          <section class="card" id="cross-cutting">
+            <h2>Cross-cutting checks</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Check</th>
+                    <th>Expected</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>4.1</td>
+                    <td>Error envelope on a 404, 422, 401, and one 5xx</td>
+                    <td>All conform per <a href="../internal/api/_shared/error-envelope.html">envelope</a>.</td>
+                  </tr>
+                  <tr>
+                    <td>4.2</td>
+                    <td>Field conventions on three responses</td>
+                    <td>UUIDs, ISO-8601 UTC, snake_case keys.</td>
+                  </tr>
+                  <tr>
+                    <td>4.3</td>
+                    <td>Pagination on a list endpoint</td>
+                    <td>First page → next → empty next_cursor.</td>
+                  </tr>
+                  <tr>
+                    <td>4.4</td>
+                    <td>Auth boundary on three endpoints</td>
+                    <td>No-token / wrong-token / valid-token reach 401 / 401 / 2xx.</td>
+                  </tr>
+                  <tr>
+                    <td>4.5</td>
+                    <td>Migration up/down round-trip on a representative dataset</td>
+                    <td>Idempotent; row counts match.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="docs-section-divider" aria-hidden="true">Pass/fail</div>
+
+          <section class="card" id="pass-fail">
+            <h2>Pass/fail rules</h2>
+            <ul>
+              <li><strong>Pass:</strong> all rows pass; new defects (if any) are S3 or below.</li>
+              <li><strong>Fail:</strong> any S1/S2 found; or any defect-prone area regresses; or contract drift on the
+                OpenAPI baseline.</li>
+                <li>Add to <a href="#defect-prone">defect-prone areas</a> any newly closed defect that surfaced through this
+                  run.</li>
+                </ul>
+              </section>
+
+              <section class="card" id="page-history">
+                <h2>Page history</h2>
+                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                  <table class="docs-page-history">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Change</th>
+                        <th>Author</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><time datetime="2026-04-30">2026-04-30</time></td>
+                        <td>Initial regression checklist.</td>
+                        <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+            </main>
+          </div>
+        </div>
+
+      </body></html>

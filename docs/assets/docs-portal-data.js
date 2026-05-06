@@ -93,7 +93,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "adr/0022-embedded-swagger-ui-openapi-sandbox.html",
-        "title": "ADR 0022: Embedded Swagger — static validation (superseded)"
+        "title": "ADR 0022: Embedded Swagger UI — interactive API sandbox"
       },
       {
         "path": "adr/0023-structured-logging-and-local-elasticsearch.html",
@@ -117,11 +117,11 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "adr/README.html",
-        "title": "ADR Index"
+        "title": "ADR Index — ETR Study API"
       },
       {
         "path": "audit/AUDIT_TEMPLATE.html",
-        "title": "TOPIC — Assessment — formed YYYY-MM-DD"
+        "title": "Assessment template — docs/audit"
       },
       {
         "path": "audit/README.html",
@@ -133,7 +133,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "audit/api/README.html",
-        "title": "REST / HTTP API assessments — index"
+        "title": "REST API assessments — index"
       },
       {
         "path": "audit/docs/2026-04-14-documentation-experience-assessment.html",
@@ -150,6 +150,10 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "audit/docs/2026-04-24-ui-ux-assessment.html",
         "title": "UI/UX Assessment (premium benchmark) — Study App product and docs experience — formed 2026-04-23"
+      },
+      {
+        "path": "audit/docs/2026-05-01-documentation-experience-assessment.html",
+        "title": "Documentation Experience (DX) Assessment — Study App — formed 1 May 2026"
       },
       {
         "path": "audit/docs/README.html",
@@ -170,10 +174,6 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "developer/0003-business-logic.html",
         "title": "Business Logic Guide"
-      },
-      {
-        "path": "developer/0004-how-to-add-post-contract.html",
-        "title": "Moved — POST /api/v1/contract guide"
       },
       {
         "path": "developer/0005-error-matrix-by-status.html",
@@ -204,36 +204,36 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Developers Docs — Study App"
       },
       {
+        "path": "howto/0001-onboarding-from-zero-to-endpoint-docs.html",
+        "title": "Onboarding: from zero to endpoint and docs — Study App"
+      },
+      {
+        "path": "howto/0002-internal-service-docs-layout.html",
+        "title": "Internal service docs — layout and how to add pages"
+      },
+      {
+        "path": "howto/0003-make-commands-inventory.html",
+        "title": "Make commands inventory — How-to guides — Study App"
+      },
+      {
         "path": "howto/0004-how-to-add-post-contract.html",
-        "title": "Guide For Beginners: Add `POST /api/v1/contract`"
+        "title": "Beginner walkthrough: add an endpoint and matching docs"
+      },
+      {
+        "path": "howto/0005-how-to-change-docs-frontend-safely.html",
+        "title": "How to change docs frontend safely (playbooks)"
       },
       {
         "path": "howto/README.html",
         "title": "How-to guides — Study App"
       },
       {
-        "path": "howto/how-to-change-docs-frontend-safely.html",
-        "title": "How to change docs frontend safely (playbooks)"
-      },
-      {
-        "path": "howto/internal-service-docs-layout.html",
-        "title": "Internal service docs — layout and how to add pages"
-      },
-      {
-        "path": "howto/make-commands-inventory.html",
-        "title": "Make commands inventory — How-to guides — Study App"
-      },
-      {
-        "path": "howto/onboarding-from-zero-to-endpoint-docs.html",
-        "title": "Onboarding: from zero to endpoint and docs — Study App"
-      },
-      {
         "path": "index.html",
-        "title": "ETR Study API - Home page"
+        "title": "ETR Study API — Engineering Docs"
       },
       {
         "path": "internal/README.html",
-        "title": "Internal docs - Home page"
+        "title": "Internal Docs — Overview"
       },
       {
         "path": "internal/analysis/methodology.html",
@@ -248,6 +248,54 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "HTTP API — internal documentation hub — Study App"
       },
       {
+        "path": "internal/api/_shared/auth.html",
+        "title": "Authentication &amp; authorization — shared rules — Study App"
+      },
+      {
+        "path": "internal/api/_shared/error-catalog.html",
+        "title": "Error catalog — shared registry — Study App"
+      },
+      {
+        "path": "internal/api/_shared/error-envelope.html",
+        "title": "Error envelope — shared internal contract — Study App"
+      },
+      {
+        "path": "internal/api/_shared/field-conventions.html",
+        "title": "Field naming &amp; format conventions — Study App"
+      },
+      {
+        "path": "internal/api/_shared/idempotency.html",
+        "title": "Idempotency — shared internal rules — Study App"
+      },
+      {
+        "path": "internal/api/_shared/index.html",
+        "title": "Shared API standards — Internal API — Study App"
+      },
+      {
+        "path": "internal/api/_shared/observability-conventions.html",
+        "title": "Observability conventions — shared rules — Study App"
+      },
+      {
+        "path": "internal/api/_shared/openapi-authoring-guide.html",
+        "title": "OpenAPI authoring guide — internal → external — Study App"
+      },
+      {
+        "path": "internal/api/_shared/pagination.html",
+        "title": "Pagination — shared rules — Study App"
+      },
+      {
+        "path": "internal/api/_shared/spec-definition-of-done.html",
+        "title": "Operation spec — Definition of Done — Study App"
+      },
+      {
+        "path": "internal/api/_shared/spec-template.html",
+        "title": "Specification template — Internal API — Study App"
+      },
+      {
+        "path": "internal/api/_shared/versioning.html",
+        "title": "API versioning — shared rules — Study App"
+      },
+      {
         "path": "internal/api/conspectus/index.html",
         "title": "Conspectus resource — internal specification — Study App"
       },
@@ -257,7 +305,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "internal/api/conspectus/operations/get-api-v1-schedule-summary.html",
-        "title": "GET /api/v1/schedule/summary — Schedule (conspectuses) — Study App"
+        "title": "GET /api/v1/schedule/summary — Conspectus — Study App"
       },
       {
         "path": "internal/api/conspectus/operations/patch-api-v1-conspectuses-conspectus_uuid.html",
@@ -281,7 +329,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "internal/api/error-log/operations/post-api-v1-errors.html",
-        "title": "POST /api/v1/errors — Error log (conspectus link) — Study App"
+        "title": "POST /api/v1/errors — Error log — Study App"
       },
       {
         "path": "internal/api/errors.html",
@@ -308,64 +356,132 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "PUT /api/v1/user/{system_uuid}/{system_user_id} — User — Study App"
       },
       {
-        "path": "internal/api/user/user-http-api.html",
-        "title": "Moved — User resource"
+        "path": "internal/front/README.html",
+        "title": "Docs frontend — internal documentation hub — Study App"
       },
       {
-        "path": "internal/front/docs-frontend-architecture-map.html",
-        "title": "Docs frontend architecture map and feature inventory"
+        "path": "internal/front/_shared/component-spec-template.html",
+        "title": "Component spec template — Docs frontend — Study App"
       },
       {
-        "path": "internal/front/docs-frontend-diagrams-and-lightbox.html",
-        "title": "Docs frontend diagrams and lightbox"
+        "path": "internal/front/_shared/contract-spec-template.html",
+        "title": "Contract spec template — Docs frontend — Study App"
       },
       {
-        "path": "internal/front/docs-frontend-fast-entry-by-role.html",
+        "path": "internal/front/_shared/fast-entry-by-role.html",
         "title": "Docs frontend quick entry by role"
       },
       {
-        "path": "internal/front/docs-frontend-feedback-and-editorial-workflow.html",
-        "title": "Docs frontend feedback and editorial workflow"
+        "path": "internal/front/_shared/foundation-spec-template.html",
+        "title": "Foundation spec template — Docs frontend — Study App"
       },
       {
-        "path": "internal/front/docs-frontend-glossary.html",
+        "path": "internal/front/_shared/glossary.html",
         "title": "Docs frontend glossary"
       },
       {
-        "path": "internal/front/docs-frontend-hotkeys.html",
-        "title": "Docs frontend hotkeys"
+        "path": "internal/front/_shared/process.html",
+        "title": "Documentation maintenance process"
       },
       {
-        "path": "internal/front/docs-frontend-menu-and-theme-controls.html",
-        "title": "Docs frontend navigation and theme controls (normative contract)"
+        "path": "internal/front/_shared/spec-definition-of-done.html",
+        "title": "Frontend spec — Definition of Done — Study App"
       },
       {
-        "path": "internal/front/docs-frontend-navigation-search-and-discovery.html",
-        "title": "Docs frontend navigation, search, and discovery"
+        "path": "internal/front/_shared/style-guide.html",
+        "title": "Documentation style guide and audit standard"
       },
       {
-        "path": "internal/front/docs-frontend-tooltips.html",
+        "path": "internal/front/architecture-map.html",
+        "title": "Docs frontend architecture map and feature inventory"
+      },
+      {
+        "path": "internal/front/components/diagrams-and-lightbox.html",
+        "title": "Docs frontend diagrams and lightbox"
+      },
+      {
+        "path": "internal/front/components/popups-and-overlays.html",
+        "title": "Docs frontend: popup and overlay system"
+      },
+      {
+        "path": "internal/front/components/report-bug-fab.html",
+        "title": "Docs frontend report-bug FAB"
+      },
+      {
+        "path": "internal/front/components/resume-and-back-to-top.html",
+        "title": "Docs frontend resume reading and back-to-top"
+      },
+      {
+        "path": "internal/front/components/rocket-launch-animation.html",
+        "title": "Docs frontend rocket launch animation"
+      },
+      {
+        "path": "internal/front/components/sticky-toc.html",
+        "title": "Sticky On this page TOC and scroll-spy"
+      },
+      {
+        "path": "internal/front/components/tooltips.html",
         "title": "Docs frontend: tooltips and inline hints"
       },
       {
-        "path": "internal/front/docs-frontend-ui-kit.html",
-        "title": "Docs frontend UI kit (component style spec)"
+        "path": "internal/front/contracts/feedback-and-editorial-workflow.html",
+        "title": "Docs frontend feedback and editorial workflow"
       },
       {
-        "path": "internal/front/docs-frontend-ui-motion-and-adaptivity.html",
+        "path": "internal/front/contracts/menu-and-theme.html",
+        "title": "Docs frontend navigation and theme controls (normative contract)"
+      },
+      {
+        "path": "internal/front/contracts/navigation-search-and-discovery.html",
+        "title": "Docs frontend navigation, search, and discovery"
+      },
+      {
+        "path": "internal/front/foundations/css-architecture.html",
+        "title": "Docs frontend CSS architecture — reference"
+      },
+      {
+        "path": "internal/front/foundations/hotkeys.html",
+        "title": "Docs frontend hotkeys"
+      },
+      {
+        "path": "internal/front/foundations/js-modules.html",
+        "title": "Docs frontend JavaScript modules — reference"
+      },
+      {
+        "path": "internal/front/foundations/motion-and-adaptivity.html",
         "title": "Docs frontend UI system, motion, and adaptivity"
       },
       {
-        "path": "internal/front/documentation-style-guide.html",
-        "title": "Documentation style guide and audit standard"
+        "path": "internal/front/foundations/tokens.html",
+        "title": "Docs frontend token gallery"
+      },
+      {
+        "path": "internal/front/foundations/ui-kit.html",
+        "title": "Docs frontend UI kit (component style spec)"
+      },
+      {
+        "path": "internal/front/patterns/long-form-reading-aids.html",
+        "title": "Pattern: long-form reading aids — Docs frontend — Study App"
+      },
+      {
+        "path": "internal/front/screens/components/README.html",
+        "title": "Component screenshots — convention &amp; viewport canon"
       },
       {
         "path": "internal/front/screens/docs-screen-backlog-cockpit.html",
         "title": "Screen spec: Backlog cockpit"
       },
       {
+        "path": "internal/front/screens/docs-screen-home-landing.html",
+        "title": "Screen spec: Engineering hub home (docs/index.html)"
+      },
+      {
         "path": "internal/front/screens/docs-screen-template.html",
-        "title": "Screen spec template"
+        "title": "Screen spec template — international standard"
+      },
+      {
+        "path": "internal/manager/README.html",
+        "title": "Manager docs — Study App"
       },
       {
         "path": "internal/manager/sdlc-raci-matrix.html",
@@ -373,7 +489,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "internal/portal/index.html",
-        "title": "Employee portal — Study App"
+        "title": "Employee portal moved — Study App"
       },
       {
         "path": "internal/portal/people/cursor/index.html",
@@ -389,7 +505,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "openapi/index.html",
-        "title": "ETR Study App API — Swagger UI (test)"
+        "title": "OpenAPI Reference — ETR Study App"
       },
       {
         "path": "openapi/openapi-explorer.html",
@@ -400,8 +516,92 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "QA checklist 0001: Documentation pages visual verification"
       },
       {
+        "path": "qa/0002-api-endpoint-acceptance-checklist.html",
+        "title": "QA checklist 0002 — API endpoint acceptance"
+      },
+      {
+        "path": "qa/0003-release-smoke-checklist.html",
+        "title": "QA checklist 0003 — Release smoke"
+      },
+      {
+        "path": "qa/0004-regression-checklist.html",
+        "title": "QA checklist 0004 — Regression"
+      },
+      {
+        "path": "qa/0005-accessibility-checklist.html",
+        "title": "QA checklist 0005 — Accessibility (WCAG 2.1 AA)"
+      },
+      {
         "path": "qa/README.html",
-        "title": "QA checklists — Documentation testing hub"
+        "title": "QA portal — testing strategy, playbooks, templates, checklists"
+      },
+      {
+        "path": "qa/glossary.html",
+        "title": "QA glossary — Study App"
+      },
+      {
+        "path": "qa/playbooks/accessibility-testing.html",
+        "title": "Playbook: accessibility testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/api-endpoint-testing.html",
+        "title": "Playbook: API endpoint testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/documentation-testing.html",
+        "title": "Playbook: documentation testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/exploratory-testing.html",
+        "title": "Playbook: exploratory testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/playbooks/release-smoke.html",
+        "title": "Playbook: release smoke testing — QA portal — Study App"
+      },
+      {
+        "path": "qa/qa-process.html",
+        "title": "QA process &amp; SDLC integration — QA portal — Study App"
+      },
+      {
+        "path": "qa/reference/bug-severity-and-priority.html",
+        "title": "Severity &amp; priority matrix — QA portal — Study App"
+      },
+      {
+        "path": "qa/reference/defect-lifecycle.html",
+        "title": "Defect lifecycle — QA portal — Study App"
+      },
+      {
+        "path": "qa/reference/test-environments.html",
+        "title": "Test environments — QA portal — Study App"
+      },
+      {
+        "path": "qa/templates/bug-report-template.html",
+        "title": "Bug report template — QA portal — Study App"
+      },
+      {
+        "path": "qa/templates/test-case-template.html",
+        "title": "Test case template — QA portal — Study App"
+      },
+      {
+        "path": "qa/templates/test-plan-template.html",
+        "title": "Test plan template — QA portal — Study App"
+      },
+      {
+        "path": "qa/test-pyramid.html",
+        "title": "Test pyramid — QA portal — Study App"
+      },
+      {
+        "path": "qa/test-strategy.html",
+        "title": "Test strategy — QA portal — Study App"
+      },
+      {
+        "path": "qa/tester-onboarding.html",
+        "title": "Tester onboarding — QA portal — Study App"
+      },
+      {
+        "path": "rfc/0000-template.html",
+        "title": "RFC template"
       },
       {
         "path": "rfc/0001-docs-search-implementation.html",
@@ -412,8 +612,12 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "RFC 0002: Docs Search KPI Policy and SLO Thresholds"
       },
       {
+        "path": "rfc/0003-documentation-authoring-model.html",
+        "title": "RFC 0003: Documentation authoring model — API specs, screen specs, and templates"
+      },
+      {
         "path": "rfc/README.html",
-        "title": "RFC Index"
+        "title": "RFC Index — ETR Study API"
       },
       {
         "path": "runbooks/0000-template.html",
@@ -457,7 +661,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "runbooks/0010-in-page-toc-missing.html",
-        "title": "Runbook: In-page “On this page” sidebar missing or empty"
+        "title": "Runbook: In-page \"On this page\" sidebar missing or empty"
       },
       {
         "path": "runbooks/README.html",

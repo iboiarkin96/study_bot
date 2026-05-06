@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Error envelope — shared internal contract — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <script defer src="../../../assets/docs-syntax.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Error envelope — shared contract</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Every non-2xx HTTP response from <code>/api/v1/**</code> carries a uniform JSON envelope.
+            The envelope shape is governed by
+            <a href="../../../adr/0003-error-contract-governance.html">ADR 0003</a>; this page is
+            the operational summary linked from per-operation Error catalog tables.
+          </p>
+        </section>
+
+        <section class="card" id="schema">
+          <h2>Schema</h2>
+          <dl class="internal-field-list">
+            <dt>
+              <code>code</code>
+              <span class="badge badge--field-type">string</span>
+              <span class="badge badge--field-req">required</span>
+            </dt>
+            <dd>
+              <p>Stable, machine-readable error code grouped by domain: <code>COMMON_…</code>,
+                <code>USER_…</code>, <code>CONS_…</code>, <code>ERR_…</code>. The numeric suffix
+                roughly tracks the HTTP status (e.g. <code>COMMON_400</code>) but the code is the
+                canonical identifier — never branch on the HTTP status alone.</p>
+                <dl class="internal-field-list__attrs">
+                  <dt>Pattern</dt>
+                  <dd><code>^[A-Z]+_(?:[0-9]{3}|[0-9]{1,4})$</code> (3-digit HTTP-aligned or
+                    4-digit domain-specific).</dd>
+                    <dt>Stability</dt>
+                    <dd>Codes are <strong>append-only</strong>. Renames are forbidden.</dd>
+                  </dl>
+                </dd>
+
+                <dt>
+                  <code>key</code>
+                  <span class="badge badge--field-type">string</span>
+                  <span class="badge badge--field-req">required</span>
+                </dt>
+                <dd>
+                  <p>Symbolic key suitable for i18n / log search:
+                    <code>SCREAMING_SNAKE_CASE</code>. Pairs 1:1 with <code>code</code>.</p>
+                    <dl class="internal-field-list__attrs">
+                      <dt>Pattern</dt>
+                      <dd><code>^[A-Z][A-Z0-9_]+$</code>.</dd>
+                      <dt>Stability</dt>
+                      <dd>Append-only. Renames forbidden.</dd>
+                    </dl>
+                  </dd>
+
+                  <dt>
+                    <code>message</code>
+                    <span class="badge badge--field-type">string</span>
+                    <span class="badge badge--field-req">required</span>
+                  </dt>
+                  <dd>
+                    <p>Human-readable English message. <strong>Not</strong> for end-user display —
+                      clients translate <code>key</code> into their own UI copy. Useful for log lines
+                      and developer dashboards.</p>
+                      <dl class="internal-field-list__attrs">
+                        <dt>Length</dt>
+                        <dd>1–256 chars.</dd>
+                        <dt>Stability</dt>
+                        <dd>Wording may change without ADR; the key/code stays.</dd>
+                      </dl>
+                    </dd>
+
+                    <dt>
+                      <code>source</code>
+                      <span class="badge badge--field-type">string</span>
+                      <span class="badge badge--field-req">required</span>
+                    </dt>
+                    <dd>
+                      <p>Logical originator: <code>{resource}.{action}</code>
+                        (e.g. <code>conspectus.review</code>, <code>user.create</code>) or a middleware
+                        identifier (<code>middleware.idempotency</code>, <code>middleware.rate_limit</code>).
+                        Used for filtering in observability dashboards.</p>
+                        <dl class="internal-field-list__attrs">
+                          <dt>Pattern</dt>
+                          <dd><code>^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$</code>.</dd>
+                        </dl>
+                      </dd>
+
+                      <dt>
+                        <code>details</code>
+                        <span class="badge badge--field-type">object | array</span>
+                        <span class="badge badge--field-opt">optional</span>
+                      </dt>
+                      <dd>
+                        <p>Operation-specific structured payload. Per-operation specs declare what fits
+                          here and the lint enforces the shape.</p>
+                          <dl class="internal-field-list__attrs">
+                            <dt>Validation errors</dt>
+                            <dd>Array of <code>{loc, msg, type}</code> per Pydantic / FastAPI convention.</dd>
+                            <dt>Business conflicts</dt>
+                            <dd>Object with the relevant identifiers (e.g.
+                              <code>{expected_schedule_revision, actual_schedule_revision}</code>).</dd>
+                              <dt>Forbidden contents</dt>
+                              <dd>No PII, no secrets, no stack traces.</dd>
+                            </dl>
+                          </dd>
+                        </dl>
+                      </section>
+
+                      <section class="card" id="examples">
+                        <h2>Examples</h2>
+
+                        <h3>Simple — missing idempotency header</h3>
+                        <pre><code>HTTP/1.1 400 Bad Request
+                          Content-Type: application/json
+
+                          {
+                          "code": "COMMON_400",
+                          "key": "IDEMPOTENCY_KEY_REQUIRED",
+                          "message": "Missing required `Idempotency-Key` header for write operation.",
+                          "source": "middleware.idempotency"
+                          }
+                        </code></pre>
+
+                        <h3>With <code>details</code> — validation error</h3>
+                        <pre><code>HTTP/1.1 422 Unprocessable Entity
+                          Content-Type: application/json
+
+                          {
+                          "code": "COMMON_000",
+                          "key": "COMMON_VALIDATION_ERROR",
+                          "message": "Request validation failed.",
+                          "source": "conspectus.review",
+                          "details": [
+                          {
+                          "loc": ["body", "tag"],
+                          "msg": "value is not a valid enumeration member; permitted: 'easy', 'hard', 'forgot'",
+                          "type": "type_error.enum"
+                          }
+                          ]
+                          }
+                        </code></pre>
+
+                        <h3>With <code>details</code> — business conflict</h3>
+                        <pre><code>HTTP/1.1 409 Conflict
+                          Content-Type: application/json
+
+                          {
+                          "code": "CONS_409",
+                          "key": "CONSPECTUS_REVIEW_REVISION_CONFLICT",
+                          "message": "Schedule revision changed since you read it; re-fetch and retry.",
+                          "source": "conspectus.review",
+                          "details": {
+                          "expected_schedule_revision": 7,
+                          "actual_schedule_revision": 9
+                          }
+                          }
+                        </code></pre>
+                      </section>
+
+                      <section class="card" id="rules">
+                        <h2>Authoring rules for new errors</h2>
+                        <ol>
+                          <li>Pick the right domain prefix
+                            (<code>COMMON_</code> / <code>USER_</code> / <code>CONS_</code> / <code>ERR_</code>).</li>
+                            <li>Allocate the next free numeric suffix per
+                              <a href="error-catalog.html">error catalog</a>. <strong>Never</strong> reuse a
+                              retired number.</li>
+                              <li>Define <code>code</code>, <code>key</code>, English <code>message</code> in
+                                <code>app/errors/&lt;domain&gt;.py</code>.</li>
+                                <li>Pick a <code>source</code> that already exists, or extend the convention only by
+                                  ADR.</li>
+                                  <li>Document the new error on the operation spec page (Section 12 — Error catalog) and
+                                    run the consistency lint.</li>
+                                    <li><code>details</code> shape is operation-local — describe it in the spec, attach an
+                                      OpenAPI example.</li>
+                                    </ol>
+                                  </section>
+
+                                  <section class="card" id="anti-patterns">
+                                    <h2>Anti-patterns</h2>
+                                    <ul>
+                                      <li><strong>Branching on HTTP status alone.</strong> Always read <code>code</code> /
+                                        <code>key</code>; HTTP status loses information (e.g. four different
+                                        <code>404</code>s).</li>
+                                        <li><strong>PII or secrets in <code>message</code> or <code>details</code>.</strong>
+                                          The error envelope is logged and emailed to integrators — keep it sterile.</li>
+                                          <li><strong>Stack traces or stack frames.</strong> Forbidden in production responses.
+                                            Include the <code>X-Request-Id</code> instead so support can find the trace
+                                            server-side.</li>
+                                            <li><strong>Localised <code>message</code>.</strong> Always English; localisation is
+                                              the client’s job using <code>key</code>.</li>
+                                              <li><strong>Renaming an existing <code>code</code> or <code>key</code>.</strong>
+                                                Forbidden — clients build dashboards and alerting on these strings.</li>
+                                                <li><strong>Free-form <code>details</code> per call.</strong> Define the shape per
+                                                  error key and stick to it; otherwise dashboards break.</li>
+                                                </ul>
+                                              </section>
+
+                                              <section class="card" id="traceability">
+                                                <h2>Traceability</h2>
+                                                <ul>
+                                                  <li><strong>ADR:</strong>
+                                                    <a href="../../../adr/0003-error-contract-governance.html">0003 — error contract
+                                                      governance</a>.</li>
+                                                      <li><strong>Catalog:</strong>
+                                                        <a href="error-catalog.html">_shared/error-catalog.html</a> — every
+                                                        <code>code/key</code> registered there.</li>
+                                                        <li><strong>Code home:</strong> <code>app/errors/common.py</code>,
+                                                          <code>app/errors/user.py</code>, <code>app/errors/conspectus.py</code>, …</li>
+                                                        </ul>
+                                                      </section>
+
+                                                      <section id="page-history" class="card">
+                                                        <h2>Page history</h2>
+                                                        <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                          <table class="docs-page-history">
+                                                            <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                            <tbody>
+                                                              <tr>
+                                                                <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                <td>Phase 3: created shared error-envelope overlay aligned with ADR 0003.</td>
+                                                                <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                              </tr>
+                                                            </tbody>
+                                                          </table>
+                                                        </div>
+                                                      </section>
+
+                                                    </main>
+                                                  </div>
+                                                </div>
+
+                                              </body></html>

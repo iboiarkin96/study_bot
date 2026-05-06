@@ -1,0 +1,37 @@
+@startuml
+title Docs frontend — Rocket launch lifecycle
+
+' Five-phase finite-state sequence per rocket launch animation spec.
+' Transitions are time-based against the simulation clock (FIXED_STEP = 1/60 s)
+' so the sequence is deterministic across machines and refresh rates.
+
+[*] --> Idle : page loaded
+
+Idle    : FAB hidden or compact\n(no canvas, no transform)
+Armed   : FAB pill expanded\nrocket icon brightened
+Boil    : 0 to PRE_MS (2 000 ms)\nthick volumetric smoke\naround the launch pad
+Flight  : 0 to DURATION (2 600 ms)\nrocket follows fixed Bezier path\nsmoke killed at lift-off
+Cleanup : up to one frame\ncanvas removed,\nGPU resources freed
+
+Idle    --> Armed   : reader within arming\ndistance of footer
+Armed   --> Idle    : reader scrolled away
+Armed   --> Boil    : click on FAB\n(reduced motion = no-preference)
+Armed   --> Idle    : click on FAB\n(reduced motion = reduce)\nscroll-to-top instant
+Boil    --> Flight  : simTs >= PRE_MS\nsmoke killed,\nsmooth scroll dispatched
+Flight  --> Cleanup : simTs >= PRE_MS + DURATION\n— or — safety-net 5 000 ms
+Cleanup --> Idle    : onDone fires,\nisLaunching = false
+
+note right of Boil
+  determinism contract:
+  - fixed RNG seed (0x51F15EED)
+  - fixed timestep 1/60 s
+  - identical visual on every click
+end note
+
+note right of Flight
+  emission off in default config
+  (EMIT_SMOKE_IN_FLIGHT = false)
+  smoke does not follow the rocket
+end note
+
+@enduml

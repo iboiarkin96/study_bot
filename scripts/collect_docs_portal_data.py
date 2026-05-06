@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -40,15 +41,36 @@ def _page_title(html: str, rel_path: str) -> str:
     return rel_path
 
 
+def _tracked_html_paths() -> set[Path] | None:
+    """Return absolute paths of git-tracked HTML files under docs.
+
+    Locally gitignored notes must not contribute to the committed portal
+    bundle, otherwise CI (which doesn't see those files) regenerates a
+    smaller bundle and trips the docs-check drift guard.
+    """
+    try:
+        output = subprocess.check_output(
+            ["git", "ls-files", "-z", "--", "docs"],
+            cwd=PROJECT_ROOT,
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return {PROJECT_ROOT / rel for rel in output.decode().split("\0") if rel.endswith(".html")}
+
+
 def collect_maintainer_pages() -> dict[str, list[dict[str, str]]]:
     """Build person_id -> list of {path, title} from HTML under docs/."""
     by_person: dict[str, list[dict[str, str]]] = defaultdict(list)
     if not DOCS_ROOT.is_dir():
         return dict(by_person)
 
+    tracked = _tracked_html_paths()
     for path in sorted(DOCS_ROOT.rglob("*.html")):
         rel = path.relative_to(DOCS_ROOT).as_posix()
         if rel.startswith("assets/"):
+            continue
+        if tracked is not None and path not in tracked:
             continue
         try:
             text = path.read_text(encoding="utf-8")

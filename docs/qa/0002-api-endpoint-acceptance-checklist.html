@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QA checklist 0002 — API endpoint acceptance</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">QA checklist 0002: API endpoint acceptance</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Checklists</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Run this checklist for every new or changed HTTP endpoint, against the operation's
+            spec page under <code>docs/internal/api/&lt;resource&gt;/</code>. Mark each row
+            <strong>Pass</strong>, <strong>Fail</strong>, or <strong>Needs follow-up</strong>; attach
+            evidence per the
+            <a href="playbooks/api-endpoint-testing.html">API endpoint testing playbook</a>.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#preconditions">Preconditions</a>
+            <a class="docs-page-hero__chip" href="#contract">Contract</a>
+            <a class="docs-page-hero__chip" href="#happy">Happy path</a>
+            <a class="docs-page-hero__chip" href="#errors">Errors</a>
+            <a class="docs-page-hero__chip" href="#auth">Auth</a>
+            <a class="docs-page-hero__chip" href="#idempotency">Idempotency</a>
+            <a class="docs-page-hero__chip" href="#observability">Observability</a>
+            <a class="docs-page-hero__chip" href="#docs">Docs &amp; OpenAPI</a>
+            <a class="docs-page-hero__chip" href="#pass-fail">Pass/fail</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Preconditions</div>
+
+        <section class="card" id="preconditions">
+          <h2>Preconditions</h2>
+          <ul>
+            <li>Spec page exists and passes <a href="../internal/api/_shared/spec-definition-of-done.html">spec DoD</a>.
+            </li>
+            <li>API is reachable on a test environment with the build SHA known.</li>
+            <li>You have a valid bearer token for an account with the required role.</li>
+            <li>HTTP client of your choice (curl, httpie, Postman) is ready and capturing.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Contract</div>
+
+        <section class="card" id="contract">
+          <h2>Contract — schema and shape</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1.1</td>
+                  <td>Path, method, version segment match the spec exactly.</td>
+                  <td>Identical.</td>
+                </tr>
+                <tr>
+                  <td>1.2</td>
+                  <td>Request body required/optional/types match the spec.</td>
+                  <td>Identical.</td>
+                </tr>
+                <tr>
+                  <td>1.3</td>
+                  <td>Response body schema matches for every documented status.</td>
+                  <td>Identical.</td>
+                </tr>
+                <tr>
+                  <td>1.4</td>
+                  <td>Field naming follows <a href="../internal/api/_shared/field-conventions.html">field conventions</a>.
+                  </td>
+                  <td>Snake_case keys; UTC ISO-8601 timestamps; UUIDs as strings.</td>
+                </tr>
+                <tr>
+                  <td>1.5</td>
+                  <td>OpenAPI baseline test (<code>tests/openapi/</code>) is green.</td>
+                  <td>Pass; if the contract changed, baseline is regenerated and committed.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Happy path</div>
+
+        <section class="card" id="happy">
+          <h2>Happy path</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2.1</td>
+                  <td>Smallest valid body returns 2xx success.</td>
+                  <td>200 / 201 per spec; body conforms to schema.</td>
+                </tr>
+                <tr>
+                  <td>2.2</td>
+                  <td>All optional fields, when supplied, round-trip unchanged.</td>
+                  <td>Echoed in the response and in a follow-up read.</td>
+                </tr>
+                <tr>
+                  <td>2.3</td>
+                  <td>List endpoints — pagination first → next → empty next_cursor.</td>
+                  <td>Per <a href="../internal/api/_shared/pagination.html">pagination</a>.</td>
+                </tr>
+                <tr>
+                  <td>2.4</td>
+                  <td>Read-after-write — a follow-up GET returns the just-created resource.</td>
+                  <td>Visible immediately.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Errors</div>
+
+        <section class="card" id="errors">
+          <h2>Error paths</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>3.1</td>
+                  <td>Missing required field.</td>
+                  <td>422; envelope; <code>field_errors</code> points to the field.</td>
+                </tr>
+                <tr>
+                  <td>3.2</td>
+                  <td>Wrong type / out-of-range value.</td>
+                  <td>422; envelope.</td>
+                </tr>
+                <tr>
+                  <td>3.3</td>
+                  <td>Resource not found (UUID for a missing row).</td>
+                  <td>404; envelope; <a href="../internal/api/_shared/error-catalog.html">catalog</a> code.</td>
+                </tr>
+                <tr>
+                  <td>3.4</td>
+                  <td>Conflict (forbidden state transition or unique constraint).</td>
+                  <td>409; envelope; catalog code.</td>
+                </tr>
+                <tr>
+                  <td>3.5</td>
+                  <td>Wrong HTTP method.</td>
+                  <td>405 with <code>Allow</code> header.</td>
+                </tr>
+                <tr>
+                  <td>3.6</td>
+                  <td>Wrong / missing Content-Type on body methods.</td>
+                  <td>415; envelope.</td>
+                </tr>
+                <tr>
+                  <td>3.7</td>
+                  <td>Forced 5xx (e.g. break a downstream).</td>
+                  <td>5xx; envelope; <code>X-Request-ID</code> traces in logs; no stack trace in the response.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Auth</div>
+
+        <section class="card" id="auth">
+          <h2>Authentication / authorization</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>4.1</td>
+                  <td>No token.</td>
+                  <td>401; envelope.</td>
+                </tr>
+                <tr>
+                  <td>4.2</td>
+                  <td>Malformed token / wrong scheme.</td>
+                  <td>401; envelope; never 500.</td>
+                </tr>
+                <tr>
+                  <td>4.3</td>
+                  <td>Authenticated but lacking permission.</td>
+                  <td>403; envelope.</td>
+                </tr>
+                <tr>
+                  <td>4.4</td>
+                  <td>Authenticated with sufficient role.</td>
+                  <td>2xx.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Idempotency</div>
+
+        <section class="card" id="idempotency">
+          <h2>Idempotency (write methods only)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>5.1</td>
+                  <td>Same key + same body, twice within window.</td>
+                  <td>Both calls return identical body and status; no duplicate row.</td>
+                </tr>
+                <tr>
+                  <td>5.2</td>
+                  <td>Same key + different body.</td>
+                  <td>409; envelope.</td>
+                </tr>
+                <tr>
+                  <td>5.3</td>
+                  <td>Same key after window expires.</td>
+                  <td>Treated as new request.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Observability</div>
+
+        <section class="card" id="observability">
+          <h2>Observability</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>6.1</td>
+                  <td>Every response carries <code>X-Request-ID</code>.</td>
+                  <td>UUID; unique per request.</td>
+                </tr>
+                <tr>
+                  <td>6.2</td>
+                  <td>Structured log shows one record per request.</td>
+                  <td>Includes method, path, status, latency_ms, correlation id.</td>
+                </tr>
+                <tr>
+                  <td>6.3</td>
+                  <td>Sensitive headers / fields not logged in clear.</td>
+                  <td>Per <a href="../internal/api/_shared/observability-conventions.html">observability conventions</a>.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Docs &amp; OpenAPI</div>
+
+        <section class="card" id="docs">
+          <h2>Docs &amp; OpenAPI</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>7.1</td>
+                  <td>Spec page passes <a href="../internal/api/_shared/spec-definition-of-done.html">DoD</a>.</td>
+                  <td>All required sections non-empty.</td>
+                </tr>
+                <tr>
+                  <td>7.2</td>
+                  <td>Operation visible in Swagger UI with the expected request/response.</td>
+                  <td>Render is correct in both light and dark.</td>
+                </tr>
+                <tr>
+                  <td>7.3</td>
+                  <td>Examples in the spec match the live API.</td>
+                  <td>Copy-paste runs.</td>
+                </tr>
+                <tr>
+                  <td>7.4</td>
+                  <td>Sidebar entry exists under "API endpoints documentation".</td>
+                  <td>Active state highlights for this page.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Evidence</div>
+
+        <section class="card" id="evidence-required">
+          <h2>Evidence required for sign-off</h2>
+          <ul>
+            <li>Request/response capture for one happy path, one validation error, one auth error.</li>
+            <li>One <code>X-Request-ID</code> traced in the structured log.</li>
+            <li>Screenshot of Swagger UI showing the operation expanded.</li>
+            <li>Result line per row above (Pass / Fail / Needs follow-up), pasted into the ticket.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Pass/fail</div>
+
+        <section class="card" id="pass-fail">
+          <h2>Pass/fail rules</h2>
+          <ul>
+            <li><strong>Pass:</strong> all rows above pass; evidence attached.</li>
+            <li><strong>Fail:</strong> any contract, error envelope, auth, idempotency, or observability row fails.</li>
+            <li><strong>Needs follow-up:</strong> non-blocking docs/wording issues with a tracked ticket.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="page-history">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Change</th>
+                  <th>Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                  <td>Initial API endpoint acceptance checklist.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

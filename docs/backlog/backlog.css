@@ -1,5 +1,7 @@
 /* Backlog page — status colors (edit here to change theme) */
 :root {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -41,8 +43,19 @@
   --status-rejected-border: #ef4444;
   --status-rejected-text: #7f1d1d;
 
-  /* Widest single-line label: "In progress" — adjust if labels change */
-  --status-pill-min-width: 11.5rem;
+  /* Priority tag colors */
+  --priority-p0-bg: #fee2e2;
+  --priority-p0-border: #ef4444;
+  --priority-p0-text: #7f1d1d;
+  --priority-p1-bg: #fef3c7;
+  --priority-p1-border: #f59e0b;
+  --priority-p1-text: #78350f;
+  --priority-p2-bg: #dbeafe;
+  --priority-p2-border: #3b82f6;
+  --priority-p2-text: #1e3a8a;
+  --priority-p3-bg: #f1f5f9;
+  --priority-p3-border: #94a3b8;
+  --priority-p3-text: #475569;
 }
 
 .backlog-legend {
@@ -59,6 +72,12 @@
 .backlog-legend dt {
   font-weight: 600;
   margin: 0;
+}
+
+body,
+button,
+input {
+  font-family: var(--font-sans);
 }
 
 main.container > h1 {
@@ -94,15 +113,15 @@ section.card > h2 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: var(--status-pill-min-width);
-  padding: 4px 12px;
+  gap: 5px;
+  padding: 3px 10px;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
   white-space: nowrap;
-  line-height: 1.1;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
 }
 
 .status-pill::before {
@@ -428,11 +447,49 @@ section.card > h2 {
 }
 
 .priority-tag {
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
+  letter-spacing: 0.07em;
   font-weight: 700;
+  flex-shrink: 0;
+  /* default (unresolved/unknown) */
+  background: var(--priority-p3-bg);
+  border-color: var(--priority-p3-border);
+  color: var(--priority-p3-text);
+}
+
+.priority-tag[data-priority="P0"],
+.priority-tag--p0 {
+  background: var(--priority-p0-bg);
+  border-color: var(--priority-p0-border);
+  color: var(--priority-p0-text);
+}
+
+.priority-tag[data-priority="P1"],
+.priority-tag--p1 {
+  background: var(--priority-p1-bg);
+  border-color: var(--priority-p1-border);
+  color: var(--priority-p1-text);
+}
+
+.priority-tag[data-priority="P2"],
+.priority-tag--p2 {
+  background: var(--priority-p2-bg);
+  border-color: var(--priority-p2-border);
+  color: var(--priority-p2-text);
+}
+
+.priority-tag[data-priority="P3"],
+.priority-tag--p3 {
+  background: var(--priority-p3-bg);
+  border-color: var(--priority-p3-border);
+  color: var(--priority-p3-text);
 }
 
 .backlog-item .meta,
@@ -753,13 +810,9 @@ section.card .meta {
   gap: 10px;
 }
 
-#backlog-intelligence {
-  display: none;
-}
-
-@media (min-width: 1051px) {
-  #backlog-intelligence {
-    display: block;
+@media (max-width: 1050px) {
+  #backlog-intelligence .backlog-intelligence-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1139,8 +1192,10 @@ section.card .meta {
 }
 
 .backlog-kpi__value {
-  font-size: 1.25rem;
-  line-height: 1.1;
+  font-size: 1.85rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .backlog-kpi__meta {
@@ -1239,4 +1294,82 @@ body[data-backlog-view="timeline"] #backlog-task-list .backlog-item::before {
   #backlog-intelligence .backlog-intelligence-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ─── Focus-visible rings — keyboard accessibility + pro polish ─── */
+.backlog-filter-btn:focus-visible,
+.backlog-cockpit__btn:focus-visible,
+.backlog-filter-reset-btn:focus-visible,
+.backlog-task-action-btn:focus-visible,
+.backlog-group-toggle:focus-visible,
+.backlog-cockpit__howto-btn:focus-visible,
+.backlog-howto-popover__close:focus-visible,
+.backlog-cockpit__new-task:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-pill);
+}
+
+/* ─── Scroll margin — prevents anchors jumping under sticky sidebar ─── */
+section.card,
+.backlog-item {
+  scroll-margin-top: 80px;
+}
+
+/* ─── Howto popover — smooth enter/exit animation ─── */
+.backlog-howto-popover {
+  transition: opacity var(--motion-base, 220ms) ease, transform var(--motion-base, 220ms) cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top left;
+}
+
+.backlog-howto-popover[hidden] {
+  display: none;
+}
+
+.backlog-howto-popover.is-entering {
+  animation: howto-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes howto-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── Priority tokens: dark mode overrides ─── */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    --priority-p0-bg: #450a0a;
+    --priority-p0-border: #dc2626;
+    --priority-p0-text: #fca5a5;
+    --priority-p1-bg: #431407;
+    --priority-p1-border: #d97706;
+    --priority-p1-text: #fcd34d;
+    --priority-p2-bg: #1e3a5f;
+    --priority-p2-border: #3b82f6;
+    --priority-p2-text: #93c5fd;
+    --priority-p3-bg: #1e2937;
+    --priority-p3-border: #475569;
+    --priority-p3-text: #94a3b8;
+  }
+}
+
+html[data-theme="dark"] {
+  --priority-p0-bg: #450a0a;
+  --priority-p0-border: #dc2626;
+  --priority-p0-text: #fca5a5;
+  --priority-p1-bg: #431407;
+  --priority-p1-border: #d97706;
+  --priority-p1-text: #fcd34d;
+  --priority-p2-bg: #1e3a5f;
+  --priority-p2-border: #3b82f6;
+  --priority-p2-text: #93c5fd;
+  --priority-p3-bg: #1e2937;
+  --priority-p3-border: #475569;
+  --priority-p3-text: #94a3b8;
 }

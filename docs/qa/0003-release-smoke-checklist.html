@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QA checklist 0003 — Release smoke</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">QA checklist 0003: Release smoke</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Checklists</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Release smoke is the broad shallow check before tagging a release. The deeper
+            walkthrough is in <a href="playbooks/release-smoke.html">release smoke playbook</a>.
+            Run this checklist on the candidate build and paste the result into the release ticket.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#preconditions">Preconditions</a>
+            <a class="docs-page-hero__chip" href="#health">Health</a>
+            <a class="docs-page-hero__chip" href="#api">API golden paths</a>
+            <a class="docs-page-hero__chip" href="#docs">Docs portal</a>
+            <a class="docs-page-hero__chip" href="#observability">Observability</a>
+            <a class="docs-page-hero__chip" href="#sign-off">Sign-off</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Preconditions</div>
+
+        <section class="card" id="preconditions">
+          <h2>Preconditions</h2>
+          <ul>
+            <li>CI green on the release commit; image built and tagged.</li>
+            <li>Migrations (if any) have been applied to the target environment.</li>
+            <li>Release ticket exists; build SHA and target environment are recorded.</li>
+            <li>Auth token, base URL, and a clean test account are ready.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Health</div>
+
+        <section class="card" id="health">
+          <h2>Health, readiness, OpenAPI</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1.1</td>
+                  <td><code>GET /health</code></td>
+                  <td>200; body matches the documented health envelope.</td>
+                </tr>
+                <tr>
+                  <td>1.2</td>
+                  <td><code>GET /ready</code></td>
+                  <td>200 once dependencies are reachable.</td>
+                </tr>
+                <tr>
+                  <td>1.3</td>
+                  <td><code>GET /openapi.json</code></td>
+                  <td>200; valid JSON; <code>info.version</code> matches release.</td>
+                </tr>
+                <tr>
+                  <td>1.4</td>
+                  <td>Container logs at startup</td>
+                  <td>No unhandled exception; one log line per route registered.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">API golden paths</div>
+
+        <section class="card" id="api">
+          <h2>API golden paths</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2.1</td>
+                  <td>Authenticated read endpoint returns 200 with valid shape.</td>
+                  <td>Schema validated.</td>
+                </tr>
+                <tr>
+                  <td>2.2</td>
+                  <td>Create + read-back on User.</td>
+                  <td>POST 201, GET 200; row present.</td>
+                </tr>
+                <tr>
+                  <td>2.3</td>
+                  <td>Create + read-back on Conspectus.</td>
+                  <td>POST 201, GET 200; row present.</td>
+                </tr>
+                <tr>
+                  <td>2.4</td>
+                  <td>Create + read-back on Error log.</td>
+                  <td>POST 201, GET 200; row present.</td>
+                </tr>
+                <tr>
+                  <td>2.5</td>
+                  <td>Idempotency replay on one POST with the same key.</td>
+                  <td>Same response twice; no duplicate row.</td>
+                </tr>
+                <tr>
+                  <td>2.6</td>
+                  <td>One forced 422 and one 401.</td>
+                  <td>Both conform to the error envelope.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Docs portal</div>
+
+        <section class="card" id="docs">
+          <h2>Docs portal</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>3.1</td>
+                  <td>Open <code>/docs/index.html</code>.</td>
+                  <td>Loads with no console errors; sidebar populates.</td>
+                </tr>
+                <tr>
+                  <td>3.2</td>
+                  <td>Open one page from each major section (ADR, runbooks, internal API, QA).</td>
+                  <td>Page renders; breadcrumbs correct.</td>
+                </tr>
+                <tr>
+                  <td>3.3</td>
+                  <td>Search a known title.</td>
+                  <td>Result appears within first 5; click navigates.</td>
+                </tr>
+                <tr>
+                  <td>3.4</td>
+                  <td>Theme toggle cycles system → light → dark.</td>
+                  <td>Persists on reload.</td>
+                </tr>
+                <tr>
+                  <td>3.5</td>
+                  <td>Drawer (mobile width) opens, closes on Escape.</td>
+                  <td>Focus trapped while open.</td>
+                </tr>
+                <tr>
+                  <td>3.6</td>
+                  <td>Open Swagger UI page.</td>
+                  <td>Renders; one operation expanded shows correct request/response.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Observability</div>
+
+        <section class="card" id="observability">
+          <h2>Observability</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Check</th>
+                  <th>Expected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>4.1</td>
+                  <td>Pick one X-Request-ID from a 2.x call.</td>
+                  <td>Found in the structured log; method/path/status match.</td>
+                </tr>
+                <tr>
+                  <td>4.2</td>
+                  <td>Pick one X-Request-ID from a 4xx call.</td>
+                  <td>Logged at warn level (or per policy); no PII leaked.</td>
+                </tr>
+                <tr>
+                  <td>4.3</td>
+                  <td>Metrics scrape (if enabled).</td>
+                  <td>Endpoint reachable; counters incremented after smoke calls.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Sign-off</div>
+
+        <section class="card" id="sign-off">
+          <h2>Sign-off</h2>
+          <ul>
+            <li><strong>Go:</strong> all rows pass; defects (if any) below S2.</li>
+            <li><strong>Conditional go:</strong> S2 defects with explicit acceptance from the release owner.</li>
+            <li><strong>No-go:</strong> any S1 open or any row in <a href="#health">Health</a>, <a href="#api">API
+              golden paths</a>, or <a href="#observability">Observability</a> failed.</li>
+            </ul>
+            <p class="small">
+              Paste the sign-off note from the
+              <a href="playbooks/release-smoke.html#sign-off">release smoke playbook</a> into the
+              release ticket with evidence.
+            </p>
+          </section>
+
+          <section class="card" id="page-history">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Change</th>
+                    <th>Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-30">2026-04-30</time></td>
+                    <td>Initial release smoke checklist.</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+  </body></html>

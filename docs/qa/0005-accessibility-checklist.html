@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QA checklist 0005 — Accessibility (WCAG 2.1 AA)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <link rel="stylesheet" href="../assets/internal-layout.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <script defer src="../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">QA checklist 0005: Accessibility (WCAG 2.1 AA)</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Checklists</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Manual + tool-assisted accessibility pass for a docs page or portal feature. Walks
+            through the four POUR principles. The procedure is in the
+            <a href="playbooks/accessibility-testing.html">accessibility playbook</a>.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#preconditions">Preconditions</a>
+            <a class="docs-page-hero__chip" href="#perceivable">Perceivable</a>
+            <a class="docs-page-hero__chip" href="#operable">Operable</a>
+            <a class="docs-page-hero__chip" href="#understandable">Understandable</a>
+            <a class="docs-page-hero__chip" href="#robust">Robust</a>
+            <a class="docs-page-hero__chip" href="#pass-fail">Pass/fail</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Preconditions</div>
+
+        <section class="card" id="preconditions">
+          <h2>Preconditions</h2>
+          <ul>
+            <li>Latest Chromium-based browser and one WebKit browser installed.</li>
+            <li>axe DevTools extension installed (or equivalent).</li>
+            <li>Screen reader available (VoiceOver / NVDA).</li>
+            <li>Page under test is loaded; reload once with cache disabled.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Perceivable</div>
+
+        <section class="card" id="perceivable">
+          <h2>Perceivable (WCAG 1.x)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead><tr><th>#</th><th>Check</th><th>Expected</th></tr></thead>
+              <tbody>
+                <tr><td>1.1</td><td>Images have meaningful <code>alt</code> or empty alt for decorative.</td><td>No image without an alt attribute.</td></tr>
+                <tr><td>1.2</td><td>Diagrams (PlantUML) have a text caption or summary nearby.</td><td>Caption present and accurate.</td></tr>
+                <tr><td>1.3</td><td>Text contrast ≥ 4.5:1 (normal) / ≥ 3:1 (large) in light + dark.</td><td>Pass for body, headings, links, code blocks.</td></tr>
+                <tr><td>1.4</td><td>UI component contrast ≥ 3:1 (borders, focus, icons).</td><td>Pass.</td></tr>
+                <tr><td>1.5</td><td>Browser zoom 200% — no clipping, no scroll-through-scroll.</td><td>Reflow correct.</td></tr>
+                <tr><td>1.6</td><td>Information not conveyed by color alone.</td><td>Status indicators use icon/text in addition to color.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Operable</div>
+
+        <section class="card" id="operable">
+          <h2>Operable (WCAG 2.x)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead><tr><th>#</th><th>Check</th><th>Expected</th></tr></thead>
+              <tbody>
+                <tr><td>2.1</td><td>Tab through every interactive control.</td><td>All reachable; order matches reading order.</td></tr>
+                <tr><td>2.2</td><td>Buttons activate on Enter and Space; links on Enter.</td><td>Pass.</td></tr>
+                <tr><td>2.3</td><td>Escape closes drawer, lightbox, search results, popovers.</td><td>Pass.</td></tr>
+                <tr><td>2.4</td><td>Focus indicator visible everywhere; not relying on the browser default only.</td><td>Pass.</td></tr>
+                <tr><td>2.5</td><td>No keyboard trap on the page; modals trap and release on close.</td><td>Pass.</td></tr>
+                <tr><td>2.6</td><td>Skip link (if any) is the first Tab stop and visible on focus.</td><td>Pass.</td></tr>
+                <tr><td>2.7</td><td>Auto-playing or repeating motion respects <code>prefers-reduced-motion</code>.</td><td>Animations stop or shorten.</td></tr>
+                <tr><td>2.8</td><td>No content flashes &gt; 3 times per second.</td><td>Pass.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Understandable</div>
+
+        <section class="card" id="understandable">
+          <h2>Understandable (WCAG 3.x)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead><tr><th>#</th><th>Check</th><th>Expected</th></tr></thead>
+              <tbody>
+                <tr><td>3.1</td><td><code>&lt;html lang="en"&gt;</code> is set.</td><td>Present on every page.</td></tr>
+                <tr><td>3.2</td><td>Page <code>&lt;title&gt;</code> identifies the page and the product.</td><td>Specific and readable.</td></tr>
+                <tr><td>3.3</td><td>Heading order does not skip levels.</td><td>One h1; h2 then h3 nested correctly.</td></tr>
+                <tr><td>3.4</td><td>Form fields have associated labels and error text where applicable.</td><td>Pass (where forms exist).</td></tr>
+                <tr><td>3.5</td><td>Predictable behavior: focus / hover does not auto-navigate.</td><td>Pass.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Robust</div>
+
+        <section class="card" id="robust">
+          <h2>Robust (WCAG 4.x)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table>
+              <thead><tr><th>#</th><th>Check</th><th>Expected</th></tr></thead>
+              <tbody>
+                <tr><td>4.1</td><td>HTML validates (no duplicate IDs, no orphan ARIA).</td><td>axe scan: no critical violations.</td></tr>
+                <tr><td>4.2</td><td>ARIA roles only where native HTML falls short.</td><td>No <code>role="button"</code> on a real <code>&lt;button&gt;</code>.</td></tr>
+                <tr><td>4.3</td><td>State attributes (<code>aria-expanded</code>, <code>aria-current</code>, etc.) update on interaction.</td><td>Verified per control.</td></tr>
+                <tr><td>4.4</td><td>Landmarks present and unique-per-type or labelled.</td><td><code>main</code>, <code>nav</code> with <code>aria-label</code>, etc.</td></tr>
+                <tr><td>4.5</td><td>Screen reader read-through makes sense top-to-bottom.</td><td>Subjective pass with notes.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Pass/fail</div>
+
+        <section class="card" id="pass-fail">
+          <h2>Pass/fail rules</h2>
+          <ul>
+            <li><strong>Pass:</strong> no critical violation; all rows pass; axe scan clean.</li>
+            <li><strong>Fail:</strong> any keyboard trap, missing alt on informative image, contrast failure on body text, or missing form label.</li>
+            <li><strong>Needs follow-up:</strong> minor issue with a tracked ticket (e.g. one decorative icon missing aria-hidden).</li>
+          </ul>
+        </section>
+
+        <section class="card" id="page-history">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+              <tbody><tr><td><time datetime="2026-04-30">2026-04-30</time></td><td>Initial accessibility checklist.</td><td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

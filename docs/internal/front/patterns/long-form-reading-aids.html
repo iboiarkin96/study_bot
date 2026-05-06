@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pattern: long-form reading aids — Docs frontend — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="pattern" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Pattern: long-form reading aids <span class="docs-page-type docs-page-type--pattern">Pattern</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Docs portal · Patterns</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Summary</span>
+            <span>Composed flow that helps a reader navigate, leave, and return to a long docs page without losing place.</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Owner</span>
+            <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Components</span>
+            <code>resume-and-back-to-top</code> + <code>rocket-launch-animation</code>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-05-06">2026-05-06</time>
+          </span>
+        </div>
+
+        <section class="docs-page-hero" id="overview">
+          <h2>Overview</h2>
+          <p>
+            Long internal pages — system-design, deep ADRs, big API specs — routinely run past 5 000 words. The
+            reader's three pain points are: <em>where am I in the page</em>, <em>how do I get back to the top</em>,
+            and <em>how do I resume reading after a tab switch or refresh</em>. This pattern composes three existing
+            UI parts into one coherent reading experience that addresses all three.
+          </p>
+        </section>
+
+        <section class="card" id="when-to-use">
+          <h2>When to use this pattern</h2>
+          <ul>
+            <li><strong>Apply</strong> on any internal page whose content runs longer than two viewport heights at
+              desktop width (roughly 1 600 px of content).</li>
+              <li><strong>Apply</strong> on pages that act as references or specifications — readers leave and return
+                repeatedly.</li>
+                <li><strong>Skip</strong> on hubs, indexes, and short summary pages where the reader is unlikely to scroll
+                  far.</li>
+                  <li><strong>Skip</strong> on pages where a sticky in-page TOC already handles place-keeping (the TOC is a
+                    stronger affordance and these aids would compete with it visually).</li>
+                  </ul>
+                </section>
+
+                <section class="card" id="components">
+                  <h2>Components participating</h2>
+                  <p>
+                    The pattern composes three building blocks already documented in their own component pages. Each
+                    component is the source of truth for its own anatomy and accessibility; this page only describes how they
+                    work <em>together</em>.
+                  </p>
+                  <div class="docs-table-scroll" role="region" aria-label="Components participating">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Component</th>
+                          <th>Role in this pattern</th>
+                          <th>Trigger</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><a href="../components/resume-and-back-to-top.html#anatomy-banner">Resume banner</a></td>
+                          <td>Restores the reader's previous scroll position on first load.</td>
+                          <td><code>DOMContentLoaded</code> + saved position within the 14-day TTL.</td>
+                        </tr>
+                        <tr>
+                          <td><a href="../components/resume-and-back-to-top.html#anatomy-fab">Back-to-top FAB</a></td>
+                          <td>One-click return to the top after the reader has scrolled.</td>
+                          <td><code>scrollY &gt; 600 px</code>.</td>
+                        </tr>
+                        <tr>
+                          <td><a href="../components/rocket-launch-animation.html">Rocket launch animation</a></td>
+                          <td>Transient state of the FAB on activation: signals the page is scrolling back up.</td>
+                          <td>FAB click while armed.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section class="card" id="readers-journey">
+                  <h2>Reader's journey</h2>
+                  <ol>
+                    <li>
+                      <strong>First load.</strong> If a saved scroll position exists for this URL within the 14-day TTL, the
+                      <em>Resume banner</em> appears at the top of <code>.internal-layout__main</code>. The reader either
+                      clicks <em>Resume reading at section X</em> (a smooth scroll moves the page to the saved offset) or
+                      dismisses the banner.
+                    </li>
+                    <li>
+                      <strong>Reading.</strong> No aids interfere with reading. The runtime quietly tracks the deepest scroll
+                      position and persists it on tab close / unload.
+                    </li>
+                    <li>
+                      <strong>Past the threshold.</strong> When <code>scrollY &gt; 600 px</code>, the
+                      <em>Back-to-top FAB</em> fades in at the bottom-right of the viewport (above the report-bug FAB).
+                    </li>
+                    <li>
+                      <strong>Return to top.</strong> On click, the FAB switches to its <em>Rocket launch</em> state — a
+                      short transient ornament — while the page smooth-scrolls to <code>0,0</code>. Animation respects
+                      <code>prefers-reduced-motion: reduce</code>.
+                    </li>
+                    <li>
+                      <strong>Leave and return.</strong> If the reader closes the tab and returns within 14 days, the
+                      journey starts again at step 1 with the resume banner offering the saved offset.
+                    </li>
+                  </ol>
+                </section>
+
+                <section class="card" id="acceptance">
+                  <h2>Acceptance checklist</h2>
+                  <ol>
+                    <li><strong>Banner shows once.</strong> Returning to a page within the TTL shows the banner; clicking
+                      <em>Resume</em> or <em>Dismiss</em> hides it for that visit.</li>
+                      <li><strong>Banner does not show twice.</strong> Once dismissed, the banner stays hidden until the reader
+                        loads the page in a fresh visit.</li>
+                        <li><strong>FAB threshold.</strong> The back-to-top FAB is hidden under 600 px of scroll and visible at
+                          or above it. No flicker at the boundary.</li>
+                          <li><strong>FAB does not overlap content.</strong> Bottom-right placement keeps clear of the
+                            report-bug FAB and any sticky footer; safe-area-insets are honoured on mobile.</li>
+                            <li><strong>Rocket transient is brief.</strong> The launch animation completes in under 1 200 ms and
+                              releases focus back to the document afterwards.</li>
+                              <li><strong>Reduced motion.</strong> With <code>prefers-reduced-motion: reduce</code>, the rocket
+                                animation is replaced by an instant scroll-to-top; the resume banner uses no animation on entry.</li>
+                                <li><strong>Drawer overlay precedence.</strong> When the mobile drawer is open (z-index 1000), it covers
+                                  both the banner area and the FAB.</li>
+                                  <li><strong>Keyboard.</strong> The banner's primary action and dismiss button are reachable by Tab; the
+                                    FAB activates on Enter and Space; Escape after activation does not strand focus.</li>
+                                  </ol>
+                                </section>
+
+                                <section class="card" id="implementation">
+                                  <h2>Implementation entry-points</h2>
+                                  <ul>
+                                    <li><code>docs/assets/docs-resume.js</code> — banner runtime, scroll-position persistence, FAB visibility
+                                      threshold.</li>
+                                      <li><code>docs/assets/docs-nav.js</code> — <code>finishLaunch()</code> closure for the rocket transient,
+                                        FAB armed/launching state machine.</li>
+                                        <li><code>docs/assets/docs.css</code> — selectors prefixed
+                                          <code>.docs-resume-banner*</code>, <code>.docs-back-to-top*</code>, and the launch ornament classes.</li>
+                                          <li><code>docs/assets/internal-layout.css</code> — layout slot for the banner inside
+                                            <code>.internal-layout__main</code>; safe-area-inset rules for the FAB cluster.</li>
+                                          </ul>
+                                          <p class="small">
+                                            <strong>Opt-in per page:</strong> the runtime mounts only when a page declares it; opting in is a single
+                                            attribute on <code>&lt;body&gt;</code>. See the component spec for the exact declaration.
+                                          </p>
+                                        </section>
+
+                                        <section class="card" id="anti-patterns">
+                                          <h2>Anti-patterns</h2>
+                                          <ul>
+                                            <li><strong>Don't pair this pattern with a sticky in-page TOC.</strong> The TOC already keeps place
+                                              visually and links every section. Showing both adds clutter without solving an unmet need.</li>
+                                              <li><strong>Don't widen the resume banner with a long primary action.</strong> The banner is meant to be
+                                                dismissable in one glance; multi-line actions push real content below the fold.</li>
+                                                <li><strong>Don't trigger the rocket transient on every scroll-up.</strong> The animation is reserved for
+                                                  the explicit FAB click — using it as a passive scroll signal devalues the affordance.</li>
+                                                </ul>
+                                              </section>
+
+                                              <section class="card" id="related">
+                                                <h2>Related</h2>
+                                                <ul>
+                                                  <li><a href="../components/resume-and-back-to-top.html">Component: resume reading and back-to-top</a> —
+                                                    the canonical anatomy and accessibility contract.</li>
+                                                    <li><a href="../components/rocket-launch-animation.html">Component: rocket launch animation</a> — the
+                                                      transient state's full spec.</li>
+                                                      <li><a href="../foundations/motion-and-adaptivity.html">Foundation: UI, motion, and adaptivity</a> —
+                                                        motion policy, reduced-motion behaviour, breakpoint table.</li>
+                                                        <li><a href="../components/sticky-toc.html">Component: sticky on-this-page TOC</a> — the alternative
+                                                          place-keeping affordance to compare against when designing a new page.</li>
+                                                          <li><a href="../architecture-map.html#feature-implementation-ledger">Architecture map ledger</a> —
+                                                            <code>DFEAT-010</code> (rocket-launch-animation) and the resume runtime entries.</li>
+                                                          </ul>
+                                                        </section>
+
+                                                        <section id="page-history" class="card">
+                                                          <h2>Page history</h2>
+                                                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                            <table class="docs-page-history">
+                                                              <thead>
+                                                                <tr>
+                                                                  <th scope="col">Date</th>
+                                                                  <th scope="col">Change</th>
+                                                                  <th scope="col">Author</th>
+                                                                </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                                <tr>
+                                                                  <td><time datetime="2026-05-06">2026-05-06</time></td>
+                                                                  <td>First pattern doc seeded — composes the resume banner, back-to-top FAB, and rocket launch animation into one long-form reading flow.</td>
+                                                                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                </tr>
+                                                              </tbody>
+                                                            </table>
+                                                          </div>
+                                                        </section>
+
+                                                      </main>
+                                                    </div>
+                                                  </div>
+
+                                                </body></html>

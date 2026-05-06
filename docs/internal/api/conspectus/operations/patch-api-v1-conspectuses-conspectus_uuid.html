@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
-
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PATCH /api/v1/conspectuses/{conspectus_uuid} — Conspectus — Study App</title>
@@ -11,137 +10,581 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+  <script defer src="../../../../assets/docs-syntax.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation" data-spec-status="draft" data-spec-owner="ivan-boyarkin" data-spec-operation-id="patchConspectus">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>PATCH /api/v1/conspectuses/{conspectus_uuid}</h1>
+        <h1 class="internal-h1--accent-tail internal-http-tablet">
+          <span class="internal-http-tablet__method badge badge--method-patch">PATCH</span>
+          <span class="internal-http-tablet__path code">/api/v1/conspectuses/{conspectus_uuid}</span>
+        </h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">Conspectus</section>
-        <section class="card">
-          <span class="badge badge--method-patch">PATCH</span>
-          <code class="internal-http-tablet__path">/api/v1/conspectuses/{conspectus_uuid}</code>
-        </section>
-        <p class="lead">
-          <strong>Specification.</strong> Intended partial update of <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields (<code>title</code>, <code>cue_sheet</code>,
-          <code>dense_paragraph</code>, <code>bullets</code>). Ownership via <code>system_user_id</code> and
-          <code>system_uuid</code> in the body. Does not change scheduling; for retrieve transitions see
-          <a href="./post-api-v1-conspectuses-conspectus_uuid-actions-review.html"><code>POST …/actions/review</code></a>.
-          Planned <code>operationId</code>: <code>patchConspectus</code>.
-        </p>
-        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>patchConspectus</code></p>
+        <p class="internal-doc-entity">Conspectus</p>
 
-        <section class="card">
-          <h2>Path, body, idempotency</h2>
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Summary</span>
+            <span>Partially updates a conspectus's ETR content; never touches scheduling.</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Owner</span>
+            <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">operationId</span>
+            <code>patchConspectus</code>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-04-29">2026-04-29</time>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Spec template</span>
+            <code>v1</code>
+          </span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Path: <code>conspectus_uuid</code>. Body: composite owner key plus any subset of <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> fields to change.
-          </p>
-          <p>
-            <strong>Idempotency:</strong> required. Namespace
-            <code>endpoint_path = "PATCH /api/v1/conspectuses/{conspectus_uuid}"</code> with the concrete UUID (same
-            pattern as <code>PATCH /api/v1/user/…</code>).
-          </p>
-          <p><strong>Success:</strong> <code>200 OK</code> — full <code>ConspectusResponse</code>.</p>
-        </section>
+            Partial update of an existing conspectus’s ETR content fields
+            (<code>title</code>, <code>cue_sheet</code>, <code>dense_paragraph</code>,
+            <code>bullets</code>). Does <strong>not</strong> change scheduling — for retrieve
+            transitions see
+            <a href="post-api-v1-conspectuses-conspectus_uuid-actions-review.html">
+              <code>POST …/actions/review</code></a>. Each successful PATCH appends a
+              <code>CONTENT_PATCHED</code> row to <code>conspectus_events</code> and bumps
+              <code>content_version</code>.
+            </p>
+          </section>
 
-        <section class="card">
-          <h2>Errors</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>HTTP</th>
-                <th>Code / key</th>
-                <th>When</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>400</code></td>
-                <td><code>COMMON_400</code></td>
-                <td>Missing <code>Idempotency-Key</code>.</td>
-              </tr>
-              <tr>
-                <td><code>400</code></td>
-                <td><code>CONS_102</code> / <code>CONSPECTUS_PATCH_BODY_EMPTY</code></td>
-                <td>Body has owner fields only — no <span class="docs-tooltip docs-tooltip--etr" tabindex="0">ETR</span> field to update.</td>
-              </tr>
-              <tr>
-                <td><code>404</code></td>
-                <td><code>USER_404</code> / <code>CONS_404</code></td>
-                <td>User or conspectus not found for this key.</td>
-              </tr>
-              <tr>
-                <td><code>409</code></td>
-                <td><code>COMMON_409</code></td>
-                <td>Idempotency key reused with different body.</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+          <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+            <h2>1. Business context</h2>
+            <p>
+              The error log workflow can drive a Transform-pass refinement: a learner discovers a
+              weak cue or an unclear paragraph and updates the conspectus content. This endpoint
+              captures that edit without disturbing the spaced-retrieval schedule.
+            </p>
+          </section>
 
-        <section class="card">
-          <h2>Single-file deep spec</h2>
-          <p><a href="../index.html#conspectus-op-patchConspectus">Conspectus hub — this operation</a></p>
-        </section>
+          <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+            <h2>2. User stories</h2>
+            <ul>
+              <li><strong>US-CONSP-PATCH-1.</strong> As a <em>learner</em>, I want to fix a weak
+                cue or rewrite a paragraph without losing my schedule progress.</li>
+                <li><strong>US-CONSP-PATCH-2.</strong> As a <em>product owner</em>, I want every
+                  content edit auditable so I can analyse why retention regressed for a note.</li>
+                </ul>
+              </section>
 
-        <p class="small">
-          <a href="../index.html">← Conspectus resource hub</a>
-        </p>
+              <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+                <h2>3. Acceptance criteria (Given / When / Then)</h2>
+                <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+                  <table>
+                    <thead>
+                      <tr><th>ID &amp; scenario</th><th>Given</th><th>When</th><th>Then</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>AC-CONSP-PATCH-001</code><br>
+                          <span class="small">Happy path — single field.</span></td>
+                          <td>Conspectus C owned by U.</td>
+                          <td>PATCH with <code>{dense_paragraph: "..."}</code> and fresh
+                            Idempotency-Key.</td>
+                            <td><code>200 OK</code> with full <code>ConspectusResponse</code>;
+                              <code>content_version</code> incremented by 1; schedule unchanged.</td>
+                            </tr>
+                            <tr>
+                              <td><code>AC-CONSP-PATCH-002</code><br>
+                                <span class="small">Empty body.</span></td>
+                                <td>Body has only owner fields, no ETR field to update.</td>
+                                <td>Request arrives.</td>
+                                <td><code>400 CONS_102 CONSPECTUS_PATCH_BODY_EMPTY</code>; no DB write.</td>
+                              </tr>
+                              <tr>
+                                <td><code>AC-CONSP-PATCH-003</code><br>
+                                  <span class="small">Wrong owner.</span></td>
+                                  <td>Conspectus owned by U1, request resolves to U2.</td>
+                                  <td>Request arrives.</td>
+                                  <td><code>404 CONS_404</code> (not 403).</td>
+                                </tr>
+                                <tr>
+                                  <td><code>AC-CONSP-PATCH-004</code><br>
+                                    <span class="small">Idempotent replay.</span></td>
+                                    <td>Successful PATCH with key K and body B.</td>
+                                    <td>Same key + body within TTL.</td>
+                                    <td>Stored <code>200</code> body returned; no new DB writes.</td>
+                                  </tr>
+                                  <tr>
+                                    <td><code>AC-CONSP-PATCH-005</code><br>
+                                      <span class="small">CONTENT_PATCHED event.</span></td>
+                                      <td>Successful PATCH.</td>
+                                      <td>Transaction commits.</td>
+                                      <td>One <code>conspectus_events</code> row with
+                                        <code>event_type="CONTENT_PATCHED"</code> and a payload diff.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>AC-CONSP-PATCH-006</code><br>
+                                          <span class="small">Schedule untouched.</span></td>
+                                          <td>Conspectus with <code>schedule_revision=R</code> and
+                                            <code>next_review_at=T</code>.</td>
+                                            <td>Successful PATCH.</td>
+                                            <td>Schedule fields are unchanged; only <code>updated_at</code> on
+                                              <code>conspectuses</code> moves.</td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </section>
 
-        <section id="page-history" class="card">
+                                    <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                                      <h2>4. Functional requirements</h2>
+                                      <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+                                        <table>
+                                          <thead>
+                                            <tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr><td><code>FR-CONSP-PATCH-001</code></td>
+                                              <td>Resolve owner; verify ownership.</td>
+                                              <td>Resolve user from body; verify
+                                                <code>conspectuses.owner_client_uuid = users.client_uuid</code>; otherwise
+                                                <code>404 CONS_404</code>.</td></tr>
+                                                <tr><td><code>FR-CONSP-PATCH-002</code></td>
+                                                  <td>Reject empty patches.</td>
+                                                  <td>Body must contain at least one of <code>title</code>,
+                                                    <code>cue_sheet</code>, <code>dense_paragraph</code>, <code>bullets</code>;
+                                                    otherwise <code>400 CONS_102</code>.</td></tr>
+                                                    <tr><td><code>FR-CONSP-PATCH-003</code></td>
+                                                      <td>Patch only ETR content fields.</td>
+                                                      <td>Schedule, IDs, and timestamps cannot be patched. Unknown body fields →
+                                                        <code>422</code>.</td></tr>
+                                                        <tr><td><code>FR-CONSP-PATCH-004</code></td>
+                                                          <td>Bump <code>content_version</code> and stamp
+                                                            <code>updated_at</code>.</td>
+                                                            <td>One DB transaction:
+                                                              <code>UPDATE conspectuses</code> with new field values,
+                                                              <code>content_version = current + 1</code>,
+                                                              <code>updated_at = now()</code>; <code>INSERT conspectus_events</code>
+                                                              (<code>CONTENT_PATCHED</code>) with diff.</td></tr>
+                                                              <tr><td><code>FR-CONSP-PATCH-005</code></td>
+                                                                <td>Enforce idempotency.</td>
+                                                                <td>Per <a href="../../_shared/idempotency.html">shared rules</a>; namespace
+                                                                  <code>PATCH /api/v1/conspectuses/{conspectus_uuid}</code> with concrete
+                                                                  UUID.</td></tr>
+                                                                  <tr><td><code>FR-CONSP-PATCH-006</code></td>
+                                                                    <td>Do not change scheduling.</td>
+                                                                    <td><code>conspectus_schedules</code> is read-only on this endpoint;
+                                                                      <code>schedule_revision</code> stays the same.</td></tr>
+                                                                      <tr><td><code>FR-CONSP-PATCH-007</code></td>
+                                                                        <td>Validate field shapes.</td>
+                                                                        <td>Same validators as create
+                                                                          (cue_sheet object, paragraph 1–4000 chars, bullets 1–20 of 1–500
+                                                                          chars).</td></tr>
+                                                                        </tbody>
+                                                                      </table>
+                                                                    </div>
+                                                                  </section>
 
-          <h2>Page history</h2>
+                                                                  <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                                                                    <h2>5. Non-functional requirements</h2>
+                                                                    <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+                                                                      <table>
+                                                                        <thead>
+                                                                          <tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                          <tr><td><code>NFR-CONSP-PATCH-001</code></td><td>Latency.</td>
+                                                                            <td>P95 ≤ 250 ms, P99 ≤ 600 ms.</td></tr>
+                                                                            <tr><td><code>NFR-CONSP-PATCH-002</code></td><td>Durability.</td>
+                                                                              <td><code>200</code> only after fsync.</td></tr>
+                                                                              <tr><td><code>NFR-CONSP-PATCH-003</code></td><td>Idempotency window.</td>
+                                                                                <td>24 h replay TTL.</td></tr>
+                                                                                <tr><td><code>NFR-CONSP-PATCH-004</code></td><td>Payload limit.</td>
+                                                                                  <td>Body ≤ 32 KB.</td></tr>
+                                                                                  <tr><td><code>NFR-CONSP-PATCH-005</code></td><td>Auditability.</td>
+                                                                                    <td>Every PATCH appends a <code>CONTENT_PATCHED</code> event with the
+                                                                                      diff.</td></tr>
+                                                                                      <tr><td><code>NFR-CONSP-PATCH-006</code></td><td>Backwards compatibility.</td>
+                                                                                        <td>Adding new patchable fields is additive; tightening validation is
+                                                                                          breaking.</td></tr>
+                                                                                          <tr><td><code>NFR-CONSP-PATCH-007</code></td><td>Observability.</td>
+                                                                                            <td>Log events listed in §14.</td></tr>
+                                                                                            <tr><td><code>NFR-CONSP-PATCH-008</code></td><td>Rate limit.</td>
+                                                                                              <td>Inherits global limit.</td></tr>
+                                                                                            </tbody>
+                                                                                          </table>
+                                                                                        </div>
+                                                                                      </section>
 
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                      <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                                                                        <h2>6. Authorization &amp; permissions</h2>
+                                                                                        <p>
+                                                                                          API key per <a href="../../_shared/auth.html">shared auth</a>. Ownership rule:
+                                                                                          <code>conspectuses.owner_client_uuid = resolved learner's client_uuid</code>.
+                                                                                          Cross-tenant access → <code>404 CONS_404</code>.
+                                                                                        </p>
+                                                                                      </section>
 
-            <table class="docs-page-history">
+                                                                                      <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                                                                        <h2>7. Request contract</h2>
 
-              <thead>
+                                                                                        <h3>Path parameters</h3>
+                                                                                        <dl class="internal-field-list">
+                                                                                          <dt><code>conspectus_uuid</code>
+                                                                                            <span class="badge badge--field-type">string · uuid</span>
+                                                                                            <span class="badge badge--field-req">required</span></dt>
+                                                                                            <dd><p>RFC 4122 canonical UUID.</p></dd>
+                                                                                          </dl>
 
-                <tr>
+                                                                                          <h3>Headers</h3>
+                                                                                          <dl class="internal-field-list">
+                                                                                            <dt><code>X-API-Key</code>
+                                                                                              <span class="badge badge--field-type">string</span>
+                                                                                              <span class="badge badge--field-req">required</span></dt>
+                                                                                              <dd><p>Tenant API key.</p></dd>
+                                                                                              <dt><code>Idempotency-Key</code>
+                                                                                                <span class="badge badge--field-type">string</span>
+                                                                                                <span class="badge badge--field-req">required</span></dt>
+                                                                                                <dd>
+                                                                                                  <p>See <a href="../../_shared/idempotency.html">shared rules</a>.</p>
+                                                                                                  <dl class="internal-field-list__attrs">
+                                                                                                    <dt>Length</dt><dd>1–128 chars.</dd>
+                                                                                                  </dl>
+                                                                                                </dd>
+                                                                                                <dt><code>Content-Type</code>
+                                                                                                  <span class="badge badge--field-type">string</span>
+                                                                                                  <span class="badge badge--field-req">required</span></dt>
+                                                                                                  <dd><p>Must be <code>application/json</code>.</p></dd>
+                                                                                                </dl>
 
-                  <th scope="col">Date</th>
+                                                                                                <h3>Body</h3>
+                                                                                                <dl class="internal-field-list">
+                                                                                                  <dt><code>system_user_id</code>
+                                                                                                    <span class="badge badge--field-type">string</span>
+                                                                                                    <span class="badge badge--field-req">required</span></dt>
+                                                                                                    <dd><p>External user identifier; PII low.</p></dd>
+                                                                                                    <dt><code>system_uuid</code>
+                                                                                                      <span class="badge badge--field-type">string · uuid</span>
+                                                                                                      <span class="badge badge--field-req">required</span></dt>
+                                                                                                      <dd><p>External tenant UUID.</p></dd>
+                                                                                                      <dt><code>title</code>
+                                                                                                        <span class="badge badge--field-type">string</span>
+                                                                                                        <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                        <dd><p>0–256 chars.</p></dd>
+                                                                                                        <dt><code>cue_sheet</code>
+                                                                                                          <span class="badge badge--field-type">object</span>
+                                                                                                          <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                          <dd><p>Replaces the entire cue sheet (no field-level merge in v1).</p></dd>
+                                                                                                          <dt><code>dense_paragraph</code>
+                                                                                                            <span class="badge badge--field-type">string</span>
+                                                                                                            <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                            <dd><p>1–4000 chars.</p></dd>
+                                                                                                            <dt><code>bullets</code>
+                                                                                                              <span class="badge badge--field-type">array&lt;string&gt;</span>
+                                                                                                              <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                              <dd><p>1–20 items, each 1–500 chars.</p></dd>
+                                                                                                            </dl>
+                                                                                                            <p class="small"><strong>Constraint.</strong> At least one of
+                                                                                                              <code>title</code> / <code>cue_sheet</code> / <code>dense_paragraph</code> /
+                                                                                                              <code>bullets</code> must be present, otherwise
+                                                                                                              <code>400 CONS_102</code>.</p>
 
-                  <th scope="col">Change</th>
+                                                                                                              <h3>Example request</h3>
+                                                                                                              <pre><code>PATCH /api/v1/conspectuses/9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001 HTTP/1.1
+                                                                                                                X-API-Key: sk_live_***
+                                                                                                                Idempotency-Key: patch-2026-04-29T11:30:00Z
+                                                                                                                Content-Type: application/json
 
-                  <th scope="col">Author</th>
+                                                                                                                {
+                                                                                                                "system_user_id": "learner-01",
+                                                                                                                "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                                                                                                                "dense_paragraph": "The sun heats oceans … (revised after error log review)."
+                                                                                                                }
+                                                                                                              </code></pre>
+                                                                                                            </section>
 
-                </tr>
+                                                                                                            <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                                                                                              <h2>8. Response contract</h2>
+                                                                                                              <h3>200 OK — patched</h3>
+                                                                                                              <p>Body matches <code>ConspectusResponse</code>; all unchanged fields are echoed.
+                                                                                                                <code>content_version</code> is incremented.</p>
+                                                                                                                <pre><code>HTTP/1.1 200 OK
+                                                                                                                  Content-Type: application/json
 
-              </thead>
+                                                                                                                  {
+                                                                                                                  "conspectus_uuid": "9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001",
+                                                                                                                  "title": "The water cycle",
+                                                                                                                  "cue_sheet": { /*…*/ },
+                                                                                                                  "cue_sheet_schema_version": 1,
+                                                                                                                  "dense_paragraph": "The sun heats oceans … (revised after error log review).",
+                                                                                                                  "bullets": [/*…*/],
+                                                                                                                  "slot": "B",
+                                                                                                                  "slot_d_ladder_index": 0,
+                                                                                                                  "next_review_at": "2026-04-30T10:11:00Z",
+                                                                                                                  "schedule_policy_id": "etr_methodology_four_slot",
+                                                                                                                  "algorithm_version": "1.0.0",
+                                                                                                                  "schedule_revision": 8,
+                                                                                                                  "content_version": 2,
+                                                                                                                  "created_at": "2026-04-29T10:00:00Z",
+                                                                                                                  "updated_at": "2026-04-29T11:30:00Z",
+                                                                                                                  "schedule_updated_at": "2026-04-29T10:11:00Z"
+                                                                                                                  }
+                                                                                                                </code></pre>
+                                                                                                              </section>
 
-              <tbody>
+                                                                                                              <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                                                                                                <h2>10. Side effects</h2>
+                                                                                                                <ul>
+                                                                                                                  <li><strong>On success.</strong> One transaction:
+                                                                                                                    <ol>
+                                                                                                                      <li><code>UPDATE conspectuses</code> SET fields,
+                                                                                                                        <code>content_version = current + 1</code>,
+                                                                                                                        <code>updated_at = now()</code>.</li>
+                                                                                                                        <li><code>INSERT INTO conspectus_events</code>
+                                                                                                                          (<code>event_type="CONTENT_PATCHED"</code>, payload diff).</li>
+                                                                                                                          <li><code>INSERT INTO idempotency_keys</code>.</li>
+                                                                                                                          <li>Emit <code>conspectus_patched</code> (info).</li>
+                                                                                                                        </ol>
+                                                                                                                      </li>
+                                                                                                                      <li><strong>On idempotent replay.</strong> No DB writes; replay stored
+                                                                                                                        <code>200</code>; emit <code>conspectus_patch_idempotent_replay</code>
+                                                                                                                        (info).</li>
+                                                                                                                        <li><strong>On error.</strong> Rollback; no partial state.</li>
+                                                                                                                        <li><strong>Schedule unchanged.</strong> No <code>conspectus_schedules</code>
+                                                                                                                          writes.</li>
+                                                                                                                        </ul>
+                                                                                                                      </section>
 
-                <tr>
+                                                                                                                      <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                                                                                                        <h2>11. Idempotency &amp; concurrency</h2>
+                                                                                                                        <ul>
+                                                                                                                          <li><strong>Namespace:</strong>
+                                                                                                                            <code>PATCH /api/v1/conspectuses/{conspectus_uuid}</code> with concrete
+                                                                                                                            UUID.</li>
+                                                                                                                            <li><strong>Key composition:</strong> <code>Idempotency-Key</code> + SHA-256 of
+                                                                                                                              canonical body.</li>
+                                                                                                                              <li><strong>Replay status:</strong> <code>200 OK</code> with stored body.</li>
+                                                                                                                              <li><strong>TTL:</strong> 24 h.</li>
+                                                                                                                              <li><strong>Concurrency:</strong> v1 — last writer wins on content fields
+                                                                                                                                (Open question Q1).</li>
+                                                                                                                              </ul>
+                                                                                                                            </section>
 
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                                                                                            <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                                                                                                              <h2>12. Error catalog</h2>
+                                                                                                                              <p class="small">Envelope: <a href="../../_shared/error-envelope.html">shared
+                                                                                                                                envelope</a>; codes registered in
+                                                                                                                                <a href="../../_shared/error-catalog.html">shared catalog</a>.</p>
+                                                                                                                                <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+                                                                                                                                  <table>
+                                                                                                                                    <thead>
+                                                                                                                                      <tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th>
+                                                                                                                                        <th>Log event (level)</th></tr>
+                                                                                                                                      </thead>
+                                                                                                                                      <tbody>
+                                                                                                                                        <tr><td><code>400</code></td><td><code>COMMON_400</code></td>
+                                                                                                                                          <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                                                                                                                                          <td>Missing header.</td>
+                                                                                                                                          <td><code>request_idempotency_key_missing</code> (warn)</td></tr>
+                                                                                                                                          <tr><td><code>400</code></td><td><code>CONS_102</code></td>
+                                                                                                                                            <td><code>CONSPECTUS_PATCH_BODY_EMPTY</code></td>
+                                                                                                                                            <td>No ETR field to update.</td>
+                                                                                                                                            <td><code>conspectus_patch_body_empty</code> (info)</td></tr>
+                                                                                                                                            <tr><td><code>401</code></td><td><code>COMMON_401</code></td>
+                                                                                                                                              <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                                                                                                                              <td>Missing/invalid API key.</td><td>middleware</td></tr>
+                                                                                                                                              <tr><td><code>404</code></td><td><code>USER_404</code></td>
+                                                                                                                                                <td><code>USER_NOT_FOUND</code></td>
+                                                                                                                                                <td>User not resolvable.</td>
+                                                                                                                                                <td><code>conspectus_patch_user_not_found</code> (info)</td></tr>
+                                                                                                                                                <tr><td><code>404</code></td><td><code>CONS_404</code></td>
+                                                                                                                                                  <td><code>CONSPECTUS_NOT_FOUND</code></td>
+                                                                                                                                                  <td>Not found or owned by another user.</td>
+                                                                                                                                                  <td><code>conspectus_patch_not_owned</code> (info)</td></tr>
+                                                                                                                                                  <tr><td><code>409</code></td><td><code>COMMON_409</code></td>
+                                                                                                                                                    <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                                                                                                                                                    <td>Same key, different body hash.</td>
+                                                                                                                                                    <td><code>idempotency_payload_mismatch</code> (warn)</td></tr>
+                                                                                                                                                    <tr><td><code>413</code></td><td><code>COMMON_413</code></td>
+                                                                                                                                                      <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+                                                                                                                                                      <td>Body &gt; 32 KB.</td><td>middleware</td></tr>
+                                                                                                                                                      <tr><td><code>422</code></td><td><code>COMMON_000</code></td>
+                                                                                                                                                        <td><code>COMMON_VALIDATION_ERROR</code></td>
+                                                                                                                                                        <td>Invalid field shape, unknown field.</td>
+                                                                                                                                                        <td><code>validation_error</code> (warn)</td></tr>
+                                                                                                                                                        <tr><td><code>429</code></td><td><code>COMMON_429</code></td>
+                                                                                                                                                          <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                                                                                                                                                          <td>Rate limit.</td><td>middleware</td></tr>
+                                                                                                                                                        </tbody>
+                                                                                                                                                      </table>
+                                                                                                                                                    </div>
+                                                                                                                                                  </section>
 
-                  <td>Added Page history section (repository baseline).</td>
+                                                                                                                                                  <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                                                                                                                                    <h2>13. Edge cases checklist</h2>
+                                                                                                                                                    <ul>
+                                                                                                                                                      <li><strong>Patch with all four fields.</strong> Accept; all fields replaced
+                                                                                                                                                        atomically.</li>
+                                                                                                                                                        <li><strong>Patch sets <code>title=""</code>.</strong> Accept (clears the
+                                                                                                                                                          title).</li>
+                                                                                                                                                          <li><strong>Patch sets <code>cue_sheet={}</code>.</strong> Accept; empty object is
+                                                                                                                                                            valid.</li>
+                                                                                                                                                            <li><strong>Body has only owner fields.</strong> <code>400 CONS_102</code>.</li>
+                                                                                                                                                            <li><strong>UUID exists but belongs to U1, request resolves to U2.</strong>
+                                                                                                                                                              <code>404 CONS_404</code>.</li>
+                                                                                                                                                              <li><strong>Concurrent patches.</strong> v1 — last writer wins;
+                                                                                                                                                                <code>content_version</code> may have gaps from a client’s perspective.</li>
+                                                                                                                                                                <li><strong>Idempotency replay across content_version bump.</strong> Original
+                                                                                                                                                                  stored body served; ignores subsequent edits.</li>
+                                                                                                                                                                </ul>
+                                                                                                                                                              </section>
 
-                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                                                              <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                                                                                                                                                <h2>14. Observability requirements</h2>
+                                                                                                                                                                <p>Conventions:
+                                                                                                                                                                  <a href="../../_shared/observability-conventions.html">shared</a>.</p>
+                                                                                                                                                                  <h3>Log events</h3>
+                                                                                                                                                                  <ul>
+                                                                                                                                                                    <li><code>conspectus_patched</code> (info) —
+                                                                                                                                                                      <code>{conspectus_uuid, owner_client_uuid, fields_updated[],
+                                                                                                                                                                        content_version_to}</code>.</li>
+                                                                                                                                                                        <li><code>conspectus_patch_idempotent_replay</code> (info).</li>
+                                                                                                                                                                        <li><code>conspectus_patch_body_empty</code> (info).</li>
+                                                                                                                                                                        <li><code>conspectus_patch_not_owned</code> (info).</li>
+                                                                                                                                                                      </ul>
+                                                                                                                                                                      <h3>Metrics</h3>
+                                                                                                                                                                      <ul>
+                                                                                                                                                                        <li><code>conspectus_patch_total</code> (counter).</li>
+                                                                                                                                                                        <li><code>conspectus_patch_duration_seconds</code> (histogram).</li>
+                                                                                                                                                                      </ul>
+                                                                                                                                                                      <h3>Alerts</h3>
+                                                                                                                                                                      <ul>
+                                                                                                                                                                        <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+                                                                                                                                                                      </ul>
+                                                                                                                                                                    </section>
 
-                </tr>
+                                                                                                                                                                    <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                                                                                                                                                      <h2>15. Test plan</h2>
+                                                                                                                                                                      <ul>
+                                                                                                                                                                        <li><strong>Unit:</strong> body validator (at least one ETR field present).</li>
+                                                                                                                                                                        <li><strong>Integration:</strong> AC-001..AC-006.</li>
+                                                                                                                                                                        <li><strong>Contract:</strong> Schemathesis on
+                                                                                                                                                                          <code>patchConspectus</code>.</li>
+                                                                                                                                                                          <li><strong>End-to-end:</strong> create → patch → review → assert
+                                                                                                                                                                            <code>content_version=2</code>, <code>schedule_revision</code> still tracking
+                                                                                                                                                                            the review history.</li>
+                                                                                                                                                                          </ul>
+                                                                                                                                                                        </section>
 
-              </tbody>
+                                                                                                                                                                        <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                                                                                                                                          <h2>16. OpenAPI authoring hints</h2>
+                                                                                                                                                                          <ul>
+                                                                                                                                                                            <li><strong>operationId:</strong> <code>patchConspectus</code>.</li>
+                                                                                                                                                                            <li><strong>Tags:</strong> <code>Conspectus</code>.</li>
+                                                                                                                                                                            <li><strong>Reused:</strong> <code>ConspectusResponse</code>,
+                                                                                                                                                                              <code>CueSheet</code>, <code>Uuid</code>, <code>ErrorEnvelope</code>. Define
+                                                                                                                                                                              <code>PatchConspectusBody</code> here (all ETR fields optional).</li>
+                                                                                                                                                                              <li><strong>Examples:</strong> single-field patch (the example above) and
+                                                                                                                                                                                multi-field patch.</li>
+                                                                                                                                                                              </ul>
+                                                                                                                                                                            </section>
 
-            </table>
+                                                                                                                                                                            <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                                                                                                                                              <h2>17. Open questions</h2>
+                                                                                                                                                                              <ul>
+                                                                                                                                                                                <li><strong>Q1.</strong> Add <code>expected_content_version</code> for explicit
+                                                                                                                                                                                  conflict detection (mirror of review’s
+                                                                                                                                                                                  <code>expected_schedule_revision</code>)? Current draft: no — patches are
+                                                                                                                                                                                  additive enough that last-writer-wins is acceptable.</li>
+                                                                                                                                                                                  <li><strong>Q2.</strong> Field-level merge for <code>cue_sheet</code> (deep merge
+                                                                                                                                                                                    by row index) vs whole-replace? v1 chose whole-replace for simplicity.</li>
+                                                                                                                                                                                  </ul>
+                                                                                                                                                                                </section>
 
-          </div>
+                                                                                                                                                                                <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                                                                                                                                                  <h2>18. Out of scope</h2>
+                                                                                                                                                                                  <ul>
+                                                                                                                                                                                    <li>Schedule edits — go through
+                                                                                                                                                                                      <code>POST …/actions/review</code> or a future manual-reschedule endpoint.</li>
+                                                                                                                                                                                      <li>Bulk patch.</li>
+                                                                                                                                                                                      <li>JSON-Patch / RFC 6902 syntax — v1 uses simple field-level replace.</li>
+                                                                                                                                                                                      <li>Field-level merge inside <code>cue_sheet</code> — see Q2.</li>
+                                                                                                                                                                                    </ul>
+                                                                                                                                                                                  </section>
 
-        </section>
+                                                                                                                                                                                  <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                                                                                                                                                    <h2>19. Traceability</h2>
+                                                                                                                                                                                    <ul>
+                                                                                                                                                                                      <li><strong>System design:</strong>
+                                                                                                                                                                                        <a href="../../../analysis/system-design.html#persistence-model">persistence</a>,
+                                                                                                                                                                                        decision D6 (manual schedule change vs review).</li>
+                                                                                                                                                                                        <li><strong>ADRs:</strong>
+                                                                                                                                                                                          <a href="../../../../adr/0003-error-contract-governance.html">0003</a>,
+                                                                                                                                                                                          <a href="../../../../adr/0005-api-security-defaults.html">0005</a>,
+                                                                                                                                                                                          <a href="../../../../adr/0006-idempotency-write-operations.html">0006</a>.</li>
+                                                                                                                                                                                          <li><strong>OpenAPI:</strong> <code>patchConspectus</code>.</li>
+                                                                                                                                                                                        </ul>
+                                                                                                                                                                                      </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
+                                                                                                                                                                                      <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                                                                                                                                                        <h2>20. Spec changelog</h2>
+                                                                                                                                                                                        <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+                                                                                                                                                                                          <table>
+                                                                                                                                                                                            <thead><tr><th>Date</th><th>Type</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                                                            <tbody>
+                                                                                                                                                                                              <tr>
+                                                                                                                                                                                                <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                                                <td>additive</td>
+                                                                                                                                                                                                <td>Phase 5 rollout: full analyst spec; h1 typo
+                                                                                                                                                                                                  <code>{conspectus_uuid}</code> restored.</td>
+                                                                                                                                                                                                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                                    Boyarkin</a></td>
+                                                                                                                                                                                                  </tr>
+                                                                                                                                                                                                </tbody>
+                                                                                                                                                                                              </table>
+                                                                                                                                                                                            </div>
+                                                                                                                                                                                          </section>
 
-</body></html>
+                                                                                                                                                                                          <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                                                                                                                                                            <h2>Page history</h2>
+                                                                                                                                                                                            <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                                                                                                                              <table class="docs-page-history">
+                                                                                                                                                                                                <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                                                                <tbody>
+                                                                                                                                                                                                  <tr>
+                                                                                                                                                                                                    <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                                                    <td>Phase 5: full rewrite + h1 fix.</td>
+                                                                                                                                                                                                    <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                                      Boyarkin</a></td>
+                                                                                                                                                                                                    </tr>
+                                                                                                                                                                                                  </tbody>
+                                                                                                                                                                                                </table>
+                                                                                                                                                                                              </div>
+                                                                                                                                                                                            </section>
+
+                                                                                                                                                                                          </main>
+                                                                                                                                                                                        </div>
+                                                                                                                                                                                      </div>
+
+                                                                                                                                                                                    </body></html>

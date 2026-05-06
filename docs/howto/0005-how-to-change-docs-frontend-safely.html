@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to change docs frontend safely (playbooks)</title>
+  <link rel="stylesheet" href="../assets/docs.css" />
+  <link rel="stylesheet" href="../assets/docs-theme.css">
+  <script defer src="../assets/docs-nav.js"></script>
+  <script defer src="../assets/docs-portal-data.js"></script>
+  <script defer src="../assets/docs-internal-meta.js"></script>
+  <script defer src="../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">How to change docs frontend safely (playbooks)</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section id="overview" class="docs-page-hero">
+          <h2>Overview</h2>
+          <p>
+            Playbooks for recurring docs-frontend changes. Each one names where to edit,
+            what to verify afterwards, and which docs to keep in sync.
+          </p>
+          <p class="small">
+            Related maps:
+            <a href="../internal/front/architecture-map.html">architecture map</a>,
+            <a href="../internal/front/_shared/fast-entry-by-role.html">quick entry by role</a>,
+            <a href="../internal/front/contracts/navigation-search-and-discovery.html">navigation, search, and discovery</a>,
+            <a href="../internal/front/foundations/motion-and-adaptivity.html">UI, motion, and adaptivity</a>,
+            <a href="../internal/front/contracts/feedback-and-editorial-workflow.html">feedback and editorial workflow</a>.
+            Diagram-specific behavior lives in
+            <a href="../internal/front/components/diagrams-and-lightbox.html">diagrams and lightbox</a>.
+          </p>
+        </section>
+
+        <section id="feature-id-usage" class="card">
+          <h2>How to use Feature IDs in change requests</h2>
+          <ul>
+            <li>Reference impacted features by their ID from the architecture ledger (for example, <code>DFEAT-005</code> for the Command Palette).</li>
+            <li>When a change spans multiple features, list every ID in the planning and QA notes.</li>
+            <li>If a request introduces new behavior, assign a new ID in the architecture map before implementation starts.</li>
+            <li>Use Feature IDs in <code>docs/CHANGELOG.md</code> entries so behavior changes stay traceable over time.</li>
+          </ul>
+        </section>
+
+        <section id="playbook-add-page-action" class="card">
+          <h2>Playbook: add a new page action</h2>
+          <ol>
+            <li>Add the action definition in <code>buildDocsPageActions()</code> inside <code>docs/assets/docs-nav.js</code>.</li>
+            <li>If the action belongs in the command palette, give it explicit <code>group</code> and <code>keywords</code> fields.</li>
+            <li>If the action opens an external URL, set <code>external: true</code> so the runtime applies the safe link attributes.</li>
+            <li>Validate toolbar rendering through <code>injectDocsPageActions()</code> and palette rendering through <code>installDocsQuickActionsUi()</code>.</li>
+            <li>Confirm the desktop-only policy: the action does not appear when the viewport is below the page-actions breakpoint.</li>
+          </ol>
+          <p><strong>Feature IDs:</strong> <code>DFEAT-006</code> (Page actions toolbar), <code>DFEAT-005</code> (Command Palette).</p>
+          <p><strong>Verify:</strong> keyboard execution, mouse execution, focus return, and no regressions in existing hotkeys.</p>
+        </section>
+
+        <section id="playbook-add-feedback-type" class="card">
+          <h2>Playbook: add a new feedback type in Page feedback</h2>
+          <ol>
+            <li>Update the feedback-type options inside <code>injectDocsFeedbackCard()</code> in <code>docs/assets/docs-nav.js</code>.</li>
+            <li>Update inline guidance in the same form when the new type needs extra wording.</li>
+            <li>Update <code>.github/ISSUE_TEMPLATE/docs_feedback.md</code> so the template guidance matches the UI options.</li>
+            <li>Confirm the issue prefill payload built by <code>docsFeedbackIssueUrl()</code> includes the selected type.</li>
+            <li>Re-check the cadence settings in <code>.github/workflows/docs-feedback-cadence.yml</code> for alignment.</li>
+          </ol>
+          <p><strong>Feature IDs:</strong> <code>DFEAT-013</code> (Page feedback form).</p>
+          <p><strong>Verify:</strong> form validation, issue link prefill, clipboard fallback, and live-status messaging.</p>
+        </section>
+
+        <section id="playbook-change-breakpoint-policy" class="card">
+          <h2>Playbook: change the breakpoint policy</h2>
+          <ol>
+            <li>Update the JS breakpoints in <code>docs/assets/docs-nav.js</code> and, where relevant, in <code>docs/assets/internal-sidebar.js</code>.</li>
+            <li>Update the CSS media queries in <code>docs/assets/docs-site-nav.css</code>, <code>docs/assets/internal-layout.css</code>, and <code>docs/assets/docs.css</code>.</li>
+            <li>Re-check the policies for quick actions, top-nav grouping, the drawer mode, and the desktop-only TOC.</li>
+            <li>Confirm that the Menu button and the flashlight still align with the title-row behavior on internal pages.</li>
+            <li>Update the docs that encode breakpoint contracts:
+              <a href="../internal/front/contracts/menu-and-theme.html">#1 contract</a> and
+              <a href="../internal/front/foundations/motion-and-adaptivity.html">UI/adaptivity page</a>.
+            </li>
+          </ol>
+          <p><strong>Feature IDs:</strong> <code>DFEAT-001</code>, <code>DFEAT-002</code>, <code>DFEAT-005</code>, <code>DFEAT-009</code>.</p>
+          <p><strong>Verify:</strong> phone, tablet, and desktop snapshots; keyboard behavior in each mode.</p>
+        </section>
+
+        <section id="playbook-add-maintainer" class="card">
+          <h2>Playbook: add a new maintainer (Edited by workflow)</h2>
+          <ol>
+            <li>Create the profile page under <code>docs/internal/portal/people/&lt;slug&gt;/index.html</code> with the required <code>data-person-*</code> attributes.</li>
+            <li>Add the maintainer ID to <code>data-maintainer-ids</code> on every page they own.</li>
+            <li>Run <code>make docs-fix</code> to regenerate <code>docs/assets/docs-portal-data.js</code>.</li>
+            <li>Confirm the <strong>Edited by</strong> widget resolves the profile and that the avatar stack and list render as expected.</li>
+            <li>If an unknown-id warning appears, re-check the profile ID and rerun the generator.</li>
+          </ol>
+          <p><strong>Feature IDs:</strong> <code>DFEAT-014</code> (Edited by), <code>DFEAT-015</code> (Portal ownership lists).</p>
+          <p><strong>Verify:</strong> profile link, image path, the "Maintained pages" list, and portal group placement.</p>
+        </section>
+
+        <section id="playbook-change-diagram-lightbox" class="card">
+          <h2>Playbook: change the diagram lightbox behavior</h2>
+          <ol>
+            <li>Update the runtime logic in <code>docs/assets/docs-diagram-lightbox.js</code> (open and close, zoom, keyboard, pan, focus return).</li>
+            <li>Update styling in <code>docs/assets/docs.css</code> under the <code>.diagram-expand-btn</code> and <code>.docs-diagram-lightbox*</code> selectors.</li>
+            <li>Keep the binding contract for <code>img.diagram--uml</code> stable, unless the change is part of an IA-level migration.</li>
+            <li>Run keyboard and pointer checks: <kbd>Escape</kbd>, <kbd>+</kbd> / <kbd>-</kbd>, <kbd>Cmd/Ctrl</kbd>+<kbd>0</kbd>, wheel zoom, and drag pan.</li>
+            <li>Update the <a href="../internal/front/components/diagrams-and-lightbox.html">diagrams and lightbox</a> docs page and the architecture ledger entry <code>DFEAT-017</code> when behavior changes.</li>
+          </ol>
+          <p><strong>Feature IDs:</strong> <code>DFEAT-017</code>.</p>
+          <p><strong>Verify:</strong> focus returns after close, the body scroll lock holds while the lightbox is open, and pages with multiple diagrams stay regression-free.</p>
+        </section>
+
+        <section id="playbook-search-telemetry-and-index" class="card">
+          <h2>Playbook: change search telemetry or the search-index lifecycle</h2>
+          <ol>
+            <li>For event-model changes, update telemetry emitters in <code>docs/assets/docs-nav.js</code> and keep event names backward-compatible where possible.</li>
+            <li>For endpoint contract changes, verify the metadata configuration path and the fallback behavior on local and hosted docs.</li>
+            <li>For ranking or corpus changes, regenerate <code>docs/assets/search-index.json</code> and run query-smoke tests on key topics.</li>
+            <li>Update the docs that hold the operational contracts:
+              <a href="../internal/front/contracts/navigation-search-and-discovery.html">search and discovery</a> and
+              <a href="../internal/front/contracts/feedback-and-editorial-workflow.html">telemetry workflow</a>.
+            </li>
+            <li>Record material telemetry or search-behavior changes in <code>docs/CHANGELOG.md</code>.</li>
+          </ol>
+          <p><strong>Feature IDs:</strong> <code>DFEAT-004</code>, <code>DFEAT-005</code>, <code>DFEAT-006</code>, <code>DFEAT-012</code>.</p>
+          <p><strong>Verify:</strong> search quality, keyboard interaction, telemetry payload integrity, and graceful behavior when the index or endpoint is unavailable.</p>
+        </section>
+
+        <section id="cross-cutting-checklist" class="card">
+          <h2>Cross-cutting safety checklist</h2>
+          <ol>
+            <li>Run <code>make docs-fix</code> and <code>make docs-html-check</code>.</li>
+            <li>Check the light and dark themes on every changed surface.</li>
+            <li>Check reduced-motion mode for every changed animation.</li>
+            <li>Run a keyboard-only pass on every changed interaction.</li>
+            <li>Update the relevant pages under <code>docs/internal/front/</code> and add a <code>docs/CHANGELOG.md</code> entry for any substantive behavior change.</li>
+          </ol>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-02">2026-05-02</time></td>
+                  <td>Rewrote prose at C1 level: tightened overview, replaced “should appear”/“must be updated” phrasings with direct present-tense rules across every playbook.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Added playbooks for diagram lightbox changes and search telemetry/index lifecycle updates; linked new diagrams frontend spec page.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-23">2026-04-23</time></td>
+                  <td>Moved frontend playbooks page into how-to section and updated all relative links.</td>
+                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

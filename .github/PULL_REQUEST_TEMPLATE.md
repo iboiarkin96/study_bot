@@ -17,7 +17,7 @@
 - [ ] Implementation is complete across required layers.
 - [ ] OpenAPI/internal docs updated in the same PR when behavior changed.
 - [ ] Local gate passed: `make verify`.
-- [ ] Pre-push gate passed: `make verify-ci`.
+- [ ] Pre-push gate passed: `make verify`.
 
 ### For `docs-only`
 

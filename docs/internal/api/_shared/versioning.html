@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API versioning — shared rules — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">API versioning</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Single source of truth for what counts as breaking, what is additive, and how new
+            versions are rolled out. Governing ADR:
+            <a href="../../../adr/0004-api-versioning-policy.html">0004 — API versioning policy</a>.
+          </p>
+        </section>
+
+        <section class="card" id="scheme">
+          <h2>Scheme — major in URL</h2>
+          <p>
+            All public endpoints are mounted under <code>/api/v{N}/...</code>. <code>N</code> is
+            a positive integer. The current major is <code>v1</code>.
+          </p>
+          <ul>
+            <li><strong>Breaking changes</strong> require a new major path
+              (<code>/api/v2/...</code>). The previous major continues to serve until the
+              announced sunset.</li>
+              <li><strong>Additive changes</strong> ship into the current major in place.</li>
+              <li>There is <strong>no minor or patch</strong> in the URL. Internal
+                <code>info.version</code> in OpenAPI is bumped per release; externally that
+                version is informational, not part of the path.</li>
+              </ul>
+            </section>
+
+            <section class="card" id="breaking-vs-additive">
+              <h2>Breaking vs additive — matrix</h2>
+              <div class="docs-table-scroll" role="region" aria-label="Breaking vs additive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Change</th><th>Class</th><th>Why</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Add a new endpoint</td>
+                      <td><span class="badge badge--success">additive</span></td>
+                      <td>Existing clients are unaffected.</td>
+                    </tr>
+                    <tr>
+                      <td>Add an <strong>optional</strong> request field with a sensible default</td>
+                      <td><span class="badge badge--success">additive</span></td>
+                      <td>Old clients that omit it keep working.</td>
+                    </tr>
+                    <tr>
+                      <td>Add a new field to a response object</td>
+                      <td><span class="badge badge--success">additive</span></td>
+                      <td>Clients are required to ignore unknown fields (a contract obligation).</td>
+                    </tr>
+                    <tr>
+                      <td>Add a new value to an enum returned in a response</td>
+                      <td><span class="badge badge--danger">breaking</span></td>
+                      <td>Existing clients’ exhaustive switches break.</td>
+                    </tr>
+                    <tr>
+                      <td>Add a new value to an enum accepted in a request</td>
+                      <td><span class="badge badge--success">additive</span></td>
+                      <td>Old clients that don’t send it are fine.</td>
+                    </tr>
+                    <tr>
+                      <td>Make an optional response field <strong>required</strong></td>
+                      <td><span class="badge badge--success">additive</span></td>
+                      <td>Stronger guarantee — clients that already used it keep working.</td>
+                    </tr>
+                    <tr>
+                      <td>Make a required response field optional</td>
+                      <td><span class="badge badge--danger">breaking</span></td>
+                      <td>Clients that read it unconditionally crash on missing.</td>
+                    </tr>
+                    <tr>
+                      <td>Rename a field</td>
+                      <td><span class="badge badge--danger">breaking</span></td>
+                      <td>Always.</td>
+                    </tr>
+                    <tr>
+                      <td>Change a field type or format</td>
+                      <td><span class="badge badge--danger">breaking</span></td>
+                      <td>Almost always; even
+                        <code>integer</code> → <code>string</code> formatted breaks parsers.</td>
+                      </tr>
+                      <tr>
+                        <td>Tighten validation (shorter max, stricter regex)</td>
+                        <td><span class="badge badge--danger">breaking</span></td>
+                        <td>Previously valid clients get rejected.</td>
+                      </tr>
+                      <tr>
+                        <td>Loosen validation (wider range)</td>
+                        <td><span class="badge badge--success">additive</span></td>
+                        <td>Old clients keep working.</td>
+                      </tr>
+                      <tr>
+                        <td>Change the meaning of an existing field</td>
+                        <td><span class="badge badge--danger">breaking</span></td>
+                        <td>Even when the type matches; semantic drift is the worst kind.</td>
+                      </tr>
+                      <tr>
+                        <td>Change a 200 to a 201 (or vice versa)</td>
+                        <td><span class="badge badge--danger">breaking</span></td>
+                        <td>Clients branch on status code.</td>
+                      </tr>
+                      <tr>
+                        <td>Add a new error <code>code</code> to an existing endpoint</td>
+                        <td><span class="badge badge--success">additive</span></td>
+                        <td>Provided the HTTP status class stays the same and the envelope shape is
+                          unchanged.</td>
+                        </tr>
+                        <tr>
+                          <td>Move from bare array to wrapped list response</td>
+                          <td><span class="badge badge--danger">breaking</span></td>
+                          <td>See <a href="pagination.html">pagination</a>.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section class="card" id="rollout">
+                  <h2>Rolling out a new major</h2>
+                  <ol>
+                    <li>RFC documenting the breaking changes; link from the new major’s OpenAPI
+                      <code>info.description</code>.</li>
+                      <li>Mount <code>/api/v2/...</code> alongside <code>/api/v1/...</code>; both serve
+                        live traffic.</li>
+                        <li>Announce sunset for <code>v1</code> with a date — minimum 6 months for paying
+                          integrators (per ADR 0004).</li>
+                          <li>Mark <code>v1</code> operations as <code>deprecated: true</code> in OpenAPI;
+                            add <code>Sunset</code> header on responses.</li>
+                            <li>Track usage; remove <code>v1</code> after sunset. Document the removal in the
+                              release notes.</li>
+                            </ol>
+                          </section>
+
+                          <section class="card" id="deprecation">
+                            <h2>Deprecating an endpoint inside a major</h2>
+                            <p>
+                              Endpoints can be deprecated <strong>without</strong> a major bump if the change is
+                              removal of an optional capability:
+                            </p>
+                            <ul>
+                              <li>Mark <code>deprecated: true</code> in OpenAPI.</li>
+                              <li>Set the <code>Sunset</code> response header (RFC 8594) to the planned
+                                removal date.</li>
+                                <li>Update internal spec status to <code>deprecated</code>.</li>
+                                <li>Removal is itself a breaking change → goes with the next major.</li>
+                              </ul>
+                            </section>
+
+                            <section class="card" id="release-notes">
+                              <h2>Release notes</h2>
+                              <p>
+                                The internal <em>spec changelog</em> (Section 20 of an operation page) is per-operation
+                                and machine-trackable. The <strong>public</strong> release notes live separately
+                                and bundle multiple endpoints into one human narrative — see
+                                <a href="../../../adr/0013-changelog-and-release-notes.html">ADR 0013</a>.
+                              </p>
+                            </section>
+
+                            <section class="card" id="traceability">
+                              <h2>Traceability</h2>
+                              <ul>
+                                <li><strong>ADRs:</strong>
+                                  <a href="../../../adr/0004-api-versioning-policy.html">0004 — versioning</a>,
+                                  <a href="../../../adr/0013-changelog-and-release-notes.html">0013 — changelog
+                                    &amp; release notes</a>,
+                                    <a href="../../../adr/0007-openapi-governance-and-usability-standard.html">0007 —
+                                      OpenAPI governance</a>.</li>
+                                      <li><strong>Related shared pages:</strong>
+                                        <a href="pagination.html">pagination</a>,
+                                        <a href="openapi-authoring-guide.html">OpenAPI authoring guide</a>.</li>
+                                      </ul>
+                                    </section>
+
+                                    <section id="page-history" class="card">
+                                      <h2>Page history</h2>
+                                      <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                        <table class="docs-page-history">
+                                          <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                          <tbody>
+                                            <tr>
+                                              <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                              <td>Phase 3: shared versioning policy with breaking-vs-additive matrix.</td>
+                                              <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </section>
+
+                                  </main>
+                                </div>
+                              </div>
+
+                            </body></html>

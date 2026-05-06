@@ -27,7 +27,7 @@ make migrate
 make run
 ```
 
-**API + Docker observability in one step:** use `make run-project` instead of `make run` (see [Observability](#observability-local)).
+Use `make setup` once, then `make dev` for day-to-day work.
 
 ---
 
@@ -54,7 +54,7 @@ The main documentation site is **`docs/index.html`**.
 
 **Daily work:** use **`make`** targets (`make help` lists them).
 
-1. Common: `make fix`, `make verify`, `make verify-ci` before you push, `make release-check`.
+1. Common: `make fix`, `make check` during development, and `make verify` before you push.
 2. Before commit: `make pre-commit-check`. After doc edits: `make docs-fix`. To check that nothing is missing: `make docs-check`.
 
 ---
@@ -76,10 +76,10 @@ For docs and smoke checks you can override host/port labels: `OBS_API_*`, `OBS_P
 
 ### How to run it
 
-1. Start the API: `make run` (or `make run-project` to start Docker observability and then the API).
-2. If the API is already running: `make observability-up` (renders Prometheus config, starts Compose).
+1. Start the API: `make run`.
+2. If the API is already running and you need observability, start Docker Compose manually: `docker compose -f docker-compose.observability.yml up -d`.
 3. Check `/live`, `/ready`, and `/metrics` (e.g. `curl -s http://127.0.0.1:8000/live`).
-4. When you are done: `make observability-down`. Optional: `make observability-smoke`.
+4. When you are done: `docker compose -f docker-compose.observability.yml down`.
 
 More detail: [Local development](docs/developer/0007-local-development.html). Design notes: [ADR 0009](docs/adr/0009-health-readiness-and-observability.html), [ADR 0011](docs/adr/0011-slo-sla-error-budget.html).
 
@@ -92,7 +92,7 @@ For **NDJSON** logs and local **search**, set `LOG_FORMAT=json` and `LOG_SERVICE
 | Elasticsearch | [http://127.0.0.1:9200](http://127.0.0.1:9200) | REST API; indices `study-app-logs-*` |
 | Kibana | [http://127.0.0.1:5601](http://127.0.0.1:5601) | Data view: pattern **`*study-app-logs*`** (wildcards on both sides). Not only `study-app-logs-*`, or Discover may miss `.ds-study-app-logs-*` streams |
 
-**Steps:** `make logging-up` starts `docker-compose.logging.yml` (Elasticsearch, Kibana, Filebeat). Run the API on the host with `LOG_FORMAT=json` writing to `./logs` (mounted read-only into Filebeat). **~2 GiB RAM** helps for ES+Kibana. `make logging-smoke` checks ES/Kibana; `make logging-down` stops the stack. Details: [ADR 0023](docs/adr/0023-structured-logging-and-local-elasticsearch.html).
+**Steps:** start `docker-compose.logging.yml` manually (`docker compose -f docker-compose.logging.yml up -d`). Run the API on the host with `LOG_FORMAT=json` writing to `./logs` (mounted read-only into Filebeat). **~2 GiB RAM** helps for ES+Kibana. Stop with `docker compose -f docker-compose.logging.yml down`. Details: [ADR 0023](docs/adr/0023-structured-logging-and-local-elasticsearch.html).
 
 ### Metrics in Prometheus / Grafana
 
@@ -104,10 +104,10 @@ Examples: `http_requests_total`, `http_request_duration_seconds_bucket`, `db_ope
 
 You do **not** need Docker for day-to-day coding: use **`make run`**, tests, and **`make verify`**.
 
-**Why Docker still matters:** in many deployments the service runs as a **container image**. Building it (`make docker-build`) is the normal packaging step for a release or a registry pull.
+**Why Docker still matters:** in many deployments the service runs as a **container image**. Building it with `docker build` is the normal packaging step for a release or a registry pull.
 
 - **Prerequisites:** [Docker](https://docs.docker.com/get-docker/) if you build or run the image locally.
-- **Build and run:** `make docker-build` builds image `study-app-api:local` (see `Dockerfile`). The container runs `scripts/container_entrypoint.sh` (Alembic, then Uvicorn) — same as `make container-start` on the host (no `--reload`). Dependencies match pinned `requirements.txt` from `make install`. Pass configuration with `-e` or your platform’s env mechanism (see `env/example`).
+- **Build and run:** `docker build -t study-app-api:local .` builds image `study-app-api:local` (see `Dockerfile`). The container runs `scripts/container_entrypoint.sh` (Alembic, then Uvicorn, no `--reload`). Dependencies match pinned `requirements.txt` from `make install`. Pass configuration with `-e` or your platform’s env mechanism (see `env/example`).
 - **Guide:** [Docker image and container](docs/developer/0009-docker-image-and-container.html). **ADRs:** [0015](docs/adr/0015-container-image.html) (image), [0021](docs/adr/0021-continuous-delivery-github-actions-and-ghcr.html) (CI → GHCR).
 
 ---
@@ -155,6 +155,9 @@ study_app/
 │   ├── pdoc/
 │   │   └── app/
 │   ├── qa/
+│   │   ├── playbooks/
+│   │   ├── reference/
+│   │   └── templates/
 │   ├── rfc/
 │   ├── runbooks/  # Operational troubleshooting guides
 │   └── uml/  # PlantUML diagrams

@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend: popup and overlay system</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Docs frontend: popup and overlay system <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Docs portal · Surfaces &amp; overlays</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Toast, dialog, and dropdown visual language and behavior.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-30">2026-04-30</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            This page is the source of truth for all floating surfaces in docs frontend:
+            toasts, popups, overlays, and modal-like panels. The goal is one visual language
+            and consistent interaction rules across all such elements.
+          </p>
+          <ul>
+            <li><strong>Scope:</strong> visual contract, behavior contract, and implementation entry points.</li>
+            <li><strong>Authoring model:</strong> this page follows the Frontend reference shape from
+              <a href="../../../rfc/0003-documentation-authoring-model.html">RFC 0003 § Document taxonomy</a>
+              — anatomy diagram, visual gallery, behaviour cards, do/don't, page history.</li>
+              <li><strong>Related pages:</strong> <a href="../foundations/ui-kit.html">UI kit</a>, <a href="../contracts/navigation-search-and-discovery.html">navigation/search/discovery</a> (sticky TOC widget itself), <a href="../foundations/motion-and-adaptivity.html">UI motion and adaptivity</a>, <a href="tooltips.html">tooltips and inline hints</a>.</li>
+            </ul>
+          </section>
+
+          <section id="visual-gallery" class="card">
+            <h2>Visual gallery — what users see</h2>
+            <p class="small">
+              Inline SVG mockups rendered from the same tokens as the live runtime. They illustrate the
+              <em>shape</em> of each surface; pixel-perfect captures live in the screen-spec asset folders and
+              are regenerated whenever <code>docs.css</code> tokens change. Numbers reference the anatomy diagram
+              below.
+            </p>
+
+            <figure class="docs-popup-mock">
+              <figcaption>1 · Single sticky-TOC promo toast — light theme, fresh state</figcaption>
+              <svg viewBox="0 0 460 260" role="img" aria-labelledby="popup-mock-single-title popup-mock-single-desc" xmlns="http://www.w3.org/2000/svg">
+                <title id="popup-mock-single-title">Single sticky-TOC promo toast in the bottom-right corner</title>
+                <desc id="popup-mock-single-desc">A page background with one premium toast pinned to the bottom-right corner. The toast contains a sparkle title, two lines of text, two action buttons, and a progress bar at the bottom.</desc>
+                <rect x="0" y="0" width="460" height="260" fill="#f7f9fc" stroke="#e2e8f0"></rect>
+                <rect x="14" y="14" width="200" height="14" rx="3" fill="#e2e8f0"></rect>
+                <rect x="14" y="36" width="320" height="9" rx="3" fill="#edf2f7"></rect>
+                <rect x="14" y="50" width="290" height="9" rx="3" fill="#edf2f7"></rect>
+                <rect x="14" y="64" width="260" height="9" rx="3" fill="#edf2f7"></rect>
+                <!-- Toast surface -->
+                <g transform="translate(120,118)">
+                  <rect width="320" height="128" rx="14" fill="url(#popupGrad)" stroke="#7c5cff" stroke-opacity="0.45"></rect>
+                  <text x="14" y="26" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1f2937">✨ Sticky TOC available</text>
+                  <text x="14" y="48" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">We have a premium sticky “On this page”</text>
+                  <text x="14" y="62" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">navigation for long docs.</text>
+                  <!-- Buttons -->
+                  <rect x="170" y="78" width="50" height="22" rx="8" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <text x="195" y="93" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#475569" text-anchor="middle">Hide</text>
+                  <rect x="226" y="78" width="80" height="22" rx="8" fill="#7c5cff" stroke="#5b3fe0"></rect>
+                  <text x="266" y="93" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#ffffff" text-anchor="middle">Enable</text>
+                  <!-- Progress bar -->
+                  <rect x="0" y="116" width="320" height="6" fill="#7c5cff"></rect>
+                  <rect x="220" y="116" width="100" height="6" fill="#7c5cff" fill-opacity="0.35"></rect>
+                </g>
+                <defs>
+                  <linearGradient id="popupGrad" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#f3eeff"></stop>
+                    <stop offset="100%" stop-color="#ffffff"></stop>
+                  </linearGradient>
+                </defs>
+                <!-- Callout 1 -->
+                <circle cx="430" cy="130" r="10" fill="#0f172a"></circle>
+                <text x="430" y="134" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
+              </svg>
+            </figure>
+
+            <figure class="docs-popup-mock">
+              <figcaption>2 · Stacked toasts — newest at the bottom, older toasts pushed upward</figcaption>
+              <svg viewBox="0 0 460 320" role="img" aria-labelledby="popup-mock-stack-title popup-mock-stack-desc" xmlns="http://www.w3.org/2000/svg">
+                <title id="popup-mock-stack-title">Three toasts stacked in the bottom-right corner</title>
+                <desc id="popup-mock-stack-desc">Three premium toasts arranged vertically against the right edge of the viewport. Newest (Continue reading) sits at the bottom closest to the corner. Older toasts are above it with a 12 pixel gap between siblings.</desc>
+                <rect x="0" y="0" width="460" height="320" fill="#f7f9fc" stroke="#e2e8f0"></rect>
+                <rect x="14" y="14" width="200" height="14" rx="3" fill="#e2e8f0"></rect>
+                <rect x="14" y="36" width="320" height="9" rx="3" fill="#edf2f7"></rect>
+                <rect x="14" y="50" width="290" height="9" rx="3" fill="#edf2f7"></rect>
+                <!-- Older (top) -->
+                <g transform="translate(120,80)">
+                  <rect width="320" height="62" rx="14" fill="#f3eeff" stroke="#7c5cff" stroke-opacity="0.45"></rect>
+                  <text x="14" y="22" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700" fill="#1f2937">✨ Sticky TOC available</text>
+                  <text x="14" y="40" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#475569">Pinned “On this page” navigation for long docs.</text>
+                  <rect x="0" y="56" width="320" height="6" fill="#7c5cff" fill-opacity="0.4"></rect>
+                </g>
+                <!-- Middle -->
+                <g transform="translate(120,156)">
+                  <rect width="320" height="62" rx="14" fill="#f3eeff" stroke="#7c5cff" stroke-opacity="0.45"></rect>
+                  <text x="14" y="22" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700" fill="#1f2937">✨ New ADR ratified</text>
+                  <text x="14" y="40" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#475569">ADR 0027 search ranking is now live.</text>
+                  <rect x="0" y="56" width="320" height="6" fill="#7c5cff" fill-opacity="0.7"></rect>
+                </g>
+                <!-- Newest (bottom) -->
+                <g transform="translate(120,232)">
+                  <rect width="320" height="68" rx="14" fill="#f3eeff" stroke="#7c5cff" stroke-opacity="0.6"></rect>
+                  <text x="14" y="22" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700" fill="#1f2937">✨ Continue reading available</text>
+                  <text x="14" y="40" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#475569">Continue from § Behavior contract</text>
+                  <rect x="0" y="62" width="320" height="6" fill="#7c5cff"></rect>
+                </g>
+                <!-- Callouts -->
+                <circle cx="430" cy="92" r="10" fill="#0f172a"></circle>
+                <text x="430" y="96" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+                <circle cx="430" cy="244" r="10" fill="#0f172a"></circle>
+                <text x="430" y="248" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" font-weight="700" fill="#ffffff" text-anchor="middle">3</text>
+              </svg>
+            </figure>
+
+            <figure class="docs-popup-mock">
+              <figcaption>3 · Dark theme, toast leaving — opacity and translate during the 180 ms close animation</figcaption>
+              <svg viewBox="0 0 460 200" role="img" aria-labelledby="popup-mock-dark-title popup-mock-dark-desc" xmlns="http://www.w3.org/2000/svg">
+                <title id="popup-mock-dark-title">Dark theme toast in its closing state</title>
+                <desc id="popup-mock-dark-desc">A toast on a dark page background, slightly translated downward and faded to about 50 percent opacity to convey the leave animation.</desc>
+                <rect x="0" y="0" width="460" height="200" fill="#0b0f1a" stroke="#1e293b"></rect>
+                <rect x="14" y="14" width="200" height="14" rx="3" fill="#1e293b"></rect>
+                <rect x="14" y="36" width="320" height="9" rx="3" fill="#111827"></rect>
+                <g transform="translate(120,80)" opacity="0.55">
+                  <rect width="320" height="92" rx="14" fill="url(#popupDark)" stroke="#a78bfa" stroke-opacity="0.55"></rect>
+                  <text x="14" y="26" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#e5e7eb">✨ Continue reading available</text>
+                  <text x="14" y="48" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#94a3b8">Continue from § Stacking and lifecycle</text>
+                  <rect x="0" y="84" width="320" height="6" fill="#a78bfa" fill-opacity="0.4"></rect>
+                </g>
+                <defs>
+                  <linearGradient id="popupDark" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#1c1330"></stop>
+                    <stop offset="100%" stop-color="#0f172a"></stop>
+                  </linearGradient>
+                </defs>
+                <circle cx="430" cy="92" r="10" fill="#a78bfa"></circle>
+                <text x="430" y="96" font-size="11" font-family="ui-sans-serif,system-ui,sans-serif" font-weight="700" fill="#0b0f1a" text-anchor="middle">4</text>
+              </svg>
+            </figure>
+
+            <ol class="docs-popup-callouts">
+              <li><strong>1 · Toast surface.</strong> Premium gradient card pinned to the bottom-right with shared <code>--docs-overlay-*</code> tokens.</li>
+              <li><strong>2 · Older toast (top of stack).</strong> Pushed up by the 12 px stack gap when a newer toast arrives.</li>
+              <li><strong>3 · Newest toast (bottom of stack).</strong> Always closest to the anchor corner so the user's eye finds the freshest message first.</li>
+              <li><strong>4 · Closing animation.</strong> 180 ms <em>docs-toc-toast-leave</em> keyframes — translate-Y 4 px and fade out; reduced motion replaces it with an instant remove.</li>
+            </ol>
+          </section>
+
+          <section id="anatomy" class="card">
+            <h2>Anatomy diagram</h2>
+            <p class="small">
+              Single-toast anatomy with numbered callouts. Every region the runtime can address has a CSS hook.
+              See <a href="#layout-map">Layout map</a> below for the full attribute table.
+            </p>
+            <figure class="docs-popup-mock">
+              <svg viewBox="0 0 520 260" role="img" aria-labelledby="popup-anatomy-title popup-anatomy-desc" xmlns="http://www.w3.org/2000/svg">
+                <title id="popup-anatomy-title">Toast anatomy with numbered callouts</title>
+                <desc id="popup-anatomy-desc">A toast surface with five labeled regions: stack host, title with sparkle prefix, body text, action button row containing a ghost and a primary button, and the auto-dismiss progress bar at the bottom.</desc>
+                <!-- Stack host outline -->
+                <rect x="20" y="20" width="360" height="220" rx="20" fill="none" stroke="#94a3b8" stroke-dasharray="6 4"></rect>
+                <text x="32" y="14" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#475569">.docs-toast-stack (host, fixed bottom-right)</text>
+                <!-- Toast surface -->
+                <g transform="translate(40,50)">
+                  <rect width="320" height="170" rx="16" fill="#ffffff" stroke="#7c5cff" stroke-opacity="0.5"></rect>
+                  <!-- Title -->
+                  <text x="14" y="30" font-family="ui-sans-serif,system-ui,sans-serif" font-size="14" font-weight="700" fill="#1f2937">✨ Sticky TOC available</text>
+                  <!-- Body -->
+                  <text x="14" y="56" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">We have a premium sticky “On this page”</text>
+                  <text x="14" y="72" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#475569">navigation for long docs.</text>
+                  <!-- Buttons -->
+                  <rect x="160" y="100" width="60" height="26" rx="9" fill="#ffffff" stroke="#cbd5e1"></rect>
+                  <text x="190" y="117" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">Hide</text>
+                  <rect x="228" y="100" width="78" height="26" rx="9" fill="#7c5cff" stroke="#5b3fe0"></rect>
+                  <text x="267" y="117" font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Enable</text>
+                  <!-- Progress bar -->
+                  <rect x="0" y="158" width="320" height="6" fill="#7c5cff"></rect>
+                  <rect x="200" y="158" width="120" height="6" fill="#7c5cff" fill-opacity="0.35"></rect>
+                </g>
+                <!-- Callouts -->
+                <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700">
+                  <circle cx="404" cy="40" r="12" fill="#0f172a"></circle>
+                  <text x="404" y="44" fill="#ffffff" text-anchor="middle">1</text>
+                  <text x="424" y="44" fill="#0f172a">.docs-toast-stack</text>
+
+                  <circle cx="404" cy="78" r="12" fill="#0f172a"></circle>
+                  <text x="404" y="82" fill="#ffffff" text-anchor="middle">2</text>
+                  <text x="424" y="82" fill="#0f172a">__title</text>
+
+                  <circle cx="404" cy="118" r="12" fill="#0f172a"></circle>
+                  <text x="404" y="122" fill="#ffffff" text-anchor="middle">3</text>
+                  <text x="424" y="122" fill="#0f172a">__text</text>
+
+                  <circle cx="404" cy="160" r="12" fill="#0f172a"></circle>
+                  <text x="404" y="164" fill="#ffffff" text-anchor="middle">4</text>
+                  <text x="424" y="164" fill="#0f172a">__actions</text>
+
+                  <circle cx="404" cy="208" r="12" fill="#0f172a"></circle>
+                  <text x="404" y="212" fill="#ffffff" text-anchor="middle">5</text>
+                  <text x="424" y="212" fill="#0f172a">__progress</text>
+                </g>
+              </svg>
+              <figcaption>Toast anatomy — stack host, title, text, actions, progress.</figcaption>
+            </figure>
+          </section>
+
+          <section id="stacking" class="card">
+            <h2>Stacking and lifecycle</h2>
+            <p>
+              All transient toasts mount inside one shared host — <code>#docs-toast-stack</code>
+              (CSS class <code>.docs-toast-stack</code>) — so multiple toasts are visible at the same time.
+              The previous behaviour (replace the existing toast or queue toasts one at a time) is retired:
+              replacing a toast hid information the user had not yet read, queueing delayed urgent prompts
+              until an unrelated promo finished its 3 s timer.
+            </p>
+            <h3>Host contract</h3>
+            <ul>
+              <li><strong>Selector.</strong> <code>#docs-toast-stack.docs-toast-stack</code> — pinned <code>position: fixed; right: 22px; bottom: 22px;</code> with <code>z-index: 130</code>.</li>
+              <li><strong>Layout.</strong> <code>display: flex; flex-direction: column; gap: 12px;</code> — newest toast is appended last, so it sits at the bottom of the stack closest to the anchor corner.</li>
+              <li><strong>Pointer events.</strong> The host uses <code>pointer-events: none</code>; only its toast children re-enable pointer events. Empty space between toasts never blocks page clicks.</li>
+              <li><strong>ARIA.</strong> The host carries <code>role="region"</code> and <code>aria-label="Notifications"</code>. Each child toast carries its own <code>role="status"</code> (or <code>role="alert"</code> for errors) so screen readers announce them independently.</li>
+              <li><strong>Width.</strong> <code>width: min(420px, calc(100vw - 28px));</code> — same width on every breakpoint to avoid layout shift when a second toast joins.</li>
+            </ul>
+            <h3>Per-toast lifecycle</h3>
+            <ol>
+              <li><strong>Create.</strong> The runtime helper builds the toast element, sets <code>role</code> + <code>aria-live</code>, and calls <code>getStackHost().appendChild(toast)</code>.</li>
+              <li><strong>Enter.</strong> 200 ms <code>docs-toc-toast-enter</code> keyframes — translate-Y 8 px → 0, scale 0.98 → 1, opacity 0 → 1.</li>
+              <li><strong>Visible.</strong> The progress bar (<code>.docs-inpage-toc-toast__progress</code>) animates <code>scaleX(1) → scaleX(0)</code> over 3 s as a non-textual countdown.</li>
+              <li><strong>Close trigger.</strong> Auto (timeout fires), manual (Hide / primary action button), or programmatic (<code>instance.close()</code>). Errors do not auto-close — they wait for acknowledgement.</li>
+              <li><strong>Leave.</strong> Add <code>.docs-inpage-toc-toast--closing</code> → 180 ms <code>docs-toc-toast-leave</code> keyframes → <code>toast.remove()</code>. Reduced-motion users skip the keyframes entirely.</li>
+            </ol>
+            <h3>Why stack and not replace</h3>
+            <ul>
+              <li>Replacing a toast hides messages the user has not yet processed — observed in the 2026-04 docs UX assessment.</li>
+              <li>Queueing single-active toasts delays urgent prompts (continue-reading) behind unrelated promos; users perceive the docs portal as “laggy”.</li>
+              <li>A bottom-right stack with a 12 px gap is the convention shipped by Stripe Dashboard, Linear, and Vercel — predictable for integrators reading our docs.</li>
+            </ul>
+            <p class="small">
+              Cap and overflow: today there is no hard cap on the number of toasts. The toasts are short-lived (3 s
+              informational, immediate dismiss for actionable) so practical concurrency stays at 1–3. If a future
+              feature emits toasts at a higher rate, add a max-children cap on the host before introducing a queue.
+            </p>
+          </section>
+
+          <section id="layout-map" class="card">
+            <h2>Layout map</h2>
+            <p>Every region the runtime addresses, with its CSS hook and purpose. Numbers match the anatomy diagram above.</p>
+            <div class="docs-table-scroll" role="region" aria-label="Layout map">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Region</th>
+                    <th scope="col">CSS hook</th>
+                    <th scope="col">Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>Stack host</td><td><code>.docs-toast-stack</code> / <code>#docs-toast-stack</code></td><td>Fixed bottom-right column that owns positioning, gap, and pointer-events.</td></tr>
+                  <tr><td>2</td><td>Title row</td><td><code>.docs-inpage-toc-toast__title</code></td><td>Short subject line with sparkle prefix; first item announced by <code>aria-live</code>.</td></tr>
+                  <tr><td>3</td><td>Body text</td><td><code>.docs-inpage-toc-toast__text</code></td><td>One-or-two-sentence message; never a paragraph.</td></tr>
+                  <tr><td>4</td><td>Actions row</td><td><code>.docs-inpage-toc-toast__actions</code></td><td>Two buttons: ghost (dismiss) + primary (do the thing). Wraps on narrow widths.</td></tr>
+                  <tr><td>5</td><td>Auto-dismiss progress</td><td><code>.docs-inpage-toc-toast__progress</code></td><td>Linear gradient bar that scales out over 3 s; <code>aria-hidden</code>.</td></tr>
+                  <tr><td>—</td><td>Closing modifier</td><td><code>.docs-inpage-toc-toast--closing</code></td><td>Triggers the 180 ms leave animation before <code>remove()</code>.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="data-contract" class="card">
+            <h2>Data contract</h2>
+            <p>Markup hooks the JS runtime depends on. Keep these names stable — renaming them is a breaking change for anything that observes the DOM (audits, screen-spec capture, e2e tests).</p>
+            <div class="docs-table-scroll" role="region" aria-label="Data contract">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Attribute / class</th>
+                    <th scope="col">Element</th>
+                    <th scope="col">Meaning</th>
+                    <th scope="col">Runtime consumer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>id="docs-toast-stack"</code></td><td>Stack host <code>&lt;div&gt;</code></td><td>Single, body-level mount point for every docs toast.</td><td><code>docs-popups.js</code> (<code>getStackHost</code>), <code>docs-nav.js</code> (<code>getDocsToastStackHost</code>).</td></tr>
+                  <tr><td><code>data-popup-dismiss</code></td><td>Ghost button</td><td>Closes the toast without performing the primary action.</td><td><code>docs-popups.js</code> (Sticky TOC promo).</td></tr>
+                  <tr><td><code>data-popup-enable</code></td><td>Primary button</td><td>Calls <code>onEnable</code> then closes the toast.</td><td><code>docs-popups.js</code> (Sticky TOC promo).</td></tr>
+                  <tr><td><code>data-docs-promo-dismiss</code></td><td>Ghost button</td><td>Closes the generic promo toast and persists the storage key when present.</td><td><code>docs-nav.js</code> (<code>enqueueDocsPromoToast</code>).</td></tr>
+                  <tr><td><code>data-docs-promo-primary</code></td><td>Primary button</td><td>Calls <code>onPrimary</code>, persists storage key, then closes.</td><td><code>docs-nav.js</code> (<code>enqueueDocsPromoToast</code>).</td></tr>
+                  <tr><td><code>role="status"</code> / <code>role="alert"</code></td><td>Toast root</td><td>Screen-reader live-region intent — polite for info, assertive for errors.</td><td>AT layer.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="inventory" class="card">
+            <h2>Popup inventory</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Popup inventory">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Component</th>
+                    <th scope="col">Purpose</th>
+                    <th scope="col">Primary selectors</th>
+                    <th scope="col">Behavior notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Theme status toast</td>
+                    <td>Theme mode switch feedback</td>
+                    <td><code>.docs-theme-toast--pillow</code></td>
+                    <td>Top centered, auto-dismiss.</td>
+                  </tr>
+                  <tr>
+                    <td>Sticky TOC promo toast</td>
+                    <td>Promote sticky in-page navigation</td>
+                    <td><code>.docs-inpage-toc-toast</code> (mounted in <code>.docs-toast-stack</code>)</td>
+                    <td>Desktop only, 3 s timer, manual actions, stacks with siblings.</td>
+                  </tr>
+                  <tr>
+                    <td>Search results popup</td>
+                    <td>Inline search results dropdown</td>
+                    <td><code>.docs-search__results</code></td>
+                    <td>Anchored under search input.</td>
+                  </tr>
+                  <tr>
+                    <td>Quick actions panel</td>
+                    <td>Command palette / fast navigation</td>
+                    <td><code>.docs-quick-actions__panel</code></td>
+                    <td>Dialog semantics + backdrop.</td>
+                  </tr>
+                  <tr>
+                    <td>Hotkey tip and continue reading</td>
+                    <td>Contextual nudges</td>
+                    <td><code>.docs-hotkey-tip</code>, <code>.docs-continue-reading--toast</code> (in <code>.docs-toast-stack</code>)</td>
+                    <td>Continue prompt uses the Sticky-TOC visual system, auto-dismisses in 3 s, and shares the stack with other toasts so it never replaces them.</td>
+                  </tr>
+                  <tr>
+                    <td>Feedback status toast</td>
+                    <td>Feedback workflow status</td>
+                    <td><code>.docs-feedback-card__toast</code></td>
+                    <td>Inline floating status near card header.</td>
+                  </tr>
+                  <tr>
+                    <td>Diagram lightbox surfaces</td>
+                    <td>Fullscreen diagram exploration</td>
+                    <td><code>.docs-diagram-lightbox__toolbar</code>, <code>.docs-diagram-lightbox__viewport</code></td>
+                    <td>Overlay backdrop + floating panel primitives.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="visual-contract" class="card">
+            <h2>Unified visual contract</h2>
+            <p>Floating elements share one premium surface style via common CSS tokens:</p>
+            <ul>
+              <li><code>--docs-overlay-border</code></li>
+              <li><code>--docs-overlay-bg</code></li>
+              <li><code>--docs-overlay-shadow</code></li>
+              <li><code>--docs-overlay-blur</code></li>
+            </ul>
+            <p>
+              Contract requirement: any new popup/overlay must use the same tokens unless there is a documented
+              product reason to diverge.
+            </p>
+          </section>
+
+          <section id="behavior-contract" class="card">
+            <h2>Behavior contract</h2>
+            <ul>
+              <li>Toasts are non-blocking and must not trap focus.</li>
+              <li>Toasts <strong>stack</strong> inside <code>.docs-toast-stack</code>; never call <code>remove()</code> on a sibling toast just because a new one is being created.</li>
+              <li>Auto-dismiss toasts should have clear timing and reduced-motion-safe transitions.</li>
+              <li>Dialog-like overlays require semantic roles (<code>role="dialog"</code>, <code>aria-modal</code>) and close affordances.</li>
+              <li>Desktop-only floating features (for example in-page TOC promo) must be disabled on tablet/phone where that UI is hidden.</li>
+              <li>Any action button in popup/toast must preserve existing page state and avoid destructive side effects.</li>
+            </ul>
+          </section>
+
+          <section id="implementation" class="card">
+            <h2>Implementation entry points</h2>
+            <ul>
+              <li><code>docs/assets/docs.css</code> — popup tokens, shared popup styling, and the <code>.docs-toast-stack</code> host (block ~ <code>2376</code>).</li>
+              <li><code>docs/assets/docs-popups.js</code> — centralized toast runtime helpers and <code>window.DocsPopups.getStackHost()</code> (Sticky TOC + Continue reading prompts).</li>
+              <li><code>docs/assets/docs-nav.js</code> — generic <code>enqueueDocsPromoToast</code> + <code>getDocsToastStackHost</code> fallback for pages that load <code>docs-nav.js</code> before <code>docs-popups.js</code>.</li>
+              <li><code>docs/assets/docs-diagram-lightbox.js</code> — diagram overlay behavior.</li>
+              <li><code>docs/assets/internal-sidebar.js</code> — drawer overlay behavior for internal navigation.</li>
+            </ul>
+          </section>
+
+          <section id="where-to-change-what" class="card">
+            <h2>Where to change what</h2>
+            <p>File-by-file map from behaviour to source — the “last mile” a contributor needs.</p>
+            <div class="docs-table-scroll" role="region" aria-label="Where to change what">
+              <table>
+                <thead>
+                  <tr><th scope="col">If you want to change…</th><th scope="col">Edit this file</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Stack position, gap, width, z-index</td><td><code>docs/assets/docs.css</code> — <code>.docs-toast-stack</code> rule</td></tr>
+                  <tr><td>Toast surface look (gradient, border, blur)</td><td><code>docs/assets/docs.css</code> — <code>.docs-inpage-toc-toast</code> rule</td></tr>
+                  <tr><td>Enter / leave keyframes and timing</td><td><code>docs/assets/docs.css</code> — <code>@keyframes docs-toc-toast-enter</code> / <code>-leave</code></td></tr>
+                  <tr><td>Sticky TOC promo copy or actions</td><td><code>docs/assets/docs-popups.js</code> — <code>buildStickyTocPromoToast</code></td></tr>
+                  <tr><td>Continue-reading prompt copy or actions</td><td><code>docs/assets/docs-popups.js</code> — <code>buildContinueReadingToast</code></td></tr>
+                  <tr><td>Generic promo toast (any new feature nudge)</td><td><code>docs/assets/docs-nav.js</code> — <code>enqueueDocsPromoToast</code></td></tr>
+                  <tr><td>Default 3 s auto-dismiss timer</td><td><code>docs/assets/docs-popups.js</code> (<code>durationMs</code>) and <code>docs-nav.js</code> (<code>options.durationMs</code>)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="qa-checklist" class="card">
+            <h2>QA checklist</h2>
+            <ul>
+              <li>All popup surfaces look visually consistent in light and dark themes.</li>
+              <li>No popup is clipped under sticky bars or under the internal drawer stack.</li>
+              <li>Desktop and tablet/phone policies are respected (including hidden desktop-only promos).</li>
+              <li>Keyboard navigation and focus-visible states are present and readable.</li>
+            </ul>
+          </section>
+
+          <section id="component-states" class="card">
+            <h2>Per-component states and accessibility</h2>
+            <p class="small">Every floating surface in the popup inventory must satisfy this matrix. Test each row with <kbd>Tab</kbd> + <kbd>Esc</kbd> and a screen-reader before merging.</p>
+            <div class="docs-table-scroll" role="region" aria-label="Per-popup states and accessibility">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Surface</th>
+                    <th scope="col">States</th>
+                    <th scope="col">Role / ARIA</th>
+                    <th scope="col">Keyboard</th>
+                    <th scope="col">Reduced motion</th>
+                    <th scope="col">Screen-reader announcement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Theme switch toast</td>
+                    <td>hidden, visible (auto-dismiss 3 s)</td>
+                    <td><code>role="status"</code> + <code>aria-live="polite"</code></td>
+                    <td>—</td>
+                    <td>Show flat, skip slide-in</td>
+                    <td>"Theme set to dark"</td>
+                  </tr>
+                  <tr>
+                    <td>TOC promo toast</td>
+                    <td>hidden, visible, dismissed (persisted)</td>
+                    <td><code>role="status"</code></td>
+                    <td><kbd>Esc</kbd> dismisses</td>
+                    <td>Skip slide-in</td>
+                    <td>"On this page navigation available"</td>
+                  </tr>
+                  <tr>
+                    <td>Search results panel</td>
+                    <td>empty, typing, loaded, no-results, navigating, error</td>
+                    <td><code>role="listbox"</code> bound to the input via <code>aria-controls</code></td>
+                    <td><kbd>↑</kbd>/<kbd>↓</kbd> navigate; <kbd>Enter</kbd> open; <kbd>Esc</kbd> close</td>
+                    <td>Show flat, no fade</td>
+                    <td>"N results, item 1 of N highlighted"</td>
+                  </tr>
+                  <tr>
+                    <td>Command palette</td>
+                    <td>closed, open, filtering, no-results, navigating</td>
+                    <td><code>role="dialog"</code> + <code>aria-modal="true"</code> with focus trap</td>
+                    <td><kbd>Cmd</kbd>+<kbd>K</kbd> / <kbd>/</kbd> opens; <kbd>Esc</kbd> closes; <kbd>↑</kbd>/<kbd>↓</kbd>/<kbd>Enter</kbd></td>
+                    <td>Skip slide-in; instant open</td>
+                    <td>"Quick actions palette open"</td>
+                  </tr>
+                  <tr>
+                    <td>Hotkey tip</td>
+                    <td>visible, hovered, dismissed (persisted)</td>
+                    <td><code>role="status"</code></td>
+                    <td><kbd>Esc</kbd> dismisses; question-mark toggles</td>
+                    <td>Skip fade-in</td>
+                    <td>"Press question mark for shortcuts"</td>
+                  </tr>
+                  <tr>
+                    <td>Feedback status toast</td>
+                    <td>hidden, sending, sent, error</td>
+                    <td><code>role="status"</code> for sent / <code>role="alert"</code> for error</td>
+                    <td><kbd>Esc</kbd> dismisses non-error toasts; errors stay until acknowledged</td>
+                    <td>Skip slide-in</td>
+                    <td>"Feedback sent" / "Feedback failed, please retry"</td>
+                  </tr>
+                  <tr>
+                    <td>Diagram lightbox</td>
+                    <td>closed, opening, open, zoomed, panning, closing</td>
+                    <td><code>role="dialog"</code> + <code>aria-modal="true"</code>; focus restored to launcher on close</td>
+                    <td><kbd>Esc</kbd> closes; <kbd>+</kbd>/<kbd>−</kbd> zoom; arrow keys pan; <kbd>Tab</kbd> trapped inside</td>
+                    <td>Skip zoom transitions; instant open / close</td>
+                    <td>"Diagram opened in fullscreen, press Escape to close"</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="dos-and-donts" class="card">
+            <h2>Do's and Don'ts</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Do's and Don'ts">
+              <table>
+                <thead>
+                  <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Reuse the unified surface tokens (<code>--docs-premium-surface-*</code>) when building a new floating surface.</td>
+                    <td>Re-invent the surface visuals for "just this one toast" — drift between popups is the most-flagged audit issue.</td>
+                  </tr>
+                  <tr>
+                    <td>Add <code>role="dialog"</code> + <code>aria-modal="true"</code> + a focus trap for any modal overlay.</td>
+                    <td>Ship a modal that does not return focus to the launcher on close — keyboard and screen-reader users get stranded.</td>
+                  </tr>
+                  <tr>
+                    <td>Auto-dismiss informational toasts after 3–5 s and animate respectfully under <code>prefers-reduced-motion: reduce</code>.</td>
+                    <td>Auto-dismiss error toasts — users miss them and lose data. Errors stay until acknowledged.</td>
+                  </tr>
+                  <tr>
+                    <td>Hide desktop-only promos at tablet/phone widths via the documented breakpoint policy.</td>
+                    <td>Stack three popups on a 360 px screen — the screen becomes unusable.</td>
+                  </tr>
+                  <tr>
+                    <td>Mount every new toast under <code>.docs-toast-stack</code> so the visual stack stays consistent and screen-reader announcements arrive in order.</td>
+                    <td>Append a toast directly to <code>document.body</code> with its own <code>position: fixed</code> coordinates — it will collide with the stack and break the lifecycle contract.</td>
+                  </tr>
+                  <tr>
+                    <td>For an error toast, use <code>role="alert"</code> and skip the auto-dismiss timer; let the user acknowledge it.</td>
+                    <td>Auto-dismiss an error toast after 3 s — users miss the message and lose the recovery path.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-30">2026-04-30</time></td>
+                    <td>Toasts now stack inside a shared <code>.docs-toast-stack</code> host instead of replacing or queueing each other. Added Visual gallery (light/dark/stacked/closing inline SVG mockups), Anatomy diagram with numbered callouts, Stacking and lifecycle section, Layout map, and Data contract — bringing the page in line with RFC 0003 Frontend reference shape.</td>
+                    <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                  <tr>
+                    <td><time datetime="2026-04-29">2026-04-29</time></td>
+                    <td>Added Per-component states and accessibility section (7 floating surfaces).</td>
+                    <td>Ivan Boyarkin</td>
+                  </tr>
+                  <tr>
+                    <td><time datetime="2026-04-29">2026-04-29</time></td>
+                    <td>Added Component badge to H1; added Do's and Don'ts section (surface tokens, focus traps, error-toast policy).</td>
+                    <td>Ivan Boyarkin</td>
+                  </tr>
+                  <tr>
+                    <td><time datetime="2026-04-25">2026-04-25</time></td>
+                    <td>Continue reading prompt restyled to Sticky TOC visual language, with 3s lifetime and centralized runtime in <code>docs-popups.js</code>.</td>
+                    <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                  <tr>
+                    <td><time datetime="2026-04-25">2026-04-25</time></td>
+                    <td>Added unified popup and overlay contract with inventory and implementation rules.</td>
+                    <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+  </body></html>

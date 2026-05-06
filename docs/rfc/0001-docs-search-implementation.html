@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,14 +12,14 @@
   <script defer src="../assets/docs-internal-meta.js"></script>
 
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <script defer src="../assets/docs-syntax.js"></script>
 </head>
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-rfc-weight="7">
-    <h1>RFC 0001: Documentation Search Implementation</h1>
+    <h1 class="internal-h1--accent-tail">RFC 0001: Documentation Search Implementation</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <details class="rfc-weight-help" data-docs-lifecycle="rfc-short"></details>
     <section class="card">
       <h2>Metadata</h2>
       <ul>
@@ -143,86 +143,90 @@
         <h2>Canonical KPI definitions</h2>
         <p>In a rolling time window:</p>
         <ul>
-          <li><strong>Zero-result rate</strong> = <code>count(search_query where results_count = 0) / count(search_query)</code>.</li>
-          <li><strong>Query CTR</strong> = <code>count(distinct query_id with at least one search_result_click) / count(search_query)</code>.</li>
-          <li><strong>Time-to-first-success</strong> = distribution of first <code>search_success.time_to_success_ms</code> per session (reported as p50/p75).</li>
-        </ul>
-        <p>
-          Metrics endpoint:
-          <code>GET /internal/telemetry/docs-search/metrics?window_minutes=&lt;N&gt;</code>.
-        </p>
-      </section>
+          <li><strong>Zero-result rate</strong> =
+            <code>count(search_query where results_count = 0) / count(search_query)</code>.</li>
+            <li><strong>Query CTR</strong> =
+              <code>count(distinct query_id with at least one search_result_click) / count(search_query)</code>.</li>
+              <li><strong>Time-to-first-success</strong> = distribution of first
+                <code>search_success.time_to_success_ms</code> per session (reported as p50/p75).</li>
+              </ul>
+              <p>
+                Metrics endpoint:
+                <code>GET /internal/telemetry/docs-search/metrics?window_minutes=&lt;N&gt;</code>.
+              </p>
+            </section>
 
-      <section class="card">
-        <h2>Local validation playbook</h2>
-        <ol>
-          <li>Rebuild the search index:
-            <pre><code>python3 scripts/build_docs_search_index.py</code></pre>
-          </li>
-          <li>Serve docs over HTTP (not <code>file://</code>):
-            <pre><code>cd docs
-              python3 -m http.server 8765</code></pre>
-            </li>
-            <li>Run the API:
-              <pre><code>make run</code></pre>
-            </li>
-            <li>Open <code>http://127.0.0.1:8765/index.html</code>, run searches, click a result.</li>
-            <li>In the browser network tab, confirm <code>GET /assets/search-index.json</code> returns <code>200</code> or <code>304</code>.</li>
-            <li>Check the database:
-              <pre><code>sqlite3 study_app.db "select id,event,session_id,query_id,datetime(emitted_at_ms/1000,'unixepoch','localtime') from docs_search_events order by id desc limit 20;"</code></pre>
-            </li>
-            <li>Check the metrics API:
-              <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
-            </li>
-          </ol>
-        </section>
+            <section class="card">
+              <h2>Local validation playbook</h2>
+              <ol>
+                <li>Rebuild the search index:
+                  <pre><code>python3 scripts/build_docs_search_index.py</code></pre>
+                </li>
+                <li>Serve docs over HTTP (not <code>file://</code>):
+                  <pre><code>cd docs
+                    python3 -m http.server 8765</code></pre>
+                  </li>
+                  <li>Run the API:
+                    <pre><code>make run</code></pre>
+                  </li>
+                  <li>Open <code>http://127.0.0.1:8765/index.html</code>, run searches, click a result.</li>
+                  <li>In the browser network tab, confirm <code>GET /assets/search-index.json</code> returns <code>200</code> or
+                    <code>304</code>.</li>
+                    <li>Check the database:
+                      <pre><code>sqlite3 study_app.db "select id,event,session_id,query_id,datetime(emitted_at_ms/1000,'unixepoch','localtime') from docs_search_events order by id desc limit 20;"</code></pre>
+                    </li>
+                    <li>Check the metrics API:
+                      <pre><code>curl "http://127.0.0.1:8000/internal/telemetry/docs-search/metrics?window_minutes=60"</code></pre>
+                    </li>
+                  </ol>
+                </section>
 
-        <section class="card">
-          <h2>Troubleshooting</h2>
-          <h3>Could not load search index</h3>
-          <ul>
-            <li>Browsers block <code>fetch</code> for <code>file://</code> pages. Serve docs over HTTP.</li>
-            <li>A bad relative path can request <code>/internal/assets/search-index.json</code> instead of <code>/assets/search-index.json</code>.</li>
-          </ul>
-          <h3>Telemetry preflight returns 200 but the DB has no rows</h3>
-          <ul>
-            <li><code>OPTIONS</code> only checks CORS; confirm a real <code>POST</code> and new rows in the DB.</li>
-            <li>Hard-refresh the page so the browser does not use an old <code>docs-nav.js</code>.</li>
-            <li>Some SQLite GUI tools do not refresh for WAL mode; use the terminal query above.</li>
-          </ul>
-        </section>
+                <section id="troubleshooting" class="card">
+                  <h2>Troubleshooting</h2>
+                  <h3>Could not load search index</h3>
+                  <ul>
+                    <li>Browsers block <code>fetch</code> for <code>file://</code> pages. Serve docs over HTTP.</li>
+                    <li>A bad relative path can request <code>/internal/assets/search-index.json</code> instead of
+                      <code>/assets/search-index.json</code>.</li>
+                    </ul>
+                    <h3>Telemetry preflight returns 200 but the DB has no rows</h3>
+                    <ul>
+                      <li><code>OPTIONS</code> only checks CORS; confirm a real <code>POST</code> and new rows in the DB.</li>
+                      <li>Hard-refresh the page so the browser does not use an old <code>docs-nav.js</code>.</li>
+                      <li>Some SQLite GUI tools do not refresh for WAL mode; use the terminal query above.</li>
+                    </ul>
+                  </section>
 
-        <section class="card">
-          <h2>Change management</h2>
-          <ul>
-            <li>ADRs stay for architecture (what/why); RFCs hold implementation details (how).</li>
-            <li>If ranking weights or formulas change, update this RFC and run the local validation playbook.</li>
-            <li>If the telemetry schema changes, keep the metrics endpoint backward compatible when you can.</li>
-          </ul>
-        </section>
-        <section id="page-history" class="card">
-          <h2>Page history</h2>
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
-            <table class="docs-page-history">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Change</th>
-                  <th scope="col">Author</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
-                  <td>Added Page history section (repository baseline).</td>
-                  <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+                  <section class="card">
+                    <h2>Change management</h2>
+                    <ul>
+                      <li>ADRs stay for architecture (what/why); RFCs hold implementation details (how).</li>
+                      <li>If ranking weights or formulas change, update this RFC and run the local validation playbook.</li>
+                      <li>If the telemetry schema changes, keep the metrics endpoint backward compatible when you can.</li>
+                    </ul>
+                  </section>
+                  <section id="page-history" class="card">
+                    <h2>Page history</h2>
+                    <div class="docs-table-scroll" role="region" aria-label="Page history">
+                      <table class="docs-page-history">
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Change</th>
+                            <th scope="col">Author</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><time datetime="2026-04-21">2026-04-21</time></td>
+                            <td>Added Page history section (repository baseline).</td>
+                            <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
+                </main>
 
-    </body></html>
+              </body></html>

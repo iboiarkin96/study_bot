@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Authentication &amp; authorization — shared rules — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Authentication &amp; authorization</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Single source of truth for how the internal API authenticates integrators and
+            authorises access to per-tenant resources. Per-operation specs link here for the global
+            scheme and only describe operation-specific deltas (extra ownership rules, scopes).
+            Governing ADR: <a href="../../../adr/0005-api-security-defaults.html">ADR 0005</a>.
+          </p>
+        </section>
+
+        <section class="card" id="scheme">
+          <h2>Scheme — API key</h2>
+          <p>
+            All endpoints under <code>/api/v1/**</code> require a valid <strong>API key</strong>
+            in the <code>X-API-Key</code> header. The key identifies the
+            <strong>integrator</strong> (one third-party tenant). The actor inside that tenant —
+            the learner — is identified separately by <code>(system_user_id, system_uuid)</code>
+            in the body or query, depending on the operation.
+          </p>
+          <dl class="internal-field-list">
+            <dt>
+              <code>X-API-Key</code>
+              <span class="badge badge--field-type">string</span>
+              <span class="badge badge--field-req">required</span>
+            </dt>
+            <dd>
+              <p>Opaque ASCII secret issued out-of-band. Treated as bearer-equivalent — keep
+                it server-side, never embed in mobile/web bundles.</p>
+                <dl class="internal-field-list__attrs">
+                  <dt>Format</dt>
+                  <dd>Printable ASCII; conventional prefix <code>sk_live_</code> /
+                    <code>sk_test_</code>.</dd>
+                    <dt>Length</dt>
+                    <dd>Implementation-defined ≥ 32 chars.</dd>
+                    <dt>Rotation</dt>
+                    <dd>Operator-driven; the API does not currently support overlapping rotation
+                      in v1 — short downtime expected (Open question for v2).</dd>
+                    </dl>
+                  </dd>
+                </dl>
+                <p class="small">
+                  <strong>Out of scope in v1:</strong> OAuth 2.0, JWT bearer tokens, mTLS, IP
+                  allow-listing, session cookies. Adding any of these requires an ADR.
+                </p>
+              </section>
+
+              <section class="card" id="actor-resolution">
+                <h2>Actor resolution: integrator vs learner</h2>
+                <p>
+                  The two-layer identity model is deliberate: one API key may serve many learners
+                  (an integrator is a school, a tutor app, a Telegram Mini App, …).
+                </p>
+                <ul>
+                  <li>The <strong>integrator</strong> is resolved from <code>X-API-Key</code> by the
+                    auth middleware <em>before</em> the handler runs.</li>
+                    <li>The <strong>learner</strong> is resolved from
+                      <code>(system_user_id, system_uuid)</code> in the body or path/query, by the
+                      service layer <em>after</em> validation. Resolution returns
+                      <code>users.client_uuid</code>; this UUID is the canonical owner key on every
+                      row owned by the learner.</li>
+                      <li>If the user composite key does not resolve, the operation returns
+                        <code>404 USER_404 USER_NOT_FOUND</code>. Always — never <code>403</code>
+                        (do not leak existence).</li>
+                      </ul>
+                    </section>
+
+                    <section class="card" id="authorization">
+                      <h2>Authorization — ownership</h2>
+                      <p>
+                        v1 uses a single authorisation rule: <strong>ownership</strong>. The resolved learner
+                        must own every resource the operation touches.
+                      </p>
+                      <ul>
+                        <li>Conspectus: <code>conspectuses.owner_client_uuid = users.client_uuid</code>.</li>
+                        <li>Error log entry: <code>learning_errors.owner_client_uuid = users.client_uuid</code>;
+                          if a referenced <code>conspectus_uuid</code> is set, it must also be owned by the
+                          same learner.</li>
+                          <li>Schedule: belongs to a conspectus; ownership transitively via
+                            <code>conspectuses</code>.</li>
+                          </ul>
+                          <p>
+                            <strong>Cross-tenant access</strong> (resource exists but belongs to a different
+                            learner): always return <code>404 &lt;DOMAIN&gt;_404</code>. Never
+                            <code>403</code>. The integrator gets the same response whether the resource does
+                            not exist or belongs to someone else — by design.
+                          </p>
+                          <p class="small">
+                            <strong>No admin override.</strong> v1 has no super-user role. Operator access to
+                            production data goes through DB-level audited queries, not the API.
+                          </p>
+                        </section>
+
+                        <section class="card" id="errors">
+                          <h2>Errors emitted by the auth layer</h2>
+                          <p class="small">
+                            See <a href="error-envelope.html">_shared/error-envelope.html</a> for the shape;
+                            registered in <a href="error-catalog.html#common">_shared/error-catalog.html</a>.
+                          </p>
+                          <div class="docs-table-scroll" role="region" aria-label="Auth-related errors">
+                            <table>
+                              <thead>
+                                <tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th></tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><code>401</code></td><td><code>COMMON_401</code></td>
+                                  <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                  <td>Missing, malformed, or revoked <code>X-API-Key</code>.</td>
+                                </tr>
+                                <tr>
+                                  <td><code>404</code></td><td><code>USER_404</code></td>
+                                  <td><code>USER_NOT_FOUND</code></td>
+                                  <td>Learner composite key does not resolve OR resource not owned by this
+                                    learner (collapsed to 404 on purpose).</td>
+                                  </tr>
+                                  <tr>
+                                    <td><code>500</code></td><td><code>COMMON_500</code></td>
+                                    <td><code>SECURITY_AUTH_STRATEGY_INVALID</code></td>
+                                    <td>Server misconfiguration. Operator-only — never the integrator’s
+                                      fault.</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </section>
+
+                            <section class="card" id="rate-limit-ref">
+                              <h2>Rate limiting (related)</h2>
+                              <p>
+                                Rate limits are enforced per <code>X-API-Key</code> by middleware
+                                (<code>COMMON_429 SECURITY_RATE_LIMIT_EXCEEDED</code>). The default budget and the
+                                sliding-window definition live in
+                                <a href="../../../adr/0005-api-security-defaults.html">ADR 0005</a>. Per-endpoint
+                                override requires its own ADR; v1 has none.
+                              </p>
+                            </section>
+
+                            <section class="card" id="forbidden-patterns">
+                              <h2>Forbidden patterns</h2>
+                              <ul>
+                                <li><strong>Returning <code>403</code></strong> for cross-tenant access. Always
+                                  <code>404</code> — even if you know the resource exists.</li>
+                                  <li><strong>Including the API key in URLs / query strings.</strong> Header only.</li>
+                                  <li><strong>Logging the API key.</strong> Mask to last 4 chars in any log line.</li>
+                                  <li><strong>Trusting client-supplied <code>owner_client_uuid</code></strong> in a
+                                    body. The server resolves it from <code>(system_user_id, system_uuid)</code>; ignore
+                                    any body field that tries to set ownership directly.</li>
+                                  </ul>
+                                </section>
+
+                                <section class="card" id="traceability">
+                                  <h2>Traceability</h2>
+                                  <ul>
+                                    <li><strong>ADR:</strong>
+                                      <a href="../../../adr/0005-api-security-defaults.html">0005 — API security
+                                        defaults</a>.</li>
+                                        <li><strong>System design:</strong>
+                                          <a href="../../analysis/system-design.html#scope">scope &amp; boundaries</a>.</li>
+                                          <li><strong>Related shared pages:</strong>
+                                            <a href="idempotency.html">idempotency</a>,
+                                            <a href="error-envelope.html">error envelope</a>.</li>
+                                          </ul>
+                                        </section>
+
+                                        <section id="page-history" class="card">
+                                          <h2>Page history</h2>
+                                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                            <table class="docs-page-history">
+                                              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                              <tbody>
+                                                <tr>
+                                                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                  <td>Phase 3: shared auth overlay aligned with ADR 0005.</td>
+                                                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                          </div>
+                                        </section>
+
+                                      </main>
+                                    </div>
+                                  </div>
+
+                                </body></html>

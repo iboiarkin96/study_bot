@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test environments — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Test environments</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Reference</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            The environments QA uses, what each is for, who can change it, and what data it
+            holds. Pick the right environment for the test type — a smoke against local won't tell
+            you anything about staging-only configuration drift.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#summary">Summary</a>
+            <a class="docs-page-hero__chip" href="#local">Local</a>
+            <a class="docs-page-hero__chip" href="#ci">CI</a>
+            <a class="docs-page-hero__chip" href="#staging">Staging</a>
+            <a class="docs-page-hero__chip" href="#prod-like">Prod-like</a>
+            <a class="docs-page-hero__chip" href="#data">Test data</a>
+            <a class="docs-page-hero__chip" href="#tools">Tools to keep handy</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Summary</div>
+
+        <section class="card" id="summary">
+          <h2>Environments at a glance</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Environment summary">
+            <table>
+              <thead>
+                <tr>
+                  <th>Env</th>
+                  <th>Purpose</th>
+                  <th>Data</th>
+                  <th>Reset cadence</th>
+                  <th>Owner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Local</td>
+                  <td>Developer + tester boxes; the only env where you mutate freely.</td>
+                  <td>Empty / fixtures.</td>
+                  <td>Anytime — <code>make reset-db</code>.</td>
+                  <td>Each user.</td>
+                </tr>
+                <tr>
+                  <td>CI</td>
+                  <td>Automated test runs on every PR.</td>
+                  <td>Ephemeral fixtures.</td>
+                  <td>Every job.</td>
+                  <td>Platform.</td>
+                </tr>
+                <tr>
+                  <td>Staging</td>
+                  <td>Manual smoke + acceptance against a deployed build.</td>
+                  <td>Synthetic seed; can be reset on request.</td>
+                  <td>On request, otherwise weekly.</td>
+                  <td>Release manager.</td>
+                </tr>
+                <tr>
+                  <td>Prod-like</td>
+                  <td>Pre-release rehearsal mirroring production config.</td>
+                  <td>Anonymized fresh dump.</td>
+                  <td>Per release cycle.</td>
+                  <td>Release manager.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Local</div>
+
+        <section class="card" id="local">
+          <h2>Local</h2>
+          <p>The default for exploratory work and any test that mutates data freely.</p>
+          <ul>
+            <li>Setup: <a href="../../developer/0007-local-development.html">local development</a>.</li>
+            <li>Database: SQLite by default; Postgres via docker-compose for closer parity.</li>
+            <li>OK to: drop the DB, run any migration, mutate any row.</li>
+            <li>Not OK to: assume timing or concurrency match production.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">CI</div>
+
+        <section class="card" id="ci">
+          <h2>CI</h2>
+          <ul>
+            <li>Runs unit + integration + contract + lint on every PR; merges blocked on red.</li>
+            <li>Each job is ephemeral — DB seeded, run, torn down.</li>
+            <li>Flakes are defects against the test, not "just retry".</li>
+            <li>QA does not "run on CI" — QA reads CI to confirm green before manual passes.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Staging</div>
+
+        <section class="card" id="staging">
+          <h2>Staging</h2>
+          <ul>
+            <li>Auto-deployed from <code>main</code> after CI green.</li>
+            <li>Configuration mirrors production except for secrets and observability backends.</li>
+            <li>Use staging for: feature acceptance, integration with neighbouring services, release smoke.</li>
+            <li>Don't use staging for: load tests (use a dedicated environment per ADR 0012).</li>
+            <li>Data is synthetic. If you need a clean reset for a test, ask the release manager.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Prod-like</div>
+
+        <section class="card" id="prod-like">
+          <h2>Prod-like</h2>
+          <ul>
+            <li>Released-tag rehearsal environment, used during the release cycle.</li>
+            <li>Data is an anonymized snapshot of production. Treat as "production minus PII".</li>
+            <li>Smoke and migration verification land here before tagging.</li>
+            <li>Do not run experimental scripts here. If in doubt, run on staging first.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Test data</div>
+
+        <section class="card" id="data">
+          <h2>Test data &amp; fixtures</h2>
+          <ul>
+            <li>Per-test fixtures live in <code>tests/conftest.py</code> and adjacent modules.</li>
+            <li>For manual runs, use the seed CLI (see <a href="../../developer/0010-make-commands-and-workflows.html">make commands</a>).</li>
+            <li>Never test with real user PII even by accident — staging and prod-like are anonymized.</li>
+            <li>Each test creates the data it needs and cleans up; assume any other state may not be present.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Tools</div>
+
+        <section class="card" id="tools">
+          <h2>Tools to keep handy</h2>
+          <ul>
+            <li>HTTP client — curl / httpie / Postman / Insomnia. Save collections per resource.</li>
+            <li>JSON viewer browser extension.</li>
+            <li>Annotated screenshot tool (Shotty / CleanShot / built-in macOS).</li>
+            <li>Log viewer — your terminal + <code>jq</code>; or the local Elasticsearch stack per ADR 0023.</li>
+            <li>Lighthouse + axe DevTools (browser extensions) for accessibility passes.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="page-history">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Change</th>
+                  <th>Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                  <td>Initial test environments page.</td>
+                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body></html>

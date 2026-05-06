@@ -16,7 +16,7 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Documentation Experience (DX) Assessment — Study App (formed 14 Apr 2026)</h1>
+    <h1 class="internal-h1--accent-tail">Documentation Experience (DX) Assessment — Study App (formed 14 Apr 2026)</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <section id="overview" class="card">
@@ -107,274 +107,276 @@
           <li><strong>Typical benchmark</strong> = who often does it well (varies by company size)</li>
         </ul>
         <div style="overflow-x: auto">
-          <table class="audit-ref-table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Category</th>
-                <th scope="col">Practice</th>
-                <th scope="col">Reference description</th>
-                <th scope="col">Typical benchmark</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>IA</td>
-                <td><a href="https://diataxis.fr/">Diátaxis-style split</a></td>
-                <td>
-                  Separate <strong>tutorials</strong> (learning-oriented), <strong>how-to guides</strong>
-                  (task-oriented), <strong>reference</strong> (information-oriented), and <strong>explanation</strong>
-                  (understanding-oriented). Users land in the right mode for their goal; navigation labels reflect it.
-                </td>
-                <td>Canonical mental model for technical docs; adopted widely in API and platform teams.</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>IA</td>
-                <td>Progressive disclosure</td>
-                <td>
-                  “Happy path” first; edge cases, limits, and failure modes linked or collapsed so beginners are not
-                  overwhelmed; experts can jump to reference or deep links.
-                </td>
-                <td>Reduces time-to-first-success (TTFS) without hiding rigor.</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Journey</td>
-                <td>Onboarding spine</td>
-                <td>
-                  A single curated path: install → authenticate → first API call / first deploy → next steps. Each step
-                  has verification (“you should see…”) and links to troubleshooting.
-                </td>
-                <td>Stripe/Twilio-style quickstarts remain the pattern to beat for APIs.</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Ops</td>
-                <td>Docs-as-code</td>
-                <td>
-                  Docs live in version control; changes are reviewed like code; publishing is automated. Prose and
-                  diagrams
-                  are diffable; ownership is explicit (CODEOWNERS or equivalent).
-                </td>
-                <td>Baseline for mature engineering orgs; see also ADR-driven governance.</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>Ops</td>
-                <td>Single source of truth (SSOT)</td>
-                <td>
-                  Generated sections (OpenAPI, CLI help, config tables, route lists) are produced from artifacts, not
-                  hand-copied. Manual text links to generated anchors explicitly.
-                </td>
-                <td>Eliminates the #1 DX failure: docs that contradict production.</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td>Ops</td>
-                <td>Versioning aligned with product</td>
-                <td>
-                  Doc sets are versioned (or time-versioned) with the product; deprecation and sunset are visible in-docs
-                  and in machine-readable metadata where applicable.
-                </td>
-                <td>Essential once you have more than one supported major version.</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td>Quality</td>
-                <td>CI for docs</td>
-                <td>
-                  Pipeline runs link checking, spelling/grammar linters (e.g. Vale with a house style), OpenAPI/MDX
-                  validators, and (for APIs) contract tests. Broken links fail the build or warn with SLAs.
-                </td>
-                <td>“Treat docs like code” in the strict sense — measurable gates.</td>
-              </tr>
-              <tr>
-                <td>8</td>
-                <td>Quality</td>
-                <td>Tested code paths</td>
-                <td>
-                  Copy-paste examples are executed in CI (or marked as pseudo-code). CLI snippets and curl examples target
-                  real endpoints; responses shown match schema or are clearly illustrative.
-                </td>
-                <td>Top teams refuse “example rot.”</td>
-              </tr>
-              <tr>
-                <td>9</td>
-                <td>Quality</td>
-                <td>Error and failure documentation</td>
-                <td>
-                  Errors are documented systematically: HTTP status, stable machine-readable codes where applicable,
-                  remediation, idempotency implications, and links to runbooks.
-                </td>
-                <td>Pairs with OpenAPI <code>Problem Details</code> / structured error bodies.</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>API docs</td>
-                <td>OpenAPI (or equivalent) as contract</td>
-                <td>
-                  Reference is generated from the spec; examples are first-class; auth schemes and security requirements
-                  are explicit; servers and environments are listed without ambiguity.
-                </td>
-                <td>Industry default for HTTP APIs; governance lint (Spectral/Redocly) is common.</td>
-              </tr>
-              <tr>
-                <td>11</td>
-                <td>API docs</td>
-                <td>Interactive “try it”</td>
-                <td>
-                  Sandboxed requests against test credentials, or clear warnings for production. Rate limits and scopes
-                  are
-                  visible before the user sends a request.
-                </td>
-                <td>Improves learning; must be safe-by-default.</td>
-              </tr>
-              <tr>
-                <td>12</td>
-                <td>SDK docs</td>
-                <td>Multi-surface examples</td>
-                <td>
-                  Same conceptual page offers language tabs (curl + official SDKs); idioms match each language; versioning
-                  notes per SDK where releases diverge.
-                </td>
-                <td>Expected at platform scale; smaller teams may start with one SDK + HTTP.</td>
-              </tr>
-              <tr>
-                <td>13</td>
-                <td>Discovery</td>
-                <td>First-class search</td>
-                <td>
-                  Full-text search with typo tolerance; results ranked by recency/relevance; scoped search within a doc
-                  set
-                  (e.g. “API reference only”). Offline/static options (Pagefind, Lunr) remain valid.
-                </td>
-                <td>Algolia DocSearch and similar patterns are table stakes for large sites.</td>
-              </tr>
-              <tr>
-                <td>14</td>
-                <td>Discovery</td>
-                <td>AI-assisted answers (2024–2026)</td>
-                <td>
-                  Optional assistant grounded in <em>your</em> docs (RAG), with citations to source pages; guardrails for
-                  “I don’t know”; no training on customer secrets; logging aligned with privacy policy.
-                </td>
-                <td>Rapidly becoming expected; quality depends on chunking and retrieval, not model size alone.</td>
-              </tr>
-              <tr>
-                <td>15</td>
-                <td>UX</td>
-                <td>Performance (Core Web Vitals)</td>
-                <td>
-                  Doc sites load fast on mobile: optimize LCP (hero text, fonts), avoid huge client bundles on content
-                  pages, lazy-load non-critical widgets.
-                </td>
-                <td>DX is part of perceived product quality.</td>
-              </tr>
-              <tr>
-                <td>16</td>
-                <td>UX</td>
-                <td>Deep links and anchors</td>
-                <td>
-                  Stable URLs for sections; headings get permalink anchors; “copy link” affordances. API objects link to
-                  changelog entries when behaviour changes.
-                </td>
-                <td>Supports support tickets and Slack threads.</td>
-              </tr>
-              <tr>
-                <td>17</td>
-                <td>A11y / i18n*</td>
-                <td>WCAG-aligned UI</td>
-                <td>
-                  Semantic HTML, keyboard navigation, focus order, color contrast, captions/transcripts for video,
-                  descriptive link text (not “click here”).
-                </td>
-                <td>WCAG 2.2 AA is a common corporate bar for customer-facing docs.</td>
-              </tr>
-              <tr>
-                <td>18</td>
-                <td>A11y / i18n*</td>
-                <td>Localization strategy</td>
-                <td>
-                  If multilingual: translation workflow, glossary, and “source of truth” language; RTL and string
-                  expansion
-                  considered. If English-only: stated explicitly to set expectations.
-                </td>
-                <td>Enterprise buyers often require localized docs.</td>
-              </tr>
-              <tr>
-                <td>19</td>
-                <td>Inclusivity</td>
-                <td>Plain, inclusive language</td>
-                <td>
-                  Style guide for inclusive terms; avoid unnecessary idioms; define acronyms on first use; consistent
-                  terminology (controlled vocabulary).
-                </td>
-                <td>Reduces misreads for non-native speakers and new hires.</td>
-              </tr>
-              <tr>
-                <td>20</td>
-                <td>Trust</td>
-                <td>Changelog discipline</td>
-                <td>
-                  Human-readable changelog or release notes linked from docs; breaking changes are called out with
-                  migration steps; dates and version tags are unambiguous.
-                </td>
-                <td>Pairs with API versioning and ADR records for rationale.</td>
-              </tr>
-              <tr>
-                <td>21</td>
-                <td>Trust</td>
-                <td>Security hygiene in examples</td>
-                <td>
-                  No real secrets in repos; placeholders and env var names are standard; “redacted” samples for tokens;
-                  guidance on rotating leaked keys.
-                </td>
-                <td>Prevents docs from becoming an attack surface.</td>
-              </tr>
-              <tr>
-                <td>22</td>
-                <td>Feedback</td>
-                <td>Visible feedback channel</td>
-                <td>
-                  “Edit this page” (for open repos), issue templates, or thumbs up/down with optional comment. Feedback
-                  routes to owners; SLAs are realistic.
-                </td>
-                <td>Closes the loop between readers and authors.</td>
-              </tr>
-              <tr>
-                <td>23</td>
-                <td>Feedback</td>
-                <td>Privacy-respecting analytics</td>
-                <td>
-                  Aggregate navigation and search success metrics; minimize PII; document cookies/consent if required;
-                  distinguish docs traffic from app traffic.
-                </td>
-                <td>GDPR/CCPA-conscious teams prefer first-party or aggregated analytics.</td>
-              </tr>
-              <tr>
-                <td>24</td>
-                <td>Support</td>
-                <td>Runbooks and on-call alignment</td>
-                <td>
-                  Operational docs (incident response, dashboards, rollback) are kept next to developer docs or clearly
-                  cross-linked; ownership matches pager rotations.
-                </td>
-                <td>Blurs “product docs” vs “internal ops” — both are DX for different audiences.</td>
-              </tr>
-              <tr>
-                <td>25</td>
-                <td>Platform</td>
-                <td>Developer portal pattern</td>
-                <td>
-                  Single entry: identity/keys, usage dashboards, quotas, docs, and support — coherent navigation and
-                  branding. For smaller products, a minimal portal is “good README + API reference + status page.”
-                </td>
-                <td>At scale, portals integrate billing and org management; don’t over-build early.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table class="audit-ref-table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Practice</th>
+                  <th scope="col">Reference description</th>
+                  <th scope="col">Typical benchmark</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>IA</td>
+                  <td><a href="https://diataxis.fr/">Diátaxis-style split</a></td>
+                  <td>
+                    Separate <strong>tutorials</strong> (learning-oriented), <strong>how-to guides</strong>
+                    (task-oriented), <strong>reference</strong> (information-oriented), and <strong>explanation</strong>
+                    (understanding-oriented). Users land in the right mode for their goal; navigation labels reflect it.
+                  </td>
+                  <td>Canonical mental model for technical docs; adopted widely in API and platform teams.</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>IA</td>
+                  <td>Progressive disclosure</td>
+                  <td>
+                    “Happy path” first; edge cases, limits, and failure modes linked or collapsed so beginners are not
+                    overwhelmed; experts can jump to reference or deep links.
+                  </td>
+                  <td>Reduces time-to-first-success (TTFS) without hiding rigor.</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Journey</td>
+                  <td>Onboarding spine</td>
+                  <td>
+                    A single curated path: install → authenticate → first API call / first deploy → next steps. Each step
+                    has verification (“you should see…”) and links to troubleshooting.
+                  </td>
+                  <td>Stripe/Twilio-style quickstarts remain the pattern to beat for APIs.</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Ops</td>
+                  <td>Docs-as-code</td>
+                  <td>
+                    Docs live in version control; changes are reviewed like code; publishing is automated. Prose and
+                    diagrams
+                    are diffable; ownership is explicit (CODEOWNERS or equivalent).
+                  </td>
+                  <td>Baseline for mature engineering orgs; see also ADR-driven governance.</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>Ops</td>
+                  <td>Single source of truth (SSOT)</td>
+                  <td>
+                    Generated sections (OpenAPI, CLI help, config tables, route lists) are produced from artifacts, not
+                    hand-copied. Manual text links to generated anchors explicitly.
+                  </td>
+                  <td>Eliminates the #1 DX failure: docs that contradict production.</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Ops</td>
+                  <td>Versioning aligned with product</td>
+                  <td>
+                    Doc sets are versioned (or time-versioned) with the product; deprecation and sunset are visible in-docs
+                    and in machine-readable metadata where applicable.
+                  </td>
+                  <td>Essential once you have more than one supported major version.</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>Quality</td>
+                  <td>CI for docs</td>
+                  <td>
+                    Pipeline runs link checking, spelling/grammar linters (e.g. Vale with a house style), OpenAPI/MDX
+                    validators, and (for APIs) contract tests. Broken links fail the build or warn with SLAs.
+                  </td>
+                  <td>“Treat docs like code” in the strict sense — measurable gates.</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>Quality</td>
+                  <td>Tested code paths</td>
+                  <td>
+                    Copy-paste examples are executed in CI (or marked as pseudo-code). CLI snippets and curl examples target
+                    real endpoints; responses shown match schema or are clearly illustrative.
+                  </td>
+                  <td>Top teams refuse “example rot.”</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>Quality</td>
+                  <td>Error and failure documentation</td>
+                  <td>
+                    Errors are documented systematically: HTTP status, stable machine-readable codes where applicable,
+                    remediation, idempotency implications, and links to runbooks.
+                  </td>
+                  <td>Pairs with OpenAPI <code>Problem Details</code> / structured error bodies.</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>API docs</td>
+                  <td>OpenAPI (or equivalent) as contract</td>
+                  <td>
+                    Reference is generated from the spec; examples are first-class; auth schemes and security requirements
+                    are explicit; servers and environments are listed without ambiguity.
+                  </td>
+                  <td>Industry default for HTTP APIs; governance lint (Spectral/Redocly) is common.</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td>API docs</td>
+                  <td>Interactive “try it”</td>
+                  <td>
+                    Sandboxed requests against test credentials, or clear warnings for production. Rate limits and scopes
+                    are
+                    visible before the user sends a request.
+                  </td>
+                  <td>Improves learning; must be safe-by-default.</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>SDK docs</td>
+                  <td>Multi-surface examples</td>
+                  <td>
+                    Same conceptual page offers language tabs (curl + official SDKs); idioms match each language; versioning
+                    notes per SDK where releases diverge.
+                  </td>
+                  <td>Expected at platform scale; smaller teams may start with one SDK + HTTP.</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>Discovery</td>
+                  <td>First-class search</td>
+                  <td>
+                    Full-text search with typo tolerance; results ranked by recency/relevance; scoped search within a doc
+                    set
+                    (e.g. “API reference only”). Offline/static options (Pagefind, Lunr) remain valid.
+                  </td>
+                  <td>Algolia DocSearch and similar patterns are table stakes for large sites.</td>
+                </tr>
+                <tr>
+                  <td>14</td>
+                  <td>Discovery</td>
+                  <td>AI-assisted answers (2024–2026)</td>
+                  <td>
+                    Optional assistant grounded in <em>your</em> docs (RAG), with citations to source pages; guardrails for
+                    “I don’t know”; no training on customer secrets; logging aligned with privacy policy.
+                  </td>
+                  <td>Rapidly becoming expected; quality depends on chunking and retrieval, not model size alone.</td>
+                </tr>
+                <tr>
+                  <td>15</td>
+                  <td>UX</td>
+                  <td>Performance (Core Web Vitals)</td>
+                  <td>
+                    Doc sites load fast on mobile: optimize LCP (hero text, fonts), avoid huge client bundles on content
+                    pages, lazy-load non-critical widgets.
+                  </td>
+                  <td>DX is part of perceived product quality.</td>
+                </tr>
+                <tr>
+                  <td>16</td>
+                  <td>UX</td>
+                  <td>Deep links and anchors</td>
+                  <td>
+                    Stable URLs for sections; headings get permalink anchors; “copy link” affordances. API objects link to
+                    changelog entries when behaviour changes.
+                  </td>
+                  <td>Supports support tickets and Slack threads.</td>
+                </tr>
+                <tr>
+                  <td>17</td>
+                  <td>A11y / i18n*</td>
+                  <td>WCAG-aligned UI</td>
+                  <td>
+                    Semantic HTML, keyboard navigation, focus order, color contrast, captions/transcripts for video,
+                    descriptive link text (not “click here”).
+                  </td>
+                  <td>WCAG 2.2 AA is a common corporate bar for customer-facing docs.</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>A11y / i18n*</td>
+                  <td>Localization strategy</td>
+                  <td>
+                    If multilingual: translation workflow, glossary, and “source of truth” language; RTL and string
+                    expansion
+                    considered. If English-only: stated explicitly to set expectations.
+                  </td>
+                  <td>Enterprise buyers often require localized docs.</td>
+                </tr>
+                <tr>
+                  <td>19</td>
+                  <td>Inclusivity</td>
+                  <td>Plain, inclusive language</td>
+                  <td>
+                    Style guide for inclusive terms; avoid unnecessary idioms; define acronyms on first use; consistent
+                    terminology (controlled vocabulary).
+                  </td>
+                  <td>Reduces misreads for non-native speakers and new hires.</td>
+                </tr>
+                <tr>
+                  <td>20</td>
+                  <td>Trust</td>
+                  <td>Changelog discipline</td>
+                  <td>
+                    Human-readable changelog or release notes linked from docs; breaking changes are called out with
+                    migration steps; dates and version tags are unambiguous.
+                  </td>
+                  <td>Pairs with API versioning and ADR records for rationale.</td>
+                </tr>
+                <tr>
+                  <td>21</td>
+                  <td>Trust</td>
+                  <td>Security hygiene in examples</td>
+                  <td>
+                    No real secrets in repos; placeholders and env var names are standard; “redacted” samples for tokens;
+                    guidance on rotating leaked keys.
+                  </td>
+                  <td>Prevents docs from becoming an attack surface.</td>
+                </tr>
+                <tr>
+                  <td>22</td>
+                  <td>Feedback</td>
+                  <td>Visible feedback channel</td>
+                  <td>
+                    “Edit this page” (for open repos), issue templates, or thumbs up/down with optional comment. Feedback
+                    routes to owners; SLAs are realistic.
+                  </td>
+                  <td>Closes the loop between readers and authors.</td>
+                </tr>
+                <tr>
+                  <td>23</td>
+                  <td>Feedback</td>
+                  <td>Privacy-respecting analytics</td>
+                  <td>
+                    Aggregate navigation and search success metrics; minimize PII; document cookies/consent if required;
+                    distinguish docs traffic from app traffic.
+                  </td>
+                  <td>GDPR/CCPA-conscious teams prefer first-party or aggregated analytics.</td>
+                </tr>
+                <tr>
+                  <td>24</td>
+                  <td>Support</td>
+                  <td>Runbooks and on-call alignment</td>
+                  <td>
+                    Operational docs (incident response, dashboards, rollback) are kept next to developer docs or clearly
+                    cross-linked; ownership matches pager rotations.
+                  </td>
+                  <td>Blurs “product docs” vs “internal ops” — both are DX for different audiences.</td>
+                </tr>
+                <tr>
+                  <td>25</td>
+                  <td>Platform</td>
+                  <td>Developer portal pattern</td>
+                  <td>
+                    Single entry: identity/keys, usage dashboards, quotas, docs, and support — coherent navigation and
+                    branding. For smaller products, a minimal portal is “good README + API reference + status page.”
+                  </td>
+                  <td>At scale, portals integrate billing and org management; don’t over-build early.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -400,289 +402,291 @@
             </p>
           </noscript>
           <div style="overflow-x: auto">
-            <table class="audit-score-table">
-              <thead>
-                <tr>
-                  <th scope="col"><span tabindex="0" data-tooltip="Row number in this assessment.">#</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="Practice name aligned with Table 1 (reference practices).">Practice (Table 1)</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="Evidence from the repository: behavior, paths, or notes supporting the score.">Study App evidence / notes</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="Why this score was chosen for the practice (judgment).">Justification</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="Maturity score 1–10 for this document's scope; see the legend above for band meanings.">Score</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Diátaxis-style split</td>
-                  <td>
-                    Content is split across ADRs, developer guides, runbooks, and generated API reference, but landing pages
-                    do not consistently label pieces as tutorial vs how-to vs reference vs explanation. Readers infer
-                    structure
-                    from folders and titles.
-                  </td>
-                  <td class="audit-table-justification">Folders imply roles; explicit Diátaxis labels would raise
-                    confidence.</td>
-                    <td class="score-good">7</td>
-                  </tr>
+            <div class="docs-table-scroll" role="region" aria-label="Table">
+              <table class="audit-score-table">
+                <thead>
                   <tr>
-                    <td>2</td>
-                    <td>Progressive disclosure</td>
-                    <td>
-                      Long-form guides and Makefile-oriented docs exist; happy path vs edge case is mostly a matter of author
-                      style, not a uniform pattern of “basics first, deep links for limits.”
-                    </td>
-                    <td class="audit-table-justification">Quality depends on author habit; no uniform “basics first” pattern.
-                    </td>
-                    <td class="score-good">7</td>
+                    <th scope="col"><span tabindex="0" data-tooltip="Row number in this assessment.">#</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="Practice name aligned with Table 1 (reference practices).">Practice (Table 1)</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="Evidence from the repository: behavior, paths, or notes supporting the score.">Study App evidence / notes</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="Why this score was chosen for the practice (judgment).">Justification</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="Maturity score 1–10 for this document's scope; see the legend above for band meanings.">Score</span></th>
                   </tr>
+                </thead>
+                <tbody>
                   <tr>
-                    <td>3</td>
-                    <td>Onboarding spine</td>
+                    <td>1</td>
+                    <td>Diátaxis-style split</td>
                     <td>
-                      Developer guides cover local dev, workflows, and API topics; there is no single named page that chains
-                      install → authenticate → first successful request with explicit verification checkpoints end-to-end.
+                      Content is split across ADRs, developer guides, runbooks, and generated API reference, but landing pages
+                      do not consistently label pieces as tutorial vs how-to vs reference vs explanation. Readers infer
+                      structure
+                      from folders and titles.
                     </td>
-                    <td class="audit-table-justification">Strong pieces exist; no single end-to-end golden path with
-                      checkpoints.</td>
+                    <td class="audit-table-justification">Folders imply roles; explicit Diátaxis labels would raise
+                      confidence.</td>
                       <td class="score-good">7</td>
                     </tr>
                     <tr>
-                      <td>4</td>
-                      <td>Docs-as-code</td>
+                      <td>2</td>
+                      <td>Progressive disclosure</td>
                       <td>
-                        <a href="../../adr/0001-docs-as-code.html">ADR 0001</a>; HTML and assets live in git; changes are
-                        reviewable
-                        like code; <a href="../../developer/0008-docs-pipeline.html">docs pipeline</a> automates sync and
-                        generation
-                        steps.
+                        Long-form guides and Makefile-oriented docs exist; happy path vs edge case is mostly a matter of author
+                        style, not a uniform pattern of “basics first, deep links for limits.”
                       </td>
-                      <td class="audit-table-justification">ADR 0001 + pipeline: reviewable, automated — reference-tier for PET.
+                      <td class="audit-table-justification">Quality depends on author habit; no uniform “basics first” pattern.
                       </td>
-                      <td class="score-excellent">9</td>
+                      <td class="score-good">7</td>
                     </tr>
                     <tr>
-                      <td>5</td>
-                      <td>Single source of truth (SSOT)</td>
+                      <td>3</td>
+                      <td>Onboarding spine</td>
                       <td>
-                        OpenAPI baseline and governance reduce drift vs hand-maintained reference; pdoc reflects the Python API;
-                        UML and markers are generated or checked. Narrative docs still require manual care to stay aligned with
-                        env tables and behaviour.
+                        Developer guides cover local dev, workflows, and API topics; there is no single named page that chains
+                        install → authenticate → first successful request with explicit verification checkpoints end-to-end.
                       </td>
-                      <td class="audit-table-justification">OpenAPI + generation limit hand drift; narrative still manual.</td>
-                      <td class="score-excellent">9</td>
-                    </tr>
-                    <tr>
-                      <td>6</td>
-                      <td>Versioning aligned with product</td>
-                      <td>
-                        <code>CHANGELOG.md</code> with a CI changelog gate; ADRs record decisions. Doc sets are not published as
-                        separate versioned subsites; alignment is via repo tags and changelog entries rather than per-major doc
-                        trees.
-                      </td>
-                      <td class="audit-table-justification">Changelog + tags; not separate versioned doc subsites.</td>
-                      <td class="score-good">8</td>
-                    </tr>
-                    <tr>
-                      <td>7</td>
-                      <td>CI for docs</td>
-                      <td>
-                        <code>make docs-check</code> fails on drift between generated and committed artifacts; OpenAPI checks
-                        run
-                        in the main quality pipeline. Spelling or Vale-style prose lint for all hand-written HTML is not assumed
-                        everywhere.
-                      </td>
-                      <td class="audit-table-justification">Drift checks and OpenAPI gates; prose lint not universal.</td>
-                      <td class="score-good">8</td>
-                    </tr>
-                    <tr>
-                      <td>8</td>
-                      <td>Tested code paths</td>
-                      <td>
-                        Contract and API tests exercise the runtime; copy-paste examples in prose docs are not systematically
-                        executed as part of a docs-specific CI job. Some examples are illustrative only.
-                      </td>
-                      <td class="audit-table-justification">Examples not executed as a dedicated docs CI job.</td>
-                      <td class="score-needs-attention">6</td>
-                    </tr>
-                    <tr>
-                      <td>9</td>
-                      <td>Error and failure documentation</td>
-                      <td>
-                        Error matrix and OpenAPI examples document stable codes; runbooks cover operational angles. Not a single
-                        Twilio-style public “error catalog” site, but the material exists across docs and spec.
-                      </td>
-                      <td class="audit-table-justification">Errors covered across matrix, OpenAPI, runbooks — not one catalog
-                        site.</td>
-                        <td class="score-good">8</td>
+                      <td class="audit-table-justification">Strong pieces exist; no single end-to-end golden path with
+                        checkpoints.</td>
+                        <td class="score-good">7</td>
                       </tr>
                       <tr>
-                        <td>10</td>
-                        <td>OpenAPI (or equivalent) as contract</td>
+                        <td>4</td>
+                        <td>Docs-as-code</td>
                         <td>
-                          Governance ADRs, <code>docs/openapi/openapi-baseline.json</code>, embedded explorer patterns; reference
-                          is driven from the app’s OpenAPI rather than hand-written endpoint lists alone.
+                          <a href="../../adr/0001-docs-as-code.html">ADR 0001</a>; HTML and assets live in git; changes are
+                          reviewable
+                          like code; <a href="../../developer/0008-docs-pipeline.html">docs pipeline</a> automates sync and
+                          generation
+                          steps.
                         </td>
-                        <td class="audit-table-justification">Baseline + governance: contract is enforced in repo.</td>
+                        <td class="audit-table-justification">ADR 0001 + pipeline: reviewable, automated — reference-tier for PET.
+                        </td>
                         <td class="score-excellent">9</td>
                       </tr>
                       <tr>
-                        <td>11</td>
-                        <td>Interactive “try it”</td>
+                        <td>5</td>
+                        <td>Single source of truth (SSOT)</td>
                         <td>
-                          Swagger UI at <code>/docs</code> and static <code>docs/openapi/index.html</code> against the
-                          committed
-                          snapshot; users must supply their own keys and understand environment risk. Rate limits and auth are
-                          documented in OpenAPI and prose.
+                          OpenAPI baseline and governance reduce drift vs hand-maintained reference; pdoc reflects the Python API;
+                          UML and markers are generated or checked. Narrative docs still require manual care to stay aligned with
+                          env tables and behaviour.
                         </td>
-                        <td class="audit-table-justification">Swagger UI + static explorer; env risk stays with the operator.</td>
+                        <td class="audit-table-justification">OpenAPI + generation limit hand drift; narrative still manual.</td>
+                        <td class="score-excellent">9</td>
+                      </tr>
+                      <tr>
+                        <td>6</td>
+                        <td>Versioning aligned with product</td>
+                        <td>
+                          <code>CHANGELOG.md</code> with a CI changelog gate; ADRs record decisions. Doc sets are not published as
+                          separate versioned subsites; alignment is via repo tags and changelog entries rather than per-major doc
+                          trees.
+                        </td>
+                        <td class="audit-table-justification">Changelog + tags; not separate versioned doc subsites.</td>
                         <td class="score-good">8</td>
                       </tr>
                       <tr>
-                        <td>12</td>
-                        <td>Multi-surface examples</td>
+                        <td>7</td>
+                        <td>CI for docs</td>
                         <td>
-                          Primary examples are HTTP-oriented (curl, OpenAPI); there is no tabbed curl + multiple official SDKs on
-                          the same page. Scope matches a small service without generated client libraries.
+                          <code>make docs-check</code> fails on drift between generated and committed artifacts; OpenAPI checks
+                          run
+                          in the main quality pipeline. Spelling or Vale-style prose lint for all hand-written HTML is not assumed
+                          everywhere.
                         </td>
-                        <td class="audit-table-justification">HTTP-only scope; no multi-SDK tabs — intentional at this scale.</td>
-                        <td class="score-needs-attention">5</td>
+                        <td class="audit-table-justification">Drift checks and OpenAPI gates; prose lint not universal.</td>
+                        <td class="score-good">8</td>
                       </tr>
                       <tr>
-                        <td>13</td>
-                        <td>First-class search</td>
+                        <td>8</td>
+                        <td>Tested code paths</td>
                         <td>
-                          Generated API docs include client-side search (e.g. pdoc search). There is no dedicated full-site search
-                          across all HTML guides and ADRs comparable to Algolia DocSearch unless added separately (e.g. Pagefind).
+                          Contract and API tests exercise the runtime; copy-paste examples in prose docs are not systematically
+                          executed as part of a docs-specific CI job. Some examples are illustrative only.
                         </td>
-                        <td class="audit-table-justification">Client-side index exists; ranking/tuning remain iterative (see ADR
-                          0027).</td>
+                        <td class="audit-table-justification">Examples not executed as a dedicated docs CI job.</td>
+                        <td class="score-needs-attention">6</td>
+                      </tr>
+                      <tr>
+                        <td>9</td>
+                        <td>Error and failure documentation</td>
+                        <td>
+                          Error matrix and OpenAPI examples document stable codes; runbooks cover operational angles. Not a single
+                          Twilio-style public “error catalog” site, but the material exists across docs and spec.
+                        </td>
+                        <td class="audit-table-justification">Errors covered across matrix, OpenAPI, runbooks — not one catalog
+                          site.</td>
+                          <td class="score-good">8</td>
+                        </tr>
+                        <tr>
+                          <td>10</td>
+                          <td>OpenAPI (or equivalent) as contract</td>
+                          <td>
+                            Governance ADRs, <code>docs/openapi/openapi-baseline.json</code>, embedded explorer patterns; reference
+                            is driven from the app’s OpenAPI rather than hand-written endpoint lists alone.
+                          </td>
+                          <td class="audit-table-justification">Baseline + governance: contract is enforced in repo.</td>
+                          <td class="score-excellent">9</td>
+                        </tr>
+                        <tr>
+                          <td>11</td>
+                          <td>Interactive “try it”</td>
+                          <td>
+                            Swagger UI at <code>/docs</code> and static <code>docs/openapi/index.html</code> against the
+                            committed
+                            snapshot; users must supply their own keys and understand environment risk. Rate limits and auth are
+                            documented in OpenAPI and prose.
+                          </td>
+                          <td class="audit-table-justification">Swagger UI + static explorer; env risk stays with the operator.</td>
+                          <td class="score-good">8</td>
+                        </tr>
+                        <tr>
+                          <td>12</td>
+                          <td>Multi-surface examples</td>
+                          <td>
+                            Primary examples are HTTP-oriented (curl, OpenAPI); there is no tabbed curl + multiple official SDKs on
+                            the same page. Scope matches a small service without generated client libraries.
+                          </td>
+                          <td class="audit-table-justification">HTTP-only scope; no multi-SDK tabs — intentional at this scale.</td>
                           <td class="score-needs-attention">5</td>
                         </tr>
                         <tr>
-                          <td>14</td>
-                          <td>AI-assisted answers (2024–2026)</td>
+                          <td>13</td>
+                          <td>First-class search</td>
                           <td>
-                            No in-product docs assistant or RAG over this doc set is part of the repository. Optional future work;
-                            must be citation-grounded if introduced.
+                            Generated API docs include client-side search (e.g. pdoc search). There is no dedicated full-site search
+                            across all HTML guides and ADRs comparable to Algolia DocSearch unless added separately (e.g. Pagefind).
                           </td>
-                          <td class="audit-table-justification">No in-repo RAG assistant — acceptable until prioritized.</td>
-                          <td class="score-needs-attention">4</td>
-                        </tr>
-                        <tr>
-                          <td>15</td>
-                          <td>Performance (Core Web Vitals)</td>
-                          <td>
-                            Static HTML and shared CSS; no heavy SPA framework on doc pages. Performance depends on hosting and
-                            asset
-                            weight; not formally audited against Core Web Vitals in this assessment.
-                          </td>
-                          <td class="audit-table-justification">Static HTML/CSS; CWV not measured in this assessment.</td>
-                          <td class="score-good">7</td>
-                        </tr>
-                        <tr>
-                          <td>16</td>
-                          <td>Deep links and anchors</td>
-                          <td>
-                            HTML pages use stable paths under <code>docs/</code>; shared nav and section anchors support linking to
-                            sections. Not every page exposes a visible “copy link to heading” control.
-                          </td>
-                          <td class="audit-table-justification">Stable paths and anchors; copy-link affordance not everywhere.</td>
-                          <td class="score-good">7</td>
-                        </tr>
-                        <tr>
-                          <td>17</td>
-                          <td>WCAG-aligned UI</td>
-                          <td>
-                            Semantic HTML patterns and shared stylesheet; no claim of a full WCAG 2.2 AA audit of every template in
-                            this mapping.
-                          </td>
-                          <td class="audit-table-justification">Semantic patterns; full WCAG 2.2 AA not claimed for every template.
-                          </td>
-                          <td class="score-needs-attention">6</td>
-                        </tr>
-                        <tr>
-                          <td>18</td>
-                          <td>Localization strategy</td>
-                          <td>
-                            Documentation is English-first; multilingual translation workflow and glossary are out of scope unless
-                            the product adds them explicitly.
-                          </td>
-                          <td class="audit-table-justification">English-first; translation workflow out of scope unless product
-                            asks.</td>
+                          <td class="audit-table-justification">Client-side index exists; ranking/tuning remain iterative (see ADR
+                            0027).</td>
                             <td class="score-needs-attention">5</td>
                           </tr>
                           <tr>
-                            <td>19</td>
-                            <td>Plain, inclusive language</td>
+                            <td>14</td>
+                            <td>AI-assisted answers (2024–2026)</td>
                             <td>
-                              Engineering and ADR tone is generally precise; a standalone inclusive-language style guide for all prose
-                              is not asserted here.
+                              No in-product docs assistant or RAG over this doc set is part of the repository. Optional future work;
+                              must be citation-grounded if introduced.
                             </td>
-                            <td class="audit-table-justification">Precise engineering tone; inclusive glossary not centralized.</td>
+                            <td class="audit-table-justification">No in-repo RAG assistant — acceptable until prioritized.</td>
+                            <td class="score-needs-attention">4</td>
+                          </tr>
+                          <tr>
+                            <td>15</td>
+                            <td>Performance (Core Web Vitals)</td>
+                            <td>
+                              Static HTML and shared CSS; no heavy SPA framework on doc pages. Performance depends on hosting and
+                              asset
+                              weight; not formally audited against Core Web Vitals in this assessment.
+                            </td>
+                            <td class="audit-table-justification">Static HTML/CSS; CWV not measured in this assessment.</td>
                             <td class="score-good">7</td>
                           </tr>
                           <tr>
-                            <td>20</td>
-                            <td>Changelog discipline</td>
+                            <td>16</td>
+                            <td>Deep links and anchors</td>
                             <td>
-                              Keep a Changelog format; CI gate on main/master pushes and PRs; ties release communication to repo
-                              history.
+                              HTML pages use stable paths under <code>docs/</code>; shared nav and section anchors support linking to
+                              sections. Not every page exposes a visible “copy link to heading” control.
                             </td>
-                            <td class="audit-table-justification">Changelog gate + format — strong trust signal.</td>
-                            <td class="score-excellent">9</td>
+                            <td class="audit-table-justification">Stable paths and anchors; copy-link affordance not everywhere.</td>
+                            <td class="score-good">7</td>
                           </tr>
                           <tr>
-                            <td>21</td>
-                            <td>Security hygiene in examples</td>
+                            <td>17</td>
+                            <td>WCAG-aligned UI</td>
                             <td>
-                              Env templates and docs emphasize configuration; examples use placeholders for keys. Contributors are
-                              guided not to commit secrets; aligns with normal OSS practice.
+                              Semantic HTML patterns and shared stylesheet; no claim of a full WCAG 2.2 AA audit of every template in
+                              this mapping.
                             </td>
-                            <td class="audit-table-justification">Env templates and placeholder discipline match good practice.</td>
-                            <td class="score-good">8</td>
-                          </tr>
-                          <tr>
-                            <td>22</td>
-                            <td>Visible feedback channel</td>
-                            <td>
-                              Typical path is GitHub Issues / PR process for a repo-hosted doc set; no in-page “was this helpful?”
-                              widget is assumed.
+                            <td class="audit-table-justification">Semantic patterns; full WCAG 2.2 AA not claimed for every template.
                             </td>
-                            <td class="audit-table-justification">Issues/PR path exists; in-page thumbs not required.</td>
                             <td class="score-needs-attention">6</td>
                           </tr>
                           <tr>
-                            <td>23</td>
-                            <td>Privacy-respecting analytics</td>
+                            <td>18</td>
+                            <td>Localization strategy</td>
                             <td>
-                              Static hosting implies no first-party docs analytics unless the team adds it; no cookie banner or
-                              analytics pipeline is described as part of this project’s default docs delivery.
+                              Documentation is English-first; multilingual translation workflow and glossary are out of scope unless
+                              the product adds them explicitly.
                             </td>
-                            <td class="audit-table-justification">No default first-party docs analytics pipeline.</td>
-                            <td class="score-needs-attention">5</td>
-                          </tr>
-                          <tr>
-                            <td>24</td>
-                            <td>Runbooks and on-call alignment</td>
-                            <td>
-                              Runbooks exist under <code>docs/runbooks/</code>; engineering practices and ADRs link operational and
-                              design context. On-call rotation is outside repo scope.
-                            </td>
-                            <td class="audit-table-justification">Runbooks under docs/runbooks; on-call roster outside repo.</td>
-                            <td class="score-good">8</td>
-                          </tr>
-                          <tr>
-                            <td>25</td>
-                            <td>Developer portal pattern</td>
-                            <td>
-                              The repo delivers a documentation site (index, guides, API explorer, ADRs) rather than a full SaaS-style
-                              portal with billing, org dashboards, and integrated support. Appropriate for PET scale.
-                            </td>
-                            <td class="audit-table-justification">PET-appropriate: docs site, not a billing portal.</td>
-                            <td class="score-needs-attention">6</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                            <td class="audit-table-justification">English-first; translation workflow out of scope unless product
+                              asks.</td>
+                              <td class="score-needs-attention">5</td>
+                            </tr>
+                            <tr>
+                              <td>19</td>
+                              <td>Plain, inclusive language</td>
+                              <td>
+                                Engineering and ADR tone is generally precise; a standalone inclusive-language style guide for all prose
+                                is not asserted here.
+                              </td>
+                              <td class="audit-table-justification">Precise engineering tone; inclusive glossary not centralized.</td>
+                              <td class="score-good">7</td>
+                            </tr>
+                            <tr>
+                              <td>20</td>
+                              <td>Changelog discipline</td>
+                              <td>
+                                Keep a Changelog format; CI gate on main/master pushes and PRs; ties release communication to repo
+                                history.
+                              </td>
+                              <td class="audit-table-justification">Changelog gate + format — strong trust signal.</td>
+                              <td class="score-excellent">9</td>
+                            </tr>
+                            <tr>
+                              <td>21</td>
+                              <td>Security hygiene in examples</td>
+                              <td>
+                                Env templates and docs emphasize configuration; examples use placeholders for keys. Contributors are
+                                guided not to commit secrets; aligns with normal OSS practice.
+                              </td>
+                              <td class="audit-table-justification">Env templates and placeholder discipline match good practice.</td>
+                              <td class="score-good">8</td>
+                            </tr>
+                            <tr>
+                              <td>22</td>
+                              <td>Visible feedback channel</td>
+                              <td>
+                                Typical path is GitHub Issues / PR process for a repo-hosted doc set; no in-page “was this helpful?”
+                                widget is assumed.
+                              </td>
+                              <td class="audit-table-justification">Issues/PR path exists; in-page thumbs not required.</td>
+                              <td class="score-needs-attention">6</td>
+                            </tr>
+                            <tr>
+                              <td>23</td>
+                              <td>Privacy-respecting analytics</td>
+                              <td>
+                                Static hosting implies no first-party docs analytics unless the team adds it; no cookie banner or
+                                analytics pipeline is described as part of this project’s default docs delivery.
+                              </td>
+                              <td class="audit-table-justification">No default first-party docs analytics pipeline.</td>
+                              <td class="score-needs-attention">5</td>
+                            </tr>
+                            <tr>
+                              <td>24</td>
+                              <td>Runbooks and on-call alignment</td>
+                              <td>
+                                Runbooks exist under <code>docs/runbooks/</code>; engineering practices and ADRs link operational and
+                                design context. On-call rotation is outside repo scope.
+                              </td>
+                              <td class="audit-table-justification">Runbooks under docs/runbooks; on-call roster outside repo.</td>
+                              <td class="score-good">8</td>
+                            </tr>
+                            <tr>
+                              <td>25</td>
+                              <td>Developer portal pattern</td>
+                              <td>
+                                The repo delivers a documentation site (index, guides, API explorer, ADRs) rather than a full SaaS-style
+                                portal with billing, org dashboards, and integrated support. Appropriate for PET scale.
+                              </td>
+                              <td class="audit-table-justification">PET-appropriate: docs site, not a billing portal.</td>
+                              <td class="score-needs-attention">6</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
 
                   </section>
@@ -706,66 +710,68 @@
                       the docs <em>program</em> vs reference?”
                     </p>
                     <div style="overflow-x: auto">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th scope="col">Axis</th>
-                            <th scope="col">Weight</th>
-                            <th scope="col">Score</th>
-                            <th scope="col">Contribution (weight × score)</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>Findability</td>
-                            <td>0.18</td>
-                            <td>7.5</td>
-                            <td>1.35</td>
-                          </tr>
-                          <tr>
-                            <td>Navigation &amp; IA</td>
-                            <td>0.18</td>
-                            <td>8.0</td>
-                            <td>1.44</td>
-                          </tr>
-                          <tr>
-                            <td>Readability &amp; design</td>
-                            <td>0.14</td>
-                            <td>7.5</td>
-                            <td>1.05</td>
-                          </tr>
-                          <tr>
-                            <td>Accessibility</td>
-                            <td>0.12</td>
-                            <td>7.5</td>
-                            <td>0.90</td>
-                          </tr>
-                          <tr>
-                            <td>Maintainability</td>
-                            <td>0.22</td>
-                            <td>9.0</td>
-                            <td>1.98</td>
-                          </tr>
-                          <tr>
-                            <td>Feedback &amp; improvement</td>
-                            <td>0.08</td>
-                            <td>7.0</td>
-                            <td>0.56</td>
-                          </tr>
-                          <tr>
-                            <td>Onboarding</td>
-                            <td>0.08</td>
-                            <td>8.0</td>
-                            <td>0.64</td>
-                          </tr>
-                          <tr>
-                            <td><strong>Total</strong></td>
-                            <td><strong>1.00</strong></td>
-                            <td>—</td>
-                            <td><strong>7.92 → ≈ 7.9 / 10</strong></td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div class="docs-table-scroll" role="region" aria-label="Table">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th scope="col">Axis</th>
+                              <th scope="col">Weight</th>
+                              <th scope="col">Score</th>
+                              <th scope="col">Contribution (weight × score)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>Findability</td>
+                              <td>0.18</td>
+                              <td>7.5</td>
+                              <td>1.35</td>
+                            </tr>
+                            <tr>
+                              <td>Navigation &amp; IA</td>
+                              <td>0.18</td>
+                              <td>8.0</td>
+                              <td>1.44</td>
+                            </tr>
+                            <tr>
+                              <td>Readability &amp; design</td>
+                              <td>0.14</td>
+                              <td>7.5</td>
+                              <td>1.05</td>
+                            </tr>
+                            <tr>
+                              <td>Accessibility</td>
+                              <td>0.12</td>
+                              <td>7.5</td>
+                              <td>0.90</td>
+                            </tr>
+                            <tr>
+                              <td>Maintainability</td>
+                              <td>0.22</td>
+                              <td>9.0</td>
+                              <td>1.98</td>
+                            </tr>
+                            <tr>
+                              <td>Feedback &amp; improvement</td>
+                              <td>0.08</td>
+                              <td>7.0</td>
+                              <td>0.56</td>
+                            </tr>
+                            <tr>
+                              <td>Onboarding</td>
+                              <td>0.08</td>
+                              <td>8.0</td>
+                              <td>0.64</td>
+                            </tr>
+                            <tr>
+                              <td><strong>Total</strong></td>
+                              <td><strong>1.00</strong></td>
+                              <td>—</td>
+                              <td><strong>7.92 → ≈ 7.9 / 10</strong></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
 
                     <h3 id="4-2-top-five-gaps-status">Top five gaps — priority and workflow status</h3>
@@ -774,61 +780,63 @@
                       <strong>DONE</strong> (accepted in main). Update started / closed / PR when you pick up or finish work.
                     </p>
                     <div style="overflow-x: auto">
-                      <table class="audit-gap-table">
-                        <thead>
-                          <tr>
-                            <th scope="col">Priority</th>
-                            <th scope="col">Gap</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Started</th>
-                            <th scope="col">Closed</th>
-                            <th scope="col">PR / reference</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>P0</td>
-                            <td>Hand-written docs vs generated <code>docs/pdoc/</code> (pdoc) — two different UX layers.</td>
-                            <td class="audit-gap-status audit-gap-status--todo">TODO</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>—</td>
-                          </tr>
-                          <tr>
-                            <td>P0</td>
-                            <td>Internal sidebar navigation is manual (<code>INTERNAL_SIDEBAR_NAV</code>) — risk of orphan pages.</td>
-                            <td class="audit-gap-status audit-gap-status--todo">TODO</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>—</td>
-                          </tr>
-                          <tr>
-                            <td>P1</td>
-                            <td>Search quality metrics when docs are viewed purely as static hosting (telemetry needs API).</td>
-                            <td class="audit-gap-status audit-gap-status--inprogress">IN PROGRESS</td>
-                            <td>2026-04-17</td>
-                            <td>—</td>
-                            <td>See RFC docs-search / ADR 0027</td>
-                          </tr>
-                          <tr>
-                            <td>P1</td>
-                            <td>Visible per-page feedback on high-traffic hubs (“was this helpful?” + issue link).</td>
-                            <td class="audit-gap-status audit-gap-status--todo">TODO</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>—</td>
-                          </tr>
-                          <tr>
-                            <td>P2</td>
-                            <td>Canonical public docs URL documented for external readers (if GitHub Pages or other host is used).
-                            </td>
-                            <td class="audit-gap-status audit-gap-status--todo">TODO</td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>—</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div class="docs-table-scroll" role="region" aria-label="Table">
+                        <table class="audit-gap-table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Priority</th>
+                              <th scope="col">Gap</th>
+                              <th scope="col">Status</th>
+                              <th scope="col">Started</th>
+                              <th scope="col">Closed</th>
+                              <th scope="col">PR / reference</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>P0</td>
+                              <td>Hand-written docs vs generated <code>docs/pdoc/</code> (pdoc) — two different UX layers.</td>
+                              <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+                              <td>—</td>
+                              <td>—</td>
+                              <td>—</td>
+                            </tr>
+                            <tr>
+                              <td>P0</td>
+                              <td>Internal sidebar navigation is manual (<code>INTERNAL_SIDEBAR_NAV</code>) — risk of orphan pages.</td>
+                              <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+                              <td>—</td>
+                              <td>—</td>
+                              <td>—</td>
+                            </tr>
+                            <tr>
+                              <td>P1</td>
+                              <td>Search quality metrics when docs are viewed purely as static hosting (telemetry needs API).</td>
+                              <td class="audit-gap-status audit-gap-status--inprogress">IN PROGRESS</td>
+                              <td>2026-04-17</td>
+                              <td>—</td>
+                              <td>See RFC docs-search / ADR 0027</td>
+                            </tr>
+                            <tr>
+                              <td>P1</td>
+                              <td>Visible per-page feedback on high-traffic hubs (“was this helpful?” + issue link).</td>
+                              <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+                              <td>—</td>
+                              <td>—</td>
+                              <td>—</td>
+                            </tr>
+                            <tr>
+                              <td>P2</td>
+                              <td>Canonical public docs URL documented for external readers (if GitHub Pages or other host is used).
+                              </td>
+                              <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+                              <td>—</td>
+                              <td>—</td>
+                              <td>—</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </section>
 
@@ -888,7 +896,6 @@
                     </div>
                   </section>
 
-                  <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
                 </main>
 
               </body></html>

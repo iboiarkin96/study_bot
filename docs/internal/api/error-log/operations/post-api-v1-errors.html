@@ -1,140 +1,549 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
-
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>POST /api/v1/errors — Error log (conspectus link) — Study App</title>
+  <title>POST /api/v1/errors — Error log — Study App</title>
   <link rel="stylesheet" href="../../../../assets/docs.css" />
   <link rel="stylesheet" href="../../../../assets/docs-theme.css">
   <link rel="stylesheet" href="../../../../assets/internal-layout.css">
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+  <script defer src="../../../../assets/docs-syntax.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation" data-spec-status="draft" data-spec-owner="ivan-boyarkin" data-spec-operation-id="createErrorLog">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>POST /api/v1/errors</h1>
+        <h1 class="internal-h1--accent-tail internal-http-tablet">
+          <span class="internal-http-tablet__method badge badge--method-post">POST</span>
+          <span class="internal-http-tablet__path code">/api/v1/errors</span>
+        </h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">Error log</section>
-        <section class="card">
-          <span class="badge badge--method-post">POST</span>
-          <code class="internal-http-tablet__path">/api/v1/errors</code>
-        </section>
-        <p class="lead">
-          Store a learning mistake message. Optional <code>conspectus_uuid</code> links the entry to a conspectus owned
-          by the same user; if set, the service verifies ownership via <code>ConspectusRepository.get_for_client</code>.
-          Planned <code>operationId</code>: <code>createErrorLog</code> (implementation TBD).
-        </p>
-        <p class="small internal-doc-opid">Planned <code>operationId</code>: <code>createErrorLog</code></p>
+        <p class="internal-doc-entity">Error log</p>
 
-        <section class="card">
-          <h2>Body and idempotency</h2>
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Records a single learning error for later remediation.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">operationId</span>
+          <code>createErrorLog</code></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-29">2026-04-29</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Body: <code>system_user_id</code>, <code>system_uuid</code>, <code>message</code>; optional
-            <code>conspectus_uuid</code>.
-          </p>
-          <p>
-            <strong>Idempotency:</strong> required. <code>endpoint_path = "/api/v1/errors"</code> (constant
-            <code>ERRORS_HTTP_BASE_PATH</code>).
-          </p>
-          <p><strong>Success:</strong> <code>201 Created</code> — <code>ErrorLogResponse</code>.</p>
-        </section>
+            Record one <strong>learning error</strong> — a weak cue or mistake the learner
+            wants to remediate later (per
+            <a href="../../../analysis/methodology.html#retrieve-system">methodology · error
+              log</a>). Optional <code>conspectus_uuid</code> ties the entry to a specific
+              note when both are owned by the same learner.
+            </p>
+          </section>
 
-        <section class="card">
-          <h2>Errors</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>HTTP</th>
-                <th>Code / key</th>
-                <th>When</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>404</code></td>
-                <td><code>USER_404</code></td>
-                <td>User not found.</td>
-              </tr>
-              <tr>
-                <td><code>404</code></td>
-                <td><code>ERR_404</code> / <code>ERROR_LOG_REFERENCE_NOT_FOUND</code></td>
-                <td><code>conspectus_uuid</code> set but not found for this user.</td>
-              </tr>
-              <tr>
-                <td><code>409</code></td>
-                <td><code>COMMON_409</code></td>
-                <td>Idempotency conflict.</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+          <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+            <h2>1. Business context</h2>
+            <p>
+              The error log is the bridge between Retrieve outcomes and the next Transform pass:
+              instead of just rating a review <code>hard</code>/<code>forgot</code>, the learner
+              captures <em>why</em> in their own words. The next time they edit the conspectus,
+              the error log seeds what to fix
+              (<a href="../../../analysis/system-design.html#etr-methodology">methodology
+              mapping</a>; decision D5).
+            </p>
+          </section>
 
-        <section class="card">
-          <h2>Related hub</h2>
-          <p><a href="../index.html#error-log-op-createErrorLog">Error log hub — this operation</a></p>
-        </section>
+          <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+            <h2>2. User stories</h2>
+            <ul>
+              <li><strong>US-ERR-CREATE-1.</strong> As a <em>learner</em>, after a failed
+                retrieve I want to write a short note about the gap so my next Transform pass
+                targets it.</li>
+                <li><strong>US-ERR-CREATE-2.</strong> As an <em>integrator</em>, I want creation
+                  to be idempotent so a network retry never duplicates a learner's mistake
+                  note.</li>
+                </ul>
+              </section>
 
-        <p class="small">
-          <a href="../index.html">← Error log hub</a>
-        </p>
+              <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+                <h2>3. Acceptance criteria (Given / When / Then)</h2>
+                <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+                  <table>
+                    <thead><tr><th>ID &amp; scenario</th><th>Given</th><th>When</th><th>Then</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><code>AC-ERR-CREATE-001</code><br>
+                          <span class="small">Standalone error.</span></td>
+                          <td>U exists; body has <code>message</code> only.</td>
+                          <td>POST with fresh Idempotency-Key.</td>
+                          <td><code>201</code> with <code>error_uuid</code>; row in
+                            <code>learning_errors</code> with
+                            <code>conspectus_uuid=null</code>.</td>
+                          </tr>
+                          <tr>
+                            <td><code>AC-ERR-CREATE-002</code><br>
+                              <span class="small">Linked to conspectus.</span></td>
+                              <td>U exists; conspectus C owned by U; body includes
+                                <code>conspectus_uuid=C</code>.</td>
+                                <td>POST.</td>
+                                <td><code>201</code>; row with
+                                  <code>conspectus_uuid=C</code>.</td>
+                                </tr>
+                                <tr>
+                                  <td><code>AC-ERR-CREATE-003</code><br>
+                                    <span class="small">Conspectus from another user.</span></td>
+                                    <td>Conspectus C owned by U1; request resolves to U2.</td>
+                                    <td>POST with <code>conspectus_uuid=C</code>.</td>
+                                    <td><code>404 ERR_404 ERROR_LOG_REFERENCE_NOT_FOUND</code>.</td>
+                                  </tr>
+                                  <tr>
+                                    <td><code>AC-ERR-CREATE-004</code><br>
+                                      <span class="small">User not found.</span></td>
+                                      <td>No user matches body.</td>
+                                      <td>POST.</td>
+                                      <td><code>404 USER_404</code>.</td>
+                                    </tr>
+                                    <tr>
+                                      <td><code>AC-ERR-CREATE-005</code><br>
+                                        <span class="small">Idempotent replay.</span></td>
+                                        <td>Successful create with key K, body B.</td>
+                                        <td>Same key + body within TTL.</td>
+                                        <td>Stored <code>201</code> body; no new row.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>AC-ERR-CREATE-006</code><br>
+                                          <span class="small">Empty message.</span></td>
+                                          <td>Body has <code>message=""</code>.</td>
+                                          <td>POST.</td>
+                                          <td><code>422 COMMON_000</code>.</td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </section>
 
-        <section id="page-history" class="card">
+                                <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                                  <h2>4. Functional requirements</h2>
+                                  <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+                                    <table>
+                                      <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                      <tbody>
+                                        <tr><td><code>FR-ERR-CREATE-001</code></td>
+                                          <td>Resolve owner via composite user key.</td>
+                                          <td>Same as conspectus endpoints; <code>404 USER_404</code> when not
+                                            found.</td></tr>
+                                            <tr><td><code>FR-ERR-CREATE-002</code></td>
+                                              <td>Validate optional FK ownership.</td>
+                                              <td>If <code>conspectus_uuid</code> is set, verify it belongs to the resolved
+                                                learner; otherwise <code>404 ERR_404</code>.</td></tr>
+                                                <tr><td><code>FR-ERR-CREATE-003</code></td>
+                                                  <td>Persist with server-generated UUID.</td>
+                                                  <td><code>INSERT INTO learning_errors</code> with
+                                                    <code>error_uuid=uuid4()</code>, <code>created_at=now()</code>; FK to
+                                                    <code>conspectus_uuid</code> uses <code>ON DELETE SET NULL</code>.</td></tr>
+                                                    <tr><td><code>FR-ERR-CREATE-004</code></td>
+                                                      <td>Validate <code>message</code>.</td>
+                                                      <td>Non-empty string, 1–2000 chars; trimmed of trailing whitespace.</td></tr>
+                                                      <tr><td><code>FR-ERR-CREATE-005</code></td>
+                                                        <td>Enforce idempotency.</td>
+                                                        <td>Per <a href="../../_shared/idempotency.html">shared rules</a>; namespace
+                                                          <code>POST /api/v1/errors</code>.</td></tr>
+                                                          <tr><td><code>FR-ERR-CREATE-006</code></td>
+                                                            <td>Optional <code>review_log_id</code> link.</td>
+                                                            <td>If supplied, must point to a review log owned by the same learner;
+                                                              invalid → <code>404 ERR_404</code>. Lets the client correlate an error
+                                                              with the exact review that surfaced it.</td></tr>
+                                                            </tbody>
+                                                          </table>
+                                                        </div>
+                                                      </section>
 
-          <h2>Page history</h2>
+                                                      <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                                                        <h2>5. Non-functional requirements</h2>
+                                                        <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+                                                          <table>
+                                                            <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                                            <tbody>
+                                                              <tr><td><code>NFR-ERR-CREATE-001</code></td><td>Latency.</td>
+                                                                <td>P95 ≤ 200 ms.</td></tr>
+                                                                <tr><td><code>NFR-ERR-CREATE-002</code></td><td>Durability.</td>
+                                                                  <td><code>201</code> only after fsync.</td></tr>
+                                                                  <tr><td><code>NFR-ERR-CREATE-003</code></td><td>Idempotency window.</td>
+                                                                    <td>24 h.</td></tr>
+                                                                    <tr><td><code>NFR-ERR-CREATE-004</code></td><td>Payload limit.</td>
+                                                                      <td>Body ≤ 8 KB.</td></tr>
+                                                                      <tr><td><code>NFR-ERR-CREATE-005</code></td><td>Auditability.</td>
+                                                                        <td>Append-only — rows are never updated, only inserted.</td></tr>
+                                                                        <tr><td><code>NFR-ERR-CREATE-006</code></td><td>Backwards compatibility.</td>
+                                                                          <td>Adding optional fields is additive.</td></tr>
+                                                                          <tr><td><code>NFR-ERR-CREATE-007</code></td><td>Observability.</td>
+                                                                            <td>Log events listed in §14.</td></tr>
+                                                                            <tr><td><code>NFR-ERR-CREATE-008</code></td><td>Rate limit.</td>
+                                                                              <td>Inherits global limit.</td></tr>
+                                                                            </tbody>
+                                                                          </table>
+                                                                        </div>
+                                                                      </section>
 
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                      <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                                                        <h2>6. Authorization &amp; permissions</h2>
+                                                                        <p>
+                                                                          API key per <a href="../../_shared/auth.html">shared auth</a>; learner from body.
+                                                                          <strong>Ownership rules:</strong> referenced <code>conspectus_uuid</code> /
+                                                                          <code>review_log_id</code> must be owned by the resolved learner; cross-tenant
+                                                                          references collapse to <code>404 ERR_404</code>.
+                                                                        </p>
+                                                                      </section>
 
-            <table class="docs-page-history">
+                                                                      <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                                                        <h2>7. Request contract</h2>
 
-              <thead>
+                                                                        <h3>Headers</h3>
+                                                                        <dl class="internal-field-list">
+                                                                          <dt><code>X-API-Key</code>
+                                                                            <span class="badge badge--field-type">string</span>
+                                                                            <span class="badge badge--field-req">required</span></dt>
+                                                                            <dd><p>Tenant API key.</p></dd>
+                                                                            <dt><code>Idempotency-Key</code>
+                                                                              <span class="badge badge--field-type">string</span>
+                                                                              <span class="badge badge--field-req">required</span></dt>
+                                                                              <dd>
+                                                                                <p>See <a href="../../_shared/idempotency.html">shared rules</a>.</p>
+                                                                                <dl class="internal-field-list__attrs">
+                                                                                  <dt>Length</dt><dd>1–128 chars.</dd>
+                                                                                </dl>
+                                                                              </dd>
+                                                                              <dt><code>Content-Type</code>
+                                                                                <span class="badge badge--field-type">string</span>
+                                                                                <span class="badge badge--field-req">required</span></dt>
+                                                                                <dd><p>Must be <code>application/json</code>.</p></dd>
+                                                                              </dl>
 
-                <tr>
+                                                                              <h3>Body</h3>
+                                                                              <dl class="internal-field-list">
+                                                                                <dt><code>system_user_id</code>
+                                                                                  <span class="badge badge--field-type">string</span>
+                                                                                  <span class="badge badge--field-req">required</span></dt>
+                                                                                  <dd><p>External user identifier.</p></dd>
+                                                                                  <dt><code>system_uuid</code>
+                                                                                    <span class="badge badge--field-type">string · uuid</span>
+                                                                                    <span class="badge badge--field-req">required</span></dt>
+                                                                                    <dd><p>External tenant UUID.</p></dd>
+                                                                                    <dt><code>message</code>
+                                                                                      <span class="badge badge--field-type">string</span>
+                                                                                      <span class="badge badge--field-req">required</span></dt>
+                                                                                      <dd>
+                                                                                        <p>Free-text description of the mistake or weak cue.</p>
+                                                                                        <dl class="internal-field-list__attrs">
+                                                                                          <dt>Length</dt><dd>1–2000 chars.</dd>
+                                                                                          <dt>PII class</dt><dd>High — learner-typed text.</dd>
+                                                                                        </dl>
+                                                                                      </dd>
+                                                                                      <dt><code>conspectus_uuid</code>
+                                                                                        <span class="badge badge--field-type">string · uuid</span>
+                                                                                        <span class="badge badge--field-opt">optional</span></dt>
+                                                                                        <dd>
+                                                                                          <p>Optional FK to a conspectus owned by the same learner.</p>
+                                                                                          <dl class="internal-field-list__attrs">
+                                                                                            <dt>On delete</dt><dd><code>SET NULL</code> — error rows survive deletion of
+                                                                                            their conspectus.</dd>
+                                                                                          </dl>
+                                                                                        </dd>
+                                                                                        <dt><code>review_log_id</code>
+                                                                                          <span class="badge badge--field-type">integer · int64</span>
+                                                                                          <span class="badge badge--field-opt">optional</span></dt>
+                                                                                          <dd>
+                                                                                            <p>Optional FK to a specific review log row, when the error is captured during a
+                                                                                              review session.</p>
+                                                                                            </dd>
+                                                                                          </dl>
 
-                  <th scope="col">Date</th>
+                                                                                          <h3>Example request</h3>
+                                                                                          <pre><code>POST /api/v1/errors HTTP/1.1
+                                                                                            X-API-Key: sk_live_***
+                                                                                            Idempotency-Key: err-2026-04-29T11:35:00Z
+                                                                                            Content-Type: application/json
 
-                  <th scope="col">Change</th>
+                                                                                            {
+                                                                                            "system_user_id": "learner-01",
+                                                                                            "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                                                                                            "message": "Mixed up condensation and precipitation; need a clearer cue.",
+                                                                                            "conspectus_uuid": "9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001"
+                                                                                            }
+                                                                                          </code></pre>
+                                                                                        </section>
 
-                  <th scope="col">Author</th>
+                                                                                        <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                                                                          <h2>8. Response contract</h2>
+                                                                                          <h3>201 Created — error logged</h3>
+                                                                                          <dl class="internal-field-list">
+                                                                                            <dt><code>error_uuid</code>
+                                                                                              <span class="badge badge--field-type">string · uuid</span></dt>
+                                                                                              <dd><p>Server-generated UUIDv4.</p></dd>
+                                                                                              <dt><code>message</code>
+                                                                                                <span class="badge badge--field-type">string</span></dt>
+                                                                                                <dd><p>Echo of the body field.</p></dd>
+                                                                                                <dt><code>conspectus_uuid</code>
+                                                                                                  <span class="badge badge--field-type">string · uuid</span>
+                                                                                                  <span class="badge badge--field-opt">nullable</span></dt>
+                                                                                                  <dd><p>Echo of the FK, or <code>null</code>.</p></dd>
+                                                                                                  <dt><code>review_log_id</code>
+                                                                                                    <span class="badge badge--field-type">integer · int64</span>
+                                                                                                    <span class="badge badge--field-opt">nullable</span></dt>
+                                                                                                    <dd><p>Echo of the review-log FK, or <code>null</code>.</p></dd>
+                                                                                                    <dt><code>created_at</code>
+                                                                                                      <span class="badge badge--field-type">string · date-time</span></dt>
+                                                                                                      <dd><p>Server timestamp (UTC).</p></dd>
+                                                                                                    </dl>
 
-                </tr>
+                                                                                                    <pre><code>HTTP/1.1 201 Created
+                                                                                                      Content-Type: application/json
+                                                                                                      Location: /api/v1/errors/0a1b2c3d-…
 
-              </thead>
+                                                                                                      {
+                                                                                                      "error_uuid": "0a1b2c3d-4e5f-6789-abcd-0123456789ab",
+                                                                                                      "message": "Mixed up condensation and precipitation; need a clearer cue.",
+                                                                                                      "conspectus_uuid": "9f3a3c1e-77a4-4f4e-9b9e-3f5b3e3c0001",
+                                                                                                      "review_log_id": null,
+                                                                                                      "created_at": "2026-04-29T11:35:00Z"
+                                                                                                      }
+                                                                                                    </code></pre>
+                                                                                                  </section>
 
-              <tbody>
+                                                                                                  <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                                                                                    <h2>10. Side effects</h2>
+                                                                                                    <ul>
+                                                                                                      <li><strong>On success.</strong> One transaction:
+                                                                                                        <code>INSERT INTO learning_errors</code>;
+                                                                                                        <code>INSERT INTO idempotency_keys</code>; emit
+                                                                                                        <code>error_log_created</code> (info).</li>
+                                                                                                        <li><strong>On idempotent replay.</strong> No DB writes; replay stored
+                                                                                                          <code>201</code>; emit
+                                                                                                          <code>error_log_create_idempotent_replay</code> (info).</li>
+                                                                                                          <li><strong>On error.</strong> Rollback; no partial state.</li>
+                                                                                                        </ul>
+                                                                                                      </section>
 
-                <tr>
+                                                                                                      <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                                                                                        <h2>11. Idempotency &amp; concurrency</h2>
+                                                                                                        <ul>
+                                                                                                          <li><strong>Namespace:</strong> <code>POST /api/v1/errors</code>.</li>
+                                                                                                          <li><strong>Key composition:</strong>
+                                                                                                            <code>Idempotency-Key</code> + SHA-256 of canonical body.</li>
+                                                                                                            <li><strong>Replay status:</strong> <code>201</code> with stored body.</li>
+                                                                                                            <li><strong>TTL:</strong> 24 h.</li>
+                                                                                                            <li><strong>Concurrency:</strong> not applicable — fresh row, server-generated
+                                                                                                              UUID.</li>
+                                                                                                            </ul>
+                                                                                                          </section>
 
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                                                                          <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                                                                                            <h2>12. Error catalog</h2>
+                                                                                                            <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+                                                                                                              <table>
+                                                                                                                <thead><tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th>
+                                                                                                                  <th>Log event (level)</th></tr></thead>
+                                                                                                                  <tbody>
+                                                                                                                    <tr><td><code>400</code></td><td><code>COMMON_400</code></td>
+                                                                                                                      <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                                                                                                                      <td>Missing header.</td>
+                                                                                                                      <td><code>request_idempotency_key_missing</code> (warn)</td></tr>
+                                                                                                                      <tr><td><code>401</code></td><td><code>COMMON_401</code></td>
+                                                                                                                        <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                                                                                                        <td>Missing/invalid API key.</td><td>middleware</td></tr>
+                                                                                                                        <tr><td><code>404</code></td><td><code>USER_404</code></td>
+                                                                                                                          <td><code>USER_NOT_FOUND</code></td>
+                                                                                                                          <td>User not resolvable.</td>
+                                                                                                                          <td><code>error_log_create_user_not_found</code> (info)</td></tr>
+                                                                                                                          <tr><td><code>404</code></td><td><code>ERR_404</code></td>
+                                                                                                                            <td><code>ERROR_LOG_REFERENCE_NOT_FOUND</code></td>
+                                                                                                                            <td>Referenced
+                                                                                                                              <code>conspectus_uuid</code>/<code>review_log_id</code> not owned by the
+                                                                                                                              learner.</td>
+                                                                                                                              <td><code>error_log_create_reference_not_found</code> (info)</td></tr>
+                                                                                                                              <tr><td><code>409</code></td><td><code>COMMON_409</code></td>
+                                                                                                                                <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                                                                                                                                <td>Same key, different body.</td>
+                                                                                                                                <td><code>idempotency_payload_mismatch</code> (warn)</td></tr>
+                                                                                                                                <tr><td><code>413</code></td><td><code>COMMON_413</code></td>
+                                                                                                                                  <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+                                                                                                                                  <td>Body &gt; 8 KB.</td><td>middleware</td></tr>
+                                                                                                                                  <tr><td><code>422</code></td><td><code>COMMON_000</code></td>
+                                                                                                                                    <td><code>COMMON_VALIDATION_ERROR</code></td>
+                                                                                                                                    <td>Empty <code>message</code>, malformed UUID, bad field type.</td>
+                                                                                                                                    <td><code>validation_error</code> (warn)</td></tr>
+                                                                                                                                    <tr><td><code>429</code></td><td><code>COMMON_429</code></td>
+                                                                                                                                      <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                                                                                                                                      <td>Rate limit.</td><td>middleware</td></tr>
+                                                                                                                                    </tbody>
+                                                                                                                                  </table>
+                                                                                                                                </div>
+                                                                                                                              </section>
 
-                  <td>Added Page history section (repository baseline).</td>
+                                                                                                                              <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                                                                                                                <h2>13. Edge cases checklist</h2>
+                                                                                                                                <ul>
+                                                                                                                                  <li><strong>Standalone (no FK).</strong> Accept; both
+                                                                                                                                    <code>conspectus_uuid</code> and <code>review_log_id</code> are null.</li>
+                                                                                                                                    <li><strong>Referenced conspectus is later deleted.</strong> FK is
+                                                                                                                                      <code>SET NULL</code>; the error row survives.</li>
+                                                                                                                                      <li><strong><code>conspectus_uuid</code> set, <code>review_log_id</code> not
+                                                                                                                                        owned.</strong> <code>404 ERR_404</code> from the second check.</li>
+                                                                                                                                        <li><strong>Long unicode message.</strong> Accept up to 2000 chars (UTF-8
+                                                                                                                                          bytes).</li>
+                                                                                                                                          <li><strong>Message with only whitespace.</strong> Reject after trim
+                                                                                                                                            (<code>422</code>).</li>
+                                                                                                                                            <li><strong>Idempotency replay across conspectus deletion.</strong> Stored
+                                                                                                                                              <code>201</code> still served; current FK state in DB may differ from the
+                                                                                                                                              replayed body.</li>
+                                                                                                                                            </ul>
+                                                                                                                                          </section>
 
-                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                                          <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                                                                                                                            <h2>14. Observability requirements</h2>
+                                                                                                                                            <h3>Log events</h3>
+                                                                                                                                            <ul>
+                                                                                                                                              <li><code>error_log_created</code> (info) —
+                                                                                                                                                <code>{error_uuid, owner_client_uuid, conspectus_uuid?,
+                                                                                                                                                  review_log_id?}</code>.</li>
+                                                                                                                                                  <li><code>error_log_create_idempotent_replay</code> (info).</li>
+                                                                                                                                                  <li><code>error_log_create_user_not_found</code> (info).</li>
+                                                                                                                                                  <li><code>error_log_create_reference_not_found</code> (info).</li>
+                                                                                                                                                </ul>
+                                                                                                                                                <h3>Metrics</h3>
+                                                                                                                                                <ul>
+                                                                                                                                                  <li><code>error_log_create_total</code> (counter).</li>
+                                                                                                                                                  <li><code>error_log_create_duration_seconds</code> (histogram).</li>
+                                                                                                                                                </ul>
+                                                                                                                                                <h3>Alerts</h3>
+                                                                                                                                                <ul>
+                                                                                                                                                  <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+                                                                                                                                                </ul>
+                                                                                                                                              </section>
 
-                </tr>
+                                                                                                                                              <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                                                                                                                                <h2>15. Test plan</h2>
+                                                                                                                                                <ul>
+                                                                                                                                                  <li><strong>Unit:</strong> validators
+                                                                                                                                                    (<code>message</code> 1–2000, UUID parsing, FK shape).</li>
+                                                                                                                                                    <li><strong>Integration:</strong> AC-001..AC-006.</li>
+                                                                                                                                                    <li><strong>Contract:</strong> Schemathesis on
+                                                                                                                                                      <code>createErrorLog</code>.</li>
+                                                                                                                                                      <li><strong>End-to-end:</strong> review forgot → create error linked to that
+                                                                                                                                                        review → list errors returns it.</li>
+                                                                                                                                                      </ul>
+                                                                                                                                                    </section>
 
-              </tbody>
+                                                                                                                                                    <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                                                                                                                      <h2>16. OpenAPI authoring hints</h2>
+                                                                                                                                                      <ul>
+                                                                                                                                                        <li><strong>operationId:</strong> <code>createErrorLog</code>.</li>
+                                                                                                                                                        <li><strong>Tags:</strong> <code>ErrorLog</code>.</li>
+                                                                                                                                                        <li><strong>Define components:</strong>
+                                                                                                                                                          <code>CreateErrorLogBody</code>, <code>ErrorLogResponse</code>.</li>
+                                                                                                                                                          <li><strong>Examples:</strong> standalone, with conspectus FK, with both FKs.</li>
+                                                                                                                                                        </ul>
+                                                                                                                                                      </section>
 
-            </table>
+                                                                                                                                                      <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                                                                                                                        <h2>17. Open questions</h2>
+                                                                                                                                                        <ul>
+                                                                                                                                                          <li><strong>Q1.</strong> Should <code>review_log_id</code> reference be allowed
+                                                                                                                                                            cross-conspectus (e.g. error captured during one conspectus while studying
+                                                                                                                                                            another)? v1: yes — owner check is the only constraint. <em>Owner:</em>
+                                                                                                                                                            product.</li>
+                                                                                                                                                            <li><strong>Q2.</strong> Add a <code>severity</code> enum
+                                                                                                                                                              (<code>note</code>/<code>warn</code>/<code>blocker</code>)? v1: no — simple
+                                                                                                                                                              free-form message.</li>
+                                                                                                                                                            </ul>
+                                                                                                                                                          </section>
 
-          </div>
+                                                                                                                                                          <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                                                                                                                            <h2>18. Out of scope</h2>
+                                                                                                                                                            <ul>
+                                                                                                                                                              <li>Bulk error log.</li>
+                                                                                                                                                              <li>Editing existing error rows — append-only in v1.</li>
+                                                                                                                                                              <li>Automatic remediation scheduling
+                                                                                                                                                                (<a href="../../../analysis/system-design.html#methodology-non-goals">methodology
+                                                                                                                                                                non-goals</a>).</li>
+                                                                                                                                                                <li>Webhook emission on new error.</li>
+                                                                                                                                                              </ul>
+                                                                                                                                                            </section>
 
-        </section>
+                                                                                                                                                            <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                                                                                                                              <h2>19. Traceability</h2>
+                                                                                                                                                              <ul>
+                                                                                                                                                                <li><strong>Methodology:</strong>
+                                                                                                                                                                  <a href="../../../analysis/methodology.html#retrieve-system">error log →
+                                                                                                                                                                    Transform</a>.</li>
+                                                                                                                                                                    <li><strong>System design:</strong>
+                                                                                                                                                                      <a href="../../../analysis/system-design.html#persistence-model">persistence —
+                                                                                                                                                                        learning_errors</a>, decision D5.</li>
+                                                                                                                                                                        <li><strong>ADRs:</strong>
+                                                                                                                                                                          <a href="../../../../adr/0003-error-contract-governance.html">0003</a>,
+                                                                                                                                                                          <a href="../../../../adr/0005-api-security-defaults.html">0005</a>,
+                                                                                                                                                                          <a href="../../../../adr/0006-idempotency-write-operations.html">0006</a>.</li>
+                                                                                                                                                                          <li><strong>OpenAPI:</strong> <code>createErrorLog</code>.</li>
+                                                                                                                                                                        </ul>
+                                                                                                                                                                      </section>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
+                                                                                                                                                                      <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                                                                                                                                        <h2>20. Spec changelog</h2>
+                                                                                                                                                                        <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+                                                                                                                                                                          <table>
+                                                                                                                                                                            <thead><tr><th>Date</th><th>Type</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                                            <tbody>
+                                                                                                                                                                              <tr>
+                                                                                                                                                                                <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                                <td>additive</td>
+                                                                                                                                                                                <td>Phase 5 rollout: full analyst spec.</td>
+                                                                                                                                                                                <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                  Boyarkin</a></td>
+                                                                                                                                                                                </tr>
+                                                                                                                                                                              </tbody>
+                                                                                                                                                                            </table>
+                                                                                                                                                                          </div>
+                                                                                                                                                                        </section>
 
-</body></html>
+                                                                                                                                                                        <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                                                                                                                                          <h2>Page history</h2>
+                                                                                                                                                                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                                                                                                            <table class="docs-page-history">
+                                                                                                                                                                              <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                                              <tbody>
+                                                                                                                                                                                <tr>
+                                                                                                                                                                                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                                  <td>Phase 5: full rewrite.</td>
+                                                                                                                                                                                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                    Boyarkin</a></td>
+                                                                                                                                                                                  </tr>
+                                                                                                                                                                                </tbody>
+                                                                                                                                                                              </table>
+                                                                                                                                                                            </div>
+                                                                                                                                                                          </section>
+
+                                                                                                                                                                        </main>
+                                                                                                                                                                      </div>
+                                                                                                                                                                    </div>
+
+                                                                                                                                                                  </body></html>

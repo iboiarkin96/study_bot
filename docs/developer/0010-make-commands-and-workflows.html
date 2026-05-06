@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,58 +17,53 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>Make commands and workflows (onboarding)</h1>
+    <h1 class="internal-h1--accent-tail">Make commands and workflows (onboarding)</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <p class="lead">
-      Make targets by topic, how composites chain, and simple if → then flows. Naming rules:
-      <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>.
-    </p>
-    <section id="overview" class="card">
-      <h2>Overview</h2>
-      <p>Targets grouped by job, diagrams for composites, and <strong>if → then</strong> rows for common tasks. Full list:
-        <code>make help</code>. Policy: <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>.
+    <section class="docs-page-hero" aria-labelledby="overview">
+      <h2 id="overview">Overview</h2>
+      <p>
+        Targets grouped by job, diagrams for the composite pipelines, and an
+        <strong>if → then</strong> table for common tasks. The full target list lives in
+        <code>make help</code>. Governing policy:
+        <a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a>.
       </p>
     </section>
 
     <section id="recommended-entry-points" class="card">
       <h2>Recommended entry points (start here)</h2>
       <p>
-        Most days you only need one of these. They wrap the same atomic targets (format, lint, tests, OpenAPI, docs)
-        in different orders and with different final doc steps.
+        Most days you only need one of these. Each one wraps the same atomic targets
+        (format, lint, tests, OpenAPI, docs); they differ in the order and in how the
+        docs are handled at the end.
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Command</th>
-            <th>Use when</th>
-            <th>Outcome</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>make fix</code></td>
-            <td>You want quick auto-fixes before committing.</td>
-            <td><code>format-fix</code> → <code>lint-fix</code> → <code>docs-fix</code></td>
-          </tr>
-          <tr>
-            <td><code>make verify</code></td>
-            <td>Local “full gate” and you are okay regenerating docs on disk.</td>
-            <td><code>lint-check</code> → <code>type-check</code> → <code>openapi-check</code> →
-              <code>contract-test</code> → <code>test</code> → <code>docs-fix</code>
-            </td>
-          </tr>
-          <tr>
-            <td><code>make verify-ci</code></td>
-            <td>Before push: match supply-chain and doc-sync expectations with CI.</td>
-            <td><code>deps-audit</code> → <code>lint-check</code> → <code>type-check</code> → <code>openapi-check</code>
-              → <code>contract-test</code> → <code>test</code> → <code>docs-check</code></td>
+      <div class="docs-table-scroll" role="region" aria-label="Table">
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Use when</th>
+              <th>Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>make fix</code></td>
+              <td>You want quick auto-fixes before committing.</td>
+              <td><code>format-fix</code> → <code>lint-fix</code> → <code>docs-fix</code></td>
+            </tr>
+            <tr>
+              <td><code>make verify</code></td>
+              <td>Single strict gate for local and CI.</td>
+              <td><code>deps-audit</code> → <code>lint-check</code> → <code>type-check</code> → <code>openapi-check</code>
+                →
+                <code>contract-test</code> → <code>test</code> → <code>docs-check</code> → <code>docs-a11y-check</code>
+              </td>
             </tr>
             <tr>
               <td><code>make release-check</code></td>
               <td>Pre-release or deploy rehearsal.</td>
-              <td><code>env-check</code> → <code>deps-audit</code> → <code>lint-check</code> → <code>type-check</code> →
-                <code>openapi-check</code> → <code>contract-test</code> → <code>test</code> → <code>docs-fix</code>
+              <td><code>env-check</code> → <code>make verify</code>
               </td>
             </tr>
             <tr>
@@ -78,36 +73,38 @@
             </tr>
           </tbody>
         </table>
-      </section>
+      </div>
+    </section>
 
-      <section id="composite-pipelines" class="card">
-        <h2>Composite pipelines (diagram)</h2>
-        <p>Diagram below shows how composite targets depend on each other. Arrows show order.</p>
-        <img class="diagram diagram--uml" src="../uml/rendered/make__composite_pipelines.svg" alt="PlantUML: Makefile composite targets — fix, verify, verify-ci, release-check, release" decoding="async" loading="lazy">
-      </section>
+    <section id="composite-pipelines" class="card">
+      <h2>Composite pipelines (diagram)</h2>
+      <p>The diagram below shows how the composite targets depend on each other. Arrows mark the order.</p>
+      <img class="diagram diagram--uml" src="../uml/rendered/make__composite_pipelines.svg" alt="PlantUML: Makefile composite targets — fix, verify, release-check, release" decoding="async" loading="lazy">
+    </section>
 
-      <section id="run-and-observability" class="card">
-        <h2>Run and observability (diagram)</h2>
-        <p>
-          Daily dev is usually <code>make run</code>. Use <code>run-project</code> when you want Compose + API in one
-          flow (requires Docker).
-        </p>
-        <img class="diagram diagram--uml" src="../uml/rendered/make__run_and_observability.svg" alt="PlantUML: make run-project starts observability stack and make run; optional alongside link" decoding="async" loading="lazy">
-        <p>
-          Details and ports: <a href="./0007-local-development.html">Local development</a>. Load testing:
-          <a href="./0006-api-load-testing.html">API load testing</a>.
-        </p>
-      </section>
+    <section id="run-and-observability" class="card">
+      <h2>Run and observability (diagram)</h2>
+      <p>
+        For day-to-day development, use <code>make run</code>. Use <code>run-project</code>
+        when you need Compose plus the API in one flow (Docker required).
+      </p>
+      <img class="diagram diagram--uml" src="../uml/rendered/make__run_and_observability.svg" alt="PlantUML: local run and optional observability stack via Docker Compose" decoding="async" loading="lazy">
+      <p>
+        Details and ports: <a href="0007-local-development.html">Local development</a>. Load testing:
+        <a href="0006-api-load-testing.html">API load testing</a>.
+      </p>
+    </section>
 
-      <section id="commands-by-theme" class="card">
-        <h2>Commands by theme (reference)</h2>
-        <p>
-          Atomic targets you can run alone; composite targets are in section
-          <a href="#composite-pipelines">Composite pipelines</a>.
-        </p>
+    <section id="commands-by-theme" class="card">
+      <h2>Commands by theme (reference)</h2>
+      <p>
+        Atomic targets you can run on their own. Composite targets live in
+        <a href="#composite-pipelines">Composite pipelines</a>.
+      </p>
 
-        <section id="environment-and-dependencies" class="card">
-          <h3>Environment and dependencies</h3>
+      <section id="environment-and-dependencies" class="card">
+        <h3>Environment and dependencies</h3>
+        <div class="docs-table-scroll" role="region" aria-label="Table">
           <table>
             <thead>
               <tr>
@@ -134,10 +131,12 @@
               </tr>
             </tbody>
           </table>
-        </section>
+        </div>
+      </section>
 
-        <section id="application-and-database" class="card">
-          <h3>Application and database</h3>
+      <section id="application-and-database" class="card">
+        <h3>Application and database</h3>
+        <div class="docs-table-scroll" role="region" aria-label="Table">
           <table>
             <thead>
               <tr>
@@ -164,10 +163,12 @@
               </tr>
             </tbody>
           </table>
-        </section>
+        </div>
+      </section>
 
-        <section id="code-quality-and-contracts" class="card">
-          <h3>Code quality and contracts</h3>
+      <section id="code-quality-and-contracts" class="card">
+        <h3>Code quality and contracts</h3>
+        <div class="docs-table-scroll" role="region" aria-label="Table">
           <table>
             <thead>
               <tr>
@@ -206,10 +207,12 @@
               </tr>
             </tbody>
           </table>
-        </section>
+        </div>
+      </section>
 
-        <section id="tests" class="card">
-          <h3>Tests</h3>
+      <section id="tests" class="card">
+        <h3>Tests</h3>
+        <div class="docs-table-scroll" role="region" aria-label="Table">
           <table>
             <thead>
               <tr>
@@ -232,10 +235,12 @@
               </tr>
             </tbody>
           </table>
-        </section>
+        </div>
+      </section>
 
-        <section id="documentation-and-changelog-helpers" class="card">
-          <h3>Documentation and changelog helpers</h3>
+      <section id="documentation-and-changelog-helpers" class="card">
+        <h3>Documentation and changelog helpers</h3>
+        <div class="docs-table-scroll" role="region" aria-label="Table">
           <table>
             <thead>
               <tr>
@@ -247,46 +252,22 @@
               <tr>
                 <td><code>docs-fix</code>, <code>docs-check</code>, <code>uml-check</code>, <code>api-docs</code></td>
                 <td>Docs pipeline, drift check, UML-only check, pdoc-only refresh (see
-                  <a href="./0008-docs-pipeline.html">Documentation pipeline</a>).
+                  <a href="0008-docs-pipeline.html">Documentation pipeline</a>).
                 </td>
               </tr>
               <tr>
                 <td><code>changelog-draft</code>, <code>llm-ping</code></td>
-                <td>Optional LLM draft and API key smoke test (<a href="../adr/0013-changelog-and-release-notes.html">ADR 0013</a>).</td>
-              </tr>
-            </tbody>
-          </table>
+                <td>Optional LLM draft and API key smoke test (<a href="../adr/0013-changelog-and-release-notes.html">ADR
+                  0013</a>).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section id="observability-logging-container" class="card">
           <h3>Observability, logging, container</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Target</th>
-                <th>Role</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>observability-up</code>, <code>observability-down</code>, <code>observability-smoke</code></td>
-                <td>Prometheus/Grafana stack and link checks.</td>
-              </tr>
-              <tr>
-                <td><code>logging-up</code>, <code>logging-down</code>, <code>logging-reset</code>, <code>logging-smoke</code>, <code>logging-es-query</code></td>
-                <td>Optional Elasticsearch + Kibana + Filebeat for local NDJSON search
-                  (<code>docker-compose.logging.yml</code>); <code>QUERY=&lt;uuid&gt;</code> for CLI search. See <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.</td>
-                </tr>
-                <tr>
-                  <td><code>docker-build</code></td>
-                  <td>Build <code>study-app-api:local</code> (see <a href="./0009-docker-image-and-container.html">Docker image and container</a>).</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section id="git-hooks" class="card">
-            <h3>Git hooks</h3>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
             <table>
               <thead>
                 <tr>
@@ -296,93 +277,107 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><code>pre-commit-install</code>, <code>pre-commit-check</code></td>
-                  <td>Install or run all hooks on the tree.</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-        </section>
-
-        <section id="if-then-scenarios" class="card">
-          <h2>If → then (scenarios)</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>If you…</th>
-                <th>Then…</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Just cloned the repo</td>
-                <td><code>make venv &amp;&amp; make install &amp;&amp; make env-init</code>, edit <code>.env</code>,
-                  <code>make migrate</code>,
-                  <code>make run</code>
-                </td>
-              </tr>
-              <tr>
-                <td>Want auto-fixes before commit</td>
-                <td><code>make fix</code></td>
-              </tr>
-              <tr>
-                <td>Want full local gate and regenerated docs</td>
-                <td><code>make verify</code></td>
-              </tr>
-              <tr>
-                <td>Are about to push and need doc sync + audit like CI</td>
-                <td><code>make verify-ci</code></td>
-              </tr>
-              <tr>
-                <td>Changed the API intentionally</td>
-                <td>Review, <code>make openapi-accept-changes</code>, commit baseline, <code>make verify</code> or
-                  <code>make verify-ci</code>
-                </td>
-              </tr>
-              <tr>
-                <td>Debug one test</td>
-                <td><code>make test-one path=tests/…</code></td>
-              </tr>
-              <tr>
-                <td>Run like production Docker entrypoint locally</td>
-                <td><code>make container-start</code></td>
-              </tr>
-              <tr>
-                <td>Need metrics dashboards locally</td>
-                <td><code>make run-project</code> or <code>make observability-up</code> plus <code>make run</code> in another terminal</td>
-              </tr>
-              <tr>
-                <td>Want logs in Kibana / Elasticsearch locally</td>
-                <td><code>make logging-up</code>, run the API with NDJSON to <code>./logs</code> (default
-                  <code>LOG_FORMAT</code> is <code>json</code>), create Kibana data view <code>*study-app-logs*</code> —
-                  see <a href="./0007-local-development.html">Local development</a>.</td>
+                  <td><code>observability-up</code>, <code>observability-down</code>, <code>observability-smoke</code></td>
+                  <td>Prometheus/Grafana stack and link checks.</td>
                 </tr>
                 <tr>
-                  <td>Prepare a release</td>
-                  <td><code>make release-check</code>; deploy with <code>make release DEPLOY_CMD='…'</code></td>
-                </tr>
-              </tbody>
-            </table>
+                  <td><code>logging-up</code>, <code>logging-down</code>, <code>logging-reset</code>,
+                    <code>logging-smoke</code>, <code>logging-es-query</code>
+                  </td>
+                  <td>Optional Elasticsearch + Kibana + Filebeat for local NDJSON search
+                    (<code>docker-compose.logging.yml</code>); <code>QUERY=&lt;uuid&gt;</code> for CLI search. See <a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>.</td>
+                  </tr>
+                  <tr>
+                    <td><code>docker-build</code></td>
+                    <td>Build <code>study-app-api:local</code> (see <a href="0009-docker-image-and-container.html">Docker
+                      image and container</a>).</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="git-hooks" class="card">
+              <h3>Git hooks</h3>
+              <div class="docs-table-scroll" role="region" aria-label="Table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Target</th>
+                      <th>Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>pre-commit-install</code>, <code>pre-commit-check</code></td>
+                      <td>Install or run all hooks on the tree.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
           </section>
 
-          <section id="related-policy-and-automation" class="card">
-            <h2>Related policy and automation</h2>
-            <ul>
-              <li><a href="../adr/0008-make-command-taxonomy-and-workflow-entrypoints.html">ADR 0008</a> — taxonomy and entrypoint rules.</li>
-              <li><a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a> — <code>verify</code> vs <code>verify-ci</code> and CI behavior.</li>
-              <li><a href="../../.github/workflows/ci.yml">GitHub Actions workflow</a> — <code>deps-audit</code> then <code>verify</code> on the runner.</li>
-            </ul>
-
-            <h2>See also</h2>
-            <ul>
-              <li><a href="./README.html#developer-guides">Developer guides index</a></li>
-              <li><a href="./0007-local-development.html">Local development</a></li>
-              <li><a href="../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023 — structured logging and local Elasticsearch</a></li>
-              <li><a href="./0008-docs-pipeline.html">Documentation pipeline</a></li>
-              <li><a href="./0009-docker-image-and-container.html">Docker image and container</a></li>
-              <li><a href="../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a> — PlantUML style for this repo</li>
-            </ul>
+          <section id="if-then-scenarios" class="card">
+            <h2>If → then (scenarios)</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>If you…</th>
+                    <th>Then…</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Just cloned the repo</td>
+                    <td><code>make venv &amp;&amp; make install &amp;&amp; make env-init</code>, edit <code>.env</code>,
+                      <code>make migrate</code>,
+                      <code>make run</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Want auto-fixes before commit</td>
+                    <td><code>make fix</code></td>
+                  </tr>
+                  <tr>
+                    <td>Want full local gate and regenerated docs</td>
+                    <td><code>make verify</code></td>
+                  </tr>
+                  <tr>
+                    <td>Changed the API intentionally</td>
+                    <td>Review, <code>make openapi-accept-changes</code>, commit baseline, <code>make verify</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Debug one test</td>
+                    <td><code>make test-one path=tests/…</code></td>
+                  </tr>
+                  <tr>
+                    <td>Run like production Docker entrypoint locally</td>
+                    <td><code>docker run … study-app-api:local</code> (see Docker guide)</td>
+                  </tr>
+                  <tr>
+                    <td>Need metrics dashboards locally</td>
+                    <td><code>docker compose -f docker-compose.observability.yml up -d</code> plus <code>make run</code></td>
+                  </tr>
+                  <tr>
+                    <td>Want logs in Kibana / Elasticsearch locally</td>
+                    <td><code>docker compose -f docker-compose.logging.yml up -d</code>, run the API with NDJSON to
+                      <code>./logs</code> (default
+                      <code>LOG_FORMAT</code> is <code>json</code>), create Kibana data view <code>*study-app-logs*</code> —
+                      see <a href="0007-local-development.html">Local development</a>.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Prepare a release</td>
+                    <td><code>make release-check</code>; deploy with <code>make release DEPLOY_CMD='…'</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </section>
+
           <section id="page-history" class="card">
             <h2>Page history</h2>
             <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -396,6 +391,11 @@
                 </thead>
                 <tbody>
                   <tr>
+                    <td><time datetime="2026-05-03">2026-05-03</time></td>
+                    <td>Tightened Overview, the entry-points intro, and the diagram captions; replaced “Daily dev is usually make run” with a complete sentence.</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                  <tr>
                     <td><time datetime="2026-04-21">2026-04-21</time></td>
                     <td>Added Page history section (repository baseline).</td>
                     <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
@@ -405,7 +405,6 @@
             </div>
           </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
         </main>
 
       </body></html>

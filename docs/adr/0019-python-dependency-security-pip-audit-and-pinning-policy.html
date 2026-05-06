@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,14 +16,14 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container" data-adr-weight="7">
-    <h1>ADR 0019: Python dependency security, pip-audit, and pinning policy</h1>
+    <h1 class="internal-h1--accent-tail">ADR 0019: Python dependency security, pip-audit, and pinning policy</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
-    <details class="adr-weight-help" data-docs-lifecycle="adr-short"></details>
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        Adopted under <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link the discussion Issue and merge PR when they exist. If not, use git history as the record.
+        Adopted under <a href="0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link the discussion
+        Issue and merge PR when they exist. If not, use git history as the record.
       </p>
       <ul>
         <li>Discussion Issue: <em>none linked for this merge</em></li>
@@ -37,12 +37,14 @@
       <p>
         <strong>Why this matters:</strong> Applications depend on thousands of lines of other people’s code. Unpinned
         installs mean “works on my machine” might pull a different transitive version tomorrow. Known CVEs in public
-        packages are tracked in advisory databases; scanning turns that signal into a failing check instead of a surprise
+        packages are tracked in advisory databases; scanning turns that signal into a failing check instead of a
+        surprise
         in production.
       </p>
       <p>
         We pin exact versions in <code>requirements.txt</code>, run <code>pip-audit</code> in Make and CI, and treat
-        severity levels with a written exception path when fixes cannot land immediately—aligned with common supply-chain
+        severity levels with a written exception path when fixes cannot land immediately—aligned with common
+        supply-chain
         guidance (for example OWASP and NIST SSDF).
       </p>
 
@@ -58,7 +60,8 @@
           <code>pip freeze</code>) so Docker, CI, and local environments resolve the same dependency graph.
         </li>
         <li>
-          After adding or upgrading packages in a virtualenv, regenerate the file with <code>make requirements</code>
+          After adding or upgrading packages in a virtualenv, regenerate the file with
+          <code>.venv/bin/pip freeze | LC_ALL=C sort &gt; requirements.txt</code>
           (see repository <code>README.md</code>) and commit the diff in the same change that introduces the dependency
           change, unless the upgrade is a dedicated maintenance PR.
         </li>
@@ -87,7 +90,8 @@
       <h3>Severity and response expectations</h3>
       <ul>
         <li>
-          <strong>Critical / High</strong>: resolve before merging the affected change, or document a time-bound exception
+          <strong>Critical / High</strong>: resolve before merging the affected change, or document a time-bound
+          exception
           (see below). Prefer upgrading to a patched release; if none exists, consider removing or replacing the
           dependency after risk review.
         </li>
@@ -133,12 +137,13 @@
       <h2>Scope</h2>
       <ul>
         <li>
-          In scope: Python packages installed from PyPI via <code>requirements.txt</code>, pip-audit wiring, Make and CI,
+          In scope: Python packages installed from PyPI via <code>requirements.txt</code>, pip-audit wiring, Make and
+          CI,
           and PR/review expectations.
         </li>
         <li>
           Out of scope: base OS and container image CVEs (covered by image rebuild and base-image policy under
-          <a href="./0015-container-image.html">ADR 0015</a>), and non-Python supply chains unless
+          <a href="0015-container-image.html">ADR 0015</a>), and non-Python supply chains unless
           separately documented.
         </li>
       </ul>
@@ -158,7 +163,8 @@
           Poetry or <code>uv</code> lockfiles without migrating the repo.
           <ul>
             <li>Pros: richer dependency resolution metadata.</li>
-            <li>Cons: would duplicate or replace the current <code>requirements.txt</code>-centric Makefile and CI; defer
+            <li>Cons: would duplicate or replace the current <code>requirements.txt</code>-centric Makefile and CI;
+              defer
               until a dedicated migration ADR.</li>
             </ul>
           </li>
@@ -185,64 +191,57 @@
           <li>Backward-compatibility impact: none for API consumers; dependency upgrades follow normal release notes.</li>
           <li>Migration plan: add <code>pip-audit</code> to developer/CI install lists, implement
             <code>make deps-audit</code>,
-            then gate CI.</li>
-            <li>Rollback strategy: revert the failing upgrade commit or temporarily document an exception with expiry.</li>
-          </ul>
+            then gate CI.
+          </li>
+          <li>Rollback strategy: revert the failing upgrade commit or temporarily document an exception with expiry.</li>
+        </ul>
 
-        </section>
-        <section class="card">
-          <h2>Implementation plan</h2>
-          <ol>
-            <li>Add pip-audit to the project’s install surface (for example <code>requirements.txt</code> or a documented CI
-              install step).</li>
-              <li>Implement <code>make deps-audit</code> and document it next to other verify targets.</li>
-              <li>Run pip-audit in CI after <code>pip install -r requirements.txt</code>; fail on unmitigated Critical/High per
-                team policy above.</li>
-                <li>Reference this ADR from contributor or engineering-practices documentation.</li>
-              </ol>
+      </section>
+      <section class="card">
+        <h2>Implementation plan</h2>
+        <ol>
+          <li>Add pip-audit to the project’s install surface (for example <code>requirements.txt</code> or a documented CI
+            install step).</li>
+            <li>Implement <code>make deps-audit</code> and document it next to other verify targets.</li>
+            <li>Run pip-audit in CI after <code>pip install -r requirements.txt</code>; fail on unmitigated Critical/High
+              per
+              team policy above.</li>
+              <li>Reference this ADR from contributor or engineering-practices documentation.</li>
+            </ol>
 
-            </section>
-            <section class="card">
-              <h2>Validation</h2>
-              <ul>
-                <li>Technical checks: <code>make deps-audit</code> passes on a clean tree after upgrades; CI job green.</li>
-                <li>Operational checks: maintainers know where to record exceptions (PR description + optional issue).</li>
-                <li>Documentation updates: this ADR, backlog item, and developer docs cross-links.</li>
-              </ul>
+          </section>
+          <section class="card">
+            <h2>Validation</h2>
+            <ul>
+              <li>Technical checks: <code>make deps-audit</code> passes on a clean tree after upgrades; CI job green.</li>
+              <li>Operational checks: maintainers know where to record exceptions (PR description + optional issue).</li>
+              <li>Documentation updates: this ADR, backlog item, and developer docs cross-links.</li>
+            </ul>
 
-            </section>
-            <section class="card">
-              <h2>References</h2>
-              <ul>
-                <li>Related ADRs: <a href="./0015-container-image.html">ADR 0015</a> (container image).</li>
-                <li>Backlog: <a href="../backlog/README.html#item-4">P1 — Dependency security (pip-audit) and update policy</a>.
-                </li>
-                <li>pip-audit: <a href="https://pypi.org/project/pip-audit/" rel="noopener noreferrer">PyPI</a>.</li>
-              </ul>
-            </section>
-            <section id="page-history" class="card">
-              <h2>Page history</h2>
-              <div class="docs-table-scroll" role="region" aria-label="Page history">
-                <table class="docs-page-history">
-                  <thead>
-                    <tr>
-                      <th scope="col">Date</th>
-                      <th scope="col">Change</th>
-                      <th scope="col">Author</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><time datetime="2026-04-21">2026-04-21</time></td>
-                      <td>Added Page history section (repository baseline).</td>
-                      <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
+          </section>
 
-            <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-          </main>
+          <section id="page-history" class="card">
+            <h2>Page history</h2>
+            <div class="docs-table-scroll" role="region" aria-label="Page history">
+              <table class="docs-page-history">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><time datetime="2026-04-21">2026-04-21</time></td>
+                    <td>Added Page history section (repository baseline).</td>
+                    <td><a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-        </body></html>
+        </main>
+
+      </body></html>

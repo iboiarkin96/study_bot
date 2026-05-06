@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
-
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>POST /api/v1/user — User — Study App</title>
@@ -11,224 +10,503 @@
   <script defer src="../../../../assets/docs-nav.js"></script>
   <script defer src="../../../../assets/docs-portal-data.js"></script>
   <script defer src="../../../../assets/docs-internal-meta.js"></script>
-
   <script defer src="../../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../../assets/docs-resume.js"></script>
   <link rel="icon" type="image/svg+xml" href="../../../../assets/favicon.svg">
+  <script defer src="../../../../assets/docs-syntax.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="operation" data-spec-status="implemented" data-spec-owner="ivan-boyarkin" data-spec-operation-id="createUser">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>POST /api/v1/user/{system_uuid}/{system_user_id}</h1>
+        <h1 class="internal-h1--accent-tail internal-http-tablet">
+          <span class="internal-http-tablet__method badge badge--method-post">POST</span>
+          <span class="internal-http-tablet__path code">/api/v1/user</span>
+        </h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
-        <section class="internal-doc-entity">User</section>
-        <section class="card">
-          <span class="badge badge--method-post">POST</span>
-          <code class="internal-http-tablet__path">/api/v1/user/{system_uuid}/{system_user_id}</code>
-        </section>
-        <p class="lead">
-          Create a new <strong>User</strong> row for the authenticated tenant. This page is the normative internal
-          description for this endpoint per
-          <a href="../../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>; the
-          external
-          contract is <a href="../../../../openapi/index.html">OpenAPI</a>
-          (<code>operationId</code>: <code>createUser</code>).
-        </p>
-        <p class="small internal-doc-opid">OpenAPI <code>operationId</code> (reference): <code>createUser</code></p>
+        <p class="internal-doc-entity">User</p>
 
-        <section class="card">
-          <h2>Request path and behavior</h2>
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Creates a user and issues a stable client_uuid.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">operationId</span>
+          <code>createUser</code></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-29">2026-04-29</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
           <p>
-            Request enters the FastAPI stack in <code>app/main.py</code> (metrics, body size limit, API key + rate limit
-            per
-            <a href="../../../../adr/0005-api-security-defaults.html">ADR 0005</a>, security headers, request ID), then
-            <code>app/api/v1/user.py</code>. The handler validates the body against the OpenAPI schema, enforces
-            <strong>idempotency</strong> for writes per
-            <a href="../../../../adr/0006-idempotency-write-operations.html">ADR 0006</a>, and delegates to
-            <code>UserService.create</code> → <code>UserRepository</code> (PostgreSQL). Successful writes may record an
-            idempotency row for replay.
-          </p>
-          <p>
-            <strong>Success:</strong> <code>201 Created</code> with the created user body (includes generated
-            <code>client_uuid</code>). On idempotent replay (same key + same payload hash), the stored success response
-            is
-            returned with the <strong>original</strong> status code.
+            Create a new <strong>User</strong> row for the authenticated tenant. Identifies a
+            learner inside the integrator's tenant via the composite natural key
+            <code>(system_user_id, system_uuid)</code>; the server generates a stable
+            <code>client_uuid</code> used as the owner key on every downstream resource.
           </p>
         </section>
 
-        <section class="card">
-          <h2>Idempotency</h2>
+        <section class="card" id="business-context" data-spec-section="business-context" data-spec-required="true">
+          <h2>1. Business context</h2>
           <p>
-            <code>Idempotency-Key</code> header is <strong>required</strong>: printable ASCII, length 1–128. The handler
-            uses <code>endpoint_path = "/api/v1/user"</code> with the key and a SHA-256 hash of the canonical JSON body
-            for
-            lookup and replay. Hash mismatch → <code>409</code>
-            <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code>; missing header → <code>400</code>
-            <code>IDEMPOTENCY_KEY_REQUIRED</code>. Full rules:
-            <a href="../index.html#idempotency">Unified spec — Idempotency</a>.
+            Every other endpoint resolves the learner via the composite key. Without this
+            endpoint there is no surface to mint that key. The server-issued
+            <code>client_uuid</code> isolates internal storage from integrator-supplied
+            identifiers — they can rotate their identifiers later without touching our row
+            graph.
           </p>
         </section>
 
-        <section class="card">
-          <h2>Errors</h2>
-          <p class="small">
-            Envelope shape per <a href="../../../../adr/0003-error-contract-governance.html">ADR 0003</a>
-            (<code>code</code>,
-            <code>key</code>, <code>message</code>, <code>source</code>).
-          </p>
-          <table>
-            <thead>
-              <tr>
-                <th>HTTP</th>
-                <th>Code / key</th>
-                <th>When</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>400</code></td>
-                <td><code>USER_101</code> / <code>USER_CREATE_ALREADY_EXISTS</code></td>
-                <td>Duplicate natural key <code>(system_user_id, system_uuid)</code> — logged at
-                  <strong>warning</strong> as
-                  <code>create_user_duplicate</code> in <code>UserService</code>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>400</code></td>
-                <td><code>COMMON_400</code> / <code>IDEMPOTENCY_KEY_REQUIRED</code></td>
-                <td>Write without <code>Idempotency-Key</code>.</td>
-              </tr>
-              <tr>
-                <td><code>409</code></td>
-                <td><code>COMMON_409</code> / <code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
-                <td>Same idempotency key, different body hash.</td>
-              </tr>
-              <tr>
-                <td><code>422</code></td>
-                <td>Validation</td>
-                <td>Pydantic / OpenAPI validation — global handler logs <code>validation_error</code> at
-                  <strong>warning</strong>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>413</code></td>
-                <td><code>COMMON_413</code></td>
-                <td>Body over limit — middleware; <code>request_body_limit_exceeded</code> at <strong>warning</strong>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>401</code> / <code>429</code></td>
-                <td>—</td>
-                <td>API key / rate limit — before handler; see ADR 0005.</td>
-              </tr>
-              <tr>
-                <td><code>500</code></td>
-                <td>—</td>
-                <td>Uncaught: <code>request_failed</code> with <code>logger.exception</code>.</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section class="card">
-          <h2>Logging</h2>
-          <p>
-            Baseline: every request completes with an info line from HTTP middleware —
-            <code>request_done method=… path=… status=… elapsed_ms=…</code>. <code>request_id</code> is propagated from
-            <code>X-Request-Id</code> per
-            <a href="../../../../adr/0023-structured-logging-and-local-elasticsearch.html">ADR 0023</a>
-            (<code>app/core/logging.py</code>).
-          </p>
-          <p><strong>User router</strong> (<code>app.api.v1.user</code>), create path:</p>
+        <section class="card" id="user-stories" data-spec-section="user-stories" data-spec-required="true">
+          <h2>2. User stories</h2>
           <ul>
-            <li><code>create_user_idempotent_replay</code> — <strong>info</strong> when replaying a stored success (key
-              only).
-            </li>
-            <li><code>create_user_requested</code> — <strong>info</strong>, <code>system_user_id</code>,
-              <code>system_uuid</code>.
-            </li>
-            <li><code>create_user_succeeded</code> — <strong>info</strong> after persist; <code>client_uuid</code>
-              included.
-            </li>
-          </ul>
-          <p>
-            <strong>UserService:</strong> <code>create_user_duplicate</code> at <strong>warning</strong> before raising;
-            <code>create_user_persisted</code> at <strong>info</strong> after insert.
-          </p>
-        </section>
+            <li><strong>US-USER-CREATE-1.</strong> As an <em>integrator</em>, I want to enrol
+              a learner once and reuse the same composite key on every other call.</li>
+              <li><strong>US-USER-CREATE-2.</strong> As an <em>integrator</em>, I want create
+                to be idempotent so retries never produce duplicates.</li>
+              </ul>
+            </section>
 
-        <section class="card">
-          <h2>Metrics</h2>
-          <p>
-            <code>http_requests_total</code> and <code>http_request_duration_seconds</code> with labels including
-            <code>path_template=/api/v1/user</code>, <code>method=POST</code>, and HTTP status. Database timing via
-            <code>db_operation_duration_seconds</code> where applicable. Details:
-            <a href="../index.html#observability">Unified spec — Metrics</a>.
-          </p>
-        </section>
+            <section class="card" id="acceptance-criteria" data-spec-section="acceptance-criteria" data-spec-required="true">
+              <h2>3. Acceptance criteria (Given / When / Then)</h2>
+              <div class="docs-table-scroll" role="region" aria-label="Acceptance criteria">
+                <table>
+                  <thead><tr><th>ID &amp; scenario</th><th>Given</th><th>When</th><th>Then</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><code>AC-USER-CREATE-001</code><br>
+                        <span class="small">Happy path.</span></td>
+                        <td>Composite key not yet seen.</td>
+                        <td>POST with valid body and fresh Idempotency-Key.</td>
+                        <td><code>201 Created</code> with server-generated
+                          <code>client_uuid</code>.</td>
+                        </tr>
+                        <tr>
+                          <td><code>AC-USER-CREATE-002</code><br>
+                            <span class="small">Duplicate composite key.</span></td>
+                            <td>User with the same
+                              <code>(system_user_id, system_uuid)</code> exists.</td>
+                              <td>POST.</td>
+                              <td><code>400 USER_101 USER_CREATE_ALREADY_EXISTS</code>; warn-level log
+                                <code>create_user_duplicate</code>.</td>
+                              </tr>
+                              <tr>
+                                <td><code>AC-USER-CREATE-003</code><br>
+                                  <span class="small">Idempotent replay.</span></td>
+                                  <td>Successful create with key K and body B.</td>
+                                  <td>Same key + body within TTL.</td>
+                                  <td>Stored <code>201</code> body returned.</td>
+                                </tr>
+                                <tr>
+                                  <td><code>AC-USER-CREATE-004</code><br>
+                                    <span class="small">Idempotency-key conflict.</span></td>
+                                    <td>Key K previously used with body B1.</td>
+                                    <td>POST with key K and body B2.</td>
+                                    <td><code>409 COMMON_409</code>.</td>
+                                  </tr>
+                                  <tr>
+                                    <td><code>AC-USER-CREATE-005</code><br>
+                                      <span class="small">Validation — invalid timezone.</span></td>
+                                      <td>Body has <code>timezone="not/an_iana_zone"</code>.</td>
+                                      <td>POST.</td>
+                                      <td><code>422</code> with
+                                        <code>USER_007 USER_CREATE_TIMEZONE_INVALID</code>.</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </section>
 
-        <section class="card">
-          <h2>Single-file deep spec</h2>
-          <p>
-            Cross-cutting sections (layers, full error catalog context, dependencies):
-            <a href="../index.html#user-op-createUser">Unified internal spec — this operation</a>.
-          </p>
-        </section>
+                              <section class="card" id="functional-requirements" data-spec-section="functional-requirements" data-spec-required="true">
+                                <h2>4. Functional requirements</h2>
+                                <div class="docs-table-scroll" role="region" aria-label="Functional requirements">
+                                  <table>
+                                    <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                    <tbody>
+                                      <tr><td><code>FR-USER-CREATE-001</code></td>
+                                        <td>Validate body.</td>
+                                        <td>Per <code>app/errors/user.py</code>: required fields, length limits,
+                                          IANA timezone, UUID shape.</td></tr>
+                                          <tr><td><code>FR-USER-CREATE-002</code></td>
+                                            <td>Reject duplicates.</td>
+                                            <td>Unique constraint on
+                                              <code>(system_user_id, system_uuid)</code>; on collision return
+                                              <code>400 USER_101</code>.</td></tr>
+                                              <tr><td><code>FR-USER-CREATE-003</code></td>
+                                                <td>Server-generated <code>client_uuid</code>.</td>
+                                                <td>UUIDv4 stamped at insert; never client-supplied.</td></tr>
+                                                <tr><td><code>FR-USER-CREATE-004</code></td>
+                                                  <td>Persist via
+                                                    <code>UserRepository</code>.</td>
+                                                    <td>Single transaction; idempotency row written for replay.</td></tr>
+                                                    <tr><td><code>FR-USER-CREATE-005</code></td>
+                                                      <td>Enforce idempotency.</td>
+                                                      <td>Per <a href="../../_shared/idempotency.html">shared rules</a>; namespace
+                                                        <code>POST /api/v1/user</code>.</td></tr>
+                                                        <tr><td><code>FR-USER-CREATE-006</code></td>
+                                                          <td>Return user view.</td>
+                                                          <td><code>UserResponse</code> echoes the body plus
+                                                            <code>client_uuid</code>, <code>created_at</code>,
+                                                            <code>updated_at</code>.</td></tr>
+                                                          </tbody>
+                                                        </table>
+                                                      </div>
+                                                    </section>
 
-        <p class="small">
-          <a href="../index.html">← User resource hub</a>
-        </p>
+                                                    <section class="card" id="non-functional-requirements" data-spec-section="non-functional-requirements" data-spec-required="true">
+                                                      <h2>5. Non-functional requirements</h2>
+                                                      <div class="docs-table-scroll" role="region" aria-label="Non-functional requirements">
+                                                        <table>
+                                                          <thead><tr><th>ID</th><th>Short description</th><th>Detailed characteristic</th></tr></thead>
+                                                          <tbody>
+                                                            <tr><td><code>NFR-USER-CREATE-001</code></td><td>Latency.</td>
+                                                              <td>P95 ≤ 250 ms.</td></tr>
+                                                              <tr><td><code>NFR-USER-CREATE-002</code></td><td>Durability.</td>
+                                                                <td><code>201</code> only after fsync.</td></tr>
+                                                                <tr><td><code>NFR-USER-CREATE-003</code></td><td>Idempotency window.</td>
+                                                                  <td>24 h.</td></tr>
+                                                                  <tr><td><code>NFR-USER-CREATE-004</code></td><td>Payload limit.</td>
+                                                                    <td>Body ≤ 4 KB.</td></tr>
+                                                                    <tr><td><code>NFR-USER-CREATE-005</code></td><td>Backwards compatibility.</td>
+                                                                      <td>Adding optional fields is additive.</td></tr>
+                                                                      <tr><td><code>NFR-USER-CREATE-006</code></td><td>Observability.</td>
+                                                                        <td>Log events listed in §14; metrics labelled by
+                                                                          <code>path_template</code>.</td></tr>
+                                                                          <tr><td><code>NFR-USER-CREATE-007</code></td><td>Rate limit.</td>
+                                                                            <td>Inherits global limit.</td></tr>
+                                                                            <tr><td><code>NFR-USER-CREATE-008</code></td><td>PII.</td>
+                                                                              <td><code>full_name</code>, <code>username</code> are PII medium — masked in
+                                                                                logs at warn level.</td></tr>
+                                                                              </tbody>
+                                                                            </table>
+                                                                          </div>
+                                                                        </section>
 
-        <section id="page-history" class="card">
+                                                                        <section class="card" id="authorization" data-spec-section="authorization" data-spec-required="true">
+                                                                          <h2>6. Authorization &amp; permissions</h2>
+                                                                          <p>API key per <a href="../../_shared/auth.html">shared auth</a>. No additional
+                                                                            scope. The integrator implicitly enrols learners on its own tenant — there is no
+                                                                            cross-tenant create.</p>
+                                                                          </section>
 
-          <h2>Page history</h2>
+                                                                          <section class="card" id="request-contract" data-spec-section="request-contract" data-spec-required="true">
+                                                                            <h2>7. Request contract</h2>
 
-          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                            <h3>Headers</h3>
+                                                                            <dl class="internal-field-list">
+                                                                              <dt><code>X-API-Key</code>
+                                                                                <span class="badge badge--field-type">string</span>
+                                                                                <span class="badge badge--field-req">required</span></dt>
+                                                                                <dd><p>Tenant API key.</p></dd>
+                                                                                <dt><code>Idempotency-Key</code>
+                                                                                  <span class="badge badge--field-type">string</span>
+                                                                                  <span class="badge badge--field-req">required</span></dt>
+                                                                                  <dd>
+                                                                                    <p>Per <a href="../../_shared/idempotency.html">shared rules</a>.</p>
+                                                                                    <dl class="internal-field-list__attrs">
+                                                                                      <dt>Length</dt><dd>1–128 chars.</dd>
+                                                                                    </dl>
+                                                                                  </dd>
+                                                                                  <dt><code>Content-Type</code>
+                                                                                    <span class="badge badge--field-type">string</span>
+                                                                                    <span class="badge badge--field-req">required</span></dt>
+                                                                                    <dd><p>Must be <code>application/json</code>.</p></dd>
+                                                                                  </dl>
 
-            <table class="docs-page-history">
+                                                                                  <h3>Body</h3>
+                                                                                  <dl class="internal-field-list">
+                                                                                    <dt><code>system_user_id</code>
+                                                                                      <span class="badge badge--field-type">string</span>
+                                                                                      <span class="badge badge--field-req">required</span></dt>
+                                                                                      <dd><p>External user identifier from the integrator (1–128 chars). PII low —
+                                                                                        opaque.</p></dd>
+                                                                                        <dt><code>system_uuid</code>
+                                                                                          <span class="badge badge--field-type">string · uuid</span>
+                                                                                          <span class="badge badge--field-req">required</span></dt>
+                                                                                          <dd><p>External tenant UUID. RFC 4122.</p></dd>
+                                                                                          <dt><code>full_name</code>
+                                                                                            <span class="badge badge--field-type">string</span>
+                                                                                            <span class="badge badge--field-req">required</span></dt>
+                                                                                            <dd><p>Display name. 1–256 chars; PII medium.</p></dd>
+                                                                                            <dt><code>username</code>
+                                                                                              <span class="badge badge--field-type">string</span>
+                                                                                              <span class="badge badge--field-opt">optional</span></dt>
+                                                                                              <dd><p>0–64 chars; PII medium.</p></dd>
+                                                                                              <dt><code>timezone</code>
+                                                                                                <span class="badge badge--field-type">string</span>
+                                                                                                <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                <dd><p>IANA zone (e.g. <code>Europe/Berlin</code>); used for calendar-day
+                                                                                                  semantics on due endpoints. ≤ 64 chars.</p></dd>
+                                                                                                  <dt><code>invalidation_reason_uuid</code>
+                                                                                                    <span class="badge badge--field-type">string · uuid</span>
+                                                                                                    <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                    <dd><p>Reserved for soft-invalidation flow.</p></dd>
+                                                                                                    <dt><code>is_row_invalid</code>
+                                                                                                      <span class="badge badge--field-type">integer · int32</span>
+                                                                                                      <span class="badge badge--field-opt">optional</span></dt>
+                                                                                                      <dd><p>0 or 1; default <code>0</code>.</p></dd>
+                                                                                                    </dl>
 
-              <thead>
+                                                                                                    <h3>Example request</h3>
+                                                                                                    <pre><code>POST /api/v1/user HTTP/1.1
+                                                                                                      X-API-Key: sk_live_***
+                                                                                                      Idempotency-Key: enrol-2026-04-29T09:00:00Z
+                                                                                                      Content-Type: application/json
 
-                <tr>
+                                                                                                      {
+                                                                                                      "system_user_id": "learner-01",
+                                                                                                      "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                                                                                                      "full_name": "Alex Learner",
+                                                                                                      "timezone": "Europe/Berlin"
+                                                                                                      }
+                                                                                                    </code></pre>
+                                                                                                  </section>
 
-                  <th scope="col">Date</th>
+                                                                                                  <section class="card" id="response-contract" data-spec-section="response-contract" data-spec-required="true">
+                                                                                                    <h2>8. Response contract</h2>
+                                                                                                    <h3>201 Created — user persisted</h3>
+                                                                                                    <p>Body matches <code>UserResponse</code>: echoes the request fields plus
+                                                                                                      <code>client_uuid</code>, <code>created_at</code>, <code>updated_at</code>.</p>
+                                                                                                      <pre><code>HTTP/1.1 201 Created
+                                                                                                        Content-Type: application/json
+                                                                                                        Location: /api/v1/user/b2c3d4e5-0002-4000-8000-000000000002/learner-01
 
-                  <th scope="col">Change</th>
+                                                                                                        {
+                                                                                                        "client_uuid": "c1c1c1c1-1111-4111-8111-111111111111",
+                                                                                                        "system_user_id": "learner-01",
+                                                                                                        "system_uuid": "b2c3d4e5-0002-4000-8000-000000000002",
+                                                                                                        "full_name": "Alex Learner",
+                                                                                                        "username": null,
+                                                                                                        "timezone": "Europe/Berlin",
+                                                                                                        "invalidation_reason_uuid": null,
+                                                                                                        "is_row_invalid": 0,
+                                                                                                        "created_at": "2026-04-29T09:00:00Z",
+                                                                                                        "updated_at": "2026-04-29T09:00:00Z"
+                                                                                                        }
+                                                                                                      </code></pre>
+                                                                                                    </section>
 
-                  <th scope="col">Author</th>
+                                                                                                    <section class="card" id="side-effects" data-spec-section="side-effects" data-spec-required="true">
+                                                                                                      <h2>10. Side effects</h2>
+                                                                                                      <ul>
+                                                                                                        <li><strong>On success.</strong>
+                                                                                                          <code>INSERT INTO users</code>;
+                                                                                                          <code>INSERT INTO idempotency_keys</code>; emit
+                                                                                                          <code>create_user_succeeded</code> (info).</li>
+                                                                                                          <li><strong>On duplicate.</strong> Warn-level
+                                                                                                            <code>create_user_duplicate</code>; no DB write.</li>
+                                                                                                            <li><strong>On idempotent replay.</strong> Emit
+                                                                                                              <code>create_user_idempotent_replay</code> (info); no DB writes.</li>
+                                                                                                            </ul>
+                                                                                                          </section>
 
-                </tr>
+                                                                                                          <section class="card" id="idempotency-concurrency" data-spec-section="idempotency-concurrency" data-spec-required="true">
+                                                                                                            <h2>11. Idempotency &amp; concurrency</h2>
+                                                                                                            <ul>
+                                                                                                              <li><strong>Namespace:</strong> <code>POST /api/v1/user</code>.</li>
+                                                                                                              <li><strong>Key composition:</strong>
+                                                                                                                <code>Idempotency-Key</code> + SHA-256 of canonical body.</li>
+                                                                                                                <li><strong>Replay status:</strong> <code>201</code> with stored body.</li>
+                                                                                                                <li><strong>TTL:</strong> 24 h.</li>
+                                                                                                                <li><strong>Concurrency:</strong> not applicable — natural-key uniqueness on the
+                                                                                                                  composite handles double-creates.</li>
+                                                                                                                </ul>
+                                                                                                              </section>
 
-              </thead>
+                                                                                                              <section class="card" id="error-catalog" data-spec-section="error-catalog" data-spec-required="true">
+                                                                                                                <h2>12. Error catalog</h2>
+                                                                                                                <p class="small">USER_001..USER_025 (field-level validation) is auto-generated;
+                                                                                                                  see <a href="../../errors.html#catalog-user">errors.html</a>.</p>
+                                                                                                                  <div class="docs-table-scroll" role="region" aria-label="Error catalog">
+                                                                                                                    <table>
+                                                                                                                      <thead><tr><th>HTTP</th><th>Code</th><th>Key</th><th>When</th>
+                                                                                                                        <th>Log event (level)</th></tr></thead>
+                                                                                                                        <tbody>
+                                                                                                                          <tr><td><code>400</code></td><td><code>COMMON_400</code></td>
+                                                                                                                            <td><code>IDEMPOTENCY_KEY_REQUIRED</code></td>
+                                                                                                                            <td>Missing header.</td>
+                                                                                                                            <td><code>request_idempotency_key_missing</code> (warn)</td></tr>
+                                                                                                                            <tr><td><code>400</code></td><td><code>USER_101</code></td>
+                                                                                                                              <td><code>USER_CREATE_ALREADY_EXISTS</code></td>
+                                                                                                                              <td>Duplicate composite key.</td>
+                                                                                                                              <td><code>create_user_duplicate</code> (warn)</td></tr>
+                                                                                                                              <tr><td><code>401</code></td><td><code>COMMON_401</code></td>
+                                                                                                                                <td><code>SECURITY_AUTH_REQUIRED</code></td>
+                                                                                                                                <td>Missing/invalid API key.</td><td>middleware</td></tr>
+                                                                                                                                <tr><td><code>409</code></td><td><code>COMMON_409</code></td>
+                                                                                                                                  <td><code>IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_PAYLOAD</code></td>
+                                                                                                                                  <td>Same key, different body.</td>
+                                                                                                                                  <td><code>idempotency_payload_mismatch</code> (warn)</td></tr>
+                                                                                                                                  <tr><td><code>413</code></td><td><code>COMMON_413</code></td>
+                                                                                                                                    <td><code>SECURITY_REQUEST_BODY_TOO_LARGE</code></td>
+                                                                                                                                    <td>Body &gt; 4 KB.</td><td>middleware</td></tr>
+                                                                                                                                    <tr><td><code>422</code></td><td><code>COMMON_000</code></td>
+                                                                                                                                      <td><code>COMMON_VALIDATION_ERROR</code></td>
+                                                                                                                                      <td>Field-level validation
+                                                                                                                                        (USER_001..025 keys via <code>details[]</code>).</td>
+                                                                                                                                        <td><code>validation_error</code> (warn)</td></tr>
+                                                                                                                                        <tr><td><code>429</code></td><td><code>COMMON_429</code></td>
+                                                                                                                                          <td><code>SECURITY_RATE_LIMIT_EXCEEDED</code></td>
+                                                                                                                                          <td>Rate limit.</td><td>middleware</td></tr>
+                                                                                                                                          <tr><td><code>500</code></td><td>—</td>
+                                                                                                                                            <td>—</td>
+                                                                                                                                            <td>Uncaught exception.</td>
+                                                                                                                                            <td><code>request_failed</code> (exception)</td></tr>
+                                                                                                                                          </tbody>
+                                                                                                                                        </table>
+                                                                                                                                      </div>
+                                                                                                                                    </section>
 
-              <tbody>
+                                                                                                                                    <section class="card" id="edge-cases" data-spec-section="edge-cases" data-spec-required="true">
+                                                                                                                                      <h2>13. Edge cases checklist</h2>
+                                                                                                                                      <ul>
+                                                                                                                                        <li><strong>Concurrent enrol with same composite key.</strong> First wins;
+                                                                                                                                          second receives <code>USER_101</code>.</li>
+                                                                                                                                          <li><strong>Enrol then immediately PATCH.</strong> Both succeed sequentially;
+                                                                                                                                            <code>updated_at</code> reflects the PATCH.</li>
+                                                                                                                                            <li><strong>Long unicode <code>full_name</code>.</strong> Validate by char count
+                                                                                                                                              and byte size.</li>
+                                                                                                                                              <li><strong>Timezone case sensitivity.</strong> IANA names are case-sensitive;
+                                                                                                                                                <code>europe/berlin</code> → <code>422</code>.</li>
+                                                                                                                                                <li><strong>Idempotency replay across DB schema migration.</strong> Replay still
+                                                                                                                                                  returns the originally stored body.</li>
+                                                                                                                                                </ul>
+                                                                                                                                              </section>
 
-                <tr>
+                                                                                                                                              <section class="card" id="observability" data-spec-section="observability" data-spec-required="true">
+                                                                                                                                                <h2>14. Observability requirements</h2>
+                                                                                                                                                <h3>Log events</h3>
+                                                                                                                                                <ul>
+                                                                                                                                                  <li><code>create_user_requested</code> (info) —
+                                                                                                                                                    <code>{system_user_id, system_uuid}</code>.</li>
+                                                                                                                                                    <li><code>create_user_succeeded</code> (info) —
+                                                                                                                                                      <code>{client_uuid}</code>.</li>
+                                                                                                                                                      <li><code>create_user_persisted</code> (info) — repository-level confirmation.</li>
+                                                                                                                                                      <li><code>create_user_duplicate</code> (warn) — duplicate composite key.</li>
+                                                                                                                                                      <li><code>create_user_idempotent_replay</code> (info) — replay served.</li>
+                                                                                                                                                    </ul>
+                                                                                                                                                    <h3>Metrics</h3>
+                                                                                                                                                    <ul>
+                                                                                                                                                      <li><code>http_requests_total{path_template="/api/v1/user", method="POST"}</code>.</li>
+                                                                                                                                                      <li><code>http_request_duration_seconds</code> (same labels).</li>
+                                                                                                                                                      <li><code>db_operation_duration_seconds</code> for the insert.</li>
+                                                                                                                                                    </ul>
+                                                                                                                                                    <h3>Alerts</h3>
+                                                                                                                                                    <ul>
+                                                                                                                                                      <li><strong>Page:</strong> 5xx rate &gt; 1 % over 5 min.</li>
+                                                                                                                                                    </ul>
+                                                                                                                                                  </section>
 
-                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                                                                                                                                                  <section class="card" id="test-plan" data-spec-section="test-plan" data-spec-required="true">
+                                                                                                                                                    <h2>15. Test plan</h2>
+                                                                                                                                                    <ul>
+                                                                                                                                                      <li><strong>Unit:</strong> validators (USER_001..025), repository.</li>
+                                                                                                                                                      <li><strong>Integration:</strong> AC-001..AC-005.</li>
+                                                                                                                                                      <li><strong>Contract:</strong> Schemathesis on <code>createUser</code> — no 5xx
+                                                                                                                                                        on schema-conforming input.</li>
+                                                                                                                                                        <li><strong>End-to-end:</strong> enrol → create conspectus → review → list-due —
+                                                                                                                                                          confirms identity glue.</li>
+                                                                                                                                                        </ul>
+                                                                                                                                                      </section>
 
-                  <td>Added Page history section (repository baseline).</td>
+                                                                                                                                                      <section class="card" id="openapi-authoring-hints" data-spec-section="openapi-authoring-hints" data-spec-required="true">
+                                                                                                                                                        <h2>16. OpenAPI authoring hints</h2>
+                                                                                                                                                        <ul>
+                                                                                                                                                          <li><strong>operationId:</strong> <code>createUser</code> (already in OpenAPI).</li>
+                                                                                                                                                          <li><strong>Tags:</strong> <code>User</code>.</li>
+                                                                                                                                                          <li><strong>Reused:</strong> <code>UserResponse</code>, <code>Uuid</code>,
+                                                                                                                                                            <code>ErrorEnvelope</code>; define <code>CreateUserBody</code>.</li>
+                                                                                                                                                            <li><strong>Document USER_001..025</strong> as discriminated examples on the
+                                                                                                                                                              <code>422</code> response.</li>
+                                                                                                                                                            </ul>
+                                                                                                                                                          </section>
 
-                  <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                                                                                          <section class="card" id="open-questions" data-spec-section="open-questions" data-spec-required="true">
+                                                                                                                                                            <h2>17. Open questions</h2>
+                                                                                                                                                            <ul>
+                                                                                                                                                              <li><strong>Q1.</strong> Should
+                                                                                                                                                                <code>invalidation_reason_uuid</code> / <code>is_row_invalid</code> be
+                                                                                                                                                                client-settable on create, or admin-only? Currently both accepted; revisit when
+                                                                                                                                                                admin endpoints land.</li>
+                                                                                                                                                              </ul>
+                                                                                                                                                            </section>
 
-                </tr>
+                                                                                                                                                            <section class="card" id="out-of-scope" data-spec-section="out-of-scope" data-spec-required="true">
+                                                                                                                                                              <h2>18. Out of scope</h2>
+                                                                                                                                                              <ul>
+                                                                                                                                                                <li>OAuth / JWT auth — API key only in v1.</li>
+                                                                                                                                                                <li>Bulk enrol.</li>
+                                                                                                                                                                <li>Email / phone fields — not part of the v1 schema.</li>
+                                                                                                                                                                <li>Cross-tenant admin user creation.</li>
+                                                                                                                                                              </ul>
+                                                                                                                                                            </section>
 
-              </tbody>
+                                                                                                                                                            <section class="card" id="traceability" data-spec-section="traceability" data-spec-required="true">
+                                                                                                                                                              <h2>19. Traceability</h2>
+                                                                                                                                                              <ul>
+                                                                                                                                                                <li><strong>System design:</strong>
+                                                                                                                                                                  <a href="../../../analysis/system-design.html#scope">scope &amp; identity</a>.</li>
+                                                                                                                                                                  <li><strong>ADRs:</strong>
+                                                                                                                                                                    <a href="../../../../adr/0003-error-contract-governance.html">0003</a>,
+                                                                                                                                                                    <a href="../../../../adr/0005-api-security-defaults.html">0005</a>,
+                                                                                                                                                                    <a href="../../../../adr/0006-idempotency-write-operations.html">0006</a>.</li>
+                                                                                                                                                                    <li><strong>OpenAPI:</strong> <code>createUser</code> (live in
+                                                                                                                                                                      <code>docs/openapi/openapi-baseline.json</code>).</li>
+                                                                                                                                                                    </ul>
+                                                                                                                                                                  </section>
 
-            </table>
+                                                                                                                                                                  <section class="card" id="changelog" data-spec-section="changelog" data-spec-required="true">
+                                                                                                                                                                    <h2>20. Spec changelog</h2>
+                                                                                                                                                                    <div class="docs-table-scroll" role="region" aria-label="Spec changelog">
+                                                                                                                                                                      <table>
+                                                                                                                                                                        <thead><tr><th>Date</th><th>Type</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                                        <tbody>
+                                                                                                                                                                          <tr>
+                                                                                                                                                                            <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                            <td>doc-only</td>
+                                                                                                                                                                            <td>Phase 5 rollout: stub promoted to full analyst spec; status set to
+                                                                                                                                                                              <code>implemented</code> to match live OpenAPI.</td>
+                                                                                                                                                                              <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                Boyarkin</a></td>
+                                                                                                                                                                              </tr>
+                                                                                                                                                                            </tbody>
+                                                                                                                                                                          </table>
+                                                                                                                                                                        </div>
+                                                                                                                                                                      </section>
 
-          </div>
+                                                                                                                                                                      <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+                                                                                                                                                                        <h2>Page history</h2>
+                                                                                                                                                                        <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                                                                                                                                          <table class="docs-page-history">
+                                                                                                                                                                            <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                                                                                                                                            <tbody>
+                                                                                                                                                                              <tr>
+                                                                                                                                                                                <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                                                                                                                                                <td>Phase 5: full rewrite; status=implemented.</td>
+                                                                                                                                                                                <td><a href="../../../portal/people/ivan-boyarkin/index.html">Ivan
+                                                                                                                                                                                  Boyarkin</a></td>
+                                                                                                                                                                                </tr>
+                                                                                                                                                                              </tbody>
+                                                                                                                                                                            </table>
+                                                                                                                                                                          </div>
+                                                                                                                                                                        </section>
 
-        </section>
+                                                                                                                                                                      </main>
+                                                                                                                                                                    </div>
+                                                                                                                                                                  </div>
 
-        <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-      </main>
-    </div>
-  </div>
-
-</body></html>
+                                                                                                                                                                </body></html>

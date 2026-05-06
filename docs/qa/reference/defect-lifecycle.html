@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Defect lifecycle — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Defect lifecycle</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Reference</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            The state machine every defect ticket follows. Eight states, deterministic transitions.
+            Use the labels exactly as written so triage and reporting stay consistent.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#states">States</a>
+            <a class="docs-page-hero__chip" href="#diagram">Diagram</a>
+            <a class="docs-page-hero__chip" href="#transitions">Transitions</a>
+            <a class="docs-page-hero__chip" href="#owner">Who moves it</a>
+            <a class="docs-page-hero__chip" href="#examples">Examples</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">States</div>
+
+        <section class="card" id="states">
+          <h2>States</h2>
+          <div class="docs-table-scroll" role="region" aria-label="State table">
+            <table>
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Meaning</th>
+                  <th>Owner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>New</strong></td>
+                  <td>Filed, not yet triaged.</td>
+                  <td>Reporter</td>
+                </tr>
+                <tr>
+                  <td><strong>Triaged</strong></td>
+                  <td>Severity / priority / area set; assignee picked.</td>
+                  <td>QA / triage rotation</td>
+                </tr>
+                <tr>
+                  <td><strong>In progress</strong></td>
+                  <td>Developer is working on the fix.</td>
+                  <td>Developer</td>
+                </tr>
+                <tr>
+                  <td><strong>Fixed</strong></td>
+                  <td>Code merged on a build that QA can verify.</td>
+                  <td>Developer</td>
+                </tr>
+                <tr>
+                  <td><strong>Verified</strong></td>
+                  <td>QA reproduced the original reproduction; failure no longer occurs.</td>
+                  <td>QA</td>
+                </tr>
+                <tr>
+                  <td><strong>Closed</strong></td>
+                  <td>Verified <em>and</em> released, or accepted as intended behavior, or duplicate.</td>
+                  <td>QA / triage</td>
+                </tr>
+                <tr>
+                  <td><strong>Reopened</strong></td>
+                  <td>Verification failed or the same defect returned post-release.</td>
+                  <td>QA</td>
+                </tr>
+                <tr>
+                  <td><strong>Won't fix</strong></td>
+                  <td>Triage decided not to fix (deferred indefinitely or out of scope).</td>
+                  <td>Triage with owner</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Diagram</div>
+
+        <section class="card" id="diagram">
+          <h2>State diagram</h2>
+          <pre><code class="language-text">              ┌──────┐
+            │ New  │
+            └──┬───┘
+            │ triage
+            ▼
+            ┌────────┐
+            │Triaged │────────────────────────────────────► Won't fix
+            └──┬─────┘
+            │ assign + start
+            ▼
+            ┌──────────────┐
+            │  In progress │
+            └────┬─────────┘
+            │ fix merged on build
+            ▼
+            ┌────────┐
+            │ Fixed  │
+            └──┬─────┘
+            │ QA verify
+            ├───────────► Verified ─── release ───► Closed
+            │ verify fails
+            └───────────► Reopened ─── back to In progress
+          </code></pre>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Transitions</div>
+
+        <section class="card" id="transitions">
+          <h2>Transition rules</h2>
+          <ul>
+            <li><strong>New → Triaged.</strong> Triage sets severity, priority, area, owner. If duplicate of an existing
+              ticket → Closed (duplicate) with link.</li>
+              <li><strong>Triaged → In progress.</strong> Owner has begun coding the fix. SLA clock for "Fix by" starts
+                here.</li>
+                <li><strong>In progress → Fixed.</strong> Code merged on a build QA can pull. Comment must include the build
+                  SHA and a one-line summary of the change.</li>
+                  <li><strong>Fixed → Verified.</strong> QA reproduces the original repro on the new build; the failure no
+                    longer occurs. Evidence attached.</li>
+                    <li><strong>Fixed → Reopened.</strong> Repro still fails. New evidence attached, comment names the build
+                      that was attempted.</li>
+                      <li><strong>Verified → Closed.</strong> Defect is in a released build. The release tag is recorded in the
+                        ticket.</li>
+                        <li><strong>Closed → Reopened.</strong> Same defect returns post-release; new evidence required.</li>
+                        <li><strong>Triaged → Won't fix.</strong> Documented rationale; product owner accepts; ticket stays
+                          searchable.</li>
+                        </ul>
+                      </section>
+
+                      <div class="docs-section-divider" aria-hidden="true">Owner</div>
+
+                      <section class="card" id="owner">
+                        <h2>Who moves the ticket</h2>
+                        <ul>
+                          <li><strong>QA</strong> moves: New → Triaged, Fixed → Verified or Reopened, Verified → Closed.</li>
+                          <li><strong>Developer</strong> moves: Triaged → In progress, In progress → Fixed.</li>
+                          <li><strong>Triage rotation</strong> moves: Triaged → Won't fix (with feature owner consent).</li>
+                          <li>Anyone may move: Closed → Reopened, with new evidence.</li>
+                        </ul>
+                      </section>
+
+                      <div class="docs-section-divider" aria-hidden="true">Examples</div>
+
+                      <section class="card" id="examples">
+                        <h2>Worked examples</h2>
+                        <ul>
+                          <li><em>"POST /user accepts empty email"</em> — New (filed) → Triaged (S2/P2) → In progress → Fixed on
+                            commit <code>abc123</code> → QA reproduces on build <code>abc123</code>, original 201 no longer occurs →
+                            Verified → release tag <code>v0.4.0</code> → Closed.</li>
+                            <li><em>"Sidebar drawer focus trap missing on Safari"</em> — New → Triaged (S2/P2) → In progress → Fixed →
+                              QA verifies, but discovers Tab still escapes after seven cycles → Reopened with new evidence → developer
+                              fixes, marks Fixed → Verified → Closed.</li>
+                              <li><em>"Typo: documenttation"</em> — New → Triaged (S4/P3) → owner fixes opportunistically with the next
+                                docs PR → Fixed → Verified → Closed.</li>
+                              </ul>
+                            </section>
+
+                            <section class="card" id="page-history">
+                              <h2>Page history</h2>
+                              <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                <table class="docs-page-history">
+                                  <thead>
+                                    <tr>
+                                      <th>Date</th>
+                                      <th>Change</th>
+                                      <th>Author</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                      <td>Initial defect lifecycle.</td>
+                                      <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </section>
+
+                          </main>
+                        </div>
+                      </div>
+
+                    </body></html>

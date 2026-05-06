@@ -1,0 +1,62 @@
+@startuml
+title Docs frontend — Rocket launch sequence (one click, full animation path)
+
+autonumber
+hide footbox
+
+actor "Reader" as Reader
+participant "FAB\n.docs-back-to-top" as FAB
+participant "click handler\ninitBackToTopButton" as Click
+participant "launch runtime\nlaunchRocketAnimation" as Run
+participant "Smoke canvas\nWebGL2 / Canvas2D" as Canvas
+participant "Rocket SVG\n.__rocket-wrap" as Rocket
+participant "window" as Win
+
+Reader -> FAB : click while armed
+activate FAB
+FAB -> Click : event
+activate Click
+Click -> Click : read prefers-reduced-motion
+
+alt reduced motion
+  Click -> Win : scrollTo({top:0, behavior:"auto"})
+  Click --> FAB : (no animation)
+else full animation
+  Click -> Click : isLaunching = true
+  Click -> Run : launchRocketAnimation(wrap, onDone)
+  activate Run
+  Run -> Canvas : create canvas, probe WebGL2
+  Run -> Canvas : compile shaders, init pool & VAO
+
+  loop fixed step (1/60 s) while simTs < PRE_MS
+    Run -> Run : emit boil particles
+    Run -> Run : physicsStep
+    Run -> Canvas : draw smoke + hot passes
+  end
+
+  Click -> Win : (at click + PRE_MS ms)\nscrollTo({top:0, smooth})
+
+  loop fixed step while simTs < PRE_MS + DURATION
+    Run -> Run : kill smoke (once at boundary)
+    Run -> Run : physics for hot particles only
+    Run -> Rocket : style.transform = translate/rotate/scale
+    Run -> Canvas : clear (no smoke drawn)
+  end
+
+  Run -> Canvas : dispose GL program / buffers / VAO
+  Run -> Canvas : remove from DOM
+  Run -> Rocket : clear inline transform / opacity
+  Run --> Click : onDone()
+  deactivate Run
+  Click -> Click : isLaunching = false
+end
+deactivate Click
+deactivate FAB
+
+note over Click
+  safety-net setTimeout fires at 5 000 ms
+  if rAF stalls (e.g. backgrounded tab) →
+  cancelFlight() → cleanup → updateVisibility()
+end note
+
+@enduml

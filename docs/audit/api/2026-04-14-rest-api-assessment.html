@@ -16,7 +16,7 @@
 
 <body data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <main class="container">
-    <h1>REST API Assessment — Study App (formed 14 Apr 2026)</h1>
+    <h1 class="internal-h1--accent-tail">REST API Assessment — Study App (formed 14 Apr 2026)</h1>
     <div id="docs-top-nav"></div>
     <div id="docs-page-meta-mount" hidden=""></div>
     <section id="overview" class="card">
@@ -131,252 +131,254 @@
           <li><strong>Typical benchmark</strong> = who often exemplifies the practice</li>
         </ul>
         <div style="overflow-x: auto">
-          <table class="audit-ref-table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Category</th>
-                <th scope="col">Practice</th>
-                <th scope="col">Reference description</th>
-                <th scope="col">Typical benchmark</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>Correlation</td>
-                <td>Request identifier</td>
-                <td>
-                  Every HTTP request gets a stable id; often echoed as <code>X-Request-Id</code>; the same value appears
-                  in
-                  structured logs and (when present) in traces.
-                </td>
-                <td>Minimum bar for support and incidents.</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Write reliability</td>
-                <td>Idempotent <code>POST</code></td>
-                <td>
-                  <code>Idempotency-Key</code> header + operation scope + body hash; retries return the stored outcome;
-                  same key with a different body yields a predictable <code>409</code> with a machine-readable code.
-                </td>
-                <td>Stripe/Twilio-level expectation for payment and write APIs.</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Concurrency</td>
-                <td>Optimistic locking (<code>ETag</code> / <code>If-Match</code>)</td>
-                <td>
-                  <code>GET</code> returns an <code>ETag</code>; <code>PUT</code>/<code>PATCH</code> send
-                  <code>If-Match</code>; if the resource changed, respond <code>412 Precondition Failed</code>.
-                </td>
-                <td>Avoids “last writer wins” without coordination.</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>Reads</td>
-                <td>Conditional <code>GET</code> (<code>304</code>)</td>
-                <td>
-                  Client sends <code>If-None-Match</code>; if unchanged, respond <code>304 Not Modified</code> with no
-                  body.
-                </td>
-                <td>Saves bandwidth for polling clients.</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>Collections</td>
-                <td>Pagination (cursor / keyset)</td>
-                <td>
-                  For large lists, use a cursor or “after this key” rather than deep <code>OFFSET</code>; stable under
-                  concurrent writes.
-                </td>
-                <td>Public list APIs for large catalogs.</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td>API evolution</td>
-                <td>URL versioning + compatibility policy</td>
-                <td>
-                  Major version prefix (e.g. <code>/api/v1</code>); additive vs breaking rules; deprecation window.
-                </td>
-                <td>Many clients on one backend.</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td>Errors</td>
-                <td>Unified error contract</td>
-                <td>
-                  Stable <code>code</code>/<code>key</code>; for 422, structured field list; optionally RFC 7807
-                  (<code>application/problem+json</code>).
-                </td>
-                <td>Clients branch on codes, not prose.</td>
-              </tr>
-              <tr>
-                <td>8</td>
-                <td>Access</td>
-                <td>Authentication and rate limiting</td>
-                <td>
-                  Explicit scheme (API key, OAuth, etc.); on quota exceed, <code>429</code>, <code>Retry-After</code>,
-                  <code>X-RateLimit-*</code>; in clusters, shared counter storage.
-                </td>
-                <td>Protection and fair consumption.</td>
-              </tr>
-              <tr>
-                <td>9</td>
-                <td>Security</td>
-                <td>Limits and headers</td>
-                <td>
-                  Request body size limits; CSP and related security headers; sensible CORS; no secrets in logs.
-                </td>
-                <td>Baseline hygiene before WAF/mTLS at the edge.</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td>Observability</td>
-                <td>Logs, metrics, probes</td>
-                <td>
-                  Structured logs (JSON); metrics (e.g. Prometheus); <code>/live</code> and <code>/ready</code>; tracing
-                  via
-                  W3C/OpenTelemetry as services multiply.
-                </td>
-                <td>SRE and 24/7 operations.</td>
-              </tr>
-              <tr>
-                <td>11</td>
-                <td>Tracing</td>
-                <td><code>traceparent</code> / OpenTelemetry</td>
-                <td>
-                  Ingress context ties logs and spans together; OTLP export to a tracing backend.
-                </td>
-                <td>Standard for microservices and platforms.</td>
-              </tr>
-              <tr>
-                <td>12</td>
-                <td>Contract</td>
-                <td>OpenAPI as source of truth</td>
-                <td>
-                  <code>operationId</code>, success and error examples, tags, <code>securitySchemes</code>, documented
-                  headers (request id, rate limits).
-                </td>
-                <td>SDK generation and one truth for teams.</td>
-              </tr>
-              <tr>
-                <td>13</td>
-                <td>CI</td>
-                <td>Anti-drift for the spec</td>
-                <td>
-                  Completeness checks (e.g. examples on writes and 422), semantic compare to a baseline, optional strict
-                  byte-for-byte mode.
-                </td>
-                <td>As in this repo: <code>openapi-check</code>, <code>contract-test</code>.</td>
-              </tr>
-              <tr>
-                <td>14</td>
-                <td>DX (Documentation Experience)</td>
-                <td>Interactive help</td>
-                <td>
-                  Swagger UI or equivalent at runtime; optional static page with an OpenAPI snapshot for browsing without
-                  a server.
-                </td>
-                <td>Fast manual API calls.</td>
-              </tr>
-              <tr>
-                <td>15</td>
-                <td>DX (Documentation Experience)</td>
-                <td>Developer portal</td>
-                <td>
-                  More than live docs: navigation, brand, onboarding journeys; OpenAPI is one artifact, not the whole UX.
-                </td>
-                <td>Large API-first companies.</td>
-              </tr>
-              <tr>
-                <td>16</td>
-                <td>DX (Documentation Experience)</td>
-                <td>Reference vs guides</td>
-                <td>
-                  Machine reference docs separate from human guides (scenarios, best practices).
-                </td>
-                <td>Stripe / Twilio style.</td>
-              </tr>
-              <tr>
-                <td>17</td>
-                <td>DX (Documentation Experience)</td>
-                <td>Premium documentation patterns</td>
-                <td>
-                  Layout that supports scanning (e.g. three columns), multi-language examples, search across guides and
-                  reference, CI-tested examples, personalized keys in snippets.
-                </td>
-                <td>See Table 2 row 17 for how far we are from this bar.</td>
-              </tr>
-              <tr>
-                <td>18</td>
-                <td>Spec distribution</td>
-                <td>Stable URL and discovery</td>
-                <td>
-                  Public <code>openapi.json</code>, sometimes <code>.well-known</code>;
-                  <code>latest</code>/<code>preview</code>
-                  variants in a repo.
-                </td>
-                <td>Integrators and codegen without guessing URLs.</td>
-              </tr>
-              <tr>
-                <td>19</td>
-                <td>Specification</td>
-                <td>Overlays</td>
-                <td>
-                  Overlays on canonical OpenAPI for branding/navigation without forking the schema.
-                </td>
-                <td>Large specs and multi-brand.</td>
-              </tr>
-              <tr>
-                <td>20</td>
-                <td>Governance</td>
-                <td>Extended lint (Spectral, etc.)</td>
-                <td>
-                  Style rules for naming, pagination, errors, security—beyond minimal baseline checks.
-                </td>
-                <td>Internal style guides (AIP-like).</td>
-              </tr>
-              <tr>
-                <td>21</td>
-                <td>Events</td>
-                <td>AsyncAPI</td>
-                <td>
-                  Separate specification for webhooks/streams alongside REST.
-                </td>
-                <td>Complex asynchronous contracts.</td>
-              </tr>
-              <tr>
-                <td>22</td>
-                <td>Errors</td>
-                <td>Error catalog</td>
-                <td>
-                  Dedicated pages or sections for error codes beyond inline OpenAPI descriptions.
-                </td>
-                <td>Twilio-style error reference.</td>
-              </tr>
-              <tr>
-                <td>23</td>
-                <td>Lifecycle</td>
-                <td>Changelog and deprecations</td>
-                <td>
-                  Keep a Changelog; HTTP <code>Deprecation</code> / <code>Sunset</code> when sunsetting; minimum support
-                  window.
-                </td>
-                <td>Trust from external integrators.</td>
-              </tr>
-              <tr>
-                <td>24</td>
-                <td>Platform</td>
-                <td>Single artifact pipeline</td>
-                <td>
-                  One specification feeds docs, contract tests, mocks, and (when needed) SDKs.
-                </td>
-                <td>Mature API platforms.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="docs-table-scroll" role="region" aria-label="Table">
+            <table class="audit-ref-table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Practice</th>
+                  <th scope="col">Reference description</th>
+                  <th scope="col">Typical benchmark</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Correlation</td>
+                  <td>Request identifier</td>
+                  <td>
+                    Every HTTP request gets a stable id; often echoed as <code>X-Request-Id</code>; the same value appears
+                    in
+                    structured logs and (when present) in traces.
+                  </td>
+                  <td>Minimum bar for support and incidents.</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Write reliability</td>
+                  <td>Idempotent <code>POST</code></td>
+                  <td>
+                    <code>Idempotency-Key</code> header + operation scope + body hash; retries return the stored outcome;
+                    same key with a different body yields a predictable <code>409</code> with a machine-readable code.
+                  </td>
+                  <td>Stripe/Twilio-level expectation for payment and write APIs.</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Concurrency</td>
+                  <td>Optimistic locking (<code>ETag</code> / <code>If-Match</code>)</td>
+                  <td>
+                    <code>GET</code> returns an <code>ETag</code>; <code>PUT</code>/<code>PATCH</code> send
+                    <code>If-Match</code>; if the resource changed, respond <code>412 Precondition Failed</code>.
+                  </td>
+                  <td>Avoids “last writer wins” without coordination.</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Reads</td>
+                  <td>Conditional <code>GET</code> (<code>304</code>)</td>
+                  <td>
+                    Client sends <code>If-None-Match</code>; if unchanged, respond <code>304 Not Modified</code> with no
+                    body.
+                  </td>
+                  <td>Saves bandwidth for polling clients.</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>Collections</td>
+                  <td>Pagination (cursor / keyset)</td>
+                  <td>
+                    For large lists, use a cursor or “after this key” rather than deep <code>OFFSET</code>; stable under
+                    concurrent writes.
+                  </td>
+                  <td>Public list APIs for large catalogs.</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>API evolution</td>
+                  <td>URL versioning + compatibility policy</td>
+                  <td>
+                    Major version prefix (e.g. <code>/api/v1</code>); additive vs breaking rules; deprecation window.
+                  </td>
+                  <td>Many clients on one backend.</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>Errors</td>
+                  <td>Unified error contract</td>
+                  <td>
+                    Stable <code>code</code>/<code>key</code>; for 422, structured field list; optionally RFC 7807
+                    (<code>application/problem+json</code>).
+                  </td>
+                  <td>Clients branch on codes, not prose.</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>Access</td>
+                  <td>Authentication and rate limiting</td>
+                  <td>
+                    Explicit scheme (API key, OAuth, etc.); on quota exceed, <code>429</code>, <code>Retry-After</code>,
+                    <code>X-RateLimit-*</code>; in clusters, shared counter storage.
+                  </td>
+                  <td>Protection and fair consumption.</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>Security</td>
+                  <td>Limits and headers</td>
+                  <td>
+                    Request body size limits; CSP and related security headers; sensible CORS; no secrets in logs.
+                  </td>
+                  <td>Baseline hygiene before WAF/mTLS at the edge.</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>Observability</td>
+                  <td>Logs, metrics, probes</td>
+                  <td>
+                    Structured logs (JSON); metrics (e.g. Prometheus); <code>/live</code> and <code>/ready</code>; tracing
+                    via
+                    W3C/OpenTelemetry as services multiply.
+                  </td>
+                  <td>SRE and 24/7 operations.</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td>Tracing</td>
+                  <td><code>traceparent</code> / OpenTelemetry</td>
+                  <td>
+                    Ingress context ties logs and spans together; OTLP export to a tracing backend.
+                  </td>
+                  <td>Standard for microservices and platforms.</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>Contract</td>
+                  <td>OpenAPI as source of truth</td>
+                  <td>
+                    <code>operationId</code>, success and error examples, tags, <code>securitySchemes</code>, documented
+                    headers (request id, rate limits).
+                  </td>
+                  <td>SDK generation and one truth for teams.</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td>CI</td>
+                  <td>Anti-drift for the spec</td>
+                  <td>
+                    Completeness checks (e.g. examples on writes and 422), semantic compare to a baseline, optional strict
+                    byte-for-byte mode.
+                  </td>
+                  <td>As in this repo: <code>openapi-check</code>, <code>contract-test</code>.</td>
+                </tr>
+                <tr>
+                  <td>14</td>
+                  <td>DX (Documentation Experience)</td>
+                  <td>Interactive help</td>
+                  <td>
+                    Swagger UI or equivalent at runtime; optional static page with an OpenAPI snapshot for browsing without
+                    a server.
+                  </td>
+                  <td>Fast manual API calls.</td>
+                </tr>
+                <tr>
+                  <td>15</td>
+                  <td>DX (Documentation Experience)</td>
+                  <td>Developer portal</td>
+                  <td>
+                    More than live docs: navigation, brand, onboarding journeys; OpenAPI is one artifact, not the whole UX.
+                  </td>
+                  <td>Large API-first companies.</td>
+                </tr>
+                <tr>
+                  <td>16</td>
+                  <td>DX (Documentation Experience)</td>
+                  <td>Reference vs guides</td>
+                  <td>
+                    Machine reference docs separate from human guides (scenarios, best practices).
+                  </td>
+                  <td>Stripe / Twilio style.</td>
+                </tr>
+                <tr>
+                  <td>17</td>
+                  <td>DX (Documentation Experience)</td>
+                  <td>Premium documentation patterns</td>
+                  <td>
+                    Layout that supports scanning (e.g. three columns), multi-language examples, search across guides and
+                    reference, CI-tested examples, personalized keys in snippets.
+                  </td>
+                  <td>See Table 2 row 17 for how far we are from this bar.</td>
+                </tr>
+                <tr>
+                  <td>18</td>
+                  <td>Spec distribution</td>
+                  <td>Stable URL and discovery</td>
+                  <td>
+                    Public <code>openapi.json</code>, sometimes <code>.well-known</code>;
+                    <code>latest</code>/<code>preview</code>
+                    variants in a repo.
+                  </td>
+                  <td>Integrators and codegen without guessing URLs.</td>
+                </tr>
+                <tr>
+                  <td>19</td>
+                  <td>Specification</td>
+                  <td>Overlays</td>
+                  <td>
+                    Overlays on canonical OpenAPI for branding/navigation without forking the schema.
+                  </td>
+                  <td>Large specs and multi-brand.</td>
+                </tr>
+                <tr>
+                  <td>20</td>
+                  <td>Governance</td>
+                  <td>Extended lint (Spectral, etc.)</td>
+                  <td>
+                    Style rules for naming, pagination, errors, security—beyond minimal baseline checks.
+                  </td>
+                  <td>Internal style guides (AIP-like).</td>
+                </tr>
+                <tr>
+                  <td>21</td>
+                  <td>Events</td>
+                  <td>AsyncAPI</td>
+                  <td>
+                    Separate specification for webhooks/streams alongside REST.
+                  </td>
+                  <td>Complex asynchronous contracts.</td>
+                </tr>
+                <tr>
+                  <td>22</td>
+                  <td>Errors</td>
+                  <td>Error catalog</td>
+                  <td>
+                    Dedicated pages or sections for error codes beyond inline OpenAPI descriptions.
+                  </td>
+                  <td>Twilio-style error reference.</td>
+                </tr>
+                <tr>
+                  <td>23</td>
+                  <td>Lifecycle</td>
+                  <td>Changelog and deprecations</td>
+                  <td>
+                    Keep a Changelog; HTTP <code>Deprecation</code> / <code>Sunset</code> when sunsetting; minimum support
+                    window.
+                  </td>
+                  <td>Trust from external integrators.</td>
+                </tr>
+                <tr>
+                  <td>24</td>
+                  <td>Platform</td>
+                  <td>Single artifact pipeline</td>
+                  <td>
+                    One specification feeds docs, contract tests, mocks, and (when needed) SDKs.
+                  </td>
+                  <td>Mature API platforms.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -399,265 +401,267 @@
             </p>
           </noscript>
           <div style="overflow-x: auto">
-            <table class="audit-score-table">
-              <thead>
-                <tr>
-                  <th scope="col"><span tabindex="0" data-tooltip="Row number in this assessment.">#</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="Capability or practice being assessed.">Practice</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="What exists today in code, contracts, or runtime.">What exists in the project (code)</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="Why this score was chosen for the row.">Justification</span></th>
-                  <th scope="col"><span tabindex="0" data-tooltip="Maturity score 1–10 for this document's scope; see the legend above for band meanings.">Score</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Request identifier</td>
-                  <td>
-                    Middleware normalizes/generates an id, <code>X-Request-Id</code> on the response, context in JSON logs
-                    (<code>app/core/request_context.py</code>, <code>app/core/logging.py</code>).
-                  </td>
-                  <td class="audit-table-justification">Request id wired through logs and responses — strong fit.</td>
-                  <td class="score-excellent">9</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Idempotent <code>POST</code> (writes)</td>
-                  <td>
-                    <code>Idempotency-Key</code>, <code>idempotency_keys</code> table, payload hash, <code>409</code> on
-                    conflict; OpenAPI examples (<code>app/core/idempotency.py</code>, user routes).
-                  </td>
-                  <td class="audit-table-justification">Idempotency keys + storage + 409 — reference implementation for
-                    writes.</td>
+            <div class="docs-table-scroll" role="region" aria-label="Table">
+              <table class="audit-score-table">
+                <thead>
+                  <tr>
+                    <th scope="col"><span tabindex="0" data-tooltip="Row number in this assessment.">#</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="Capability or practice being assessed.">Practice</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="What exists today in code, contracts, or runtime.">What exists in the project (code)</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="Why this score was chosen for the row.">Justification</span></th>
+                    <th scope="col"><span tabindex="0" data-tooltip="Maturity score 1–10 for this document's scope; see the legend above for band meanings.">Score</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Request identifier</td>
+                    <td>
+                      Middleware normalizes/generates an id, <code>X-Request-Id</code> on the response, context in JSON logs
+                      (<code>app/core/request_context.py</code>, <code>app/core/logging.py</code>).
+                    </td>
+                    <td class="audit-table-justification">Request id wired through logs and responses — strong fit.</td>
                     <td class="score-excellent">9</td>
                   </tr>
                   <tr>
-                    <td>3</td>
-                    <td><code>ETag</code> / <code>If-Match</code></td>
+                    <td>2</td>
+                    <td>Idempotent <code>POST</code> (writes)</td>
                     <td>
-                      <strong>Not implemented</strong> on current routes (no optimistic-locking headers on
-                      <code>PUT</code>/<code>PATCH</code>).
+                      <code>Idempotency-Key</code>, <code>idempotency_keys</code> table, payload hash, <code>409</code> on
+                      conflict; OpenAPI examples (<code>app/core/idempotency.py</code>, user routes).
                     </td>
-                    <td class="audit-table-justification">Optimistic concurrency not implemented — score reflects absence.
-                    </td>
-                    <td class="score-needs-attention">3</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>Conditional <code>GET</code> (<code>304</code>)</td>
-                    <td>Not implemented for <code>GET /api/v1/user/…</code>.</td>
-                    <td class="audit-table-justification">Conditional GET not implemented for current reads.</td>
-                    <td class="score-needs-attention">2</td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td>Collection pagination</td>
-                    <td>
-                      User API has <strong>no</strong> list endpoint; the practice becomes relevant if collection reads are
-                      added.
-                    </td>
-                    <td class="audit-table-justification">No list route yet; pagination N/A until collections exist.</td>
-                    <td class="score-needs-attention">4</td>
-                  </tr>
-                  <tr>
-                    <td>6</td>
-                    <td>URL version + policy</td>
-                    <td>
-                      Router under <code>/api/v1</code>; policy in ADR 0004; OpenAPI <code>servers</code> skew toward local
-                      development.
-                    </td>
-                    <td class="audit-table-justification">/api/v1 + ADR policy; servers skew local — documented.</td>
-                    <td class="score-excellent">9</td>
-                  </tr>
-                  <tr>
-                    <td>7</td>
-                    <td>Unified error contract</td>
-                    <td>
-                      Stable <code>code</code>/<code>key</code>, custom envelope (not RFC 7807 by default), rich OpenAPI
-                      examples;
-                      error matrix in docs.
-                    </td>
-                    <td class="audit-table-justification">Stable codes + rich OpenAPI examples; custom envelope (not RFC 7807
-                      by default) — strong for PET.</td>
-                      <td class="score-good">8</td>
+                    <td class="audit-table-justification">Idempotency keys + storage + 409 — reference implementation for
+                      writes.</td>
+                      <td class="score-excellent">9</td>
                     </tr>
                     <tr>
-                      <td>8</td>
-                      <td>Authentication and rate limiting</td>
+                      <td>3</td>
+                      <td><code>ETag</code> / <code>If-Match</code></td>
                       <td>
-                        API key, in-memory limiter, <code>429</code> with <code>Retry-After</code> and
-                        <code>X-RateLimit-*</code>;
-                        quotas are not global across replicas without Redis/gateway.
+                        <strong>Not implemented</strong> on current routes (no optimistic-locking headers on
+                        <code>PUT</code>/<code>PATCH</code>).
                       </td>
-                      <td class="audit-table-justification">API key + 429 + rate-limit headers; in-memory limits — good on one
-                        node, not distributed.</td>
-                        <td class="score-good">7</td>
+                      <td class="audit-table-justification">Optimistic concurrency not implemented — score reflects absence.
+                      </td>
+                      <td class="score-needs-attention">3</td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>Conditional <code>GET</code> (<code>304</code>)</td>
+                      <td>Not implemented for <code>GET /api/v1/user/…</code>.</td>
+                      <td class="audit-table-justification">Conditional GET not implemented for current reads.</td>
+                      <td class="score-needs-attention">2</td>
+                    </tr>
+                    <tr>
+                      <td>5</td>
+                      <td>Collection pagination</td>
+                      <td>
+                        User API has <strong>no</strong> list endpoint; the practice becomes relevant if collection reads are
+                        added.
+                      </td>
+                      <td class="audit-table-justification">No list route yet; pagination N/A until collections exist.</td>
+                      <td class="score-needs-attention">4</td>
+                    </tr>
+                    <tr>
+                      <td>6</td>
+                      <td>URL version + policy</td>
+                      <td>
+                        Router under <code>/api/v1</code>; policy in ADR 0004; OpenAPI <code>servers</code> skew toward local
+                        development.
+                      </td>
+                      <td class="audit-table-justification">/api/v1 + ADR policy; servers skew local — documented.</td>
+                      <td class="score-excellent">9</td>
+                    </tr>
+                    <tr>
+                      <td>7</td>
+                      <td>Unified error contract</td>
+                      <td>
+                        Stable <code>code</code>/<code>key</code>, custom envelope (not RFC 7807 by default), rich OpenAPI
+                        examples;
+                        error matrix in docs.
+                      </td>
+                      <td class="audit-table-justification">Stable codes + rich OpenAPI examples; custom envelope (not RFC 7807
+                        by default) — strong for PET.</td>
+                        <td class="score-good">8</td>
                       </tr>
                       <tr>
-                        <td>9</td>
-                        <td>Limits and security headers</td>
+                        <td>8</td>
+                        <td>Authentication and rate limiting</td>
                         <td>
-                          Request body size limit, CORS from config, security headers middleware
-                          (<code>app/core/security.py</code>).
+                          API key, in-memory limiter, <code>429</code> with <code>Retry-After</code> and
+                          <code>X-RateLimit-*</code>;
+                          quotas are not global across replicas without Redis/gateway.
                         </td>
-                        <td class="audit-table-justification">Body size limits, CORS, security middleware — solid baseline
-                          hygiene.</td>
-                          <td class="score-good">8</td>
+                        <td class="audit-table-justification">API key + 429 + rate-limit headers; in-memory limits — good on one
+                          node, not distributed.</td>
+                          <td class="score-good">7</td>
                         </tr>
                         <tr>
-                          <td>10</td>
-                          <td>Logs, metrics, probes</td>
+                          <td>9</td>
+                          <td>Limits and security headers</td>
                           <td>
-                            NDJSON logs, Prometheus metrics, <code>/live</code>, <code>/ready</code> with DB check, optional
-                            Elasticsearch/Filebeat for local search.
+                            Request body size limit, CORS from config, security headers middleware
+                            (<code>app/core/security.py</code>).
                           </td>
-                          <td class="audit-table-justification">NDJSON, Prometheus, health checks — strong ops baseline; distributed
-                            tracing is row 11.</td>
-                            <td class="score-excellent">9</td>
+                          <td class="audit-table-justification">Body size limits, CORS, security middleware — solid baseline
+                            hygiene.</td>
+                            <td class="score-good">8</td>
                           </tr>
                           <tr>
-                            <td>11</td>
-                            <td><code>traceparent</code> / OpenTelemetry</td>
+                            <td>10</td>
+                            <td>Logs, metrics, probes</td>
                             <td>
-                              <code>trace_id</code>/<code>span_id</code> fields reserved in logs; full OTel integration not present.
+                              NDJSON logs, Prometheus metrics, <code>/live</code>, <code>/ready</code> with DB check, optional
+                              Elasticsearch/Filebeat for local search.
                             </td>
-                            <td class="audit-table-justification">Trace fields reserved in logs; no full OTel export — partial vs
-                              reference.</td>
-                              <td class="score-needs-attention">4</td>
-                            </tr>
-                            <tr>
-                              <td>12</td>
-                              <td>Runtime OpenAPI contract</td>
-                              <td>
-                                Tags, <code>operationId</code>, examples, <code>custom_openapi</code> documenting
-                                <code>X-Request-Id</code> per operation.
-                              </td>
-                              <td class="audit-table-justification">OpenAPI drives UI and tests — SSOT for HTTP contract.</td>
+                            <td class="audit-table-justification">NDJSON, Prometheus, health checks — strong ops baseline; distributed
+                              tracing is row 11.</td>
                               <td class="score-excellent">9</td>
                             </tr>
                             <tr>
-                              <td>13</td>
-                              <td>CI against OpenAPI drift</td>
+                              <td>11</td>
+                              <td><code>traceparent</code> / OpenTelemetry</td>
                               <td>
-                                <code>scripts/openapi_governance.py</code>, baseline <code>docs/openapi/openapi-baseline.json</code>,
-                                <code>make openapi-check</code> / <code>contract-test</code>, CI steps.
+                                <code>trace_id</code>/<code>span_id</code> fields reserved in logs; full OTel integration not present.
                               </td>
-                              <td class="audit-table-justification">Baseline + governance + CI contract tests — strong anti-drift.</td>
-                              <td class="score-excellent">9</td>
-                            </tr>
-                            <tr>
-                              <td>14</td>
-                              <td>Interactive help</td>
-                              <td>
-                                <code>/docs</code> (Swagger UI) in the app; static <code>docs/openapi/index.html</code> over
-                                a spec
-                                snapshot.
-                              </td>
-                              <td class="audit-table-justification">Swagger UI + static explorer — solid interactive help at PET scale.
-                              </td>
-                              <td class="score-good">8</td>
-                            </tr>
-                            <tr>
-                              <td>15</td>
-                              <td>Developer portal</td>
-                              <td>
-                                No separate marketing portal; HTML docs, ADRs, indexes—“docs as repo” level.
-                              </td>
-                              <td class="audit-table-justification">No marketing portal; repo HTML/ADRs — scope matches small product.
-                              </td>
-                              <td class="score-needs-attention">5</td>
-                            </tr>
-                            <tr>
-                              <td>16</td>
-                              <td>Reference vs guides</td>
-                              <td>
-                                Split: pdoc/OpenAPI vs <code>docs/developer/*</code>, engineering practices, runbooks—no single
-                                three-column portal.
-                              </td>
-                              <td class="audit-table-justification">Reference split from guides without a single three-column portal —
-                                decent.</td>
-                                <td class="score-good">7</td>
+                              <td class="audit-table-justification">Trace fields reserved in logs; no full OTel export — partial vs
+                                reference.</td>
+                                <td class="score-needs-attention">4</td>
                               </tr>
                               <tr>
-                                <td>17</td>
-                                <td>Premium patterns (columns, SDKs, search, tested snippets)</td>
+                                <td>12</td>
+                                <td>Runtime OpenAPI contract</td>
                                 <td>
-                                  Partial: search in generated API docs, curl examples in operation descriptions; no multi-language SDKs
-                                  from
-                                  the spec, no personalized keys in snippets.
+                                  Tags, <code>operationId</code>, examples, <code>custom_openapi</code> documenting
+                                  <code>X-Request-Id</code> per operation.
                                 </td>
-                                <td class="audit-table-justification">Partial “premium” patterns; no multi-SDK tabs or personalized
-                                  snippets.</td>
-                                  <td class="score-needs-attention">4</td>
+                                <td class="audit-table-justification">OpenAPI drives UI and tests — SSOT for HTTP contract.</td>
+                                <td class="score-excellent">9</td>
+                              </tr>
+                              <tr>
+                                <td>13</td>
+                                <td>CI against OpenAPI drift</td>
+                                <td>
+                                  <code>scripts/openapi_governance.py</code>, baseline <code>docs/openapi/openapi-baseline.json</code>,
+                                  <code>make openapi-check</code> / <code>contract-test</code>, CI steps.
+                                </td>
+                                <td class="audit-table-justification">Baseline + governance + CI contract tests — strong anti-drift.</td>
+                                <td class="score-excellent">9</td>
+                              </tr>
+                              <tr>
+                                <td>14</td>
+                                <td>Interactive help</td>
+                                <td>
+                                  <code>/docs</code> (Swagger UI) in the app; static <code>docs/openapi/index.html</code> over
+                                  a spec
+                                  snapshot.
+                                </td>
+                                <td class="audit-table-justification">Swagger UI + static explorer — solid interactive help at PET scale.
+                                </td>
+                                <td class="score-good">8</td>
+                              </tr>
+                              <tr>
+                                <td>15</td>
+                                <td>Developer portal</td>
+                                <td>
+                                  No separate marketing portal; HTML docs, ADRs, indexes—“docs as repo” level.
+                                </td>
+                                <td class="audit-table-justification">No marketing portal; repo HTML/ADRs — scope matches small product.
+                                </td>
+                                <td class="score-needs-attention">5</td>
+                              </tr>
+                              <tr>
+                                <td>16</td>
+                                <td>Reference vs guides</td>
+                                <td>
+                                  Split: pdoc/OpenAPI vs <code>docs/developer/*</code>, engineering practices, runbooks—no single
+                                  three-column portal.
+                                </td>
+                                <td class="audit-table-justification">Reference split from guides without a single three-column portal —
+                                  decent.</td>
+                                  <td class="score-good">7</td>
                                 </tr>
                                 <tr>
-                                  <td>18</td>
-                                  <td>Stable public spec URL</td>
+                                  <td>17</td>
+                                  <td>Premium patterns (columns, SDKs, search, tested snippets)</td>
                                   <td>
-                                    <code>/openapi.json</code> from the app; optional <code>.well-known</code> not standardized; baseline in
-                                    git
-                                    for partners/CI.
+                                    Partial: search in generated API docs, curl examples in operation descriptions; no multi-language SDKs
+                                    from
+                                    the spec, no personalized keys in snippets.
                                   </td>
-                                  <td class="audit-table-justification">Runtime <code>/openapi.json</code> + baseline in git; no
-                                    standardized public discovery URL.</td>
-                                    <td class="score-good">7</td>
+                                  <td class="audit-table-justification">Partial “premium” patterns; no multi-SDK tabs or personalized
+                                    snippets.</td>
+                                    <td class="score-needs-attention">4</td>
                                   </tr>
                                   <tr>
-                                    <td>19</td>
-                                    <td>OpenAPI overlays</td>
-                                    <td>Not used.</td>
-                                    <td class="audit-table-justification">Overlays not used — fair for a single-brand PET API.</td>
-                                    <td class="score-needs-attention">2</td>
-                                  </tr>
-                                  <tr>
-                                    <td>20</td>
-                                    <td>Spectral / external spec lint</td>
+                                    <td>18</td>
+                                    <td>Stable public spec URL</td>
                                     <td>
-                                      Custom governance script and pytest contract tests; does not replicate a full Spectral ruleset.
+                                      <code>/openapi.json</code> from the app; optional <code>.well-known</code> not standardized; baseline in
+                                      git
+                                      for partners/CI.
                                     </td>
-                                    <td class="audit-table-justification">Custom governance + pytest contracts vs full Spectral ruleset —
-                                      pragmatic trade-off.</td>
+                                    <td class="audit-table-justification">Runtime <code>/openapi.json</code> + baseline in git; no
+                                      standardized public discovery URL.</td>
                                       <td class="score-good">7</td>
                                     </tr>
                                     <tr>
-                                      <td>21</td>
-                                      <td>AsyncAPI</td>
-                                      <td>None (REST-only surface).</td>
-                                      <td class="audit-table-justification">No separate AsyncAPI artifact — sync-only surface for now.</td>
+                                      <td>19</td>
+                                      <td>OpenAPI overlays</td>
+                                      <td>Not used.</td>
+                                      <td class="audit-table-justification">Overlays not used — fair for a single-brand PET API.</td>
                                       <td class="score-needs-attention">2</td>
                                     </tr>
                                     <tr>
-                                      <td>22</td>
-                                      <td>Error catalog</td>
+                                      <td>20</td>
+                                      <td>Spectral / external spec lint</td>
                                       <td>
-                                        Error matrix and OpenAPI examples; no standalone public “error center” like Twilio.
+                                        Custom governance script and pytest contract tests; does not replicate a full Spectral ruleset.
                                       </td>
-                                      <td class="audit-table-justification">Errors spread across matrix/docs vs single catalog — PET trade-off.
-                                      </td>
-                                      <td class="score-good">7</td>
-                                    </tr>
-                                    <tr>
-                                      <td>23</td>
-                                      <td>Changelog and HTTP deprecations</td>
-                                      <td>
-                                        <code>CHANGELOG.md</code> with CI gate; <code>Deprecation</code>/<code>Sunset</code> response headers
-                                        not
-                                        implemented.
-                                      </td>
-                                      <td class="audit-table-justification">Lifecycle docs + HTTP deprecation story evolving with API.</td>
-                                      <td class="score-good">7</td>
-                                    </tr>
-                                    <tr>
-                                      <td>24</td>
-                                      <td>Single artifact pipeline</td>
-                                      <td>
-                                        OpenAPI generated from FastAPI; baseline in repo; tests and verify tied to contract; no SDK generation.
-                                      </td>
-                                      <td class="audit-table-justification">One pipeline from code to OpenAPI to tests — strong alignment.</td>
-                                      <td class="score-good">8</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
+                                      <td class="audit-table-justification">Custom governance + pytest contracts vs full Spectral ruleset —
+                                        pragmatic trade-off.</td>
+                                        <td class="score-good">7</td>
+                                      </tr>
+                                      <tr>
+                                        <td>21</td>
+                                        <td>AsyncAPI</td>
+                                        <td>None (REST-only surface).</td>
+                                        <td class="audit-table-justification">No separate AsyncAPI artifact — sync-only surface for now.</td>
+                                        <td class="score-needs-attention">2</td>
+                                      </tr>
+                                      <tr>
+                                        <td>22</td>
+                                        <td>Error catalog</td>
+                                        <td>
+                                          Error matrix and OpenAPI examples; no standalone public “error center” like Twilio.
+                                        </td>
+                                        <td class="audit-table-justification">Errors spread across matrix/docs vs single catalog — PET trade-off.
+                                        </td>
+                                        <td class="score-good">7</td>
+                                      </tr>
+                                      <tr>
+                                        <td>23</td>
+                                        <td>Changelog and HTTP deprecations</td>
+                                        <td>
+                                          <code>CHANGELOG.md</code> with CI gate; <code>Deprecation</code>/<code>Sunset</code> response headers
+                                          not
+                                          implemented.
+                                        </td>
+                                        <td class="audit-table-justification">Lifecycle docs + HTTP deprecation story evolving with API.</td>
+                                        <td class="score-good">7</td>
+                                      </tr>
+                                      <tr>
+                                        <td>24</td>
+                                        <td>Single artifact pipeline</td>
+                                        <td>
+                                          OpenAPI generated from FastAPI; baseline in repo; tests and verify tied to contract; no SDK generation.
+                                        </td>
+                                        <td class="audit-table-justification">One pipeline from code to OpenAPI to tests — strong alignment.</td>
+                                        <td class="score-good">8</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
                             </section>
 
@@ -681,36 +685,38 @@
                                 weights importance by practice); it answers “what is the unweighted mean of the rubric rows?”
                               </p>
                               <div style="overflow-x: auto">
-                                <table>
-                                  <thead>
-                                    <tr>
-                                      <th scope="col">Step</th>
-                                      <th scope="col">Operation</th>
-                                      <th scope="col">Figures</th>
-                                      <th scope="col">Result</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td>1</td>
-                                      <td>Sum of Table 2 scores</td>
-                                      <td>9+9+3+2+4+9+8+7+8+9+4+9+9+8+5+7+4+7+2+7+2+7+7+8</td>
-                                      <td>154</td>
-                                    </tr>
-                                    <tr>
-                                      <td>2</td>
-                                      <td>÷ number of practices</td>
-                                      <td>24</td>
-                                      <td>—</td>
-                                    </tr>
-                                    <tr>
-                                      <td><strong>Total</strong></td>
-                                      <td><strong>Explicit row mean (unweighted)</strong></td>
-                                      <td>—</td>
-                                      <td><strong>154 ÷ 24 ≈ 6.42 / 10</strong></td>
-                                    </tr>
-                                  </tbody>
-                                </table>
+                                <div class="docs-table-scroll" role="region" aria-label="Table">
+                                  <table>
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Step</th>
+                                        <th scope="col">Operation</th>
+                                        <th scope="col">Figures</th>
+                                        <th scope="col">Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>1</td>
+                                        <td>Sum of Table 2 scores</td>
+                                        <td>9+9+3+2+4+9+8+7+8+9+4+9+9+8+5+7+4+7+2+7+2+7+7+8</td>
+                                        <td>154</td>
+                                      </tr>
+                                      <tr>
+                                        <td>2</td>
+                                        <td>÷ number of practices</td>
+                                        <td>24</td>
+                                        <td>—</td>
+                                      </tr>
+                                      <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td><strong>Explicit row mean (unweighted)</strong></td>
+                                        <td>—</td>
+                                        <td><strong>154 ÷ 24 ≈ 6.42 / 10</strong></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
                               <p>
                                 <strong>Interpretation:</strong> several high scores (OpenAPI pipeline, idempotency, request ids) sit alongside
@@ -724,61 +730,63 @@
                                 <strong>DONE</strong> (accepted in main). Update started / closed / PR when you pick up or finish work.
                               </p>
                               <div style="overflow-x: auto">
-                                <table class="audit-gap-table">
-                                  <thead>
-                                    <tr>
-                                      <th scope="col">Priority</th>
-                                      <th scope="col">Gap</th>
-                                      <th scope="col">Status</th>
-                                      <th scope="col">Started</th>
-                                      <th scope="col">Closed</th>
-                                      <th scope="col">PR / reference</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td>P0</td>
-                                      <td>OpenTelemetry / distributed tracing aligned with logs (Table 2 row 11).</td>
-                                      <td class="audit-gap-status audit-gap-status--todo">TODO</td>
-                                      <td>—</td>
-                                      <td>—</td>
-                                      <td>—</td>
-                                    </tr>
-                                    <tr>
-                                      <td>P0</td>
-                                      <td>Distributed or edge rate limiting when running &gt;1 replica (row 8).</td>
-                                      <td class="audit-gap-status audit-gap-status--todo">TODO</td>
-                                      <td>—</td>
-                                      <td>—</td>
-                                      <td>—</td>
-                                    </tr>
-                                    <tr>
-                                      <td>P1</td>
-                                      <td>HTTP <code>Deprecation</code> / <code>Sunset</code> headers + changelog story (row 23).</td>
-                                      <td class="audit-gap-status audit-gap-status--todo">TODO</td>
-                                      <td>—</td>
-                                      <td>—</td>
-                                      <td>—</td>
-                                    </tr>
-                                    <tr>
-                                      <td>P1</td>
-                                      <td>Stable public OpenAPI / spec discovery URL (e.g. <code>.well-known</code>) when product needs it (row
-                                        18).</td>
+                                <div class="docs-table-scroll" role="region" aria-label="Table">
+                                  <table class="audit-gap-table">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Priority</th>
+                                        <th scope="col">Gap</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Started</th>
+                                        <th scope="col">Closed</th>
+                                        <th scope="col">PR / reference</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>P0</td>
+                                        <td>OpenTelemetry / distributed tracing aligned with logs (Table 2 row 11).</td>
                                         <td class="audit-gap-status audit-gap-status--todo">TODO</td>
                                         <td>—</td>
                                         <td>—</td>
                                         <td>—</td>
                                       </tr>
                                       <tr>
-                                        <td>P2</td>
-                                        <td><code>ETag</code> / <code>If-Match</code> for safe concurrent edits if clients need it (row 3).</td>
+                                        <td>P0</td>
+                                        <td>Distributed or edge rate limiting when running &gt;1 replica (row 8).</td>
                                         <td class="audit-gap-status audit-gap-status--todo">TODO</td>
                                         <td>—</td>
                                         <td>—</td>
                                         <td>—</td>
                                       </tr>
-                                    </tbody>
-                                  </table>
+                                      <tr>
+                                        <td>P1</td>
+                                        <td>HTTP <code>Deprecation</code> / <code>Sunset</code> headers + changelog story (row 23).</td>
+                                        <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+                                        <td>—</td>
+                                        <td>—</td>
+                                        <td>—</td>
+                                      </tr>
+                                      <tr>
+                                        <td>P1</td>
+                                        <td>Stable public OpenAPI / spec discovery URL (e.g. <code>.well-known</code>) when product needs it (row
+                                          18).</td>
+                                          <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+                                          <td>—</td>
+                                          <td>—</td>
+                                          <td>—</td>
+                                        </tr>
+                                        <tr>
+                                          <td>P2</td>
+                                          <td><code>ETag</code> / <code>If-Match</code> for safe concurrent edits if clients need it (row 3).</td>
+                                          <td class="audit-gap-status audit-gap-status--todo">TODO</td>
+                                          <td>—</td>
+                                          <td>—</td>
+                                          <td>—</td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
                                 </div>
                               </section>
 
@@ -830,7 +838,6 @@
                                 </div>
                               </section>
 
-                              <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
                             </main>
 
                           </body></html>

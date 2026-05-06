@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head>
-  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,9 +11,10 @@
   <script defer src="../assets/docs-portal-data.js"></script>
   <script defer src="../assets/docs-internal-meta.js"></script>
   <script defer src="../assets/internal-sidebar.js"></script>
-
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <script defer src="../assets/docs-syntax.js"></script>
 </head>
+
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
@@ -27,9 +28,10 @@
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1>Runbook: Observability Scrape Failing</h1>
+        <h1 class="internal-h1--accent-tail">Runbook: Observability Scrape Failing</h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
+
         <section class="card">
           <h2>Trigger</h2>
           <ul>
@@ -38,13 +40,13 @@
             <li>Grafana dashboard panels show <code>No data</code>.</li>
           </ul>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Fast triage</h2>
           <ol>
             <li>Ensure API is running: <code>make run</code>.</li>
-            <li>Ensure observability stack is running: <code>make observability-up</code>.</li>
-            <li>Run smoke-check: <code>make observability-smoke</code>.</li>
+            <li>Ensure observability stack is running: <code>docker compose -f docker-compose.observability.yml up -d</code>.</li>
+            <li>Run smoke-check: <code>python scripts/check_observability_links.py</code>.</li>
             <li>Verify endpoint directly: <code>curl http://127.0.0.1:8000/metrics</code>.</li>
             <li>Open Prometheus targets page and inspect scrape error details.</li>
           </ol>
@@ -67,8 +69,8 @@
             <a href="http://127.0.0.1:9090/graph?g0.expr=1000%20*%20histogram_quantile%280.95%2C%20sum%28rate%28db_operation_duration_seconds_bucket%5B5m%5D%29%29%20by%20%28le%29%29&amp;g0.tab=0">open</a>
           </p>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Most common causes</h2>
           <ul>
             <li>API process is down or started on a different port.</li>
@@ -77,22 +79,20 @@
             <li>Docker cannot reach the host (<code>host.docker.internal</code> missing or broken).</li>
           </ul>
         </section>
-        <section class="card">
 
+        <section class="card">
           <h2>Recovery steps</h2>
           <h3>Endpoint-level checks</h3>
           <ul>
             <li>Run <code>curl -i http://127.0.0.1:8000/metrics</code> and confirm status <code>200</code>.</li>
             <li>Confirm payload contains metric names such as <code>http_requests_total</code>.</li>
           </ul>
-
           <h3>Prometheus target checks</h3>
           <ul>
             <li>Open <code>http://127.0.0.1:9090/targets</code>.</li>
-            <li>If target is down, inspect <code>PROMETHEUS_SCRAPE_TARGET</code>, then re-run <code>make observability-up</code> to render and apply config.</li>
-            <li>Restart stack: <code>make observability-down &amp;&amp; make observability-up</code>.</li>
+            <li>If target is down, inspect <code>PROMETHEUS_SCRAPE_TARGET</code>, then re-run <code>python scripts/render_prometheus_config.py</code> and <code>docker compose -f docker-compose.observability.yml up -d</code> to apply config.</li>
+            <li>Restart stack: <code>docker compose -f docker-compose.observability.yml down &amp;&amp; docker compose -f docker-compose.observability.yml up -d</code>.</li>
           </ul>
-
           <h3>Grafana checks</h3>
           <ul>
             <li>Open Grafana (<code>http://127.0.0.1:3001</code>) and verify Prometheus datasource is healthy.</li>
@@ -101,8 +101,8 @@
           <pre><code>for i in {1..20}; do curl -s http://127.0.0.1:8000/live &gt; /dev/null; done
             for i in {1..20}; do curl -s http://127.0.0.1:8000/ready &gt; /dev/null; done</code></pre>
           </section>
-          <section class="card">
 
+          <section class="card">
             <h2>Exit criteria</h2>
             <ul>
               <li>Prometheus target is <code>UP</code>.</li>
@@ -110,6 +110,7 @@
               <li>Grafana dashboard panels show non-empty time-series data.</li>
             </ul>
           </section>
+
           <section class="card">
             <h2>Follow-up</h2>
             <ul>
@@ -117,6 +118,7 @@
               <li>If the same scrape failure repeats, add a note to this runbook.</li>
             </ul>
           </section>
+
           <section id="page-history" class="card">
             <h2>Page history</h2>
             <div class="docs-table-scroll" role="region" aria-label="Page history">
@@ -139,7 +141,6 @@
             </div>
           </section>
 
-          <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
         </main>
       </div>
     </div>

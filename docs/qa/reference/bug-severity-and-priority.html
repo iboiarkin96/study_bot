@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Severity &amp; priority matrix — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Severity &amp; priority matrix</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Reference</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Two independent dimensions: <strong>severity</strong> = how bad is it,
+            <strong>priority</strong> = how soon to fix. A defect can be S1 / P3 (data corruption
+            on a feature nobody uses yet) or S4 / P1 (annoying typo on the home page that the CEO
+            wants gone today). Always set both.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#severity">Severity</a>
+            <a class="docs-page-hero__chip" href="#priority">Priority</a>
+            <a class="docs-page-hero__chip" href="#decision">Decision table</a>
+            <a class="docs-page-hero__chip" href="#sla">SLA targets</a>
+            <a class="docs-page-hero__chip" href="#examples">Examples</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Severity</div>
+
+        <section class="card" id="severity">
+          <h2>Severity — impact only</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Severity table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Level</th>
+                  <th>Definition</th>
+                  <th>Examples</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>S1 — Critical</td>
+                  <td>Production-down, data loss or corruption, security exposure, or a release blocker that affects all
+                    users.</td>
+                    <td>Auth bypass; 500 on every request; rows persisted with wrong tenant; secret leaked in response.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>S2 — Major</td>
+                    <td>Significant feature broken or contract violated; workaround exists but is costly or partial.</td>
+                    <td>POST accepts invalid data and persists it; pagination loses pages; idempotency replay creates
+                      duplicates; endpoint returns 500 instead of 422.</td>
+                    </tr>
+                    <tr>
+                      <td>S3 — Minor</td>
+                      <td>Functional defect with a low impact or a clean workaround.</td>
+                      <td>Wrong field label; sidebar group does not auto-open; tooltip text outdated; rare flaky behavior.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>S4 — Trivial</td>
+                      <td>Cosmetic / wording issue; no functional impact.</td>
+                      <td>Typo; small spacing inconsistency; missing trailing period.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">Priority</div>
+
+            <section class="card" id="priority">
+              <h2>Priority — when to fix</h2>
+              <div class="docs-table-scroll" role="region" aria-label="Priority table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Level</th>
+                      <th>Definition</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>P1 — Now</td>
+                      <td>Stop other work; fix this release. Hotfix-eligible.</td>
+                    </tr>
+                    <tr>
+                      <td>P2 — Soon</td>
+                      <td>Plan into the current sprint; fix before next release.</td>
+                    </tr>
+                    <tr>
+                      <td>P3 — Backlog</td>
+                      <td>Tracked, scheduled within the next two sprints.</td>
+                    </tr>
+                    <tr>
+                      <td>P4 — Someday</td>
+                      <td>Tracked, no commitment.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">Decision</div>
+
+            <section class="card" id="decision">
+              <h2>Decision table — suggested priority by severity × visibility</h2>
+              <p class="small">
+                Reporters suggest; triage decides. <em>Visibility</em> = who would notice today.
+              </p>
+              <div class="docs-table-scroll" role="region" aria-label="Decision table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Visible to all users</th>
+                      <th>Visible to a few</th>
+                      <th>Internal only</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>S1</th>
+                      <td>P1</td>
+                      <td>P1</td>
+                      <td>P2</td>
+                    </tr>
+                    <tr>
+                      <th>S2</th>
+                      <td>P1</td>
+                      <td>P2</td>
+                      <td>P3</td>
+                    </tr>
+                    <tr>
+                      <th>S3</th>
+                      <td>P2</td>
+                      <td>P3</td>
+                      <td>P3 / P4</td>
+                    </tr>
+                    <tr>
+                      <th>S4</th>
+                      <td>P3</td>
+                      <td>P4</td>
+                      <td>P4</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">SLA</div>
+
+            <section class="card" id="sla">
+              <h2>Default SLA targets</h2>
+              <p class="small">
+                Targets, not promises. Used by triage to size the response.
+              </p>
+              <div class="docs-table-scroll" role="region" aria-label="SLA table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Severity</th>
+                      <th>Triage by</th>
+                      <th>Mitigation by</th>
+                      <th>Fix by</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>S1</td>
+                      <td>1 hour (working)</td>
+                      <td>1 working day</td>
+                      <td>3 working days</td>
+                    </tr>
+                    <tr>
+                      <td>S2</td>
+                      <td>1 working day</td>
+                      <td>—</td>
+                      <td>Current sprint</td>
+                    </tr>
+                    <tr>
+                      <td>S3</td>
+                      <td>3 working days</td>
+                      <td>—</td>
+                      <td>Within 2 sprints</td>
+                    </tr>
+                    <tr>
+                      <td>S4</td>
+                      <td>1 sprint</td>
+                      <td>—</td>
+                      <td>Backlog</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <div class="docs-section-divider" aria-hidden="true">Examples</div>
+
+            <section class="card" id="examples">
+              <h2>Worked examples</h2>
+              <ul>
+                <li><em>POST /user persists a user without an email.</em> Severity S2 (data integrity), Priority P2 (visible
+                  to a few in current testing).</li>
+                  <li><em>Auth header parsing throws 500 instead of returning 401.</em> Severity S2, Priority P1 (visible to
+                    all integrators on a basic mistake).</li>
+                    <li><em>Sidebar group does not auto-open on a deep-linked page.</em> Severity S3, Priority P3.</li>
+                    <li><em>Typo on the home hero ("Documenttation").</em> Severity S4, Priority P3.</li>
+                    <li><em>SQL migration drops a non-empty column when re-applied.</em> Severity S1, Priority P1.</li>
+                  </ul>
+                </section>
+
+                <section class="card" id="page-history">
+                  <h2>Page history</h2>
+                  <div class="docs-table-scroll" role="region" aria-label="Page history">
+                    <table class="docs-page-history">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Change</th>
+                          <th>Author</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><time datetime="2026-04-30">2026-04-30</time></td>
+                          <td>Initial severity &amp; priority matrix.</td>
+                          <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+              </main>
+            </div>
+          </div>
+
+        </body></html>

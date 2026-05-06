@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playbook: release smoke testing — QA portal — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Playbook: release smoke testing</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — QA portal · Playbooks</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            The minimum bar before a release tag goes out. Smoke is broad and shallow: confirm the
+            build is alive, the golden paths still work, and the docs portal still loads. If smoke
+            fails, the release does not ship.
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#when">When to run</a>
+            <a class="docs-page-hero__chip" href="#preconditions">Preconditions</a>
+            <a class="docs-page-hero__chip" href="#order">Order of operations</a>
+            <a class="docs-page-hero__chip" href="#rollback">Rollback</a>
+            <a class="docs-page-hero__chip" href="#sign-off">Sign-off</a>
+          </nav>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">When</div>
+
+        <section class="card" id="when">
+          <h2>When to run smoke</h2>
+          <ul>
+            <li>Before tagging any release.</li>
+            <li>Immediately after a hotfix is deployed to staging or prod-like.</li>
+            <li>After any infrastructure change touching the runtime image, container, or DB.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Preconditions</div>
+
+        <section class="card" id="preconditions">
+          <h2>Preconditions</h2>
+          <ul>
+            <li>CI is green on the release commit.</li>
+            <li>Image is built and pushed; the build SHA is known.</li>
+            <li>Database migrations have run (if any).</li>
+            <li>You have a usable bearer token and a clean test account.</li>
+          </ul>
+        </section>
+
+        <div class="docs-section-divider" aria-hidden="true">Order</div>
+
+        <section class="card" id="order">
+          <h2>Order of operations</h2>
+          <ol>
+            <li><strong>Health.</strong> <code>GET /health</code> returns 200 with expected body.
+              <code>GET /ready</code> returns 200.</li>
+              <li><strong>OpenAPI.</strong> <code>GET /openapi.json</code> returns the document; first 200 bytes look like
+                valid JSON.</li>
+                <li><strong>Docs portal.</strong> Open the docs index; sidebar loads; one section page loads; search returns
+                  results.</li>
+                  <li><strong>Auth golden path.</strong> An authenticated read endpoint returns the expected shape.</li>
+                  <li><strong>Write golden path.</strong> Create + read-back on each top-level resource (User, Conspectus,
+                    Error log) using the API playbook.</li>
+                    <li><strong>Idempotency.</strong> Repeat one POST with the same Idempotency-Key — second call returns the
+                      same response.</li>
+                      <li><strong>Errors envelope.</strong> Force one validation error and one auth error; bodies conform to the
+                        envelope.</li>
+                        <li><strong>Observability.</strong> Find the X-Request-ID from one earlier call in the structured log.</li>
+                        <li><strong>Migrations sanity (if migrations ran).</strong> A read across the migrated table returns rows;
+                          counts look reasonable.</li>
+                          <li><strong>UI smoke.</strong> Load the docs portal in light + dark, mobile + desktop. Tab through the page
+                            once.</li>
+                          </ol>
+                          <p class="small">
+                            The line-by-line pass/fail is in
+                            <a href="../0003-release-smoke-checklist.html">checklist 0003</a>.
+                          </p>
+                        </section>
+
+                        <div class="docs-section-divider" aria-hidden="true">Rollback</div>
+
+                        <section class="card" id="rollback">
+                          <h2>If smoke fails</h2>
+                          <ol>
+                            <li>Stop the release. Do not tag.</li>
+                            <li>File a defect with the failing step. Tag <em>release blocker</em>.</li>
+                            <li>If the failure is data-dangerous (writes wrong rows, exposes data), trigger the
+                              <a href="../../runbooks/README.html">runbook</a> for the affected area.
+                            </li>
+                            <li>Decide with the release owner: roll forward (fix on the branch) or roll back to the prior tag.</li>
+                          </ol>
+                        </section>
+
+                        <div class="docs-section-divider" aria-hidden="true">Sign-off</div>
+
+                        <section class="card" id="sign-off">
+                          <h2>Sign-off note (paste into the release ticket)</h2>
+                          <pre><code class="language-markdown">QA smoke sign-off — release &lt;tag&gt;
+                            - Build: &lt;sha&gt;
+                            - Environment: &lt;staging | prod-like&gt;
+                            - Result: GO | CONDITIONAL | NO-GO
+                            - Defects opened: &lt;count by severity, links&gt;
+                            - Notes: &lt;optional&gt;
+                            - Evidence: &lt;link to attached captures&gt;
+                          </code></pre>
+                        </section>
+
+                        <section class="card" id="page-history">
+                          <h2>Page history</h2>
+                          <div class="docs-table-scroll" role="region" aria-label="Page history">
+                            <table class="docs-page-history">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Change</th>
+                                  <th>Author</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                  <td>Initial release smoke playbook.</td>
+                                  <td><a href="../../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+
+                      </main>
+                    </div>
+                  </div>
+
+                </body></html>

@@ -1,4 +1,10 @@
-/* Shared chrome for multi-page internal documentation (docs/internal/**). */
+/* Shared chrome for multi-page internal documentation (docs/internal/**).
+ *
+ * ⛔ Do NOT introduce a new `font-size` rem value in this file.
+ *    Pick a tier from the canonical font ladder declared in docs.css :root:
+ *    var(--fs-h1 | h2 | h3 | h4 | h5 | body | meta | eyebrow).
+ *    em values are accepted only when explicitly parent-relative.
+ */
 
 .internal-layout {
   margin: 0;
@@ -27,6 +33,31 @@
   min-width: 0;
 }
 
+/* Subtle accent shift for standard internal page H1 titles. */
+.internal-h1--accent-tail {
+  /* Keep most of the title neutral; shift color only near the end. */
+  background: linear-gradient(90deg,
+      var(--text) 0%,
+      var(--text) 74%,
+      color-mix(in srgb, var(--accent) 88%, var(--text)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* The gradient-tail H1 sets `-webkit-text-fill-color: transparent`, which
+   is inherited and would render any badge / path / inline code inside the
+   heading invisible (only the badge background pill would show). Children
+   that have their own solid color must opt out of the inherited transparent
+   fill so their text renders. */
+.internal-h1--accent-tail .badge,
+.internal-h1--accent-tail .internal-http-tablet__method,
+.internal-h1--accent-tail .internal-http-tablet__path,
+.internal-h1--accent-tail code {
+  -webkit-text-fill-color: currentColor;
+}
+
 .internal-layout__page-title-row .top-nav__theme-btn--flashlight {
   flex: 0 0 auto;
   margin-left: auto;
@@ -39,7 +70,7 @@
   border-radius: 999px;
   background: var(--nav-link-bg, var(--card, #fff));
   color: var(--text, #0f172a);
-  font-size: 0.86rem;
+  font-size: var(--fs-body);
   font-weight: 700;
   line-height: 1.1;
   padding: 9px 14px;
@@ -50,7 +81,7 @@
 .internal-layout__page-menu-btn::before {
   content: "|||";
   display: inline-block;
-  font-size: 0.72rem;
+  font-size: var(--fs-eyebrow);
   letter-spacing: -1px;
   margin-right: 8px;
   opacity: 0.85;
@@ -102,15 +133,49 @@
     position: sticky;
     top: max(10px, env(safe-area-inset-top, 0px));
     z-index: 5;
-    padding: 6px 0 10px;
+    padding: 8px 0 12px;
     margin: 0 0 10px;
+    /* Premium sticky strip — frosted glass over content, soft accent border at
+       the bottom edge so the strip reads as elevated chrome instead of a flat
+       header. Mirrors the desktop top-nav backdrop-blur language. */
     background: linear-gradient(180deg,
-        color-mix(in srgb, var(--bg, #f8fafc) 92%, transparent) 0%,
-        color-mix(in srgb, var(--bg, #f8fafc) 72%, transparent) 72%,
+        color-mix(in srgb, var(--bg, #f8fafc) 88%, transparent) 0%,
+        color-mix(in srgb, var(--bg, #f8fafc) 70%, transparent) 72%,
         transparent 100%);
-    border-bottom: 1px solid color-mix(in srgb, var(--line, #dbe3ef) 70%, transparent);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent, #2563eb) 18%, var(--line, #dbe3ef));
+    box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--accent, #2563eb) 12%, transparent);
   }
 
+}
+
+/* Mobile-tier polish for the sticky page-title row: allow the controls to
+   wrap below the H1 if the heading is long, tighten gap and chip padding so
+   we keep at least ~340 px of horizontal space for the title text. */
+@media (max-width: 760px) {
+  .internal-layout__page-title-row {
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    padding: 6px 0 10px;
+  }
+
+  .internal-layout__page-menu-btn {
+    padding: 9px 14px;
+    font-size: var(--fs-meta);
+    /* WCAG 2.1 Level AAA touch-target: 44 × 44 px. */
+    min-height: 44px;
+  }
+}
+
+/*
+ * Internal docs + tablet width: keep sticky in-page TOC below the sticky title row.
+ * Without this offset, the collapsed TOC rail can sit under the title strip and lose clicks.
+ */
+@media (min-width: 901px) and (max-width: 1024px) {
+  .internal-layout .docs-inpage-toc {
+    top: calc(max(10px, env(safe-area-inset-top, 0px)) + 58px);
+  }
 }
 
 .internal-layout__shell {
@@ -126,7 +191,14 @@
 @media (max-width: 900px) {
   .internal-layout__shell {
     grid-template-columns: 1fr;
-    padding: 16px 16px 56px;
+    /* Tight horizontal padding so the reading column claims as much of the
+       narrow viewport as possible. Safe-area insets only push the padding
+       outward when the device asks (notched phones in landscape). */
+    padding:
+      12px
+      max(8px, env(safe-area-inset-right, 0px))
+      56px
+      max(8px, env(safe-area-inset-left, 0px));
   }
 }
 
@@ -138,6 +210,9 @@
   overflow: auto;
   padding: 4px 16px 20px 0;
   border-right: 1px solid var(--line, #dbe3ef);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--line) 80%, transparent) transparent;
+  scroll-padding-bottom: 20px;
 }
 
 @media (max-width: 900px) {
@@ -182,8 +257,12 @@
   background: var(--card, #ffffff);
   color: var(--text, #0f172a);
   border-right: 1px solid var(--line, #dbe3ef);
-  box-shadow: var(--nav-group-shadow, 0 18px 44px rgba(2, 6, 23, 0.28));
+  box-shadow:
+    var(--nav-group-shadow, 0 18px 44px rgba(2, 6, 23, 0.28)),
+    4px 0 32px rgba(2, 6, 23, 0.08);
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--line, #dbe3ef) 80%, transparent) transparent;
   padding: max(14px, env(safe-area-inset-top, 0px)) 14px max(14px, env(safe-area-inset-bottom, 0px));
   -webkit-font-smoothing: antialiased;
 }
@@ -198,7 +277,7 @@
 
 .internal-layout__drawer-title {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -210,7 +289,7 @@
   border-radius: 999px;
   background: var(--nav-theme-btn-bg, var(--card, #fff));
   color: var(--nav-theme-btn-fg, var(--text, #0f172a));
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   font-weight: 650;
   padding: 6px 12px;
   cursor: pointer;
@@ -226,93 +305,21 @@
   outline-offset: 2px;
 }
 
-.internal-layout__drawer-sections {
-  display: grid;
-  gap: 10px;
-  margin: 0 0 12px;
-}
-
-.internal-layout__drawer-section {
-  border: 1px solid var(--line, #dbe3ef);
-  border-radius: 12px;
-  padding: 10px 10px 9px;
-  background: var(--nav-group-bg, var(--card, #fff));
-}
-
-.internal-layout__drawer-section--internal {
-  border-color: var(--nav-internal-border, var(--line, #dbe3ef));
-  background: var(--nav-internal-bg, var(--card, #fff));
-}
-
-.internal-layout__drawer-section--public {
-  border-color: var(--nav-public-border, var(--line, #dbe3ef));
-  background: var(--nav-public-bg, var(--card, #fff));
-}
-
-.internal-layout__drawer-section-title {
-  margin: 0 0 8px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--nav-section-title, var(--muted, #64748b));
-}
-
-.internal-layout__drawer-section-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.internal-layout__drawer-section-links a {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--line, #dbe3ef);
-  border-radius: 999px;
-  padding: 5px 10px;
-  background: var(--nav-link-bg, var(--card, #fff));
-  color: var(--text, #0f172a);
-  font-size: 0.84rem;
-  text-decoration: none;
-}
-
-.internal-layout__drawer-section-links a:hover {
-  border-color: var(--accent, #2563eb);
-  color: var(--accent, #2563eb);
-}
-
-.internal-layout__drawer-section-links a.is-active {
-  background: var(--nav-link-active-bg, #dbeafe);
-  border-color: var(--nav-link-active-border, #93c5fd);
-  color: var(--nav-link-active-text, #1e3a8a);
-}
-
+/* Drawer mirrors the desktop sidebar's visual language so the slid-out panel
+   reads as the same surface, just relocated. Vertical padding is bumped a hair
+   above desktop (8 px vs 6 px) to give a finger-comfortable target without
+   forcing a body-sized "native list view" aesthetic. */
 .internal-layout__drawer-body .internal-sidebar__tree a {
-  color: var(--text, #1f2937);
-  background: var(--card, #fff);
-  border: 1px solid transparent;
-  font-weight: 550;
-}
-
-.internal-layout__drawer-body .internal-sidebar__tree a:hover {
-  background: var(--internal-tree-hover-bg);
-  border-color: color-mix(in srgb, var(--accent, #2563eb) 20%, var(--line, #dbe3ef));
-}
-
-.internal-layout__drawer-body .internal-sidebar__tree a.is-active {
-  background: var(--internal-tree-active-bg);
-  border-color: var(--internal-tree-active-border);
-  color: var(--internal-tree-active-text);
+  padding: 8px 10px;
 }
 
 .internal-layout__drawer-body .internal-sidebar__summary {
-  color: var(--text, #0f172a);
-  background: color-mix(in srgb, var(--internal-summary-hover-bg) 66%, transparent);
-  border-bottom: 1px solid var(--line, #dbe3ef);
+  background: transparent;
+  border-bottom: 0;
 }
 
 .internal-layout__sidebar-title {
-  font-size: 0.72rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -320,49 +327,35 @@
   margin: 0 0 10px;
 }
 
-@property --internal-toggle-border-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
 .internal-layout__sidebar-toggle {
-  --internal-toggle-border-angle: 0deg;
-  display: inline-block;
-  margin: 0 0 12px;
-  border: 2px solid transparent;
-  border-radius: 999px;
-  background:
-    linear-gradient(var(--internal-toggle-bg), var(--internal-toggle-bg)) padding-box,
-    conic-gradient(from var(--internal-toggle-border-angle),
-      #1d4ed8 0deg 58deg,
-      #bfdbfe 58deg 182deg,
-      #1d4ed8 182deg 242deg,
-      #bfdbfe 242deg 360deg) border-box;
-  color: var(--internal-toggle-fg);
-  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 16px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #64748b);
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
   line-height: 1.2;
-  padding: 5px 11px;
+  padding: 5px 10px;
   cursor: pointer;
-  position: relative;
-  isolation: isolate;
-  animation: internal-toggle-border-sweep 10s linear infinite;
+  transition:
+    color var(--motion-fast, 150ms) ease,
+    border-color var(--motion-fast, 150ms) ease,
+    background var(--motion-fast, 150ms) ease;
 }
 
 .internal-layout__sidebar-toggle:hover {
-  color: var(--internal-toggle-hover-fg);
+  color: var(--text, #0f172a);
+  border-color: color-mix(in srgb, var(--line, #dbe3ef) 50%, var(--accent, #2563eb));
+  background: color-mix(in srgb, var(--accent, #2563eb) 5%, transparent);
 }
 
-@keyframes internal-toggle-border-sweep {
-  to {
-    --internal-toggle-border-angle: 360deg;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .internal-layout__sidebar-toggle {
-    animation: none;
-  }
+.internal-layout__sidebar-toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent, #2563eb) 70%, transparent);
+  outline-offset: 2px;
 }
 
 .internal-layout__shell.is-sidebar-collapsed {
@@ -387,14 +380,10 @@
 
 .internal-layout__shell.is-sidebar-collapsed .internal-layout__sidebar-toggle {
   margin-bottom: 0;
-  writing-mode: horizontal-tb;
-  min-height: 0;
-  min-width: 44px;
-  padding: 8px 6px;
-  border-radius: 16px;
-  line-height: 1.1;
-  text-align: center;
-  white-space: pre-line;
+  min-width: 34px;
+  padding: 6px;
+  justify-content: center;
+  border-radius: 8px;
 }
 
 
@@ -414,6 +403,14 @@
 }
 
 @media (max-width: 1024px) {
+  .internal-layout__shell.is-drawer-mode {
+    /* Without this, the base `min(288px, 92vw) 1fr` grid keeps the first
+       (sidebar) track at 288 px even when the sidebar is display:none — main
+       auto-places into that 288 px track and the reading column collapses to
+       a sliver. Collapse the grid so main spans the full viewport. */
+    grid-template-columns: 1fr;
+  }
+
   .internal-layout__shell.is-drawer-mode .internal-layout__sidebar {
     display: none;
   }
@@ -435,6 +432,15 @@
   margin-left: auto;
   margin-right: auto;
   padding: 0;
+}
+
+/* Mobile padding for internal docs: keep prose off the screen edge with
+   safe-area-aware insets on notched phones (e.g. iPhone 17 Pro Max). */
+@media (max-width: 760px) {
+  .internal-layout__main .container {
+    padding-left: max(6px, env(safe-area-inset-left, 0px));
+    padding-right: max(6px, env(safe-area-inset-right, 0px));
+  }
 }
 
 /*
@@ -468,19 +474,24 @@
 .internal-sidebar__tree ul {
   list-style: none;
   margin: 0;
-  padding: 4px 0 6px 12px;
-  border-left: 2px solid var(--internal-tree-border);
+  padding: 2px 0 4px 12px;
+  border-left: 1px solid var(--internal-tree-border);
 }
 
 .internal-sidebar__tree>li {
   margin: 4px 0;
 }
 
+.internal-sidebar__divider {
+  margin: 10px 8px;
+  border-top: 1px solid var(--internal-tree-border);
+}
+
 .internal-sidebar__tree a {
   display: block;
   padding: 6px 10px;
   border-radius: 8px;
-  font-size: 0.82rem;
+  font-size: var(--fs-meta);
   line-height: 1.35;
   word-break: break-word;
   color: var(--text, #1f2937);
@@ -494,31 +505,26 @@
 
 .internal-sidebar__tree a.is-active {
   background: var(--internal-tree-active-bg);
-  border: 1px solid var(--internal-tree-active-border);
-  font-weight: 650;
+  font-weight: 600;
   color: var(--internal-tree-active-text);
 }
 
 .internal-sidebar__group {
-  margin: 4px 0;
-  border: 1px solid var(--line, #dbe3ef);
-  border-radius: 10px;
-  background: var(--internal-group-bg);
-  overflow: hidden;
-}
-
-.internal-sidebar__group[open] {
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  margin: 0;
 }
 
 .internal-sidebar__summary {
   cursor: pointer;
   list-style: none;
-  font-weight: 650;
-  font-size: 0.88rem;
-  padding: 9px 12px 9px 32px;
+  font-weight: 700;
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+  padding: 14px 8px 5px 22px;
   position: relative;
   user-select: none;
+  transition: color var(--motion-fast, 150ms) ease;
 }
 
 .internal-sidebar__summary::-webkit-details-marker {
@@ -528,24 +534,25 @@
 .internal-sidebar__summary::before {
   content: "";
   position: absolute;
-  left: 12px;
+  left: 7px;
   top: 50%;
-  width: 0.32em;
-  height: 0.32em;
-  margin-top: -0.18em;
-  border-right: 2px solid var(--accent, #2563eb);
-  border-bottom: 2px solid var(--accent, #2563eb);
+  width: 0.28em;
+  height: 0.28em;
+  margin-top: -0.05em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
   transform: rotate(-45deg);
   transition: transform 0.12s ease;
+  opacity: 0.7;
 }
 
 .internal-sidebar__group[open]>.internal-sidebar__summary::before {
   transform: rotate(45deg);
-  margin-top: -0.1em;
+  margin-top: -0.14em;
 }
 
 .internal-sidebar__summary:hover {
-  background: var(--internal-summary-hover-bg);
+  color: var(--text, #0f172a);
 }
 
 .internal-sidebar__group .internal-sidebar__tree {
@@ -560,7 +567,7 @@
 /* Entity + HTTP “tablet” hero on operation pages */
 .internal-doc-entity {
   margin: 0 0 8px;
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -601,14 +608,14 @@ h1.internal-doc-h1 {
 
 .internal-http-tablet .badge {
   flex-shrink: 0;
-  font-size: 0.78rem;
+  font-size: var(--fs-meta);
   padding: 5px 11px;
 }
 
 .internal-http-tablet__path {
   margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
   line-height: 1.45;
   color: var(--internal-http-tablet-path);
   word-break: break-all;
@@ -617,7 +624,7 @@ h1.internal-doc-h1 {
 .internal-http-tablet--stacked .internal-http-tablet__path {
   display: block;
   width: 100%;
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
 }
 
 .internal-doc-opid {
@@ -657,6 +664,708 @@ h1.internal-doc-h1 {
 }
 
 /*
+ * Spec lifecycle status badges (used in operation specs and resource hubs under
+ * internal/api/**). Five fixed states: draft → in-review → approved → implemented → deprecated.
+ * Colour intent: neutral / amber / blue / green / red.
+ */
+.internal-layout .badge--status-draft {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.internal-layout .badge--status-in-review {
+  background: #fef3c7;
+  border-color: #fcd34d;
+  color: #78350f;
+}
+
+.internal-layout .badge--status-approved {
+  background: #e0f2fe;
+  border-color: #3b82f6;
+  color: #1e3a8a;
+}
+
+.internal-layout .badge--status-implemented {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.internal-layout .badge--status-deprecated {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #7f1d1d;
+}
+
+/*
+ * Section requirement marker, rendered next to <h2> headings inside spec pages.
+ * `--required` = mandatory section (lint blocks if missing/empty).
+ * `--optional` = may be removed for trivial operations.
+ */
+.internal-layout .badge--req-required {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4c1d95;
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.internal-layout .badge--req-optional {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+/*
+ * Spec metadata card — stacked label/value rows under the HTTP tablet on
+ * operation specs. Each item is a row with a fixed-width label column on the
+ * left and the value (status pill, owner link, code, time) on the right,
+ * separated by hairline dividers — same shape used by Stripe/Linear/Vercel
+ * API reference pages.
+ */
+.internal-spec-meta {
+  display: block;
+  margin: 20px 0 28px;
+  padding: 2px 20px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 12px;
+  background: var(--card, #ffffff);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+}
+
+.internal-spec-meta__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 22px;
+  row-gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid color-mix(in srgb, var(--line, #dbe3ef) 65%, transparent);
+}
+
+.internal-spec-meta__item:first-child {
+  border-top: 0;
+}
+
+.internal-spec-meta__label {
+  flex: 0 0 142px;
+  color: var(--muted, #4b5563);
+  text-transform: uppercase;
+  font-size: var(--fs-eyebrow);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.internal-spec-meta__item > a {
+  font-weight: 500;
+}
+
+.internal-spec-meta__item > code {
+  font-size: 0.86em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--inline-code-bg, rgba(15, 23, 42, 0.06));
+}
+
+.internal-spec-meta__item > time {
+  font-variant-numeric: tabular-nums;
+  color: var(--text, #1f2937);
+}
+
+@media (max-width: 600px) {
+  .internal-spec-meta {
+    padding: 4px 16px;
+  }
+
+  .internal-spec-meta__label {
+    flex: 0 0 100%;
+  }
+}
+
+/*
+ * Spec lifecycle pill — premium status card driven entirely by the
+ * `data-spec-status` attribute on `<body>`; hydrated by docs-spec-status.js.
+ * Five tones share one shape; CSS variables (`--pill-from`, `--pill-to`,
+ * `--pill-border`, `--pill-fg`) are swapped per tone.
+ */
+.spec-status-pill {
+  --pill-from: #f1f5f9;
+  --pill-to: #e2e8f0;
+  --pill-border: #cbd5e1;
+  --pill-fg: #1e293b;
+  --pill-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 10px;
+  border: 1px solid var(--pill-border);
+  border-radius: 999px;
+  background-image: linear-gradient(135deg, var(--pill-from) 0%, var(--pill-to) 100%);
+  color: var(--pill-fg);
+  font-weight: 600;
+  font-size: var(--fs-body);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  vertical-align: middle;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    var(--pill-shadow);
+}
+
+.spec-status-pill__emoji {
+  font-size: var(--fs-body);
+  line-height: 1;
+  filter: saturate(1.1);
+}
+
+.spec-status-pill__label {
+  line-height: 1;
+}
+
+/* ── Tones — light theme ─────────────────────────────────────────── */
+
+.spec-status-pill--draft {
+  --pill-from: #f8fafc;
+  --pill-to: #e2e8f0;
+  --pill-border: #94a3b8;
+  --pill-fg: #1e293b;
+}
+
+.spec-status-pill--in-review {
+  --pill-from: #fffbeb;
+  --pill-to: #fde68a;
+  --pill-border: #d97706;
+  --pill-fg: #78350f;
+}
+
+.spec-status-pill--approved {
+  --pill-from: #eff6ff;
+  --pill-to: #bfdbfe;
+  --pill-border: #2563eb;
+  --pill-fg: #1e3a8a;
+}
+
+.spec-status-pill--implemented {
+  --pill-from: #ecfdf5;
+  --pill-to: #a7f3d0;
+  --pill-border: #16a34a;
+  --pill-fg: #064e3b;
+}
+
+.spec-status-pill--deprecated {
+  --pill-from: #fef2f2;
+  --pill-to: #fecaca;
+  --pill-border: #dc2626;
+  --pill-fg: #7f1d1d;
+}
+
+/* ── Tones — dark theme ──────────────────────────────────────────── */
+
+[data-theme="dark"] .spec-status-pill {
+  --pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    var(--pill-shadow);
+}
+
+[data-theme="dark"] .spec-status-pill--draft {
+  --pill-from: #1f2937;
+  --pill-to: #334155;
+  --pill-border: #64748b;
+  --pill-fg: #e2e8f0;
+}
+
+[data-theme="dark"] .spec-status-pill--in-review {
+  --pill-from: #422006;
+  --pill-to: #78350f;
+  --pill-border: #d97706;
+  --pill-fg: #fde68a;
+}
+
+[data-theme="dark"] .spec-status-pill--approved {
+  --pill-from: #172554;
+  --pill-to: #1e40af;
+  --pill-border: #3b82f6;
+  --pill-fg: #dbeafe;
+}
+
+[data-theme="dark"] .spec-status-pill--implemented {
+  --pill-from: #052e16;
+  --pill-to: #14532d;
+  --pill-border: #22c55e;
+  --pill-fg: #bbf7d0;
+}
+
+[data-theme="dark"] .spec-status-pill--deprecated {
+  --pill-from: #450a0a;
+  --pill-to: #7f1d1d;
+  --pill-border: #ef4444;
+  --pill-fg: #fee2e2;
+}
+
+/*
+ * Help disclosure rendered after the pill. Compact summary; lifecycle table
+ * appears as a popover panel that also closes on Escape / outside click.
+ */
+.spec-status-help {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.spec-status-help > summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px dashed var(--line, #cbd5e1);
+  border-radius: 999px;
+  background: var(--badge-default-bg, #ffffff);
+  color: var(--muted, #475569);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  user-select: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.spec-status-help > summary::-webkit-details-marker {
+  display: none;
+}
+
+.spec-status-help > summary::marker {
+  content: "";
+}
+
+.spec-status-help > summary:hover {
+  border-color: var(--accent, #2563eb);
+  color: var(--accent, #2563eb);
+}
+
+.spec-status-help[open] > summary {
+  border-style: solid;
+  border-color: var(--accent, #2563eb);
+  color: var(--accent, #2563eb);
+}
+
+.spec-status-help__summary-icon {
+  font-size: 1em;
+  line-height: 1;
+}
+
+.spec-status-help__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  width: min(560px, 90vw);
+  padding: 14px 16px 12px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 12px;
+  background: var(--card, #ffffff);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+[data-theme="dark"] .spec-status-help__panel {
+  background: #0f172a;
+  border-color: #1e293b;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.spec-status-help .spec-status-help__intro,
+.spec-status-help .spec-status-help__example {
+  margin: 0 0 10px;
+  color: var(--text, #0f172a);
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+}
+
+.spec-status-help__example {
+  margin: 10px 0 0;
+  color: var(--muted, #475569);
+}
+
+.spec-status-help__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--fs-meta);
+  table-layout: fixed;
+}
+
+.spec-status-help__table th,
+.spec-status-help__table td {
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  font-size: var(--fs-meta);
+}
+
+.spec-status-help__table th {
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #475569);
+  background: var(--badge-default-bg, #f8fafc);
+}
+
+[data-theme="dark"] .spec-status-help__table th {
+  background: #1e293b;
+}
+
+.spec-status-help__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.spec-status-help__row--current td {
+  background: color-mix(in srgb, var(--accent, #2563eb) 6%, transparent);
+}
+
+[data-theme="dark"] .spec-status-help__row--current td {
+  background: color-mix(in srgb, var(--accent, #3b82f6) 14%, transparent);
+}
+
+/* On narrow viewports the popover would overflow if anchored to the small
+   inline `.spec-status-help` button — switch to viewport-fixed positioning so
+   it sits centered on screen and never gets clipped by the strip or the body. */
+@media (max-width: 720px) {
+  .spec-status-help__panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    width: min(560px, calc(100vw - 24px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+}
+
+/*
+ * Code samples inside internal spec pages (request/response/envelope JSON).
+ * Smaller than the global pre to match the surrounding doc text density —
+ * uses --fs-meta (~12.75 px) uniformly across desktop, tablet, and mobile.
+ * No viewport override: the ladder is the contract.
+ */
+.internal-layout__main pre {
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  padding: 12px 14px;
+}
+
+.internal-layout__main pre code {
+  font-size: inherit;
+}
+
+/* Mobile keeps the same --fs-meta size; only padding tightens. */
+@media (max-width: 760px) {
+  .internal-layout__main pre {
+    padding: 12px 12px;
+  }
+}
+
+/*
+ * Field reference list — used in operation specs to describe path / header /
+ * query / body parameters and response fields without forcing readers through
+ * a too-wide table. Each field is one <dt>/<dd> pair: the name and a few
+ * inline badges on the dt, the meaning + structured attributes on the dd.
+ */
+.internal-field-list {
+  margin: 14px 0 18px;
+  padding: 0;
+}
+
+.internal-field-list>dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin: 14px 0 4px;
+  padding: 8px 12px 6px;
+  border-left: 3px solid var(--accent, #2563eb);
+  background: var(--badge-default-bg, #f8fafc);
+  border-radius: 0 8px 8px 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.internal-field-list>dt>code {
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+  font-size: var(--fs-body);
+}
+
+.internal-field-list>dt .badge {
+  font-size: var(--fs-eyebrow);
+  padding: 2px 8px;
+  margin: 0;
+  font-weight: 500;
+  font-family: var(--font-sans, system-ui), sans-serif;
+  text-transform: lowercase;
+  letter-spacing: 0;
+}
+
+.internal-field-list>dd {
+  margin: 0 0 6px 14px;
+  padding: 4px 0 8px;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+
+.internal-field-list>dd p {
+  margin: 4px 0;
+}
+
+.internal-field-list>dd .internal-field-list__attrs {
+  margin: 6px 0 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 12px;
+  font-size: var(--fs-meta);
+}
+
+.internal-field-list>dd .internal-field-list__attrs dt {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans, system-ui), sans-serif;
+  font-size: var(--fs-eyebrow);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #475569);
+  align-self: center;
+}
+
+.internal-field-list>dd .internal-field-list__attrs dd {
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-meta);
+}
+
+.internal-field-list .badge--field-req {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4c1d95;
+}
+
+.internal-field-list .badge--field-opt {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.internal-field-list .badge--field-type {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0c4a6e;
+}
+
+/*
+ * Long-page reading aids (docs-resume.js):
+ *   .docs-resume-top    floating "Back to top" button (bottom-right, fades in after scroll)
+ *   .docs-resume-banner first-load offer to jump to the previously-saved scroll position
+ */
+.docs-resume-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line, #cbd5e1);
+  background: var(--badge-default-bg, #ffffff);
+  color: inherit;
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 30;
+}
+
+.docs-resume-top.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.docs-resume-top:hover {
+  background: #f8fafc;
+}
+
+.docs-resume-top svg {
+  flex-shrink: 0;
+}
+
+.docs-resume-banner {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 16px 0 18px;
+  padding: 10px 14px;
+  border: 1px solid #7dd3fc;
+  background: #e0f2fe;
+  color: #0c4a6e;
+  border-radius: 10px;
+  font-size: var(--fs-body);
+  z-index: 25;
+  box-shadow: 0 6px 18px rgba(12, 74, 110, 0.08);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.docs-resume-banner.is-leaving {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.docs-resume-banner__text {
+  flex: 1 1 280px;
+  min-width: 220px;
+}
+
+.docs-resume-banner__actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.docs-resume-banner__btn {
+  appearance: none;
+  border: 1px solid #7dd3fc;
+  background: #ffffff;
+  color: #0c4a6e;
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.docs-resume-banner__btn--primary {
+  background: #0c4a6e;
+  color: #f0f9ff;
+  border-color: #0c4a6e;
+}
+
+.docs-resume-banner__btn:hover {
+  filter: brightness(0.96);
+}
+
+[data-theme="dark"] .docs-resume-top {
+  background: #1f2937;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .docs-resume-top:hover {
+  background: #273345;
+}
+
+[data-theme="dark"] .docs-resume-banner {
+  background: #0c2a3a;
+  color: #e0f2fe;
+  border-color: #0369a1;
+}
+
+[data-theme="dark"] .docs-resume-banner__btn {
+  background: #1e3a52;
+  color: #e0f2fe;
+  border-color: #0369a1;
+}
+
+[data-theme="dark"] .docs-resume-banner__btn--primary {
+  background: #38bdf8;
+  color: #0b1220;
+  border-color: #38bdf8;
+}
+
+/*
+ * Diagram fallback: when the rendered SVG is missing (e.g. Kroki was unavailable
+ * during the last `make docs-fix`), the inline `onerror` on the <img> tags the
+ * <figure> as `.is-missing` and auto-opens the sibling <details> with PlantUML
+ * source. We replace the broken-image canvas with a friendly placeholder so the
+ * page does not show the browser's default broken-image icon.
+ */
+.sys-diagram.is-missing .sys-diagram__canvas {
+  position: relative;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line, #cbd5e1);
+  background: var(--badge-default-bg, #f8fafc);
+  border-radius: 10px;
+  padding: 18px;
+  color: var(--muted, #475569);
+  font-size: var(--fs-body);
+}
+
+.sys-diagram.is-missing .sys-diagram__canvas img {
+  display: none;
+}
+
+.sys-diagram.is-missing .sys-diagram__canvas::after {
+  content: "Diagram SVG not generated yet — run `make docs-fix`.";
+  text-align: center;
+  font-style: italic;
+}
+
+details.docs-uml-source {
+  margin: 8px 0 18px;
+  padding: 6px 12px;
+  border: 1px solid var(--line, #cbd5e1);
+  border-radius: 8px;
+  background: var(--badge-default-bg, #f8fafc);
+  font-size: var(--fs-body);
+}
+
+details.docs-uml-source>summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 2px 0;
+  color: var(--muted, #475569);
+}
+
+details.docs-uml-source[open]>summary {
+  margin-bottom: 6px;
+}
+
+details.docs-uml-source pre {
+  margin: 4px 0 8px;
+}
+
+/*
  * Tables in .docs-table-scroll: global docs.css sets `width: max-content` on the inner
  * table, which stretches layout and breaks column balance. Inside internal pages, use
  * full width and fixed table layout so the four-column layer table formats predictably.
@@ -672,6 +1381,17 @@ h1.internal-doc-h1 {
 .internal-layout__main .card .docs-table-scroll td {
   overflow-wrap: anywhere;
   word-break: normal;
+}
+
+/* Keep internal-analysis table typography aligned with prose cards. */
+.internal-layout__main .card .docs-table-scroll td {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+
+.internal-layout__main .card .docs-table-scroll th {
+  font-size: var(--fs-meta);
+  line-height: 1.35;
 }
 
 .internal-layout__main .card .docs-table-scroll col.layers-col-layer {
@@ -693,13 +1413,13 @@ h1.internal-doc-h1 {
 }
 
 .portal-note {
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   color: var(--muted, #64748b);
   margin: 0 0 12px;
 }
 
 .portal-people-hint {
-  font-size: 0.88rem;
+  font-size: var(--fs-body);
   color: var(--muted, #64748b);
   margin: 0 0 14px;
   line-height: 1.45;
@@ -715,7 +1435,7 @@ h1.internal-doc-h1 {
 
 .portal-people-group__title {
   margin: 0 0 12px;
-  font-size: 1.05rem;
+  font-size: var(--fs-h3);
   font-weight: 650;
   color: var(--text, #0f172a);
   letter-spacing: -0.01em;
@@ -727,7 +1447,7 @@ h1.internal-doc-h1 {
   padding: 1px 7px;
   border: 1px solid var(--line, #dbe3ef);
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: var(--fs-eyebrow);
   font-weight: 400;
   line-height: 1.2;
   color: var(--muted, #64748b);
@@ -737,13 +1457,13 @@ h1.internal-doc-h1 {
 
 .portal-people-group__empty {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   color: var(--muted, #64748b);
 }
 
 .portal-back {
   margin: 0 0 16px;
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
 }
 
 .portal-people__list {
@@ -757,14 +1477,15 @@ h1.internal-doc-h1 {
 
 .portal-people__item {
   margin: 0;
-  padding: 12px;
+  padding: var(--space-3, 12px);
   min-height: 82px;
   border: 1px solid var(--line, #dbe3ef);
+  border-radius: var(--radius-lg, 14px);
   background: var(--card, #fff);
   transition:
-    border-color 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 160ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+    border-color var(--motion-fast) var(--motion-ease-premium),
+    box-shadow var(--motion-fast) var(--motion-ease-premium),
+    transform var(--motion-fast) var(--motion-ease-premium);
 }
 
 .portal-people__link {
@@ -808,7 +1529,7 @@ h1.internal-doc-h1 {
 
 .portal-people__meta {
   display: block;
-  font-size: 0.74rem;
+  font-size: var(--fs-eyebrow);
   line-height: 1.25;
   color: var(--muted, #64748b);
   font-weight: 400;
@@ -850,12 +1571,10 @@ h1.internal-doc-h1 {
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 180deg,
-    color-mix(in srgb, var(--accent, #2563eb) 32%, transparent),
-    transparent 40%,
-    color-mix(in srgb, var(--accent, #2563eb) 22%, transparent)
-  );
+  background: conic-gradient(from 180deg,
+      color-mix(in srgb, var(--accent, #2563eb) 32%, transparent),
+      transparent 40%,
+      color-mix(in srgb, var(--accent, #2563eb) 22%, transparent));
   opacity: 0;
   transform: scale(0.96);
   transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1), transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -890,7 +1609,7 @@ h1.internal-doc-h1 {
 }
 
 /* Site breadcrumbs + top nav sit above the profile card, not inside it */
-.internal-layout__main main.container > #docs-top-nav + .portal-profile {
+.internal-layout__main main.container>#docs-top-nav+.portal-profile {
   margin-top: 1rem;
 }
 
@@ -943,12 +1662,12 @@ h1.internal-doc-h1 {
 
 .portal-profile__name {
   margin: 0 0 8px;
-  font-size: 1.65rem;
+  font-size: var(--fs-h1);
 }
 
 .portal-profile__groups {
   margin: 0 0 10px;
-  font-size: 0.92rem;
+  font-size: var(--fs-body);
   color: var(--muted, #64748b);
 }
 
@@ -963,7 +1682,7 @@ h1.internal-doc-h1 {
 
 .portal-profile__id {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   color: var(--muted, #64748b);
 }
 
@@ -973,7 +1692,7 @@ h1.internal-doc-h1 {
 
 .portal-profile-groups-hint__title {
   margin: 0 0 10px;
-  font-size: 1.05rem;
+  font-size: var(--fs-h3);
 }
 
 .portal-profile-maintained {
@@ -1002,7 +1721,7 @@ h1.internal-doc-h1 {
 
 .portal-maintained-pager__btn {
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   padding: 6px 12px;
   border-radius: 8px;
   border: 1px solid var(--line, #dbe3ef);
@@ -1028,13 +1747,13 @@ h1.internal-doc-h1 {
 }
 
 .portal-maintained-pager__status {
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   color: var(--text, #0f172a);
   opacity: 0.88;
 }
 
 .portal-profile__path {
-  font-size: 0.85rem;
+  font-size: var(--fs-body);
   color: var(--muted, #64748b);
 }
 

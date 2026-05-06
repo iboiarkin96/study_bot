@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function(){try{var k="docs-theme-preference",v=localStorage.getItem(k);if(v==="dark")document.documentElement.setAttribute("data-theme","dark");else if(v==="light")document.documentElement.setAttribute("data-theme","light");}catch(e){}})();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend resume reading and back-to-top</title>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+</head>
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Docs frontend resume-reading and back-to-top <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Docs portal · Reading aids</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+          <span>Resume-reading banner and floating back-to-top button.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+          <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+          <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+          <time datetime="2026-04-30">2026-04-30</time></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
+          <code>v1</code></span>
+        </div>
+
+        <section id="overview" class="card">
+          <h2>Overview</h2>
+          <p>
+            Long-page reading aids for internal docs: a top <strong>resume-reading banner</strong> that offers a
+            one-click jump back to the reader's previous scroll position, and a floating <strong>back-to-top
+            button</strong> that appears after a scroll threshold. Both are opt-in per page — the runtime
+            (<a href="../foundations/js-modules.html#docs-resume"><code>docs-resume.js</code></a>) loads
+            only where the page declares it.
+          </p>
+          <p class="small">
+            Status: <span class="screen-status screen-status--in-progress">in-progress</span> — first deployed on
+            <code>internal/api/conspectus/operations/post-…actions-review.html</code> (long page, lots of state-table
+            scrolling). Stabilization criteria below.
+          </p>
+        </section>
+
+        <section id="anatomy" class="card">
+          <h2>Anatomy</h2>
+          <ol>
+            <li><strong>Resume banner</strong> — appears at the top of <code>.internal-layout__main</code> after
+              <code>DOMContentLoaded</code> if a saved scroll position exists for this URL within the 14-day TTL.
+              Includes a primary action ("Resume reading at section X") and a dismiss button. Single instance per
+              page.</li>
+              <li><strong>Back-to-top button</strong> — fixed-position circular button at the bottom-right of the
+                viewport. Hidden by default; reveals once <code>scrollY &gt; 600 px</code> and smooth-scrolls to
+                <code>0,0</code> on click. Persists across navigations within the page; respects safe-area-insets on
+                mobile.</li>
+              </ol>
+              <p class="small">
+                Both controls are visual children of <code>.internal-layout</code>; they are <em>not</em> portaled into
+                <code>document.body</code>, so the drawer overlay (z-index 1000) still covers them when active. CSS rules
+                live in <a href="../foundations/css-architecture.html#internal-layout-deep-dive"><code>internal-layout.css</code></a>.
+              </p>
+            </section>
+
+            <section id="visual-reference" class="card">
+              <h2>Visual reference</h2>
+              <p>
+                The two reading aids appear at opposite ends of the page and on different triggers. The mocks below
+                show <em>where</em> each one lives and <em>when</em> it shows up. Left: the resume banner anchored
+                to the top of <code>.internal-layout__main</code> on first load. Right: the back-to-top FAB
+                revealing at the <code>scrollY &gt; 600 px</code> threshold near the bottom-right of the viewport.
+              </p>
+
+              <figure class="sys-diagram" aria-label="Resume banner placement and back-to-top button visibility threshold">
+                <div class="sys-diagram__head">
+                  <span class="sys-diagram__badge">Mock · Visual reference</span>
+                  <div class="sys-diagram__titles">
+                    <h3>Where each control appears, and when</h3>
+                    <p class="sys-diagram__sub">Two viewport mocks side-by-side. Annotations call out trigger conditions, ARIA roles, and the 600 px scroll threshold for the FAB.</p>
+                  </div>
+                </div>
+                <div class="sys-diagram__canvas" style="background:#fafbfd;">
+                  <svg viewBox="0 0 760 460" role="img" aria-labelledby="rsm-vis-title rsm-vis-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+                    <title id="rsm-vis-title">Resume banner placement and back-to-top button visibility threshold</title>
+                    <desc id="rsm-vis-desc">Two viewport mocks. The left shows a docs page on first load with a resume-reading banner above the article, with annotations for the primary action button, dismiss button, role status, aria-live polite, and the 14-day TTL. The right shows the same page after scrolling, with a 600-pixel horizontal threshold line above which the back-to-top FAB is hidden and below which it appears at the bottom-right corner of the viewport.</desc>
+                    <defs>
+                      <filter id="rsm-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <fedropshadow dx="0" dy="3" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.16"></fedropshadow>
+                      </filter>
+                    </defs>
+
+                    <rect x="4" y="4" width="752" height="452" fill="#fafbfd" stroke="#cbd5e1" stroke-width="2" rx="8"></rect>
+
+                    <!-- ============ LEFT: RESUME BANNER ============ -->
+                    <text x="190" y="36" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Resume banner · top of <tspan font-family="ui-monospace,monospace" font-weight="600">.internal-layout__main</tspan></text>
+                    <text x="190" y="54" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10.5" fill="#475569">First load · saved scroll within 14 d · scrolled past 25 % previously</text>
+
+                    <!-- viewport frame -->
+                    <rect x="40" y="74" width="300" height="356" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"></rect>
+                    <!-- chrome -->
+                    <rect x="40" y="74" width="300" height="22" rx="10" fill="#e2e8f0"></rect>
+                    <circle cx="54" cy="85" r="3" fill="#f87171"></circle>
+                    <circle cx="64" cy="85" r="3" fill="#fbbf24"></circle>
+                    <circle cx="74" cy="85" r="3" fill="#34d399"></circle>
+                    <rect x="120" y="80" width="120" height="10" rx="5" fill="#cbd5e1"></rect>
+
+                    <!-- The banner (highlighted) -->
+                    <rect x="56" y="108" width="268" height="38" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.4" filter="url(#rsm-shadow)"></rect>
+                    <!-- icon (bookmark) -->
+                    <path d="M68 117 L68 137 L74 132 L80 137 L80 117 Z" fill="#3b82f6" stroke="none"></path>
+                    <!-- label -->
+                    <rect x="88" y="118" width="124" height="6" rx="3" fill="#1e3a8a"></rect>
+                    <rect x="88" y="128" width="92" height="5" rx="2.5" fill="#64748b"></rect>
+                    <!-- primary action -->
+                    <rect x="220" y="118" width="74" height="20" rx="10" fill="#2563eb"></rect>
+                    <text x="257" y="132" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="600" fill="#ffffff">Resume reading</text>
+                    <!-- dismiss × -->
+                    <text x="310" y="132" font-family="ui-sans-serif,system-ui,sans-serif" font-size="14" fill="#94a3b8" text-anchor="middle">×</text>
+
+                    <!-- page content below banner -->
+                    <rect x="56" y="166" width="200" height="9" rx="3" fill="#1f2937"></rect>
+                    <rect x="56" y="186" width="260" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="56" y="198" width="240" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="56" y="210" width="252" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="56" y="222" width="200" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="56" y="244" width="260" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0"></rect>
+                    <rect x="64" y="252" width="80" height="6" rx="2" fill="#94a3b8"></rect>
+                    <rect x="64" y="266" width="220" height="4" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="64" y="276" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="56" y="304" width="252" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="56" y="316" width="240" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="56" y="328" width="200" height="5" rx="2" fill="#cbd5e1"></rect>
+
+                    <!-- ScrollY indicator -->
+                    <line x1="345" y1="100" x2="358" y2="100" stroke="#1d4ed8" stroke-width="1"></line>
+                    <text x="362" y="98" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#1d4ed8" font-weight="600">scrollY = 0</text>
+                    <text x="362" y="108" font-family="ui-sans-serif,system-ui,sans-serif" font-size="8" fill="#64748b">first paint</text>
+
+                    <!-- Annotations -->
+                    <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#0f172a">
+                      <!-- primary action -->
+                      <line x1="257" y1="146" x2="270" y2="166" stroke="#2563eb" stroke-width="0.8" stroke-dasharray="2 2"></line>
+                      <text x="200" y="370" font-weight="700" fill="#1e3a8a">A · Primary action</text>
+                      <text x="200" y="382" font-size="9" fill="#475569">"Resume reading at § X" — restores scroll</text>
+                      <line x1="240" y1="368" x2="265" y2="138" stroke="#2563eb" stroke-width="0.6" stroke-dasharray="2 3" opacity="0.5"></line>
+                      <!-- dismiss -->
+                      <text x="200" y="398" font-weight="700" fill="#1e3a8a">B · Dismiss button</text>
+                      <text x="200" y="410" font-size="9" fill="#475569">Esc or click — sessionStorage flag</text>
+                      <line x1="240" y1="396" x2="305" y2="134" stroke="#94a3b8" stroke-width="0.6" stroke-dasharray="2 3" opacity="0.5"></line>
+                      <!-- role / live -->
+                      <text x="56" y="370" font-weight="700" fill="#1e3a8a">role="status"</text>
+                      <text x="56" y="382" font-size="9" fill="#475569">aria-live="polite" on first appearance</text>
+                      <text x="56" y="398" font-weight="700" fill="#1e3a8a">TTL · 14 days</text>
+                      <text x="56" y="410" font-size="9" fill="#475569">localStorage docs.resume.&lt;path&gt;</text>
+                    </g>
+
+                    <!-- ============ DIVIDER ============ -->
+                    <line x1="380" y1="74" x2="380" y2="430" stroke="#cbd5e1" stroke-dasharray="3 3"></line>
+
+                    <!-- ============ RIGHT: BACK-TO-TOP THRESHOLD ============ -->
+                    <text x="570" y="36" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Back-to-top FAB · visibility threshold</text>
+                    <text x="570" y="54" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10.5" fill="#475569">Reveals once <tspan font-family="ui-monospace,monospace">scrollY &gt; 600 px</tspan> · scrolls smoothly to <tspan font-family="ui-monospace,monospace">0,0</tspan></text>
+
+                    <!-- viewport frame -->
+                    <rect x="420" y="74" width="300" height="356" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"></rect>
+                    <!-- chrome -->
+                    <rect x="420" y="74" width="300" height="22" rx="10" fill="#e2e8f0"></rect>
+                    <circle cx="434" cy="85" r="3" fill="#f87171"></circle>
+                    <circle cx="444" cy="85" r="3" fill="#fbbf24"></circle>
+                    <circle cx="454" cy="85" r="3" fill="#34d399"></circle>
+                    <rect x="500" y="80" width="120" height="10" rx="5" fill="#cbd5e1"></rect>
+
+                    <!-- "scroll meter" along the right edge of the viewport: 0 → footer -->
+                    <rect x="700" y="105" width="6" height="320" rx="3" fill="#f1f5f9" stroke="#e2e8f0"></rect>
+                    <!-- scroll position indicator (current scrollY > 600) -->
+                    <rect x="700" y="105" width="6" height="115" fill="#cbd5e1"></rect>
+                    <rect x="699" y="218" width="8" height="6" rx="2" fill="#3b82f6"></rect>
+
+                    <!-- threshold horizontal line (mapped: 600px → ~y=170) -->
+                    <line x1="420" y1="178" x2="720" y2="178" stroke="#dc2626" stroke-width="1.4" stroke-dasharray="6 3" opacity="0.85"></line>
+                    <text x="425" y="172" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#dc2626" font-weight="700">scrollY = 600 px</text>
+                    <text x="425" y="184" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#94a3b8">↑ FAB stays hidden above this line</text>
+
+                    <!-- "above threshold" zone (faded) -->
+                    <rect x="420" y="96" width="300" height="82" fill="#f8fafc" opacity="0.5"></rect>
+                    <rect x="436" y="106" width="160" height="9" rx="3" fill="#94a3b8" opacity="0.6"></rect>
+                    <rect x="436" y="124" width="240" height="5" rx="2" fill="#cbd5e1" opacity="0.7"></rect>
+                    <rect x="436" y="136" width="220" height="5" rx="2" fill="#cbd5e1" opacity="0.7"></rect>
+                    <rect x="436" y="148" width="252" height="5" rx="2" fill="#cbd5e1" opacity="0.7"></rect>
+                    <rect x="436" y="160" width="180" height="5" rx="2" fill="#cbd5e1" opacity="0.7"></rect>
+
+                    <!-- "below threshold" zone (active) -->
+                    <rect x="436" y="194" width="240" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="436" y="206" width="220" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="436" y="222" width="280" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0" opacity="0.9"></rect>
+                    <rect x="444" y="232" width="80" height="6" rx="2" fill="#94a3b8"></rect>
+                    <rect x="444" y="246" width="220" height="4" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="444" y="256" width="180" height="4" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="436" y="282" width="252" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="436" y="294" width="240" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="436" y="306" width="200" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="436" y="318" width="252" height="5" rx="2" fill="#cbd5e1"></rect>
+                    <rect x="436" y="330" width="180" height="5" rx="2" fill="#cbd5e1"></rect>
+
+                    <!-- Back-to-top FAB at bottom-right -->
+                    <g transform="translate(688 400)">
+                      <circle cx="0" cy="0" r="22" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5" filter="url(#rsm-shadow)"></circle>
+                      <!-- rocket glyph (24-grid scaled to 22) -->
+                      <g transform="translate(-11 -11) scale(0.917)" stroke="#2563eb" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3c3.4 1.9 5.5 5.5 5.5 9.3v1.1L12 19l-5.5-5.6v-1.1C6.5 8.5 8.6 4.9 12 3z"></path>
+                        <path d="M12 8.2a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2z"></path>
+                        <path d="M9.3 16.6l-1.8 3.1M14.7 16.6l1.8 3.1"></path>
+                        <path d="M10.8 19.3h2.4"></path>
+                      </g>
+                    </g>
+                    <!-- arrow pointing to FAB -->
+                    <line x1="668" y1="395" x2="630" y2="378" stroke="#2563eb" stroke-width="0.8" stroke-dasharray="2 3"></line>
+                    <text x="540" y="372" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" font-weight="700" fill="#1e3a8a">FAB visible here</text>
+                    <text x="540" y="384" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#64748b">smooth-scrolls to top on click</text>
+
+                    <!-- "scrollY current" callout -->
+                    <line x1="710" y1="221" x2="730" y2="245" stroke="#3b82f6" stroke-width="0.6"></line>
+                    <text x="734" y="248" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" font-weight="700" fill="#2563eb">scroll</text>
+                    <text x="734" y="259" font-family="ui-sans-serif,system-ui,sans-serif" font-size="9" fill="#64748b">meter</text>
+                  </svg>
+                </div>
+                <figcaption class="sys-diagram__foot">
+                  <strong>Source:</strong> inline SVG mock (no external asset). Banner styles per
+                  <code>.docs-resume-banner*</code> in
+                  <a href="../foundations/css-architecture.html#internal-layout-deep-dive"><code>internal-layout.css</code></a>;
+                  back-to-top visibility logic per <code>BACK_TO_TOP_THRESHOLD = 600</code> in
+                  <code>docs/assets/docs-resume.js</code>; armed-launch behaviour described in
+                  <a href="rocket-launch-animation.html">Rocket launch animation</a>.
+                </figcaption>
+              </figure>
+
+              <p class="small">
+                <strong>Why these two together.</strong> The resume banner is the <em>first</em> reading aid the
+                reader sees on returning to a long page; the back-to-top FAB is the <em>last</em> after they reach
+                the bottom. Pairing them in one spec keeps the scroll-aware UX in a single page so we can reason
+                about overlap (none — the banner is hidden by the time the FAB shows) and stacking (both children
+                of <code>.internal-layout</code>, both covered by the drawer overlay at z-index 1000).
+              </p>
+              <p class="small">
+                <strong>What the threshold means.</strong> <code>BACK_TO_TOP_THRESHOLD = 600 px</code> is the
+                first reveal — at this point the FAB appears as the compact "sleeping rocket" pill. A second,
+                deeper threshold (~ 320 px from the footer) <em>arms</em> the rocket; only the armed click
+                actually launches the rocket animation. The full state machine — Compact → Armed → Boil →
+                Flight → Cleanup — is the subject of
+                <a href="rocket-launch-animation.html">Rocket launch animation</a>.
+              </p>
+            </section>
+
+            <section id="component-states" class="card">
+              <h2>States and accessibility</h2>
+              <div class="docs-table-scroll" role="region" aria-label="Resume + back-to-top states and accessibility">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Component</th>
+                      <th scope="col">States</th>
+                      <th scope="col">Role / ARIA</th>
+                      <th scope="col">Keyboard</th>
+                      <th scope="col">Reduced motion</th>
+                      <th scope="col">Screen-reader announcement</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Resume banner</td>
+                      <td>hidden, visible, dismissed (in this tab), expired (no save within 14 d), not-applicable (no prior scroll)</td>
+                      <td><code>role="status"</code> + <code>aria-live="polite"</code> on first appearance</td>
+                      <td><kbd>Tab</kbd> reaches the action and dismiss buttons; <kbd>Enter</kbd> jumps; <kbd>Esc</kbd> dismisses while focused</td>
+                      <td>Skip the fade-in; show flat</td>
+                      <td>"Resume reading from section X, button to jump or dismiss"</td>
+                    </tr>
+                    <tr>
+                      <td>Back-to-top button</td>
+                      <td>hidden (<code>scrollY &lt; 600 px</code>), visible, hovered, focused, smoothing (during animated scroll)</td>
+                      <td><code>aria-label="Back to top"</code>; <code>type="button"</code></td>
+                      <td><kbd>Tab</kbd> reaches it once visible; <kbd>Enter</kbd>/<kbd>Space</kbd> activates</td>
+                      <td>Skip smooth-scroll animation; jump instantly to top</td>
+                      <td>"Back to top, button"</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="public-surface" class="card">
+              <h2>Public surface</h2>
+              <dl class="docs-module-meta">
+                <dt>Loaded by</dt>
+                <dd>Pages that opt in via <code>&lt;script defer src="../…/assets/docs-resume.js"&gt;</code>. The script
+                  gracefully no-ops on pages without scrollable content or without an <code>.internal-layout</code> host.</dd>
+                  <dt>Storage keys</dt>
+                  <dd>
+                    <code>localStorage</code> · <code>docs.resume.&lt;path&gt;</code> — JSON <code>{ scrollY, ts }</code>,
+                    throttled write at 750 ms, TTL 14 days.<br>
+                    <code>sessionStorage</code> · <code>docs.resume.seen.&lt;path&gt;</code> — <code>"1"</code> when the
+                    banner has been actioned or dismissed in the current tab. Cleared on tab close.
+                  </dd>
+                  <dt>Tuning constants (in source)</dt>
+                  <dd>
+                    <code>TTL_MS = 14 × 24 × 60 × 60 × 1000</code><br>
+                    <code>MIN_SCROLL_FRACTION = 0.25</code> — banner only offers if reader passed 25% of the page before<br>
+                    <code>BACK_TO_TOP_THRESHOLD = 600</code> px<br>
+                    <code>SAVE_THROTTLE_MS = 750</code> ms
+                  </dd>
+                  <dt>CSS hooks</dt>
+                  <dd><code>.docs-resume-banner</code>, <code>.docs-resume-banner__action</code>,
+                    <code>.docs-resume-banner__dismiss</code>, <code>.docs-back-to-top</code> — all defined in
+                    <code>internal-layout.css</code>.</dd>
+                    <dt>CustomEvents</dt>
+                    <dd>None emitted or listened. The module is self-contained.</dd>
+                    <dt>Window globals</dt>
+                    <dd>None.</dd>
+                  </dl>
+                </section>
+
+                <section id="dos-and-donts" class="card">
+                  <h2>Do's and Don'ts</h2>
+                  <div class="docs-table-scroll" role="region" aria-label="Table">
+                    <table>
+                      <thead>
+                        <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Opt in only on pages where the reader is likely to scroll past 25% — long API operation pages, deep ADRs, audit reports.</td>
+                          <td>Add the script globally — short pages get a banner that never resolves and a button that never appears, wasting bytes and runtime.</td>
+                        </tr>
+                        <tr>
+                          <td>Bump the <code>SAVE_THROTTLE_MS</code> constant if the page has very long scroll regions and CPU-sensitive behavior (e.g. heavy SVG diagrams).</td>
+                          <td>Reduce the throttle below 250 ms — repeated <code>localStorage</code> writes degrade performance and battery on mobile.</td>
+                        </tr>
+                        <tr>
+                          <td>Test the <code>prefers-reduced-motion: reduce</code> path: button must scroll instantly, banner must show without fade.</td>
+                          <td>Use <code>scrollIntoView({ behavior: "smooth" })</code> unconditionally — it ignores reduced-motion and animates anyway. Branch on the media query.</td>
+                        </tr>
+                        <tr>
+                          <td>Treat the resume banner as informational — keep the dismiss button always reachable via <kbd>Tab</kbd> + <kbd>Esc</kbd>.</td>
+                          <td>Make the banner sticky or full-screen — it would block the page and erode trust.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section id="acceptance" class="card">
+                  <h2>Acceptance checklist</h2>
+                  <ol>
+                    <li>Loading a previously-scrolled page (within 14 days, scrollY &gt; 25% of page height) shows the banner above all other content.</li>
+                    <li>Dismissing the banner persists for the current tab session — banner does not return on F5 in the same tab.</li>
+                    <li>Closing and reopening the tab brings the banner back (sessionStorage cleared).</li>
+                    <li>After 14 days, the banner does not appear even if a save exists — entry has expired.</li>
+                    <li>The back-to-top button appears at <code>scrollY = 600 px</code> on every breakpoint and disappears below it.</li>
+                    <li>Click on the back-to-top scrolls smoothly to top under <code>prefers-reduced-motion: no-preference</code>; jumps instantly under <code>reduce</code>.</li>
+                    <li>Both controls are reachable via <kbd>Tab</kbd>, dismissable via <kbd>Esc</kbd> or activation.</li>
+                    <li>No console errors and no stray timers after navigation.</li>
+                  </ol>
+                </section>
+
+                <section id="implementation-map" class="card">
+                  <h2>Implementation map</h2>
+                  <ul>
+                    <li><code>docs/assets/docs-resume.js</code> — runtime: scroll save/restore, banner/button render, dismiss persistence.</li>
+                    <li><code>docs/assets/internal-layout.css</code> — visual styles for <code>.docs-resume-banner</code> and <code>.docs-back-to-top</code> (including reduced-motion overrides).</li>
+                    <li><code>docs/internal/api/conspectus/operations/post-api-v1-conspectuses-conspectus_uuid-actions-review.html</code> — first opt-in consumer.</li>
+                  </ul>
+                </section>
+
+                <section id="related" class="card">
+                  <h2>Related internal docs</h2>
+                  <ul>
+                    <li><a href="../foundations/js-modules.html#docs-resume">JavaScript modules reference — <code>docs-resume.js</code></a></li>
+                    <li><a href="../foundations/css-architecture.html#internal-layout-deep-dive">CSS architecture — <code>internal-layout.css</code> deep dive</a></li>
+                    <li><a href="popups-and-overlays.html">Popups and overlays</a> — sister page covering toast surfaces.</li>
+                    <li><a href="../foundations/motion-and-adaptivity.html">UI / motion / adaptivity</a> — reduced-motion policy.</li>
+                    <li><a href="rocket-launch-animation.html">Rocket launch animation</a> — what happens after the armed FAB is clicked: WebGL2 boil-and-launch contract.</li>
+                    <li><a href="report-bug-fab.html">Report-bug FAB</a> — the bug-shaped sibling that sits one slot above this rocket; same launchpad palette, opens the page-feedback modal.</li>
+                  </ul>
+                </section>
+
+                <section id="page-history" class="card">
+                  <h2>Page history</h2>
+                  <div class="docs-table-scroll" role="region" aria-label="Page history">
+                    <table class="docs-page-history">
+                      <thead>
+                        <tr>
+                          <th scope="col">Date</th>
+                          <th scope="col">Change</th>
+                          <th scope="col">Author</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><time datetime="2026-05-01">2026-05-01</time></td>
+                          <td>Added the <a href="#visual-reference">Visual reference</a> section: side-by-side viewport mocks showing the resume banner anchored to the top of <code>.internal-layout__main</code> with primary-action/dismiss/role/TTL annotations, and the back-to-top FAB with the <code>scrollY = 600 px</code> threshold drawn as a horizontal red dashed line plus a scroll-meter on the viewport edge.</td>
+                          <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                        </tr>
+                        <tr>
+                          <td><time datetime="2026-04-29">2026-04-29</time></td>
+                          <td>Page created — first dedicated component spec for the resume-reading banner and back-to-top button.</td>
+                          <td>Ivan Boyarkin</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+              </main>
+            </div>
+          </div>
+
+        </body></html>

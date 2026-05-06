@@ -1,0 +1,49 @@
+@startuml
+title Docs frontend — Diagram lightbox open / close sequence
+
+autonumber
+hide footbox
+
+actor "Reader" as Reader
+participant "img.diagram--uml" as Img
+participant "wrapper\n.diagram-uml-wrap" as Wrap
+participant "Expand button" as Btn
+participant "Lightbox runtime\ndocs-diagram-lightbox.js" as Run
+participant "Lightbox surface\n.docs-diagram-lightbox*" as LB
+participant "document.body" as Body
+
+== bootstrap (once per page load) ==
+Run -> LB : createLightbox()\nappend to body
+Run -> Img : scan all img.diagram--uml
+Run -> Wrap : wrap each img\n+ append Expand button
+
+== open flow ==
+Reader -> Btn : click (or Enter / Space)
+Btn -> Run : open(targetImg)
+Run -> Run : remember previous focus
+Run -> LB : copy src and alt from target
+Run -> LB : reset zoom = 1, pan = (0, 0)
+Run -> Body : add body lock class
+Run -> LB : focus close button
+
+== zoom and pan ==
+Reader -> LB : wheel / + / - / Cmd+0 / drag
+LB -> Run : delta + position
+Run -> Run : clamp scale to [MIN_SCALE, MAX_SCALE]
+Run -> LB : apply CSS transform on stage
+
+== close flow ==
+Reader -> LB : Escape, click on backdrop, or close button
+LB -> Run : close()
+Run -> LB : clear src and alt
+Run -> Body : remove body lock class
+Run -> Btn : restore focus to previous element
+
+note right of Run
+  Bootstrap is idempotent: pages without
+  img.diagram--uml are no-ops.
+  Expand button is appended only once
+  per image; duplicate runs are guarded.
+end note
+
+@enduml

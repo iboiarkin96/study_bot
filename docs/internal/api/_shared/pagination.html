@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagination — shared rules — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-resume.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Pagination</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Convention for list endpoints under <code>/api/v1/**</code>. Per-operation specs
+            describe their own filters and ordering; the pagination shape itself is shared and
+            lives here.
+          </p>
+          <p>
+            <strong>v1 default — bounded list with a hard cap.</strong> Endpoints return at most
+            <strong>100</strong> items per call, ordered deterministically, with no cursor.
+            Cursor pagination is added per-endpoint when usage data shows the cap is hit; until
+            then, listing endpoints rely on the cap + filters being sufficient.
+          </p>
+        </section>
+
+        <section class="card" id="defaults">
+          <h2>Default — bounded list</h2>
+          <ul>
+            <li><strong>Cap:</strong> 100 items per response. The integrator cannot raise it.</li>
+            <li><strong>Order:</strong> deterministic, stated by the endpoint
+              (e.g. <code>next_review_at</code> ascending, then
+              <code>conspectus_uuid</code> as a stable tiebreaker for total order).</li>
+              <li><strong>Filters:</strong> per-endpoint query parameters
+                (e.g. <code>slot</code>, <code>due_before</code>).</li>
+                <li><strong>Response shape:</strong> bare JSON array; no envelope, no
+                  <code>meta</code>, no <code>total</code>. Adding a wrapper would be a breaking
+                  change.</li>
+                </ul>
+                <p class="small">
+                  <strong>Why no wrapper in v1.</strong> Wrapping costs every client a layer of
+                  unwrapping; v1 lists are bounded by the cap and not cursorable. When a list grows
+                  beyond the cap and needs cursors, that endpoint gains a wrapper as an
+                  <em>additive</em> change behind a query flag, or as a v2 path.
+                </p>
+              </section>
+
+              <section class="card" id="cursor">
+                <h2>Cursor pagination — added per endpoint</h2>
+                <p>
+                  When an endpoint genuinely needs more than 100 items, it gains cursor pagination.
+                  The shape:
+                </p>
+                <ul>
+                  <li>Query parameters: <code>cursor</code> (opaque string, optional) and
+                    <code>limit</code> (1–100, default 50).</li>
+                    <li>Response: object
+                      <code>{ items: [...], next_cursor: string | null }</code>. <code>next_cursor</code>
+                      is non-null when more items exist.</li>
+                      <li>Cursors are <strong>opaque</strong> base64 of an internal struct
+                        (last seen sort key + tiebreaker). Clients must not parse them.</li>
+                        <li>Cursors are <strong>not</strong> stable across schema migrations of the sort
+                          key; integrators are warned in the endpoint description.</li>
+                        </ul>
+                        <p>
+                          <strong>Adding cursor pagination to an existing array-returning endpoint</strong>
+                          is a <em>breaking</em> change unless gated behind a new query flag. See
+                          <a href="versioning.html">versioning</a> for the rules.
+                        </p>
+                      </section>
+
+                      <section class="card" id="ordering">
+                        <h2>Stable ordering rules</h2>
+                        <ol>
+                          <li>Pick a domain-meaningful primary sort
+                            (<code>next_review_at</code>, <code>created_at</code>, …).</li>
+                            <li>Add a tiebreaker on a unique column (UUID lexicographic) so the order is a total
+                              order. Without this, cursors are unstable and integration tests are flaky.</li>
+                              <li>Document the order on the operation page (Section 7 query params or Section 8
+                                response).</li>
+                                <li>Never rely on insertion order or DB physical order; both can change.</li>
+                              </ol>
+                            </section>
+
+                            <section class="card" id="errors">
+                              <h2>Errors</h2>
+                              <p class="small">
+                                All standard middleware errors apply (<code>401</code>, <code>429</code>, …).
+                                Pagination-specific errors are minimal in v1:
+                              </p>
+                              <ul>
+                                <li><code>422 COMMON_000 COMMON_VALIDATION_ERROR</code> — invalid
+                                  <code>limit</code> (out of range) or invalid filter value.</li>
+                                  <li><code>422</code> on cursor parse failure — the client should treat any cursor it
+                                    did not just receive from this endpoint as invalid.</li>
+                                  </ul>
+                                </section>
+
+                                <section class="card" id="anti-patterns">
+                                  <h2>Anti-patterns</h2>
+                                  <ul>
+                                    <li><strong>Returning a <code>total</code> count</strong> on every page. Forces a
+                                      full-table scan; we don’t do it. Clients that need totals build them out-of-band.</li>
+                                      <li><strong>Offset/limit for cursor-style endpoints.</strong> Offset shifts when
+                                        data mutates between pages; cursor is the right primitive. Offset is fine only on
+                                        tiny, immutable lists.</li>
+                                        <li><strong>Client-decoded cursors.</strong> Forbidden. Cursors are opaque and may
+                                          change shape without notice.</li>
+                                          <li><strong>Mixing wrapper and bare array in one endpoint.</strong> Choose one and
+                                            stick with it for that endpoint’s lifetime.</li>
+                                          </ul>
+                                        </section>
+
+                                        <section class="card" id="traceability">
+                                          <h2>Traceability</h2>
+                                          <ul>
+                                            <li><strong>Versioning:</strong>
+                                              <a href="versioning.html">_shared/versioning.html</a> + ADR 0004.</li>
+                                              <li><strong>System design:</strong>
+                                                <a href="../../analysis/system-design.html#review-suggestion-logic">due ordering /
+                                                  tiebreakers</a>.</li>
+                                                </ul>
+                                              </section>
+
+                                              <section id="page-history" class="card">
+                                                <h2>Page history</h2>
+                                                <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                                  <table class="docs-page-history">
+                                                    <thead><tr><th>Date</th><th>Change</th><th>Author</th></tr></thead>
+                                                    <tbody>
+                                                      <tr>
+                                                        <td><time datetime="2026-04-29">2026-04-29</time></td>
+                                                        <td>Phase 3: shared pagination rules — bounded list default, cursor on
+                                                          demand.</td>
+                                                          <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                        </tr>
+                                                      </tbody>
+                                                    </table>
+                                                  </div>
+                                                </section>
+
+                                              </main>
+                                            </div>
+                                          </div>
+
+                                        </body></html>

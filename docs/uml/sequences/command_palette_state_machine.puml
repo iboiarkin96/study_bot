@@ -1,0 +1,40 @@
+@startuml
+title Docs frontend — Command palette state machine
+
+' Single-page palette opened from any docs page via the global hotkey.
+' Closed and Open are the steady states; everything else is in-flight.
+
+[*] --> Closed
+
+Closed   : palette overlay hidden\nbody scroll unlocked\nfocus on the page
+Open     : palette overlay visible\nempty input, full result list\nfocus inside palette
+Filtering: input has at least one character\nresult list filtered live\nfirst result auto-highlighted
+Selected : a result row is highlighted\nactivation runs that row's command
+Closing  : closing animation in flight\nfocus restoration scheduled
+
+Closed    --> Open      : Cmd / Ctrl + K\n— or — toolbar trigger
+Open      --> Filtering : input changes (length > 0)
+Filtering --> Open      : input cleared (length = 0)
+Open      --> Selected  : ArrowDown / Up / hover
+Filtering --> Selected  : ArrowDown / Up / hover
+Selected  --> Selected  : ArrowDown / Up
+Selected  --> Open      : input cleared
+Selected  --> Closing   : Enter\n(execute selected row)
+Open      --> Closing   : Escape\nclick on backdrop
+Filtering --> Closing   : Escape\nclick on backdrop
+Selected  --> Closing   : Escape
+Closing   --> Closed    : transition end\nfocus restored
+
+note right of Open
+  result rows are virtualized for >200 entries
+  data source: docs-portal-data.js
+end note
+
+note right of Selected
+  row activation may be:
+  - navigate to URL
+  - copy to clipboard
+  - run a registered command
+end note
+
+@enduml
