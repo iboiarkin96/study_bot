@@ -501,9 +501,10 @@ docs-spec-check:
 # Verify docs are already synchronized (no drift allowed).
 # Compare the working tree diff vs HEAD before and after docs-fix. If identical,
 # docs-fix did not change any file—so committed generated artifacts match the pipeline.
-# ``docs/pdoc/search.js`` is excluded: pdoc/elasticlunr rebuilds the embedded lunr trie in a
-# nondeterministic shape across runs (even with PYTHONHASHSEED=0); other ``docs/pdoc/*`` HTML
-# stays in the diff and must remain stable.
+# After ``docs-fix``, reset ``docs/pdoc/search.js`` to ``HEAD`` before comparing diffs:
+# pdoc/elasticlunr emits a nondeterministic lunr trie across runs (even with PYTHONHASHSEED=0).
+# Using ``git checkout HEAD -- …`` avoids pathspec ``:(exclude)`` quirks on older Git and shallow clones.
+# Match CI Python (see ``.python-version``): docs-fix output must match committed artifacts for other paths.
 # (Local edits in unrelated paths are preserved as long as docs-fix leaves the tree unchanged.)
 docs-check:
 	@if [ ! -d ".venv" ]; then \
@@ -514,9 +515,10 @@ docs-check:
 	@$(MAKE) docs-feedback-check
 	@$(MAKE) docs-spec-check
 	@tmp_before=$$(mktemp); tmp_after=$$(mktemp); \
-	git diff HEAD -- . ":(exclude)docs/pdoc/search.js" > "$$tmp_before"; \
+	git diff HEAD > "$$tmp_before"; \
 	$(MAKE) docs-fix; \
-	git diff HEAD -- . ":(exclude)docs/pdoc/search.js" > "$$tmp_after"; \
+	git checkout HEAD -- docs/pdoc/search.js 2>/dev/null || true; \
+	git diff HEAD > "$$tmp_after"; \
 	if cmp -s "$$tmp_before" "$$tmp_after"; then \
 		printf "$(ICON_OK) %s\n" "Docs check passed (no drift)"; \
 		rm -f "$$tmp_before" "$$tmp_after"; \
