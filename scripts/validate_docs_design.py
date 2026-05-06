@@ -1,7 +1,7 @@
 """Validate design-consistency baseline for docs HTML pages.
 
 This check enforces the shared page skeleton from
-``docs/internal/front/documentation-style-guide.html`` for non-generated docs pages.
+``docs/internal/front/_shared/style-guide.html`` for non-generated docs pages.
 Generated Python API HTML under ``docs/pdoc/`` is skipped (same as legacy ``docs/api/`` output).
 It is intentionally lightweight: fail only on clear structural regressions.
 """
@@ -44,6 +44,13 @@ def _iter_docs_pages(candidates: list[str] | None = None) -> list[Path]:
         if rel.parts and rel.parts[0] in {"api", "assets", "pdoc"}:
             continue
         if rel in FROZEN_DOCS_REL_PATHS:
+            continue
+        # Scratch HTML under portal profile `notes/` (gitignored locally; never shipped).
+        if (
+            len(rel.parts) >= 5
+            and rel.parts[0:3] == ("internal", "portal", "people")
+            and rel.parts[4] == "notes"
+        ):
             continue
         pages.append(path)
     return pages
@@ -189,7 +196,7 @@ def main() -> None:
                 failures.append(
                     f"{rel}: missing Page history section "
                     f'(<section id="page-history"> or assessment <section> with id="5-page-history"); '
-                    f"see docs/internal/front/documentation-style-guide.html#page-history"
+                    f"see docs/internal/front/_shared/style-guide.html#page-history"
                 )
             if not _has_body_maintainers(doc):
                 failures.append(

@@ -1,7 +1,10 @@
 """Post-process pdoc HTML under docs/pdoc/.
 
 Strip unstable memory addresses from HTML and ``search.js`` (function reprs) so
-``make api-docs`` output is diff-stable across machines and runs. Also ensure
+``make api-docs`` output is diff-stable across machines and runs. Re-serialize the
+embedded lunr ``docs`` JSON in ``search.js`` with sorted keys — pdoc otherwise emits
+trie children in nondeterministic order, which breaks ``make docs-check`` drift
+detection. Also ensure
 every pdoc HTML document links the shared docs favicon and loads Inter.
 
 pdoc output is otherwise left unchanged — no site chrome or ``docs-nav.js``.
@@ -9,6 +12,7 @@ pdoc output is otherwise left unchanged — no site chrome or ``docs-nav.js``.
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import sys
@@ -22,6 +26,9 @@ FAVICON_NAME = "favicon.svg"
 # e.g. ``<function foo at 0x10ab02c40>`` in HTML-escaped form or plain text
 _AT_ADDR = re.compile(r" at 0x[0-9a-f]{8,16}")
 
+# pdoc ``search.js`` embeds the lunr index as ``const docs = {...};``
+_SEARCH_JS_MARKER = "/** pdoc search index */const docs = "
+
 
 def main() -> int:
     if not DOCS_API.is_dir():
@@ -33,6 +40,8 @@ def main() -> int:
             continue
         text = path.read_text(encoding="utf-8")
         new = _AT_ADDR.sub("", text)
+        if path.name == "search.js":
+            new = _canonicalize_pdoc_search_js(new)
         if path.suffix == ".html":
             new = _inject_favicon(new, path)
             new = _inject_inter_font(new)
@@ -43,6 +52,25 @@ def main() -> int:
     if changed:
         print(f"Normalized unstable pdoc reprs in {changed} file(s) under docs/pdoc/")
     return 0
+
+
+def _canonicalize_pdoc_search_js(text: str) -> str:
+    """Rewrite embedded lunr index JSON with sorted keys for deterministic output."""
+    idx = text.find(_SEARCH_JS_MARKER)
+    if idx == -1:
+        return text
+    start = idx + len(_SEARCH_JS_MARKER)
+    try:
+        data, end_idx = json.JSONDecoder().raw_decode(text, start)
+    except json.JSONDecodeError:
+        return text
+    serialized = json.dumps(
+        data,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return text[:start] + serialized + text[end_idx:]
 
 
 _INTER_FONT_MARKER = "fonts.googleapis.com/css2?family=Inter"

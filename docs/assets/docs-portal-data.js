@@ -356,44 +356,48 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "PUT /api/v1/user/{system_uuid}/{system_user_id} — User — Study App"
       },
       {
-        "path": "internal/front/architecture-map.html",
-        "title": "Docs frontend architecture map and feature inventory"
+        "path": "internal/front/README.html",
+        "title": "Docs frontend — internal documentation hub — Study App"
       },
       {
-        "path": "internal/front/foundations/css-architecture.html",
-        "title": "Docs frontend CSS architecture — reference"
+        "path": "internal/front/_shared/component-spec-template.html",
+        "title": "Component spec template — Docs frontend — Study App"
       },
       {
-        "path": "internal/front/components/diagrams-and-lightbox.html",
-        "title": "Docs frontend diagrams and lightbox"
+        "path": "internal/front/_shared/contract-spec-template.html",
+        "title": "Contract spec template — Docs frontend — Study App"
       },
       {
         "path": "internal/front/_shared/fast-entry-by-role.html",
         "title": "Docs frontend quick entry by role"
       },
       {
-        "path": "internal/front/contracts/feedback-and-editorial-workflow.html",
-        "title": "Docs frontend feedback and editorial workflow"
+        "path": "internal/front/_shared/foundation-spec-template.html",
+        "title": "Foundation spec template — Docs frontend — Study App"
       },
       {
         "path": "internal/front/_shared/glossary.html",
         "title": "Docs frontend glossary"
       },
       {
-        "path": "internal/front/foundations/hotkeys.html",
-        "title": "Docs frontend hotkeys"
+        "path": "internal/front/_shared/process.html",
+        "title": "Documentation maintenance process"
       },
       {
-        "path": "internal/front/foundations/js-modules.html",
-        "title": "Docs frontend JavaScript modules — reference"
+        "path": "internal/front/_shared/spec-definition-of-done.html",
+        "title": "Frontend spec — Definition of Done — Study App"
       },
       {
-        "path": "internal/front/contracts/menu-and-theme.html",
-        "title": "Docs frontend navigation and theme controls (normative contract)"
+        "path": "internal/front/_shared/style-guide.html",
+        "title": "Documentation style guide and audit standard"
       },
       {
-        "path": "internal/front/contracts/navigation-search-and-discovery.html",
-        "title": "Docs frontend navigation, search, and discovery"
+        "path": "internal/front/architecture-map.html",
+        "title": "Docs frontend architecture map and feature inventory"
+      },
+      {
+        "path": "internal/front/components/diagrams-and-lightbox.html",
+        "title": "Docs frontend diagrams and lightbox"
       },
       {
         "path": "internal/front/components/popups-and-overlays.html",
@@ -416,28 +420,48 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Sticky On this page TOC and scroll-spy"
       },
       {
-        "path": "internal/front/foundations/tokens.html",
-        "title": "Docs frontend token gallery"
-      },
-      {
         "path": "internal/front/components/tooltips.html",
         "title": "Docs frontend: tooltips and inline hints"
       },
       {
-        "path": "internal/front/foundations/ui-kit.html",
-        "title": "Docs frontend UI kit (component style spec)"
+        "path": "internal/front/contracts/feedback-and-editorial-workflow.html",
+        "title": "Docs frontend feedback and editorial workflow"
+      },
+      {
+        "path": "internal/front/contracts/menu-and-theme.html",
+        "title": "Docs frontend navigation and theme controls (normative contract)"
+      },
+      {
+        "path": "internal/front/contracts/navigation-search-and-discovery.html",
+        "title": "Docs frontend navigation, search, and discovery"
+      },
+      {
+        "path": "internal/front/foundations/css-architecture.html",
+        "title": "Docs frontend CSS architecture — reference"
+      },
+      {
+        "path": "internal/front/foundations/hotkeys.html",
+        "title": "Docs frontend hotkeys"
+      },
+      {
+        "path": "internal/front/foundations/js-modules.html",
+        "title": "Docs frontend JavaScript modules — reference"
       },
       {
         "path": "internal/front/foundations/motion-and-adaptivity.html",
         "title": "Docs frontend UI system, motion, and adaptivity"
       },
       {
-        "path": "internal/front/_shared/process.html",
-        "title": "Documentation maintenance process"
+        "path": "internal/front/foundations/tokens.html",
+        "title": "Docs frontend token gallery"
       },
       {
-        "path": "internal/front/_shared/style-guide.html",
-        "title": "Documentation style guide and audit standard"
+        "path": "internal/front/foundations/ui-kit.html",
+        "title": "Docs frontend UI kit (component style spec)"
+      },
+      {
+        "path": "internal/front/patterns/long-form-reading-aids.html",
+        "title": "Pattern: long-form reading aids — Docs frontend — Study App"
       },
       {
         "path": "internal/front/screens/components/README.html",
@@ -474,6 +498,14 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/portal/people/ivan-boyarkin/index.html",
         "title": "Ivan Boyarkin — Employee portal — Study App"
+      },
+      {
+        "path": "internal/portal/people/ivan-boyarkin/notes/sa-growth.html",
+        "title": "SA growth"
+      },
+      {
+        "path": "internal/portal/people/ivan-boyarkin/notes/week-calendar-2026-05-07.html",
+        "title": "Senior SA push — 24 дня до 2026-05-30"
       },
       {
         "path": "internal/portal/people/kirill-neustroev/index.html",
