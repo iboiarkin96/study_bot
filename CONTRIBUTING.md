@@ -17,7 +17,7 @@
 - **GitHub Pages** (branch → `/docs`): the `docs/` folder is the **site root**, so URLs look like `https://<user>.github.io/<repo>/<file>.html`.
 - After you change routes, Makefile help, env templates, PlantUML, or HTML under `docs/`, run **`make docs-fix`** and commit so CI stays green.
 - Use **Python 3.11** for the project virtualenv (see **`.python-version`**, same as [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) so `docs-fix` / `docs-check` match GitHub Actions; a venv built with another minor version can still fail the drift step on HTML/pdoc output.
-- **`docs-check`** fails if the docs pipeline would change any file compared to `HEAD` — your branch must already contain everything `docs-fix` would write (except `docs/pdoc/search.js`, which is restored from `HEAD` after `docs-fix` because its lunr trie is nondeterministic).
+- **`docs-check`** fails if the docs pipeline would change any file compared to `HEAD` — your branch must already contain everything `docs-fix` would write for **non-pdoc** paths. After `docs-fix`, the check restores **`docs/pdoc/`** from `HEAD` (pdoc output varies by OS / run) and rebuilds **`docs/assets/search-index.json`** so the index matches that tree; commit the pdoc tree you want as the API reference snapshot.
 - Docs-only history: [docs/CHANGELOG.md](docs/CHANGELOG.md). ADR lifecycle and GitHub Issue flow: [ADR 0018](docs/adr/0018-adr-lifecycle-ratification-and-badges.html).
 
 ## Container image
