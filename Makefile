@@ -485,8 +485,9 @@ docs-feedback-check:
 	@printf "$(COLOR_GREEN)== DOCS-FEEDBACK-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
 # Lint internal analyst-spec pages (structure + cross-doc consistency).
-# spec_lint.py    — per-page structure (required sections, metadata, examples, page history).
-# spec_consistency.py — operationId ↔ spec page; error code/key ↔ shared error catalog.
+# spec_lint.py        — per-page structure for API operation specs (required sections, metadata, examples, page history).
+# spec_consistency.py  — operationId ↔ spec page; error code/key ↔ shared error catalog.
+# front_spec_lint.py   — per-page structure for typed frontend specs (component / foundation / contract).
 docs-spec-check:
 	@if [ ! -d ".venv" ]; then \
 		printf "$(ICON_ERR) %s\n" ".venv not found. Run 'make venv && make install' first."; exit 1; \
@@ -494,6 +495,7 @@ docs-spec-check:
 	@printf "$(COLOR_CYAN)== DOCS-SPEC-CHECK: START ==$(COLOR_RESET)\n"
 	@$(PYTHON) scripts/spec_lint.py
 	@$(PYTHON) scripts/spec_consistency.py
+	@$(PYTHON) scripts/front_spec_lint.py
 	@printf "$(COLOR_GREEN)== DOCS-SPEC-CHECK: SUCCESS ==$(COLOR_RESET)\n"
 
 # Verify docs are already synchronized (no drift allowed).

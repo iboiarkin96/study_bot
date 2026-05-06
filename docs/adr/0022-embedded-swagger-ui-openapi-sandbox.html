@@ -23,7 +23,7 @@
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        Lifecycle governed by <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.
+        Lifecycle governed by <a href="0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>.
         The decision went through two stages: the original approach was placed <strong>on hold</strong>
         (2026-04-12); the final approach was adopted after investigation (2026-04-24).
       </p>
@@ -39,16 +39,16 @@
       <h2>Context</h2>
       <p>
         The HTTP contract for integrators is the committed OpenAPI snapshot and the runtime spec
-        (<a href="./0025-external-and-internal-api-documentation.html">ADR 0025</a>,
-        <a href="./0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Browsing the spec
+        (<a href="0025-external-and-internal-api-documentation.html">ADR 0025</a>,
+        <a href="0007-openapi-governance-and-usability-standard.html">ADR 0007</a>). Browsing the spec
         in a static site is not enough: partners and internal providers need
         <strong>round trips against a real process and persistent storage</strong> to build confidence
         before production.
       </p>
       <p>
         The first approach tried to deliver validation <strong>without a cooperating server</strong>
-        (Ajv, interceptors, no real HTTP). It proved brittle. The missing pieces were a
-        <strong>reachable sandbox backend</strong>, <strong>correct CORS</strong> for the public docs
+        (Ajv, interceptors, no real HTTP). It proved brittle. What was missing sat on the server side:
+        a <strong>reachable sandbox backend</strong>, <strong>correct CORS</strong> for the public docs
         origin, and <strong>sandbox-scoped credentials</strong> — not more client-side plumbing.
       </p>
     </section>
@@ -155,7 +155,7 @@
         <li>
           <strong>Dedicated sandbox deployment.</strong> Run a separate app instance at a stable HTTPS
           base URL (e.g. a PaaS with a fixed hostname, per
-          <a href="./0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a> for the image).
+          <a href="0021-continuous-delivery-github-actions-and-ghcr.html">ADR 0021</a> for the image).
           It uses its <strong>own</strong> persistent database — not production, not shared with ad-hoc
           local runs. The sandbox is long-lived enough for integration work (not a throwaway
           <code>pytest</code> process).
@@ -180,7 +180,7 @@
         <li>
           <strong>No Ajv / interceptor validation layer in the static site.</strong> Reject resurrecting
           <code>openapi-sandbox.js</code> and request interceptors. The service validates; errors follow
-          <a href="./0003-error-contract-governance.html">ADR 0003</a> and the OpenAPI.
+          <a href="0003-error-contract-governance.html">ADR 0003</a> and the OpenAPI.
         </li>
         <li>
           <strong>Credential model: scoped API keys for the sandbox only.</strong> Integrators use
@@ -188,7 +188,7 @@
           <strong>Authorize</strong> — not production keys. Keys are revocable, least-privilege for the
           sandbox, and must not be committed to the repo. Production credentials must never be pasted into
           a public static page; environment separation and policy are part of the security story
-          (<a href="./0005-api-security-defaults.html">ADR 0005</a>).
+          (<a href="0005-api-security-defaults.html">ADR 0005</a>).
         </li>
         <li>
           <strong>Sandbox is explicitly non-production.</strong> UI copy and runbooks state that data is
@@ -308,7 +308,7 @@
           </li>
           <li>
             Configure CORS on the sandbox (e.g. <code>CORS_ORIGINS</code> per
-            <a href="./0005-api-security-defaults.html">ADR 0005</a>) to include
+            <a href="0005-api-security-defaults.html">ADR 0005</a>) to include
             <code>https://iboiarkin96.github.io</code>. Verify with
             <code>OPTIONS</code> and a browser from that origin.
           </li>

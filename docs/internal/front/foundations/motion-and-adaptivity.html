@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Docs frontend UI system, motion, and adaptivity</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
-  <script defer src="../../assets/docs-diagram-lightbox.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-diagram-lightbox.js"></script>
 </head>
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="foundation" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
@@ -35,7 +35,7 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
           <time datetime="2026-04-30">2026-04-30</time></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
@@ -106,7 +106,7 @@
               </div>
             </div>
             <div class="sys-diagram__canvas">
-              <img alt="Motion policy decision flow: read prefers-reduced-motion at action time; if reduce, skip animation and perform state change instantly; otherwise branch by animation type (decorative, informational, critical) — each runs the animation with a different ARIA contract; flow ends with focus and state resolution." class="diagram diagram--uml" loading="lazy" src="../../uml/rendered/motion_policy_decision_flow.svg">
+              <img alt="Motion policy decision flow: read prefers-reduced-motion at action time; if reduce, skip animation and perform state change instantly; otherwise branch by animation type (decorative, informational, critical) — each runs the animation with a different ARIA contract; flow ends with focus and state resolution." class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/motion_policy_decision_flow.svg">
             </div>
             <figcaption class="sys-diagram__foot"><strong>Source:</strong>
               <code>docs/uml/sequences/motion_policy_decision_flow.puml</code>
@@ -337,10 +337,10 @@
             <figcaption class="sys-diagram__foot">
               <strong>Source:</strong> inline SVG mock (no external asset). Bars derived from
               <code>docs/assets/docs.css</code> and per-component spec pages
-              (<a href="./docs-frontend-popups-and-overlays.html">popups</a>,
-              <a href="./docs-frontend-report-bug-fab.html">report-bug FAB</a>,
-              <a href="./docs-frontend-rocket-launch-animation.html">rocket launch</a>,
-              <a href="./docs-frontend-resume-and-back-to-top.html">resume + back-to-top</a>).
+              (<a href="../components/popups-and-overlays.html">popups</a>,
+              <a href="../components/report-bug-fab.html">report-bug FAB</a>,
+              <a href="../components/rocket-launch-animation.html">rocket launch</a>,
+              <a href="../components/resume-and-back-to-top.html">resume + back-to-top</a>).
             </figcaption>
           </figure>
 
@@ -408,7 +408,7 @@
               <p class="small">
                 <strong>Component-level breakpoints (not device tiers).</strong> Internal-layout sidebar reflows at
                 901 px and 900 px because the wide rail no longer fits — see
-                <a href="./docs-frontend-css-architecture.html#sidebar-component-breakpoints">CSS architecture §
+                <a href="css-architecture.html#sidebar-component-breakpoints">CSS architecture §
                   sidebar component breakpoints</a>. A secondary mobile-compact cut-off lives at 520 px
                   (heading scale + safe-area padding) inside the mobile tier. Home landing hero collapses at
                   640 px. These cut-offs are layout-specific and never used to name a device.
@@ -559,8 +559,8 @@
                   <strong>Forbidden:</strong> any <code>@media (max-width: …)</code> rule that
                   changes <code>width</code>, <code>height</code>, <code>padding</code>, or icon
                   size on either FAB. Drift between the two FABs is a review blocker. Spec pages:
-                  <a href="./docs-frontend-rocket-launch-animation.html#positioning-and-stacking">rocket §positioning-and-stacking</a>,
-                  <a href="./docs-frontend-report-bug-fab.html#positioning-and-stacking">bug §positioning-and-stacking</a>.
+                  <a href="../components/rocket-launch-animation.html#positioning-and-stacking">rocket §positioning-and-stacking</a>,
+                  <a href="../components/report-bug-fab.html#positioning-and-stacking">bug §positioning-and-stacking</a>.
                 </p>
 
                 <h3>Container &amp; safe-area padding</h3>
@@ -657,7 +657,7 @@
                                                           <tr>
                                                             <td><time datetime="2026-05-01">2026-05-01</time></td>
                                                             <td>Added the <a href="#visual-reference">Visual reference</a> section: motion timing palette as a horizontal-bar chart of the eight canonical motion durations (60–1700 ms) colour-coded by category (critical / informational / decorative), each row paired with its <code>prefers-reduced-motion: reduce</code> fallback (most → 0; toast pillow → 100 ms; <code>:active</code> kept). Plus three easing-curve callouts showing the cubic-bezier vocabulary covering the entire portal.</td>
-                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                           </tr>
                                                           <tr>
                                                             <td><time datetime="2026-04-29">2026-04-29</time></td>
@@ -667,7 +667,7 @@
                                                           <tr>
                                                             <td><time datetime="2026-04-23">2026-04-23</time></td>
                                                             <td>Added detailed UI/theming/motion/adaptive frontend documentation, including rocket and reading UX.</td>
-                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                           </tr>
                                                         </tbody>
                                                       </table>

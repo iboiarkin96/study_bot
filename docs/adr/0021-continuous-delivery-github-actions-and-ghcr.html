@@ -23,7 +23,7 @@
     <section class="card">
       <h2>Ratification</h2>
       <p>
-        Adopted under <a href="./0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link the discussion
+        Adopted under <a href="0018-adr-lifecycle-ratification-and-badges.html">ADR 0018</a>. Link the discussion
         Issue and merge PR when they exist. If not, use git history as the record.
       </p>
       <ul>
@@ -63,7 +63,7 @@
         </li>
         <li>
           <strong>Onboarding</strong> — New contributors read “we have a <code>Dockerfile</code>”
-          (<a href="./0015-container-image.html">ADR 0015</a>) but may not know how that image gets
+          (<a href="0015-container-image.html">ADR 0015</a>) but may not know how that image gets
           to a place where a VM or a PaaS can consume it. This ADR documents the <strong>first automated
           hop</strong>: build → push to <strong>GHCR</strong>.
         </li>
@@ -115,7 +115,7 @@
 
       <h3>How this relates to ADR 0015</h3>
       <p>
-        <a href="./0015-container-image.html">ADR 0015</a> defines <strong>what</strong> goes into
+        <a href="0015-container-image.html">ADR 0015</a> defines <strong>what</strong> goes into
         the
         image (Dockerfile layout, entrypoint). This ADR defines <strong>automation</strong>
         that
@@ -164,7 +164,7 @@
           and similar settings are <strong>not</strong> injected by this workflow; they are the responsibility of
           whoever
           runs the container (host, PaaS, or another runtime), consistent with
-          <a href="./0010-env-profiles-and-config-governance.html">ADR 0010</a>.
+          <a href="0010-env-profiles-and-config-governance.html">ADR 0010</a>.
         </li>
       </ul>
 
@@ -175,7 +175,7 @@
         <li>
           <strong>In scope:</strong> GitHub Actions workflow changes, GHCR as the default registry, tagging policy tied
           to
-          branches and <code>v*</code> release tags (<a href="./0017-branch-naming-and-repository-workflow.html">ADR
+          branches and <code>v*</code> release tags (<a href="0017-branch-naming-and-repository-workflow.html">ADR
           0017</a>),
           documentation and ADR index updates.
         </li>
@@ -222,7 +222,7 @@
             <h3>Positive</h3>
             <ul>
               <li>Every successful merge to the integration branch (and version tags) yields a pullable image that matches the
-                Dockerfile from <a href="./0015-container-image.html">ADR 0015</a>.</li>
+                Dockerfile from <a href="0015-container-image.html">ADR 0015</a>.</li>
                 <li>New contributors get one path: CI green → image on GHCR → pull and run anywhere Docker can reach the
                   registry.</li>
                   <li>The standard GitHub-hosted publish path does not require an extra personal access token for the push step.
@@ -254,7 +254,7 @@
                     <ul>
                       <li>Technical: on push to <code>main</code>, the workflow completes <code>publish-image</code>; the image
                         appears under the repository’s Packages and is pullable with correct authentication.</li>
-                        <li>Documentation: this ADR, the <a href="../adr/README.html">ADR index</a>, and contributor notes link to the
+                        <li>Documentation: this ADR, the <a href="README.html">ADR index</a>, and contributor notes link to the
                           workflow as needed.</li>
                         </ul>
 

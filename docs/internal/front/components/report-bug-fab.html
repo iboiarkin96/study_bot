@@ -5,16 +5,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Docs frontend report-bug FAB</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <link rel="stylesheet" href="./screens/screen-spec.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <link rel="stylesheet" href="../screens/screen-spec.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
 </head>
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
@@ -36,7 +36,7 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal · all docs pages</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Component type</span>
           <span>Floating action button + modal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Implementation</span>
@@ -58,7 +58,7 @@
           </p>
           <p>
             This FAB is the visible sibling of the
-            <a href="./docs-frontend-resume-and-back-to-top.html#anatomy">back-to-top rocket</a> — same launchpad
+            <a href="resume-and-back-to-top.html#anatomy">back-to-top rocket</a> — same launchpad
             palette, same right-edge stack, but a different personality: the rocket <em>departs</em> when the page is
             done; the bug <em>listens</em> the entire time. Together they form the two-FAB cluster shown above the
             footer.
@@ -69,7 +69,7 @@
             <code>docs/assets/docs.css</code> (selectors prefixed <code>.docs-report-bug-fab*</code> and
             <code>.docs-feedback-modal*</code>). Editorial governance (cadence workflow, GitHub template, triage
             labels) is described in
-            <a href="./docs-frontend-feedback-and-editorial-workflow.html">Feedback and editorial workflow</a>;
+            <a href="../contracts/feedback-and-editorial-workflow.html">Feedback and editorial workflow</a>;
             this page is the <em>UI</em> spec for the floating control and the modal it opens.
           </p>
         </section>
@@ -141,7 +141,7 @@
             </li>
             <li>
               <strong>Tooltip hook</strong> — <code>data-tooltip="Report issue"</code> wires the FAB into the docs
-              <a href="./docs-frontend-tooltips.html">tooltip system</a>. Tooltip contents are kept short because
+              <a href="tooltips.html">tooltip system</a>. Tooltip contents are kept short because
               the FAB is icon-only.
             </li>
             <li>
@@ -368,9 +368,9 @@
             is the first reachable target with a tap-up gesture and the bug sits within thumb arc on mobile. Sizing
             and offset are <strong>identical on every viewport</strong> — desktop, tablet, and mobile — per the
             uniform-typography-and-controls rule pinned in
-            <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>. The
+            <a href="../foundations/motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>. The
             companion rocket FAB is locked to the same numbers in
-            <a href="./docs-frontend-rocket-launch-animation.html#positioning-and-stacking">rocket launch animation
+            <a href="rocket-launch-animation.html#positioning-and-stacking">rocket launch animation
               §positioning-and-stacking</a>.
             </p>
             <div class="docs-table-scroll" role="region" aria-label="Positioning rules">
@@ -431,7 +431,7 @@
             <p>
               Raster screenshots of the bug FAB at every canonical viewport. Filenames and capture rules are
               defined in
-              <a href="./screens/components/README.html">screens/components/README</a> (viewport canon, naming
+              <a href="../screens/components/README.html">screens/components/README</a> (viewport canon, naming
               pattern, manual capture flow). Update these images in the <em>same PR</em> as any visual change.
             </p>
             <p class="small">
@@ -478,8 +478,8 @@
             </div>
             <!-- Replace each placeholder with a real <figure> when the PNG lands:
             <figure class="screen-gallery__item">
-              <a href="./screens/components/assets/report-bug-fab-desktop.png" target="_blank" rel="noopener">
-                <img src="./screens/components/assets/report-bug-fab-desktop.png" alt="Bug FAB at the bottom-right corner of a desktop docs page, idle state with the radar pulse expanding around the pill." loading="lazy" />
+              <a href="../screens/components/assets/report-bug-fab-desktop.png" target="_blank" rel="noopener">
+                <img src="../screens/components/assets/report-bug-fab-desktop.png" alt="Bug FAB at the bottom-right corner of a desktop docs page, idle state with the radar pulse expanding around the pill." loading="lazy" />
               </a>
               <figcaption>Desktop · 1440 × 900 · idle</figcaption>
             </figure>
@@ -660,7 +660,7 @@
 
                       <dt>CustomEvents</dt>
                       <dd>None emitted today. Future telemetry hooks are described in
-                        <a href="./docs-frontend-feedback-and-editorial-workflow.html#telemetry-contract">Telemetry contract</a>.</dd>
+                        <a href="../contracts/feedback-and-editorial-workflow.html#telemetry-contract">Telemetry contract</a>.</dd>
 
                         <dt>Window globals</dt>
                         <dd>None.</dd>
@@ -767,7 +767,7 @@
                         The page-actions menu's "Report issue" link uses the same builder with no message; only the modal
                         submit path passes a non-empty <code>extraFeedback</code>. Cadence and triage of these issues are
                         governed by <code>.github/workflows/docs-feedback-cadence.yml</code> — see
-                        <a href="./docs-frontend-feedback-and-editorial-workflow.html#github-feedback-contract">GitHub feedback contract</a>.
+                        <a href="../contracts/feedback-and-editorial-workflow.html#github-feedback-contract">GitHub feedback contract</a>.
                       </p>
                     </section>
 
@@ -781,7 +781,7 @@
                           <tbody>
                             <tr>
                               <td>Keep the bug pill the same diameter as the rocket pill at <strong>every viewport</strong>: <code>52 × 52 px</code> button, <code>28 × 28 px</code> glyph, identical right inset and offset stack — desktop, tablet, mobile alike. They form a visual cluster; drift breaks the "two siblings on the launchpad" reading.</td>
-                              <td>Add a <code>@media (max-width: …)</code> rule that changes <code>width</code>, <code>height</code>, <code>padding</code>, or icon size on either FAB. Per <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">#mobile-contract</a> the FAB cluster is uniform across viewports — review blocker.</td>
+                              <td>Add a <code>@media (max-width: …)</code> rule that changes <code>width</code>, <code>height</code>, <code>padding</code>, or icon size on either FAB. Per <a href="../foundations/motion-and-adaptivity.html#mobile-contract">#mobile-contract</a> the FAB cluster is uniform across viewports — review blocker.</td>
                             </tr>
                             <tr>
                               <td>Reach for <code>data-feedback-open="true"</code> when adding inline "Report issue" links elsewhere on the page — the same modal handles them.</td>
@@ -871,7 +871,7 @@
                           <li>The FAB is visible at the bottom-right on every internal docs page after first paint, sized
                             <strong><code>52 × 52 px</code> uniformly on every viewport</strong> (desktop, tablet,
                             mobile). No <code>@media</code>-conditional shrink; per
-                            <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>
+                            <a href="../foundations/motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>
                             this rule is enforced for the entire FAB cluster.</li>
                             <li>The FAB sits exactly one slot above the back-to-top rocket with a fixed
                               <strong>12 px gap</strong>; both pills share the right margin
@@ -984,14 +984,14 @@
                                                                           <section id="related" class="card">
                                                                             <h2>Related internal docs</h2>
                                                                             <ul>
-                                                                              <li><a href="./docs-frontend-feedback-and-editorial-workflow.html">Feedback and editorial workflow</a> — the editorial side: GitHub template, labels, cadence workflow, telemetry contract.</li>
-                                                                              <li><a href="./docs-frontend-resume-and-back-to-top.html">Resume-reading and back-to-top</a> — sibling FAB; shared launchpad palette and stacking rules.</li>
-                                                                              <li><a href="./docs-frontend-rocket-launch-animation.html">Rocket launch animation</a> — the back-to-top's launch sequence; companion ambient-motion spec.</li>
-                                                                              <li><a href="./docs-frontend-popups-and-overlays.html">Popups and overlays</a> — modal-system architecture this dialog conforms to.</li>
-                                                                              <li><a href="./docs-frontend-tooltips.html">Tooltips and inline hints</a> — how <code>data-tooltip</code> on the FAB is rendered.</li>
-                                                                              <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — global reduced-motion policy this spec inherits.</li>
-                                                                              <li><a href="./docs-frontend-css-architecture.html">CSS architecture</a> — where launchpad-FAB and modal styles live.</li>
-                                                                              <li><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a> — runtime contract for <code>docs-nav.js</code>.</li>
+                                                                              <li><a href="../contracts/feedback-and-editorial-workflow.html">Feedback and editorial workflow</a> — the editorial side: GitHub template, labels, cadence workflow, telemetry contract.</li>
+                                                                              <li><a href="resume-and-back-to-top.html">Resume-reading and back-to-top</a> — sibling FAB; shared launchpad palette and stacking rules.</li>
+                                                                              <li><a href="rocket-launch-animation.html">Rocket launch animation</a> — the back-to-top's launch sequence; companion ambient-motion spec.</li>
+                                                                              <li><a href="popups-and-overlays.html">Popups and overlays</a> — modal-system architecture this dialog conforms to.</li>
+                                                                              <li><a href="tooltips.html">Tooltips and inline hints</a> — how <code>data-tooltip</code> on the FAB is rendered.</li>
+                                                                              <li><a href="../foundations/motion-and-adaptivity.html">UI / motion / adaptivity</a> — global reduced-motion policy this spec inherits.</li>
+                                                                              <li><a href="../foundations/css-architecture.html">CSS architecture</a> — where launchpad-FAB and modal styles live.</li>
+                                                                              <li><a href="../foundations/js-modules.html">JavaScript modules reference</a> — runtime contract for <code>docs-nav.js</code>.</li>
                                                                             </ul>
                                                                           </section>
 
@@ -1021,17 +1021,17 @@
                                                                                   <tr>
                                                                                     <td><time datetime="2026-05-01">2026-05-01</time></td>
                                                                                     <td>Added <strong>ambient antenna twitch</strong>: each antenna now has its own keyframe loop (<code>docs-bug-antenna-l-idle 7.3 s</code> · <code>docs-bug-antenna-r-idle 9.1 s</code>) so the bug occasionally flicks like a real insect even without hover. Loops are coprime-ish (LCM ≈ 66 s) so left and right rarely lock into a pattern; each antenna spends ~95 % of its cycle at <code>0°</code>. Hover continues to override with the fixed <code>±12°</code> lift, and reduced-motion disables both loops. Updated the Anatomy parts list, States table, design-tokens summary, smoke and reduced-motion test steps, glyph-detail SVG annotations, and acceptance checklist.</td>
-                                                                                    <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                    <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                   </tr>
                                                                                   <tr>
                                                                                     <td><time datetime="2026-05-01">2026-05-01</time></td>
                                                                                     <td>Added the <a href="#visual-reference">Visual reference</a> section: in-situ viewport mock of the bug-FAB / rocket-FAB cluster with sizing, stack-offset, and radar-pulse annotations, plus a 4× detail callout of the glyph showing the <code>.bug-antenna--l</code>, <code>.bug-antenna--r</code>, and <code>.bug-body</code> hover targets.</td>
-                                                                                    <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                    <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                   </tr>
                                                                                   <tr>
                                                                                     <td><time datetime="2026-05-01">2026-05-01</time></td>
                                                                                     <td>Page created — first authoritative spec for the floating "Report issue" FAB and its modal: anatomy, positioning vs. the rocket sibling, states/accessibility, modal contract, GitHub URL payload, design tokens, do/don't, failure modes, acceptance checklist, and test plan. Documents the <code>52 px</code> desktop / <code>38 px</code> mobile sizing aligned with the back-to-top rocket cluster.</td>
-                                                                                    <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                    <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                   </tr>
                                                                                 </tbody>
                                                                               </table>

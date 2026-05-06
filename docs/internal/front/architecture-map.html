@@ -74,41 +74,41 @@
                 <tr>
                   <td>Frontend architecture and contracts</td>
                   <td>Required mounts, runtime boot flow, script boundaries, responsive shell model</td>
-                  <td><a href="./docs-frontend-architecture-map.html#runtime-ownership">This page (runtime ownership)</a>
+                  <td><a href="architecture-map.html#runtime-ownership">This page (runtime ownership)</a>
                   </td>
                 </tr>
                 <tr>
                   <td>Role-based onboarding and task routing</td>
                   <td>Fast entry paths for analysts, frontend contributors, and reviewers</td>
-                  <td><a href="./docs-frontend-fast-entry-by-role.html">Quick entry by role</a></td>
+                  <td><a href="_shared/fast-entry-by-role.html">Quick entry by role</a></td>
                 </tr>
                 <tr>
                   <td>Shared terminology and naming</td>
                   <td>Canonical definitions for frontend UX, governance, and delivery terms</td>
-                  <td><a href="./docs-frontend-glossary.html">Frontend glossary</a></td>
+                  <td><a href="_shared/glossary.html">Frontend glossary</a></td>
                 </tr>
                 <tr>
                   <td>Navigation, search, and discovery</td>
                   <td>Top nav, internal sidebar/drawer, breadcrumbs, docs search, command palette, skip link, TOC</td>
-                  <td><a href="./docs-frontend-navigation-search-and-discovery.html">Navigation, search, and discovery</a>
+                  <td><a href="contracts/navigation-search-and-discovery.html">Navigation, search, and discovery</a>
                   </td>
                 </tr>
                 <tr>
                   <td>UI system, theme, motion, and responsive UX</td>
                   <td>Tokens, theme cycle, flashlight control, toast, reading mode, progress, rocket button, motion policy
                   </td>
-                  <td><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI, motion, and adaptivity</a></td>
+                  <td><a href="foundations/motion-and-adaptivity.html">UI, motion, and adaptivity</a></td>
                 </tr>
                 <tr>
                   <td>Diagram interaction and lightbox</td>
                   <td>Expand control, full-screen diagram viewer, zoom/pan interaction, and accessibility behavior</td>
-                  <td><a href="./docs-frontend-diagrams-and-lightbox.html">Diagrams and lightbox</a></td>
+                  <td><a href="components/diagrams-and-lightbox.html">Diagrams and lightbox</a></td>
                 </tr>
                 <tr>
                   <td>Feedback and editorial workflow</td>
                   <td>Page feedback form, issue template, cadence automation, Edited by widget, maintainers data model
                   </td>
-                  <td><a href="./docs-frontend-feedback-and-editorial-workflow.html">Feedback and editorial workflow</a>
+                  <td><a href="contracts/feedback-and-editorial-workflow.html">Feedback and editorial workflow</a>
                   </td>
                 </tr>
                 <tr>
@@ -119,12 +119,12 @@
                 <tr>
                   <td>Screen-level implementation specs</td>
                   <td>Detailed behavior maps for high-value docs screens (layout, filter logic, sorting, and ownership)</td>
-                  <td><a href="./screens/docs-screen-backlog-cockpit.html">Screen spec: Backlog cockpit</a></td>
+                  <td><a href="screens/docs-screen-backlog-cockpit.html">Screen spec: Backlog cockpit</a></td>
                 </tr>
                 <tr>
                   <td>Screen documentation template</td>
                   <td>Reusable structure for documenting additional critical screens consistently</td>
-                  <td><a href="./screens/docs-screen-template.html">Screen spec template</a></td>
+                  <td><a href="screens/docs-screen-template.html">Screen spec template</a></td>
                 </tr>
               </tbody>
             </table>
@@ -293,7 +293,7 @@
                                                       <tr>
                                                         <td><code>DFEAT-009</code></td>
                                                         <td>In-page TOC + scroll spy</td>
-                                                        <td>Auto heading outline, active section highlighting, in-rail auto-scroll for long TOCs, and desktop collapse/expand control (<code>&lt;</code>/<code>&gt;</code>). Full spec: <a href="./docs-frontend-sticky-toc.html">Sticky On this page TOC and scroll-spy</a>.</td>
+                                                        <td>Auto heading outline, active section highlighting, in-rail auto-scroll for long TOCs, and desktop collapse/expand control (<code>&lt;</code>/<code>&gt;</code>). Full spec: <a href="components/sticky-toc.html">Sticky On this page TOC and scroll-spy</a>.</td>
                                                         <td><code>initAutoInPageToc()</code>, <code>ensureTocAnchorIds()</code>,
                                                           <code>initInPageTocScrollSpy()</code> (with <code>keepActiveLinkVisibleInNav()</code>) in <code>docs/assets/docs-nav.js</code>; TOC styles in
                                                           <code>docs/assets/docs.css</code>.</td>
@@ -301,7 +301,7 @@
                                                         <tr>
                                                           <td><code>DFEAT-010</code></td>
                                                           <td>Rocket back-to-top</td>
-                                                          <td>Shows near page bottom and launches upward on click. WebGL2 boil-and-launch animation is specified in <a href="./docs-frontend-rocket-launch-animation.html">Docs frontend rocket launch animation</a>.</td>
+                                                          <td>Shows near page bottom and launches upward on click. WebGL2 boil-and-launch animation is specified in <a href="components/rocket-launch-animation.html">Docs frontend rocket launch animation</a>.</td>
                                                           <td><code>initBackToTopButton()</code> + <code>launchRocketAnimation()</code> in <code>docs/assets/docs-nav.js</code>; animation classes
                                                             <code>.docs-back-to-top*</code> in <code>docs/assets/docs.css</code>.</td>
                                                           </tr>
@@ -326,7 +326,7 @@
                                                                 <td>Prefilled GitHub issue creation from page context. Surface: floating <code>.docs-report-bug-fab</code> bug-shaped beacon at the bottom-right (sibling of the back-to-top rocket); opens a side-panel modal with type select + textarea.</td>
                                                                 <td><code>injectDocsFeedbackCard()</code> + <code>docsFeedbackIssueUrl()</code> in
                                                                   <code>docs/assets/docs-nav.js</code>; styles <code>.docs-report-bug-fab*</code> and <code>.docs-feedback-modal*</code> in <code>docs/assets/docs.css</code>; template <code>.github/ISSUE_TEMPLATE/docs_feedback.md</code>;
-                                                                  spec <a href="./docs-frontend-report-bug-fab.html">Report-bug FAB</a>.
+                                                                  spec <a href="components/report-bug-fab.html">Report-bug FAB</a>.
                                                                 </td>
                                                               </tr>
                                                               <tr>
@@ -428,17 +428,17 @@
                                                               <section id="related-pages" class="card">
                                                                 <h2>Related baseline specs</h2>
                                                                 <ul>
-                                                                  <li><a href="./documentation-style-guide.html">Documentation style guide and audit standard</a></li>
-                                                                  <li><a href="./docs-frontend-fast-entry-by-role.html">Docs frontend quick entry by role</a></li>
-                                                                  <li><a href="./docs-frontend-glossary.html">Docs frontend glossary</a></li>
-                                                                  <li><a href="./docs-frontend-menu-and-theme-controls.html">Docs frontend navigation and theme controls</a>
+                                                                  <li><a href="_shared/style-guide.html">Documentation style guide and audit standard</a></li>
+                                                                  <li><a href="_shared/fast-entry-by-role.html">Docs frontend quick entry by role</a></li>
+                                                                  <li><a href="_shared/glossary.html">Docs frontend glossary</a></li>
+                                                                  <li><a href="contracts/menu-and-theme.html">Docs frontend navigation and theme controls</a>
                                                                   </li>
-                                                                  <li><a href="./docs-frontend-hotkeys.html">Docs frontend hotkeys</a></li>
-                                                                  <li><a href="./docs-frontend-ui-kit.html">Docs frontend UI kit (premium surfaces and interactions)</a></li>
-                                                                  <li><a href="./docs-frontend-popups-and-overlays.html">Docs frontend popup and overlay system</a></li>
-                                                                  <li><a href="./docs-frontend-diagrams-and-lightbox.html">Docs frontend diagrams and lightbox</a></li>
-                                                                  <li><a href="./screens/docs-screen-backlog-cockpit.html">Screen spec: Backlog cockpit</a></li>
-                                                                  <li><a href="./screens/docs-screen-template.html">Screen spec template</a></li>
+                                                                  <li><a href="foundations/hotkeys.html">Docs frontend hotkeys</a></li>
+                                                                  <li><a href="foundations/ui-kit.html">Docs frontend UI kit (premium surfaces and interactions)</a></li>
+                                                                  <li><a href="components/popups-and-overlays.html">Docs frontend popup and overlay system</a></li>
+                                                                  <li><a href="components/diagrams-and-lightbox.html">Docs frontend diagrams and lightbox</a></li>
+                                                                  <li><a href="screens/docs-screen-backlog-cockpit.html">Screen spec: Backlog cockpit</a></li>
+                                                                  <li><a href="screens/docs-screen-template.html">Screen spec template</a></li>
                                                                   <li><a href="../../howto/0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely (playbooks)</a></li>
                                                                 </ul>
                                                               </section>

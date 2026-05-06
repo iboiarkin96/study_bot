@@ -285,7 +285,7 @@ html {
   /* Disable iOS Safari auto-shrink fallback when content overflows the viewport.
      Without this, any small horizontal overflow (e.g. an unwrapped table) causes
      Safari to shrink the entire document text, which the reader perceives as
-     "everything became unreadably small". See docs-frontend-ui-motion-and-adaptivity
+     "everything became unreadably small". See foundations/motion-and-adaptivity
      #mobile-contract for the readability ladder. */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -2082,7 +2082,7 @@ main.container:not(.container--swagger) :not(.docs-table-scroll)>table:not(.audi
  * stays one line and the reader can swipe sideways. The right-edge inset
  * shadow hints that horizontal scroll is available. Authors should still wrap
  * wide tables in <div class="docs-table-scroll" role="region" aria-label="…">
- * — this rule is only a safety net (see docs-frontend-ui-motion-and-adaptivity
+ * — this rule is only a safety net (see foundations/motion-and-adaptivity
  * #mobile-contract).
  */
 @media (max-width: 760px) {
@@ -5164,6 +5164,24 @@ body.docs-reading-mode main.container li {
   }
 }
 
+/*
+ * FAB sits at the viewport's right edge, so the default centered tooltip
+ * (left: 50%; width: 11.5rem) overflows and gets clipped. Anchor to the
+ * button's right edge and shrink to content for clean pill edges.
+ */
+.docs-report-bug-fab[data-tooltip]::after {
+  left: auto;
+  right: 0;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  transform: translateX(0) translateY(4px);
+}
+
+.docs-report-bug-fab[data-tooltip]:hover::after,
+.docs-report-bug-fab[data-tooltip]:focus-visible::after {
+  transform: translateX(0) translateY(0);
+}
+
 .docs-feedback-modal {
   position: fixed;
   inset: 0;
@@ -5419,7 +5437,7 @@ body.docs-reading-mode main.container li {
 /*
  * Secondary mobile-compact cut-off (≤520 px) — NOT a separate device tier.
  * Canonical device tiers are defined in
- * docs/internal/front/docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints
+ * docs/internal/front/foundations/motion-and-adaptivity.html#canonical-breakpoints
  * (Desktop ≥1025 / Tablet 761–1024 / Mobile ≤760). This block applies inside
  * the mobile tier when the viewport is also too narrow for the default
  * heading/card/padding rhythm — comfortable reading width, safe areas
@@ -5568,7 +5586,7 @@ body.docs-reading-mode main.container li {
 /* -------------------------------------------------------------------------- */
 /* Data-tooltip hints (backlog cockpit style): no dotted underline on host.   */
 /* Usage: <span data-tooltip="…" tabindex="0">label</span> or <button data-tooltip="…"> */
-/* Normative doc: docs/internal/front/docs-frontend-tooltips.html            */
+/* Normative doc: docs/internal/front/components/tooltips.html            */
 /* -------------------------------------------------------------------------- */
 
 [data-tooltip] {

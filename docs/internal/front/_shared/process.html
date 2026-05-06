@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Documentation maintenance process</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
 </head>
 
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="foundation" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
@@ -35,7 +35,7 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
           <time datetime="2026-04-30">2026-04-30</time></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
@@ -46,7 +46,7 @@
           <h2>Overview</h2>
           <p>
             This page describes <strong>how we keep documentation alive</strong> in this repository. It is the lifecycle
-            companion of the <a href="./documentation-style-guide.html">documentation style guide</a> (which covers
+            companion of the <a href="style-guide.html">documentation style guide</a> (which covers
             <em>how words look</em>): this page covers <em>how docs are produced, updated, audited, and retired over time</em>.
           </p>
           <p>
@@ -68,8 +68,8 @@
             <li><strong>Co-located with code.</strong> Documentation lives in the same repository, on the same branch, and changes in the same PR as the code it describes. There is no separate "docs site" or wiki.</li>
             <li><strong>Living, not archived.</strong> A page is either current or replaced. There are no "deprecated but kept around" pages — outdated content is removed in the same change that replaces it (with redirect stubs only when external links exist).</li>
             <li><strong>Screen specs over screenshots.</strong> Visual reality is captured by anatomy diagrams (annotated SVG) checked into git, not pixel-perfect screenshots. A diagram aligns to architecture; a screenshot rots on every style tweak.</li>
-            <li><strong>Glossary first.</strong> No new domain term goes into a page without a definition added to the <a href="./docs-frontend-glossary.html">frontend glossary</a> in the same PR. Term consistency is the foundation of every other doc.</li>
-            <li><strong>Plain language.</strong> Documentation is read by engineers whose first language is rarely English. Short sentences. Common words. One idea per sentence. The <a href="./documentation-style-guide.html#plain-language">style guide</a> is normative.</li>
+            <li><strong>Glossary first.</strong> No new domain term goes into a page without a definition added to the <a href="glossary.html">frontend glossary</a> in the same PR. Term consistency is the foundation of every other doc.</li>
+            <li><strong>Plain language.</strong> Documentation is read by engineers whose first language is rarely English. Short sentences. Common words. One idea per sentence. The <a href="style-guide.html#plain-language">style guide</a> is normative.</li>
             <li><strong>Page history is required.</strong> Every non-redirect page ends with a <em>Page history</em> table. Every meaningful edit appends a row. This is the ledger that lets a future reader see when something was last verified.</li>
             <li><strong>Definition of done includes docs.</strong> A code change that touches user-visible behavior is not done until the corresponding docs are updated in the same PR.</li>
           </ol>
@@ -104,7 +104,7 @@
                 <tr>
                   <td>One topic per page; cards within a page for sub-topics</td>
                   <td>Stripe API reference structure, Vercel docs</td>
-                  <td><code>&lt;section class="card"&gt;</code> per topic, enforced by the <a href="./documentation-style-guide.html#required-page-skeleton">style guide skeleton</a>.</td>
+                  <td><code>&lt;section class="card"&gt;</code> per topic, enforced by the <a href="style-guide.html#required-page-skeleton">style guide skeleton</a>.</td>
                 </tr>
                 <tr>
                   <td>Page history / changelog at the bottom of every page</td>
@@ -114,7 +114,7 @@
                 <tr>
                   <td>Stable identifiers for capabilities</td>
                   <td>Linear's <code>FEAT-</code> issue prefixes, GitHub's <code>actions/checkout@v4</code> versioning</td>
-                  <td><a href="./docs-frontend-architecture-map.html#feature-id-governance"><code>DFEAT-xxx</code> feature IDs</a> referenced from every change.</td>
+                  <td><a href="../architecture-map.html#feature-id-governance"><code>DFEAT-xxx</code> feature IDs</a> referenced from every change.</td>
                 </tr>
                 <tr>
                   <td>Maintainer ownership recorded in metadata</td>
@@ -124,12 +124,12 @@
                 <tr>
                   <td>Plain-language editorial guidelines</td>
                   <td>Mailchimp Voice &amp; Tone, GOV.UK Service Manual, Stripe writing principles</td>
-                  <td><a href="./documentation-style-guide.html#plain-language">Style guide — Plain language</a> section.</td>
+                  <td><a href="style-guide.html#plain-language">Style guide — Plain language</a> section.</td>
                 </tr>
                 <tr>
                   <td>Glossary as a contract</td>
                   <td>Stripe API glossary, IBM Carbon "Concepts"</td>
-                  <td><a href="./docs-frontend-glossary.html">Frontend glossary</a>; new terms are added in the same PR that introduces them.</td>
+                  <td><a href="glossary.html">Frontend glossary</a>; new terms are added in the same PR that introduces them.</td>
                 </tr>
                 <tr>
                   <td>Definition of "done" includes docs</td>
@@ -196,7 +196,7 @@
                 <tr>
                   <td>Screen spec</td>
                   <td>Canonical specification for one critical user-facing screen: layout, behavior, hooks, edge cases.</td>
-                  <td><a href="./screens/docs-screen-template.html">docs-screen-template.html</a> in <code>docs/internal/front/screens/</code></td>
+                  <td><a href="../screens/docs-screen-template.html">docs-screen-template.html</a> in <code>docs/internal/front/screens/</code></td>
                 </tr>
                 <tr>
                   <td>ADR (Architecture Decision Record)</td>
@@ -226,7 +226,7 @@
                 <tr>
                   <td>Glossary</td>
                   <td>Single-table-per-section page defining all terminology used elsewhere.</td>
-                  <td><a href="./docs-frontend-glossary.html">docs-frontend-glossary.html</a></td>
+                  <td><a href="glossary.html">_shared/glossary.html</a></td>
                 </tr>
               </tbody>
             </table>
@@ -242,7 +242,7 @@
               covered.
             </li>
             <li>
-              <strong>Identify the canonical page.</strong> Use the <a href="./docs-frontend-architecture-map.html">architecture map</a>
+              <strong>Identify the canonical page.</strong> Use the <a href="../architecture-map.html">architecture map</a>
               to find the existing page; if no canonical page exists, create one from the appropriate template.
             </li>
             <li>
@@ -251,7 +251,7 @@
             </li>
             <li>
               <strong>Update the page.</strong> Edit only what changed. Preserve the page skeleton (Overview → topic
-              cards → Page history). Use plain language; reference the <a href="./documentation-style-guide.html">style
+              cards → Page history). Use plain language; reference the <a href="style-guide.html">style
               guide</a> when in doubt.
             </li>
             <li>
@@ -312,7 +312,7 @@
           <h3>Required visual gallery (screenshots)</h3>
           <ul>
             <li>Every screen spec opens with a <strong>Visual gallery</strong> card containing real screenshots of the screen.</li>
-            <li><strong>Minimum coverage</strong> (using <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical viewport breakpoints</a>):
+            <li><strong>Minimum coverage</strong> (using <a href="../foundations/motion-and-adaptivity.html#canonical-breakpoints">canonical viewport breakpoints</a>):
               <ul>
                 <li>Desktop default state (≥1025 px), light theme</li>
                 <li>Desktop default state (≥1025 px), dark theme</li>
@@ -410,7 +410,7 @@
           <ol>
             <li>The behavior change is implemented and tested in code.</li>
             <li>The relevant screen spec or reference page is updated in the same PR.</li>
-            <li>If new terminology was introduced, it is defined in the <a href="./docs-frontend-glossary.html">frontend glossary</a> in the same PR.</li>
+            <li>If new terminology was introduced, it is defined in the <a href="glossary.html">frontend glossary</a> in the same PR.</li>
             <li>The architecture map is updated if the change adds, removes, or reassigns a feature.</li>
             <li>A page-history row is appended to every page that was edited, with today's date and a meaningful description.</li>
             <li>For screen specs: the anatomy diagram still matches reality, and the acceptance checklist is reviewed.</li>
@@ -440,26 +440,26 @@
         <section id="onboarding" class="card">
           <h2>Onboarding: first time editing docs</h2>
           <ol>
-            <li>Read the <a href="./documentation-style-guide.html">style guide</a> end-to-end (~10 min).</li>
+            <li>Read the <a href="style-guide.html">style guide</a> end-to-end (~10 min).</li>
             <li>Skim this process page (~5 min).</li>
-            <li>Skim the <a href="./docs-frontend-glossary.html">frontend glossary</a> to learn the canonical terms (~5 min).</li>
-            <li>Open the <a href="./screens/docs-screen-home-landing.html">home screen spec</a> as a reference for what a complete screen spec looks like.</li>
+            <li>Skim the <a href="glossary.html">frontend glossary</a> to learn the canonical terms (~5 min).</li>
+            <li>Open the <a href="../screens/docs-screen-home-landing.html">home screen spec</a> as a reference for what a complete screen spec looks like.</li>
             <li>For your first edit, start with a small change to an existing page; copy the structure of nearby cards.</li>
-            <li>Always use the templates (<a href="./screens/docs-screen-template.html">screen template</a>, ADR template, etc.) — do not start from a blank file.</li>
+            <li>Always use the templates (<a href="../screens/docs-screen-template.html">screen template</a>, ADR template, etc.) — do not start from a blank file.</li>
           </ol>
         </section>
 
         <section id="related-pages" class="card">
           <h2>Related pages</h2>
           <ul>
-            <li><a href="./documentation-style-guide.html">Documentation style guide and audit standard</a> — the rules for how words look.</li>
-            <li><a href="./docs-frontend-glossary.html">Docs frontend glossary</a> — canonical term definitions.</li>
-            <li><a href="./docs-frontend-architecture-map.html">Docs frontend architecture map and feature inventory</a> — the index of what exists and where.</li>
-            <li><a href="./screens/docs-screen-template.html">Screen spec template</a> — start here when documenting a new screen.</li>
-            <li><a href="./screens/docs-screen-home-landing.html">Screen spec: Engineering hub home</a> — exemplar screen spec.</li>
-            <li><a href="./screens/docs-screen-backlog-cockpit.html">Screen spec: Backlog cockpit</a> — second exemplar.</li>
-            <li><a href="../../adr/0001-docs-as-code.html">ADR 0001: Adopt Docs as Code</a> — the policy decision behind the co-located docs model.</li>
-            <li><a href="../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026: Internal service documentation as source of truth</a> — single-source-of-truth principle.</li>
+            <li><a href="style-guide.html">Documentation style guide and audit standard</a> — the rules for how words look.</li>
+            <li><a href="glossary.html">Docs frontend glossary</a> — canonical term definitions.</li>
+            <li><a href="../architecture-map.html">Docs frontend architecture map and feature inventory</a> — the index of what exists and where.</li>
+            <li><a href="../screens/docs-screen-template.html">Screen spec template</a> — start here when documenting a new screen.</li>
+            <li><a href="../screens/docs-screen-home-landing.html">Screen spec: Engineering hub home</a> — exemplar screen spec.</li>
+            <li><a href="../screens/docs-screen-backlog-cockpit.html">Screen spec: Backlog cockpit</a> — second exemplar.</li>
+            <li><a href="../../../adr/0001-docs-as-code.html">ADR 0001: Adopt Docs as Code</a> — the policy decision behind the co-located docs model.</li>
+            <li><a href="../../../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026: Internal service documentation as source of truth</a> — single-source-of-truth principle.</li>
           </ul>
         </section>
 
@@ -483,7 +483,7 @@
                 <tr>
                   <td><time datetime="2026-04-29">2026-04-29</time></td>
                   <td>Created documentation maintenance process page: operating principles, industry references (Stripe / Linear / Vercel / GitHub / Storybook / Atlassian), document type catalog, change lifecycle, screen-spec policy, visual evidence policy, page-history rules, audit cadence, Definition of Done, anti-patterns, and onboarding steps.</td>
-                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                 </tr>
               </tbody>
             </table>

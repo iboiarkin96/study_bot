@@ -801,19 +801,29 @@
     {
       label: "Docs frontend documentation",
       children: [
+        { label: "Frontend docs hub", path: "internal/front/README.html" },
         {
           label: "Foundations",
           children: [
-            { label: "Style guide", path: "internal/front/documentation-style-guide.html" },
-            { label: "Maintenance process", path: "internal/front/documentation-process.html" },
-            { label: "Frontend glossary", path: "internal/front/docs-frontend-glossary.html" },
-            { label: "Quick entry by role", path: "internal/front/docs-frontend-fast-entry-by-role.html" },
+            { label: "Style guide", path: "internal/front/_shared/style-guide.html" },
+            { label: "Maintenance process", path: "internal/front/_shared/process.html" },
+            { label: "Frontend glossary", path: "internal/front/_shared/glossary.html" },
+            { label: "Quick entry by role", path: "internal/front/_shared/fast-entry-by-role.html" },
+          ],
+        },
+        {
+          label: "Spec templates",
+          children: [
+            { label: "Component spec template", path: "internal/front/_shared/component-spec-template.html" },
+            { label: "Foundation spec template", path: "internal/front/_shared/foundation-spec-template.html" },
+            { label: "Contract spec template", path: "internal/front/_shared/contract-spec-template.html" },
+            { label: "Definition of Done", path: "internal/front/_shared/spec-definition-of-done.html" },
           ],
         },
         {
           label: "Architecture",
           children: [
-            { label: "Architecture map", path: "internal/front/docs-frontend-architecture-map.html" },
+            { label: "Architecture map", path: "internal/front/architecture-map.html" },
           ],
         },
         {
@@ -827,32 +837,38 @@
         {
           label: "Components",
           children: [
-            { label: "UI kit", path: "internal/front/docs-frontend-ui-kit.html" },
-            { label: "Tooltips and inline hints", path: "internal/front/docs-frontend-tooltips.html" },
-            { label: "Popup and overlay system", path: "internal/front/docs-frontend-popups-and-overlays.html" },
-            { label: "Diagrams and lightbox", path: "internal/front/docs-frontend-diagrams-and-lightbox.html" },
-            { label: "Resume reading and back-to-top", path: "internal/front/docs-frontend-resume-and-back-to-top.html" },
-            { label: "Rocket launch animation", path: "internal/front/docs-frontend-rocket-launch-animation.html" },
-            { label: "Report-bug FAB", path: "internal/front/docs-frontend-report-bug-fab.html" },
-            { label: "Sticky On this page TOC", path: "internal/front/docs-frontend-sticky-toc.html" },
-            { label: "Hotkeys", path: "internal/front/docs-frontend-hotkeys.html" },
+            { label: "UI kit", path: "internal/front/foundations/ui-kit.html" },
+            { label: "Tooltips and inline hints", path: "internal/front/components/tooltips.html" },
+            { label: "Popup and overlay system", path: "internal/front/components/popups-and-overlays.html" },
+            { label: "Diagrams and lightbox", path: "internal/front/components/diagrams-and-lightbox.html" },
+            { label: "Resume reading and back-to-top", path: "internal/front/components/resume-and-back-to-top.html" },
+            { label: "Rocket launch animation", path: "internal/front/components/rocket-launch-animation.html" },
+            { label: "Report-bug FAB", path: "internal/front/components/report-bug-fab.html" },
+            { label: "Sticky On this page TOC", path: "internal/front/components/sticky-toc.html" },
+            { label: "Hotkeys", path: "internal/front/foundations/hotkeys.html" },
           ],
         },
         {
           label: "Reference",
           children: [
-            { label: "JavaScript modules", path: "internal/front/docs-frontend-js-modules-reference.html" },
-            { label: "CSS architecture", path: "internal/front/docs-frontend-css-architecture.html" },
-            { label: "Token gallery (auto-generated)", path: "internal/front/docs-frontend-token-gallery.html" },
+            { label: "JavaScript modules", path: "internal/front/foundations/js-modules.html" },
+            { label: "CSS architecture", path: "internal/front/foundations/css-architecture.html" },
+            { label: "Token gallery (auto-generated)", path: "internal/front/foundations/tokens.html" },
           ],
         },
         {
           label: "Cross-cutting systems",
           children: [
-            { label: "Navigation and theme contract", path: "internal/front/docs-frontend-menu-and-theme-controls.html" },
-            { label: "Navigation, search, discovery", path: "internal/front/docs-frontend-navigation-search-and-discovery.html" },
-            { label: "UI, motion, adaptivity", path: "internal/front/docs-frontend-ui-motion-and-adaptivity.html" },
-            { label: "Feedback and editorial workflow", path: "internal/front/docs-frontend-feedback-and-editorial-workflow.html" },
+            { label: "Navigation and theme contract", path: "internal/front/contracts/menu-and-theme.html" },
+            { label: "Navigation, search, discovery", path: "internal/front/contracts/navigation-search-and-discovery.html" },
+            { label: "UI, motion, adaptivity", path: "internal/front/foundations/motion-and-adaptivity.html" },
+            { label: "Feedback and editorial workflow", path: "internal/front/contracts/feedback-and-editorial-workflow.html" },
+          ],
+        },
+        {
+          label: "Patterns",
+          children: [
+            { label: "Long-form reading aids", path: "internal/front/patterns/long-form-reading-aids.html" },
           ],
         },
       ],

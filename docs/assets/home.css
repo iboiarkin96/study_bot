@@ -1523,6 +1523,19 @@ body.home-first-visit .home-hero__title-line--two {
   opacity: 0.42;
 }
 
+/*
+ * Below desktop, every visible layer inside .home-hero__bg has been
+ * combining into an off-white "card" framing the H1. Drop the entire
+ * decorative bg subtree on tablet/phone — hero becomes a plain section
+ * matching the rest of the page. Desktop is untouched.
+ */
+@media (max-width: 1024px) {
+  .home-hero__bg {
+    display: none !important;
+  }
+}
+
+
 /* ── Variable-font swell on H1 ────────────────────────────────────────────── */
 @media (prefers-reduced-motion: no-preference) {
   [data-home-variable-weight] {

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contract spec template — Docs frontend — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142"
+  data-spec-page="template" data-spec-status="template" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Contract spec — template <span class="docs-page-type docs-page-type--contract">Contract</span></h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — Docs frontend · _shared</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Summary</span>
+            <span>One-line description of the cross-cutting surface this contract governs.</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Owner</span>
+            <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-05-06">2026-05-06</time>
+          </span>
+          <span class="internal-spec-meta__item">
+            <span class="internal-spec-meta__label">Spec template</span>
+            <code>contract v1</code>
+          </span>
+        </div>
+
+        <section class="docs-page-hero" aria-labelledby="how-to-use">
+          <h2 id="how-to-use">How to use this template</h2>
+          <p>
+            <strong>Golden template for any normative behaviour contract under
+              <code>docs/internal/front/contracts/</code>.</strong> A contract describes <em>what the portal must
+            do</em> at the product level — the rules every implementation must follow, regardless of which JS or CSS
+            file delivers them. Implementation details belong in the foundations and components pages the contract
+            references.
+          </p>
+          <p>
+            <strong>Required vs optional.</strong> Required sections must exist and be non-empty. Optional sections
+            may be removed when they do not apply — never reorder, only remove.
+          </p>
+          <p class="small">
+            Contracts use <strong>RFC 2119</strong> keywords (<em>MUST</em>, <em>MUST NOT</em>, <em>SHOULD</em>,
+            <em>MAY</em>) for normative requirements. If you are not making a normative statement, do not use these
+            keywords.
+          </p>
+        </section>
+
+        <section class="card" id="lint-checklist" aria-labelledby="lint-checklist-h">
+          <h2 id="lint-checklist-h">Lint checklist (block-merge gate, future)</h2>
+          <p class="small">
+            This block lives only on the template page. Real contract specs do not duplicate it.
+          </p>
+          <ul>
+            <li><strong>Body attributes:</strong> <code>data-spec-page="contract"</code>,
+              <code>data-spec-status</code>, <code>data-spec-owner</code> on <code>&lt;body&gt;</code>.</li>
+            <li><strong>Page-type badge</strong> in the H1 reads <em>Contract</em>.</li>
+            <li><strong>Every required section exists</strong> as
+              <code>&lt;section data-spec-section="…" data-spec-required="true"&gt;</code> with non-empty content.</li>
+            <li><strong>Scope &amp; breakpoints</strong> names the viewport tiers covered (≥ 1025 / 761–1024 / ≤ 760).</li>
+            <li><strong>Normative requirements</strong> uses <em>MUST</em> / <em>SHOULD</em> / <em>MAY</em>; each
+              clause is independently verifiable.</li>
+            <li><strong>Acceptance checklist</strong> is a numbered or bulleted list of pass/fail conditions.</li>
+            <li><strong>Implementation entry-points</strong> names every JS/CSS file the contract relies on.</li>
+            <li><strong>Page history</strong> section present with at least one entry.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="overview" data-spec-section="overview" data-spec-required="true">
+          <h2>1. Overview <span class="badge badge--req-required">required</span></h2>
+          <p>
+            <strong>What this contract governs.</strong> 2–4 sentences. Name the surface (e.g. menu and theme,
+            navigation/search, feedback workflow), the audience (every reader of the portal), and what changes if
+            the contract is violated.
+          </p>
+          <p class="small">TODO(spec-template): replace with concrete overview prose.</p>
+        </section>
+
+        <section class="card" id="scope" data-spec-section="scope" data-spec-required="true">
+          <h2>2. Scope &amp; breakpoints <span class="badge badge--req-required">required</span></h2>
+          <p>
+            <strong>What is covered, and across which viewport tiers.</strong> Reference the canonical breakpoints in
+            <a href="../foundations/motion-and-adaptivity.html#canonical-breakpoints">foundations/motion-and-adaptivity</a>
+            instead of restating values.
+          </p>
+          <ul>
+            <li><strong>Desktop:</strong> ≥ 1025 px — &lt;what applies&gt;.</li>
+            <li><strong>Tablet:</strong> 761–1024 px — &lt;what applies&gt;.</li>
+            <li><strong>Mobile:</strong> ≤ 760 px — &lt;what applies&gt;.</li>
+            <li><strong>Out of scope:</strong> &lt;what this contract explicitly does not cover&gt;.</li>
+          </ul>
+          <p class="small">TODO(spec-template): set the scope precisely.</p>
+        </section>
+
+        <section class="card" id="requirements" data-spec-section="requirements" data-spec-required="true">
+          <h2>3. Normative requirements <span class="badge badge--req-required">required</span></h2>
+          <p>
+            <strong>Numbered list of MUST / SHOULD / MAY clauses.</strong> Each clause is independently verifiable:
+            a tester reads the clause and can pass/fail the implementation against it without further interpretation.
+          </p>
+          <ol>
+            <li><strong>R1.</strong> The implementation MUST &lt;observable behaviour&gt;.</li>
+            <li><strong>R2.</strong> The implementation MUST NOT &lt;forbidden behaviour&gt;.</li>
+            <li><strong>R3.</strong> The implementation SHOULD &lt;recommended behaviour&gt;, unless &lt;explicit
+              exception&gt;.</li>
+          </ol>
+          <p class="small">TODO(spec-template): list every normative requirement with an ID.</p>
+        </section>
+
+        <section class="card" id="acceptance" data-spec-section="acceptance" data-spec-required="true">
+          <h2>4. Acceptance checklist <span class="badge badge--req-required">required</span></h2>
+          <p>
+            <strong>Pass/fail conditions a reviewer can walk through.</strong> Each checklist item maps back to one
+            or more normative requirements. The checklist is what a QA pass exercises.
+          </p>
+          <ol>
+            <li><strong>Phone (≤ 760 px).</strong> &lt;acceptance condition&gt; &mdash; satisfies R1, R2.</li>
+            <li><strong>Tablet (761–1024 px).</strong> &lt;acceptance condition&gt; &mdash; satisfies R3.</li>
+            <li><strong>Desktop (≥ 1025 px).</strong> &lt;acceptance condition&gt; &mdash; satisfies R1, R3.</li>
+            <li><strong>Cross-cutting.</strong> &lt;acceptance condition that holds at every tier&gt;.</li>
+          </ol>
+          <p class="small">TODO(spec-template): write checklist items that map to requirements.</p>
+        </section>
+
+        <section class="card" id="implementation" data-spec-section="implementation" data-spec-required="true">
+          <h2>5. Implementation entry-points <span class="badge badge--req-required">required</span></h2>
+          <p>
+            <strong>Where the contract is honoured in code.</strong> A contract is a product-level statement; this
+            section names the files that implement it.
+          </p>
+          <ul>
+            <li><code>docs/assets/&lt;module&gt;.js</code> — &lt;runtime responsibility&gt;.</li>
+            <li><code>docs/assets/&lt;stylesheet&gt;.css</code> — &lt;visual / responsive responsibility&gt;.</li>
+          </ul>
+          <p class="small">TODO(spec-template): name every implementing file.</p>
+        </section>
+
+        <section class="card" id="visual-reference" data-spec-section="visual-reference" data-spec-required="false">
+          <h2>6. Visual reference <span class="badge badge--req-optional">optional</span></h2>
+          <p>
+            Inline SVG mocks or referenced screenshots illustrating the contract. Helpful for behaviours that span
+            breakpoints or transient states.
+          </p>
+          <p class="small">TODO(spec-template): add visual reference, or remove this section.</p>
+        </section>
+
+        <section class="card" id="related" data-spec-section="related" data-spec-required="false">
+          <h2>7. Related <span class="badge badge--req-optional">optional</span></h2>
+          <ul>
+            <li>Foundations the contract references (tokens, motion, breakpoints).</li>
+            <li>Components that participate in the contract.</li>
+            <li>Sibling contracts that touch the same surface.</li>
+          </ul>
+          <p class="small">TODO(spec-template): list real related links or remove this section.</p>
+        </section>
+
+        <section id="page-history" class="card" data-spec-section="page-history" data-spec-required="true">
+          <h2>Page history <span class="badge badge--req-required">required</span></h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-06">2026-05-06</time></td>
+                  <td>Phase 2: contract spec template seeded with required sections.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

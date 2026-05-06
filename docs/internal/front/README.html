@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs frontend — internal documentation hub — Study App</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../assets/internal-layout.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+  <script defer src="../../assets/docs-spec-status.js"></script>
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="hub"
+  data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Docs frontend (internal)</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — Docs portal hub</p>
+
+        <div class="internal-spec-meta" aria-label="Spec metadata">
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
+            <span>Engineering-facing docs portal reference: foundations, components, contracts, patterns, and screens.</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
+            <span data-spec-status-mount=""></span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
+            <span>v1 · Internal</span></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
+            <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
+            <time datetime="2026-05-06">2026-05-06</time></span>
+        </div>
+
+        <section class="docs-page-hero" id="overview">
+          <h2>Overview</h2>
+          <p>
+            This is the entry point for the docs portal frontend documentation. The portal is structured by
+            <strong>category</strong>: foundations (cross-cutting visual rules), components (single UI parts), contracts
+            (normative behavior), patterns (composed flows), and screens (full-page specs). Templates and the editorial
+            workflow live in <a href="./_shared/">_shared/</a>.
+          </p>
+        </section>
+
+        <section class="card" id="categories">
+          <h2>Categories</h2>
+          <p>
+            Each category answers a different question. The status column rolls up
+            <code>data-spec-status</code> across the pages in that category; "Pages" counts only the typed specs
+            (templates and untyped reference pages excluded).
+          </p>
+          <p class="small">
+            Status counted as of <time datetime="2026-05-06">2026-05-06</time>. To regenerate, run
+            <code>python3 scripts/front_spec_lint.py</code> for the structural pass and inspect each category
+            sub-folder for current statuses.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Frontend doc categories">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Question it answers</th>
+                  <th>Most-read entry</th>
+                  <th>Status roll-up</th>
+                  <th>Pages</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong><a href="./_shared/">_shared</a></strong></td>
+                  <td>Editorial standards, templates, glossary, onboarding</td>
+                  <td><a href="./_shared/style-guide.html">Style guide</a></td>
+                  <td>
+                    <span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 4 editorial · 4 templates/DoD</span>
+                  </td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td><strong><a href="./foundations/">Foundations</a></strong></td>
+                  <td>Tokens, typography, motion, breakpoints, runtime modules</td>
+                  <td><a href="./foundations/ui-kit.html">UI kit</a></td>
+                  <td>
+                    <span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 6 of 6 live</span>
+                  </td>
+                  <td>6</td>
+                </tr>
+                <tr>
+                  <td><strong><a href="./components/">Components</a></strong></td>
+                  <td>How does this single UI part look, behave, and degrade?</td>
+                  <td><a href="./components/tooltips.html">Tooltips</a></td>
+                  <td>
+                    <span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 7 of 7 live</span>
+                  </td>
+                  <td>7</td>
+                </tr>
+                <tr>
+                  <td><strong><a href="./contracts/">Contracts</a></strong></td>
+                  <td>Normative product-level behaviour across breakpoints</td>
+                  <td><a href="./contracts/menu-and-theme.html">Menu &amp; theme</a></td>
+                  <td>
+                    <span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 3 of 3 live</span>
+                  </td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td><strong><a href="./patterns/">Patterns</a></strong></td>
+                  <td>How do components compose into a recurring flow?</td>
+                  <td><a href="./patterns/long-form-reading-aids.html">Long-form reading aids</a></td>
+                  <td>
+                    <span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 1 of 1 live</span>
+                  </td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <td><strong><a href="./screens/">Screens</a></strong></td>
+                  <td>End-to-end spec for a full docs screen (anatomy, gallery, behaviour)</td>
+                  <td><a href="./screens/docs-screen-template.html">Screen template</a></td>
+                  <td>
+                    <span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 2 screens + 1 template (no <code>data-spec-status</code> yet)</span>
+                  </td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td><strong><a href="./architecture-map.html">Architecture map</a></strong></td>
+                  <td>Feature ledger, runtime ownership, full inventory</td>
+                  <td>—</td>
+                  <td>
+                    <span class="spec-status-pill spec-status-pill--implemented">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                  </td>
+                  <td>1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <section id="shared" class="card">
+          <h2>_shared (cross-cutting)</h2>
+          <p>
+            The <code>_shared/</code> folder holds editorial rules, reference indexes, and golden templates used
+            across every category. One source of truth — link to anchors here instead of duplicating text.
+          </p>
+          <h3>Editorial</h3>
+          <ul>
+            <li><a href="./_shared/style-guide.html">Style guide</a> — page skeleton, plain-language rules, page-history convention.</li>
+            <li><a href="./_shared/process.html">Maintenance process</a> — document types, lifecycle, audit cadence, definition of done.</li>
+            <li><a href="./_shared/glossary.html">Glossary</a> — canonical definitions for frontend UX, governance, and delivery terms.</li>
+            <li><a href="./_shared/fast-entry-by-role.html">Quick entry by role</a> — onboarding map: analyst, frontend contributor, reviewer.</li>
+          </ul>
+          <h3>Spec templates (Phase 2)</h3>
+          <p class="small">
+            Copy the matching template when adding a new page. Section markers
+            (<code>data-spec-section</code>, <code>data-spec-required</code>) opt the page in to the front-spec
+            linter.
+          </p>
+          <ul>
+            <li><a href="./_shared/component-spec-template.html">Component spec template</a> — for a single UI part: anatomy, states, accessibility, behaviour, do/don't, code handoff.</li>
+            <li><a href="./_shared/foundation-spec-template.html">Foundation spec template</a> — for a cross-cutting visual or runtime rule: tokens/values, usage rules, examples, code handoff.</li>
+            <li><a href="./_shared/contract-spec-template.html">Contract spec template</a> — for a product-level normative contract: scope &amp; breakpoints, MUST/SHOULD requirements, acceptance checklist, implementation entry-points.</li>
+          </ul>
+          <h3>Quality gates (Phase 3)</h3>
+          <ul>
+            <li><a href="./_shared/spec-definition-of-done.html">Definition of Done</a> — DoD checklist per page-type (component, foundation, contract); plus the common metadata gate.</li>
+            <li><code>scripts/front_spec_lint.py</code> — structural lint reading <code>data-spec-section</code> markers; wired into <code>make docs-spec-check</code>. Pre-template legacy pages are skipped.</li>
+          </ul>
+        </section>
+
+        <section id="foundations" class="card">
+          <h2>Foundations</h2>
+          <p>
+            Cross-cutting visual and runtime rules. These pages do not describe a single component — they define the
+            primitives that every component reuses.
+          </p>
+          <ul>
+            <li><a href="./foundations/tokens.html">Token gallery</a> — auto-generated catalogue of CSS custom properties (light + dark).</li>
+            <li><a href="./foundations/ui-kit.html">UI kit</a> — components vocabulary, badges, status pills, density presets.</li>
+            <li><a href="./foundations/motion-and-adaptivity.html">UI, motion, and adaptivity</a> — breakpoints, motion policy, mobile contract.</li>
+            <li><a href="./foundations/css-architecture.html">CSS architecture</a> — file boundaries, naming, layer order.</li>
+            <li><a href="./foundations/js-modules.html">JS modules reference</a> — runtime entry points, ownership, lifecycle.</li>
+            <li><a href="./foundations/hotkeys.html">Hotkeys</a> — keyboard shortcut catalogue.</li>
+          </ul>
+        </section>
+
+        <section id="components" class="card">
+          <h2>Components</h2>
+          <p>
+            One page per UI part. Each is the source of truth for that component's anatomy, states, accessibility, and
+            code handoff.
+          </p>
+          <ul>
+            <li><a href="./components/tooltips.html">Tooltips and inline hints</a> — Pattern A vs B; clipping rules.</li>
+            <li><a href="./components/popups-and-overlays.html">Popups and overlays</a> — anatomy, dismiss policy, focus.</li>
+            <li><a href="./components/diagrams-and-lightbox.html">Diagrams and lightbox</a> — expand control, zoom/pan.</li>
+            <li><a href="./components/sticky-toc.html">Sticky on-this-page TOC</a> — desktop aside contract.</li>
+            <li><a href="./components/resume-and-back-to-top.html">Resume reading and back-to-top</a> — long-page reading aids.</li>
+            <li><a href="./components/rocket-launch-animation.html">Rocket launch animation</a> — the back-to-top FAB's transient state.</li>
+            <li><a href="./components/report-bug-fab.html">Report-bug FAB</a> — page feedback beacon.</li>
+          </ul>
+        </section>
+
+        <section id="contracts" class="card">
+          <h2>Contracts</h2>
+          <p>
+            Normative behavior contracts for cross-cutting product surfaces. These pages describe <em>what</em> the
+            portal must do at the product level; implementation lives in foundations/components.
+          </p>
+          <ul>
+            <li><a href="./contracts/menu-and-theme.html">Menu and theme</a> — drawer / top-nav split, theme cycle, toast.</li>
+            <li><a href="./contracts/navigation-search-and-discovery.html">Navigation, search, and discovery</a> — sidebar, breadcrumbs, search panel, command palette.</li>
+            <li><a href="./contracts/feedback-and-editorial-workflow.html">Feedback and editorial workflow</a> — page feedback form, cadence, edited-by widget.</li>
+          </ul>
+        </section>
+
+        <section id="patterns" class="card">
+          <h2>Patterns</h2>
+          <p>
+            Composed flows where multiple components participate in a single user-visible behaviour. Patterns name
+            the participating components, the reader's journey, and the acceptance checklist that proves the flow
+            holds together.
+          </p>
+          <ul>
+            <li><a href="./patterns/long-form-reading-aids.html">Long-form reading aids</a> — composes the resume banner, back-to-top FAB, and rocket launch animation for pages that run past two viewport heights.</li>
+          </ul>
+        </section>
+
+        <section id="screens" class="card">
+          <h2>Screens</h2>
+          <p>
+            End-to-end spec for a single docs screen. Covers anatomy, visual gallery (light + dark + breakpoints),
+            states, behaviour, and code handoff. Use the template for any new screen.
+          </p>
+          <ul>
+            <li><a href="./screens/docs-screen-template.html">Screen spec template</a> — copy this for new screens.</li>
+            <li><a href="./screens/docs-screen-home-landing.html">Home landing</a> — rocket intro, hero, parallax.</li>
+            <li><a href="./screens/docs-screen-backlog-cockpit.html">Backlog cockpit</a> — filters, board, list, timeline.</li>
+          </ul>
+        </section>
+
+        <section id="architecture" class="card">
+          <h2>Architecture</h2>
+          <ul>
+            <li><a href="./architecture-map.html">Architecture map</a> — feature ledger (DFEAT-xxx), runtime ownership, full implemented-feature inventory.</li>
+          </ul>
+        </section>
+
+        <section id="related" class="card">
+          <h2>Related</h2>
+          <ul>
+            <li><a href="../../howto/0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely</a> — operational playbooks for recurring frontend changes.</li>
+            <li><a href="../../rfc/0003-documentation-authoring-model.html">RFC 0003: Documentation authoring model</a> — consolidated rationale and template index.</li>
+            <li><a href="../api/README.html">API internal hub</a> — sibling structure for HTTP API specs.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-06">2026-05-06</time></td>
+                  <td>Phase 1 reorganisation: introduced category subdirectories (_shared, foundations, components, contracts, patterns, screens) and this hub page mirroring <a href="../api/README.html">api/README.html</a>.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

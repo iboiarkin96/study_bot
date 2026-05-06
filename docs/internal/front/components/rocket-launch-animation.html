@@ -5,17 +5,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Docs frontend rocket launch animation</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <link rel="stylesheet" href="./screens/screen-spec.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
-  <script defer src="../../assets/docs-diagram-lightbox.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <link rel="stylesheet" href="../screens/screen-spec.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-diagram-lightbox.js"></script>
 </head>
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin" data-spec-feature-id="DFEAT-010">
   <div class="internal-layout__shell">
@@ -37,9 +37,9 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Feature ID</span>
-          <a href="./docs-frontend-architecture-map.html#feature-implementation-ledger"><code>DFEAT-010</code></a></span>
+          <a href="../architecture-map.html#feature-implementation-ledger"><code>DFEAT-010</code></a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Component type</span>
           <span>Visual / motion</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Implementation</span>
@@ -54,7 +54,7 @@
           <h2>Overview</h2>
           <p>
             The rocket launch animation is the celebratory dismissal of the floating
-            <a href="./docs-frontend-resume-and-back-to-top.html#anatomy">back-to-top button</a> on internal docs
+            <a href="resume-and-back-to-top.html#anatomy">back-to-top button</a> on internal docs
             pages. When the reader has scrolled to the footer (the <em>armed</em> state) and clicks the FAB, the
             page plays a short, deterministic launch sequence: a thick boil of smoke gathers around the launch pad
             for two seconds, then the rocket flies a fixed Bézier trajectory off-screen while the page smooth-scrolls
@@ -69,8 +69,8 @@
           </p>
           <p class="small">
             Live in production with the WebGL2 rewrite. Feature ledger entry: <code>DFEAT-010</code> in the
-            <a href="./docs-frontend-architecture-map.html">architecture map</a>. Sister page:
-            <a href="./docs-frontend-resume-and-back-to-top.html">resume-reading and back-to-top</a> (covers the
+            <a href="../architecture-map.html">architecture map</a>. Sister page:
+            <a href="resume-and-back-to-top.html">resume-reading and back-to-top</a> (covers the
             FAB visibility / arming logic; this page covers what happens <em>after</em> the click).
           </p>
         </section>
@@ -124,7 +124,7 @@
               </div>
             </div>
             <div class="sys-diagram__canvas">
-              <img alt="Rocket launch lifecycle state machine: Idle, Armed, Boil, Flight, Cleanup with time-based transitions and determinism notes" class="diagram diagram--uml" loading="lazy" src="../../uml/rendered/rocket_launch_lifecycle.svg">
+              <img alt="Rocket launch lifecycle state machine: Idle, Armed, Boil, Flight, Cleanup with time-based transitions and determinism notes" class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/rocket_launch_lifecycle.svg">
             </div>
             <figcaption class="sys-diagram__foot"><strong>Source:</strong>
               <code>docs/uml/sequences/rocket_launch_lifecycle.puml</code>
@@ -291,10 +291,10 @@
                     <h2>Positioning and stacking</h2>
                     <p>
                       The rocket FAB is the launchpad <em>and</em> the donor of physical dimensions for the bug FAB
-                      (<a href="./docs-frontend-report-bug-fab.html#positioning-and-stacking">report-bug-fab
+                      (<a href="report-bug-fab.html#positioning-and-stacking">report-bug-fab
                       §positioning-and-stacking</a> mirrors these numbers). All values are
                       <strong>uniform across desktop, tablet, and mobile</strong> per the
-                      <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>
+                      <a href="../foundations/motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>
                       «no <code>font-size</code> / <code>width</code> / <code>height</code> in width-conditional
                       <code>@media</code>» rule.
                     </p>
@@ -342,7 +342,7 @@
                       <code>.docs-back-to-top</code> in <code>docs/assets/docs.css</code>. If you change the size
                       here, also update the bug FAB spec — the two are a visual pair and drift between them is a
                       review blocker per
-                      <a href="./docs-frontend-report-bug-fab.html#dos-and-donts">report-bug-fab Do's and Don'ts</a>.
+                      <a href="report-bug-fab.html#dos-and-donts">report-bug-fab Do's and Don'ts</a>.
                     </p>
                     <p class="small">
                       <strong>History:</strong> until 2026-05-01 the bug FAB shrank to <code>38 × 38 px</code> on
@@ -358,7 +358,7 @@
                     <p>
                       Raster screenshots of the rocket FAB across canonical viewports and lifecycle phases.
                       Filenames and capture rules are defined in
-                      <a href="./screens/components/README.html">screens/components/README</a>. Update these
+                      <a href="../screens/components/README.html">screens/components/README</a>. Update these
                       images in the <em>same PR</em> as any visual change.
                     </p>
                     <p class="small">
@@ -696,7 +696,7 @@
                                   </div>
                                 </div>
                                 <div class="sys-diagram__canvas">
-                                  <img alt="Rocket smoke renderer pipeline: particle pool feeds emit and physics, output routes to either WebGL2 instanced shader or Canvas2D fallback, each runs a smoke pass and a hot pass" class="diagram diagram--uml" loading="lazy" src="../../uml/rendered/rocket_renderer_pipeline.svg">
+                                  <img alt="Rocket smoke renderer pipeline: particle pool feeds emit and physics, output routes to either WebGL2 instanced shader or Canvas2D fallback, each runs a smoke pass and a hot pass" class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/rocket_renderer_pipeline.svg">
                                 </div>
                                 <figcaption class="sys-diagram__foot"><strong>Source:</strong>
                                   <code>docs/uml/sequences/rocket_renderer_pipeline.puml</code>
@@ -837,452 +837,452 @@
                                 (<code>#f7f9fc</code>) and dark page backgrounds. Two earlier iterations were rejected on the way
                                 here — a deep charcoal that read as a solid black blob, and a mid-grey that still skewed too dark —
                                 in favour of the light-grey values below.</p>
-                              <div class="docs-table-scroll" role="region" aria-label="Smoke colour stops">
-                                <table>
-                                  <thead>
-                                    <tr><th scope="col">Role</th><th scope="col">RGB (0–1)</th><th scope="col">Visible at</th></tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr><td>Inner (dense)</td><td>0.88 / 0.87 / 0.91</td><td>Centre of dense puffs</td></tr>
-                                    <tr><td>Mid</td><td>0.78 / 0.77 / 0.82</td><td>Body of the puff</td></tr>
-                                    <tr><td>Outer (fog)</td><td>0.68 / 0.66 / 0.72</td><td>Rim and translucent halo</td></tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                              <p class="small">
-                                The palette is a single source of truth for both light and dark themes — there is no theme detection
-                                in the renderer, no <code>uLight</code> uniform, and no per-theme branch in the Canvas2D fallback.
-                                Light-grey smoke against the light page background relies on the slightly darker outer rim
-                                (<code>0.68 / 0.66 / 0.72</code>) plus the alpha multiplier of <code>1.6</code> on the smoke pass to
-                                give puffs a readable silhouette without pushing them to alpha-saturation (which is what made the
-                                previous charcoal palette read as black). If we later introduce per-theme palettes, the colour stops
-                                above become theme-tokenised and this table moves into the
-                                <a href="./docs-frontend-token-gallery.html">token gallery</a>.
-                              </p>
+                                <div class="docs-table-scroll" role="region" aria-label="Smoke colour stops">
+                                  <table>
+                                    <thead>
+                                      <tr><th scope="col">Role</th><th scope="col">RGB (0–1)</th><th scope="col">Visible at</th></tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr><td>Inner (dense)</td><td>0.88 / 0.87 / 0.91</td><td>Centre of dense puffs</td></tr>
+                                      <tr><td>Mid</td><td>0.78 / 0.77 / 0.82</td><td>Body of the puff</td></tr>
+                                      <tr><td>Outer (fog)</td><td>0.68 / 0.66 / 0.72</td><td>Rim and translucent halo</td></tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <p class="small">
+                                  The palette is a single source of truth for both light and dark themes — there is no theme detection
+                                  in the renderer, no <code>uLight</code> uniform, and no per-theme branch in the Canvas2D fallback.
+                                  Light-grey smoke against the light page background relies on the slightly darker outer rim
+                                  (<code>0.68 / 0.66 / 0.72</code>) plus the alpha multiplier of <code>1.6</code> on the smoke pass to
+                                  give puffs a readable silhouette without pushing them to alpha-saturation (which is what made the
+                                  previous charcoal palette read as black). If we later introduce per-theme palettes, the colour stops
+                                  above become theme-tokenised and this table moves into the
+                                  <a href="../foundations/tokens.html">token gallery</a>.
+                                </p>
 
-                              <h3>Hot core (optional)</h3>
-                              <ul>
-                                <li>Used only when <code>EMIT_SMOKE_IN_FLIGHT</code> is enabled.</li>
-                                <li>Colour ramps from yellow-white (<code>#FFE16E</code>) at fresh emission to deep orange (<code>#FF8214</code>) and out to opaque red-black (<code>#A01E00</code>) at the rim.</li>
-                                <li>Rendered with additive blending on top of the smoke pass, so overlapping cores brighten naturally.</li>
-                              </ul>
-                            </section>
+                                <h3>Hot core (optional)</h3>
+                                <ul>
+                                  <li>Used only when <code>EMIT_SMOKE_IN_FLIGHT</code> is enabled.</li>
+                                  <li>Colour ramps from yellow-white (<code>#FFE16E</code>) at fresh emission to deep orange (<code>#FF8214</code>) and out to opaque red-black (<code>#A01E00</code>) at the rim.</li>
+                                  <li>Rendered with additive blending on top of the smoke pass, so overlapping cores brighten naturally.</li>
+                                </ul>
+                              </section>
 
-                            <section id="tunables" class="card">
-                              <h2>Tunable parameters reference</h2>
-                              <p>
-                                All numeric tunables live as constants at the top of <code>launchRocketAnimation()</code> in
-                                <code>docs/assets/docs-nav.js</code>. Changing one and reloading the page reproduces the new behaviour
-                                deterministically. Ranges below are the bands within which we keep the contract intact; values outside
-                                them require a new revision of this spec.
-                              </p>
-                              <div class="docs-table-scroll" role="region" aria-label="Tunable parameters reference">
-                                <table>
-                                  <thead>
-                                    <tr>
-                                      <th scope="col">Parameter</th>
-                                      <th scope="col">Default</th>
-                                      <th scope="col">Supported range</th>
-                                      <th scope="col">Observable effect</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td><code>DURATION</code></td>
-                                      <td><code>2 600 ms</code></td>
-                                      <td>1 800 – 3 500 ms</td>
-                                      <td>Length of the flight phase from lift-off to off-screen.</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>PRE_MS</code></td>
-                                      <td><code>2 000 ms</code></td>
-                                      <td>1 200 – 3 000 ms</td>
-                                      <td>Length of the boil phase. Below 1 200 ms the cloud does not reach visible density.</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>POST_SMOKE_MS</code></td>
-                                      <td><code>0 ms</code></td>
-                                      <td>0 – 800 ms</td>
-                                      <td>Padding between flight end and cleanup. Currently zero because smoke is killed at lift-off.</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>FIXED_STEP</code></td>
-                                      <td><code>1 / 60 s</code></td>
-                                      <td>Fixed; do not change</td>
-                                      <td>Simulation timestep. Determinism contract depends on this being constant.</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>SMOKE_LAG_MS</code></td>
-                                      <td><code>140 ms</code></td>
-                                      <td>60 – 240 ms</td>
-                                      <td>Visual lag of the trail behind the nozzle (only relevant if <code>EMIT_SMOKE_IN_FLIGHT</code>).</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>SMOKE_SETTLE_ACC</code></td>
-                                      <td><code>50 px/s²</code></td>
-                                      <td>20 – 120</td>
-                                      <td>Downward gravity on smoke during boil. Higher values flatten the cloud against the pad.</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>SMOKE_DRAG</code></td>
-                                      <td><code>0.93</code></td>
-                                      <td>0.85 – 0.97</td>
-                                      <td>Velocity retention per <code>1/60 s</code>. Lower values bring puffs to rest faster.</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>SMOKE_SPREAD</code></td>
-                                      <td><code>1.0</code></td>
-                                      <td>0.5 – 1.6</td>
-                                      <td>Global multiplier on radial dispersion. Acts as a single dial for "how wide is the cloud".</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>SMOKE_LIFETIME</code></td>
-                                      <td><code>3.0 s</code></td>
-                                      <td>1.5 – 5.0 s</td>
-                                      <td>Base puff lifetime before the per-particle random factor.</td>
-                                    </tr>
-                                    <tr>
-                                      <td><code>EMIT_SMOKE_IN_FLIGHT</code></td>
-                                      <td><code>false</code></td>
-                                      <td><code>true</code> / <code>false</code></td>
-                                      <td>Enables the in-flight trail. Off by default so smoke never "follows" the rocket.</td>
-                                    </tr>
-                                    <tr>
-                                      <td>RNG seed</td>
-                                      <td><code>0x51F15EED</code></td>
-                                      <td>Any 32-bit value</td>
-                                      <td>Changes the deterministic shape of every cloud; not user-facing.</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                              <p class="small">
-                                The renderer-specific dials (pool size, emission count per step, disc radius, particle size range,
-                                shader FBM scale and clump contrast, alpha factor) are documented in source comments next to their
-                                assignments. They are <em>not</em> part of the public contract because changing them swaps the
-                                visual identity of the animation; touching them requires a revision of
-                                <a href="#visual-spec">Smoke visual specification</a>.
-                              </p>
-                            </section>
+                              <section id="tunables" class="card">
+                                <h2>Tunable parameters reference</h2>
+                                <p>
+                                  All numeric tunables live as constants at the top of <code>launchRocketAnimation()</code> in
+                                  <code>docs/assets/docs-nav.js</code>. Changing one and reloading the page reproduces the new behaviour
+                                  deterministically. Ranges below are the bands within which we keep the contract intact; values outside
+                                  them require a new revision of this spec.
+                                </p>
+                                <div class="docs-table-scroll" role="region" aria-label="Tunable parameters reference">
+                                  <table>
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Parameter</th>
+                                        <th scope="col">Default</th>
+                                        <th scope="col">Supported range</th>
+                                        <th scope="col">Observable effect</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td><code>DURATION</code></td>
+                                        <td><code>2 600 ms</code></td>
+                                        <td>1 800 – 3 500 ms</td>
+                                        <td>Length of the flight phase from lift-off to off-screen.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>PRE_MS</code></td>
+                                        <td><code>2 000 ms</code></td>
+                                        <td>1 200 – 3 000 ms</td>
+                                        <td>Length of the boil phase. Below 1 200 ms the cloud does not reach visible density.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>POST_SMOKE_MS</code></td>
+                                        <td><code>0 ms</code></td>
+                                        <td>0 – 800 ms</td>
+                                        <td>Padding between flight end and cleanup. Currently zero because smoke is killed at lift-off.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>FIXED_STEP</code></td>
+                                        <td><code>1 / 60 s</code></td>
+                                        <td>Fixed; do not change</td>
+                                        <td>Simulation timestep. Determinism contract depends on this being constant.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>SMOKE_LAG_MS</code></td>
+                                        <td><code>140 ms</code></td>
+                                        <td>60 – 240 ms</td>
+                                        <td>Visual lag of the trail behind the nozzle (only relevant if <code>EMIT_SMOKE_IN_FLIGHT</code>).</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>SMOKE_SETTLE_ACC</code></td>
+                                        <td><code>50 px/s²</code></td>
+                                        <td>20 – 120</td>
+                                        <td>Downward gravity on smoke during boil. Higher values flatten the cloud against the pad.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>SMOKE_DRAG</code></td>
+                                        <td><code>0.93</code></td>
+                                        <td>0.85 – 0.97</td>
+                                        <td>Velocity retention per <code>1/60 s</code>. Lower values bring puffs to rest faster.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>SMOKE_SPREAD</code></td>
+                                        <td><code>1.0</code></td>
+                                        <td>0.5 – 1.6</td>
+                                        <td>Global multiplier on radial dispersion. Acts as a single dial for "how wide is the cloud".</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>SMOKE_LIFETIME</code></td>
+                                        <td><code>3.0 s</code></td>
+                                        <td>1.5 – 5.0 s</td>
+                                        <td>Base puff lifetime before the per-particle random factor.</td>
+                                      </tr>
+                                      <tr>
+                                        <td><code>EMIT_SMOKE_IN_FLIGHT</code></td>
+                                        <td><code>false</code></td>
+                                        <td><code>true</code> / <code>false</code></td>
+                                        <td>Enables the in-flight trail. Off by default so smoke never "follows" the rocket.</td>
+                                      </tr>
+                                      <tr>
+                                        <td>RNG seed</td>
+                                        <td><code>0x51F15EED</code></td>
+                                        <td>Any 32-bit value</td>
+                                        <td>Changes the deterministic shape of every cloud; not user-facing.</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <p class="small">
+                                  The renderer-specific dials (pool size, emission count per step, disc radius, particle size range,
+                                  shader FBM scale and clump contrast, alpha factor) are documented in source comments next to their
+                                  assignments. They are <em>not</em> part of the public contract because changing them swaps the
+                                  visual identity of the animation; touching them requires a revision of
+                                  <a href="#visual-spec">Smoke visual specification</a>.
+                                </p>
+                              </section>
 
-                            <section id="public-surface" class="card">
-                              <h2>Public surface</h2>
-                              <dl class="docs-module-meta">
-                                <dt>DOM contract</dt>
-                                <dd>The animation requires <code>.docs-back-to-top__rocket-wrap</code> to exist as a child of the
-                                  FAB. The runtime drives this element through inline <code>style.transform</code> and
-                                  <code>style.opacity</code>, and clears them on cleanup. Any future replacement of the rocket icon
-                                  must preserve this class.</dd>
-                                  <dt>CSS hooks</dt>
-                                  <dd>
-                                    <code>.docs-back-to-top.docs-back-to-top--armed</code> — set by
-                                    <code>initBackToTopButton()</code> when the FAB is in arming distance of the footer. The animation
-                                    only runs when this class is present at click time.<br>
-                                    <code>.docs-back-to-top.docs-back-to-top--launching</code> — set for the duration of the animation.
-                                    CSS uses it to fade ambient FAB ornaments (flame, trail, embers) while the rocket flies.<br>
-                                    <code>.docs-back-to-top--nudge</code> — set on disarmed clicks (1-shot shake animation). Independent
-                                    of this spec but shares the click handler.
-                                  </dd>
-                                  <dt>CustomEvents</dt>
-                                  <dd>None emitted, none observed. The animation is an internal effect of one click.</dd>
-                                  <dt>Window globals</dt>
-                                  <dd>None. The runtime is closed over the click handler.</dd>
-                                  <dt>Storage keys</dt>
-                                  <dd>None. The animation is fully ephemeral.</dd>
-                                  <dt>Scroll behaviour</dt>
-                                  <dd>The click handler dispatches a <code>window.scrollTo({ top: 0, behavior: "smooth" })</code> at
-                                    <code>~PRE_MS</code> ms after the click — i.e. at the boundary between Boil and Flight. Under
-                                    <code>prefers-reduced-motion: reduce</code> the dispatch is immediate and uses
-                                    <code>behavior: "auto"</code>.</dd>
-                                    <dt>Post-launch visibility gate</dt>
-                                    <dd>After cleanup, an internal <code>suppressUntilUserScroll</code> flag forces the FAB
-                                      hidden inside <code>updateVisibility()</code>. The scroll listener releases the flag in
-                                      two stages: it waits for <code>scrollY</code> to reach <code>0</code> (smooth scroll
-                                      settled), then arms the next scroll movement (<code>scrollY &gt; 0</code>) as the trigger
-                                      that lets the FAB come back according to scroll dynamics. A 4 000 ms safety timer
-                                      clears the flag if the user never scrolls again.</dd>
-                                    </dl>
-                                  </section>
-
-                                  <section id="call-flow" class="card">
-                                    <h2>Call flow (one click)</h2>
-                                    <p>
-                                      End-to-end sequence from reader click to cleanup. Both the reduced-motion path
-                                      (instant scroll, no animation) and the full-animation path are shown explicitly
-                                      so reviewers can audit either branch in isolation.
-                                    </p>
-                                    <figure class="sys-diagram">
-                                      <div class="sys-diagram__head">
-                                        <span class="sys-diagram__badge">Diagram · Sequence</span>
-                                        <div class="sys-diagram__titles">
-                                          <h3>Reader → FAB → launch runtime → canvas + rocket</h3>
-                                          <p class="sys-diagram__sub">Boil-phase emission and physics run on each fixed step; flight phase kills smoke once and animates the rocket SVG; cleanup runs synchronously or via the 5 000 ms safety-net.</p>
-                                        </div>
-                                      </div>
-                                      <div class="sys-diagram__canvas">
-                                        <img alt="Sequence diagram of one rocket launch click: reader clicks FAB, click handler reads reduced-motion preference, then either dispatches an instant scroll or invokes launchRocketAnimation which initialises a canvas, runs a fixed-step loop emitting and rendering smoke during boil, dispatches a smooth scroll at PRE_MS, drives the rocket SVG transform during flight, and finally disposes GPU resources and removes the canvas." class="diagram diagram--uml" loading="lazy" src="../../uml/rendered/rocket_launch_sequence.svg">
-                                      </div>
-                                      <figcaption class="sys-diagram__foot"><strong>Source:</strong>
-                                        <code>docs/uml/sequences/rocket_launch_sequence.puml</code>
-                                      </figcaption>
-                                    </figure>
-                                  </section>
-
-                                  <section id="perf-budget" class="card">
-                                    <h2>Performance budget</h2>
-                                    <p>
-                                      The animation is short, infrequent, and self-cleaning, so its budget is generous compared with
-                                      steady-state UI. Targets below are upper bounds at the moment the cloud reaches peak density
-                                      (≈ 1.7 s into boil).
-                                    </p>
-                                    <div class="docs-table-scroll" role="region" aria-label="Performance budget">
-                                      <table>
-                                        <thead>
-                                          <tr>
-                                            <th scope="col">Metric</th>
-                                            <th scope="col">Target — WebGL2</th>
-                                            <th scope="col">Target — Canvas2D fallback</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          <tr><td>Frame time, p95</td><td>≤ 12 ms (≥ 60 fps)</td><td>≤ 16 ms (≥ 60 fps)</td></tr>
-                                          <tr><td>Frame time, p99</td><td>≤ 24 ms</td><td>≤ 33 ms</td></tr>
-                                          <tr><td>JS main-thread busy time per frame</td><td>≤ 4 ms</td><td>≤ 10 ms</td></tr>
-                                          <tr><td>Persistent allocations beyond cleanup</td><td>0</td><td>0</td></tr>
-                                          <tr><td>Persistent GPU resources beyond cleanup</td><td>0 (program/buffers/VAO are deleted)</td><td>—</td></tr>
-                                          <tr><td>Total animation duration end-to-end</td><td>≤ 4 700 ms</td><td>≤ 4 700 ms</td></tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                    <p class="small">
-                                      Devices that miss the WebGL2 p95 target (low-power integrated GPUs, throttled mobile) are expected to
-                                      still complete the animation; they will simply drop frames. Determinism still holds because the
-                                      simulation clock is decoupled from the render clock.
-                                    </p>
-                                  </section>
-
-                                  <section id="failure-modes" class="card">
-                                    <h2>Failure modes and degradation</h2>
-                                    <div class="docs-table-scroll" role="region" aria-label="Failure modes">
-                                      <table>
-                                        <thead>
-                                          <tr>
-                                            <th scope="col">Failure</th>
-                                            <th scope="col">Detection</th>
-                                            <th scope="col">Behaviour</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          <tr>
-                                            <td>WebGL2 unavailable</td>
-                                            <td><code>getContext("webgl2", …)</code> returns <code>null</code></td>
-                                            <td>Canvas2D fallback runs to completion with reduced fidelity.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Shader compile or link fails on a WebGL2-capable browser</td>
-                                            <td>Compile/link status is <code>false</code></td>
-                                            <td>A console warning is emitted and the renderer becomes a no-op. The rocket still flies; no smoke is drawn. Cleanup runs as normal.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>WebGL context lost (driver reset, OS sleep)</td>
-                                            <td>Browser fires <code>webglcontextlost</code></td>
-                                            <td>Current animation frames may be dropped. The simulation clock continues; cleanup still fires within the safety-net timeout.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Tab backgrounded mid-animation</td>
-                                            <td><code>requestAnimationFrame</code> stalls</td>
-                                            <td>A safety-net <code>setTimeout</code> at <code>PRE_MS + DURATION + POST_SMOKE_MS + 400 ms</code> force-completes cleanup so the FAB remains usable.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Click during another active animation</td>
-                                            <td><code>isLaunching</code> is <code>true</code></td>
-                                            <td>The new click is ignored. There is no animation queue.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>FAB clicked while disarmed</td>
-                                            <td><code>--armed</code> class absent</td>
-                                            <td>A short shake animation plays; no rocket animation runs and no scroll is performed.</td>
-                                          </tr>
-                                          <tr>
-                                            <td><code>prefers-reduced-motion: reduce</code></td>
-                                            <td>Media query at click time</td>
-                                            <td>Animation is skipped entirely. The page jumps to top with <code>behavior: "auto"</code>.</td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  </section>
-
-                                  <section id="dos-and-donts" class="card">
-                                    <h2>Do's and Don'ts</h2>
-                                    <div class="docs-table-scroll" role="region" aria-label="Table">
-                                      <table>
-                                        <thead>
-                                          <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
-                                        </thead>
-                                        <tbody>
-                                          <tr>
-                                            <td>Treat <code>SMOKE_SPREAD</code> as the primary dial when reviewing a visual change request — it tunes the cloud width without disturbing density or timing.</td>
-                                            <td>Edit the RNG seed, the trajectory, or <code>FIXED_STEP</code> to "tweak" the look. Those are determinism-load-bearing.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Verify the <code>prefers-reduced-motion: reduce</code> path on every change — the path is a single branch but it is a shipping requirement.</td>
-                                            <td>Add motion-only feedback that the click was registered. The smooth-scroll itself confirms the click; the animation is celebratory, not informational.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Keep the smoke canvas at <code>pointer-events: none</code> and high <code>z-index</code> so it sits over content but never intercepts clicks.</td>
-                                            <td>Portal the canvas into a different stacking context "for layering". Composing across stacking contexts is brittle and the existing setup is verified.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Audit any change that increases pool size, particle size, or shader complexity against the <a href="#perf-budget">performance budget</a>.</td>
-                                            <td>Ship a "wow it's denser" change without measuring frame times on a low-power laptop. The animation runs once, but the first frame is the impression.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Set <code>EMIT_SMOKE_IN_FLIGHT = false</code> in the shipping configuration. The contract is "smoke does not follow the rocket".</td>
-                                            <td>Re-enable <code>EMIT_SMOKE_IN_FLIGHT</code> without first revising <a href="#goals-non-goals">Goals and non-goals</a> and <a href="#determinism-contract">Determinism contract</a>.</td>
-                                          </tr>
-                                          <tr>
-                                            <td>Keep <code>.docs-back-to-top</code> sizing (<code>52 × 52 px</code> button + <code>28 × 28 px</code> glyph) identical on desktop, tablet, and mobile. The bug FAB matches exactly — see <a href="#positioning-and-stacking">§positioning-and-stacking</a>.</td>
-                                            <td>Add a <code>@media (max-width: …)</code> rule that changes <code>.docs-back-to-top</code>'s <code>width</code>, <code>height</code>, or <code>padding</code>. Per <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">#mobile-contract</a> the FAB cluster is uniform across viewports.</td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  </section>
-
-                                  <section id="acceptance" class="card">
-                                    <h2>Acceptance checklist</h2>
-                                    <ol>
-                                      <li><strong>FAB sizing is identical on every viewport:</strong> <code>52 × 52 px</code>
-                                        button with a <code>28 × 28 px</code> rocket glyph on desktop, tablet, and
-                                        mobile (no <code>@media</code>-conditional shrink). The companion bug FAB
-                                        matches exactly — drift between the two is a review blocker. See
-                                        <a href="#positioning-and-stacking">§positioning-and-stacking</a> and
-                                        <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>.</li>
-                                        <li>Two consecutive launches produce visually indistinguishable smoke shapes at <code>t = 1.5 s</code>.</li>
-                                        <li>The boil phase is visibly thick and wide by <code>t = 1.0 s</code> (cloud spans ≥ 200 px around the FAB at default <code>SMOKE_SPREAD</code>).</li>
-                                        <li>At lift-off the smoke disappears within one rendered frame; no smoke is visible during flight.</li>
-                                        <li>The rocket follows a single fixed trajectory upward; only the rocket SVG translates — no other element animates upward.</li>
-                                        <li>Under <code>prefers-reduced-motion: reduce</code> the click jumps to top instantly with no canvas mounted.</li>
-                                        <li>On WebGL2-incapable browsers the launch completes via the Canvas2D fallback with no console errors.</li>
-                                        <li>Cleanup removes the canvas from the DOM and releases GPU resources within one frame of flight end (or within the safety-net timeout if rAF stalls).</li>
-                                        <li>A second click during an in-flight animation is silently ignored; no double animation.</li>
-                                        <li>The FAB returns to its normal post-launch state (compact pill, no <code>--launching</code> class) after cleanup.</li>
-                                        <li>Immediately after the rocket exits, the FAB stays hidden — no compact pill or progress-ring "phantom circle" appears at the bottom-right while the smooth-scroll-to-top is still in flight.</li>
-                                        <li>The FAB only re-appears once the user starts a fresh scroll movement after the page has settled at <code>scrollY === 0</code>; a 4 000 ms safety timer is the upper bound.</li>
-                                        <li>No persistent timers, listeners, storage entries, or DOM nodes are left behind.</li>
-                                      </ol>
+                              <section id="public-surface" class="card">
+                                <h2>Public surface</h2>
+                                <dl class="docs-module-meta">
+                                  <dt>DOM contract</dt>
+                                  <dd>The animation requires <code>.docs-back-to-top__rocket-wrap</code> to exist as a child of the
+                                    FAB. The runtime drives this element through inline <code>style.transform</code> and
+                                    <code>style.opacity</code>, and clears them on cleanup. Any future replacement of the rocket icon
+                                    must preserve this class.</dd>
+                                    <dt>CSS hooks</dt>
+                                    <dd>
+                                      <code>.docs-back-to-top.docs-back-to-top--armed</code> — set by
+                                      <code>initBackToTopButton()</code> when the FAB is in arming distance of the footer. The animation
+                                      only runs when this class is present at click time.<br>
+                                      <code>.docs-back-to-top.docs-back-to-top--launching</code> — set for the duration of the animation.
+                                      CSS uses it to fade ambient FAB ornaments (flame, trail, embers) while the rocket flies.<br>
+                                      <code>.docs-back-to-top--nudge</code> — set on disarmed clicks (1-shot shake animation). Independent
+                                      of this spec but shares the click handler.
+                                    </dd>
+                                    <dt>CustomEvents</dt>
+                                    <dd>None emitted, none observed. The animation is an internal effect of one click.</dd>
+                                    <dt>Window globals</dt>
+                                    <dd>None. The runtime is closed over the click handler.</dd>
+                                    <dt>Storage keys</dt>
+                                    <dd>None. The animation is fully ephemeral.</dd>
+                                    <dt>Scroll behaviour</dt>
+                                    <dd>The click handler dispatches a <code>window.scrollTo({ top: 0, behavior: "smooth" })</code> at
+                                      <code>~PRE_MS</code> ms after the click — i.e. at the boundary between Boil and Flight. Under
+                                      <code>prefers-reduced-motion: reduce</code> the dispatch is immediate and uses
+                                      <code>behavior: "auto"</code>.</dd>
+                                      <dt>Post-launch visibility gate</dt>
+                                      <dd>After cleanup, an internal <code>suppressUntilUserScroll</code> flag forces the FAB
+                                        hidden inside <code>updateVisibility()</code>. The scroll listener releases the flag in
+                                        two stages: it waits for <code>scrollY</code> to reach <code>0</code> (smooth scroll
+                                        settled), then arms the next scroll movement (<code>scrollY &gt; 0</code>) as the trigger
+                                        that lets the FAB come back according to scroll dynamics. A 4 000 ms safety timer
+                                        clears the flag if the user never scrolls again.</dd>
+                                      </dl>
                                     </section>
 
-                                    <section id="test-plan" class="card">
-                                      <h2>Test plan</h2>
+                                    <section id="call-flow" class="card">
+                                      <h2>Call flow (one click)</h2>
+                                      <p>
+                                        End-to-end sequence from reader click to cleanup. Both the reduced-motion path
+                                        (instant scroll, no animation) and the full-animation path are shown explicitly
+                                        so reviewers can audit either branch in isolation.
+                                      </p>
+                                      <figure class="sys-diagram">
+                                        <div class="sys-diagram__head">
+                                          <span class="sys-diagram__badge">Diagram · Sequence</span>
+                                          <div class="sys-diagram__titles">
+                                            <h3>Reader → FAB → launch runtime → canvas + rocket</h3>
+                                            <p class="sys-diagram__sub">Boil-phase emission and physics run on each fixed step; flight phase kills smoke once and animates the rocket SVG; cleanup runs synchronously or via the 5 000 ms safety-net.</p>
+                                          </div>
+                                        </div>
+                                        <div class="sys-diagram__canvas">
+                                          <img alt="Sequence diagram of one rocket launch click: reader clicks FAB, click handler reads reduced-motion preference, then either dispatches an instant scroll or invokes launchRocketAnimation which initialises a canvas, runs a fixed-step loop emitting and rendering smoke during boil, dispatches a smooth scroll at PRE_MS, drives the rocket SVG transform during flight, and finally disposes GPU resources and removes the canvas." class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/rocket_launch_sequence.svg">
+                                        </div>
+                                        <figcaption class="sys-diagram__foot"><strong>Source:</strong>
+                                          <code>docs/uml/sequences/rocket_launch_sequence.puml</code>
+                                        </figcaption>
+                                      </figure>
+                                    </section>
 
-                                      <h3>Deterministic-replay (manual)</h3>
-                                      <ol>
-                                        <li>Open any internal docs page and scroll to the footer.</li>
-                                        <li>Click the rocket. Capture a screenshot at simulated <code>t = 1.5 s</code>.</li>
-                                        <li>Reload the page, repeat. Compare screenshots — they must be pixel-identical (modulo sub-pixel anti-aliasing on different DPRs of the same machine).</li>
-                                      </ol>
-
-                                      <h3>Reduced-motion (manual)</h3>
-                                      <ol>
-                                        <li>Enable OS-level reduced motion (or DevTools emulation).</li>
-                                        <li>Click the rocket. The page must jump to top instantly. No canvas mount in the DOM tree.</li>
-                                      </ol>
-
-                                      <h3>Fallback path (manual)</h3>
-                                      <ol>
-                                        <li>Disable WebGL2 (Chrome: <code>chrome://flags</code> → "WebGL 2.0" → Disabled, restart).</li>
-                                        <li>Click the rocket. The animation must complete using the Canvas2D path.</li>
-                                      </ol>
-
-                                      <h3>Performance regression (semi-automated)</h3>
-                                      <ol>
-                                        <li>Run the launch under DevTools Performance recording on a reference low-power profile.</li>
-                                        <li>Verify p95 frame time and JS busy time against the <a href="#perf-budget">budget table</a>.</li>
-                                      </ol>
-
-                                      <h3>Cleanup invariants (manual)</h3>
-                                      <ol>
-                                        <li>After one launch, verify in DevTools that no <code>&lt;canvas&gt;</code> element remains in the DOM, no <code>requestAnimationFrame</code> handles are pending, and no <code>setTimeout</code>s related to the launch are scheduled.</li>
-                                      </ol>
-
+                                    <section id="perf-budget" class="card">
+                                      <h2>Performance budget</h2>
+                                      <p>
+                                        The animation is short, infrequent, and self-cleaning, so its budget is generous compared with
+                                        steady-state UI. Targets below are upper bounds at the moment the cloud reaches peak density
+                                        (≈ 1.7 s into boil).
+                                      </p>
+                                      <div class="docs-table-scroll" role="region" aria-label="Performance budget">
+                                        <table>
+                                          <thead>
+                                            <tr>
+                                              <th scope="col">Metric</th>
+                                              <th scope="col">Target — WebGL2</th>
+                                              <th scope="col">Target — Canvas2D fallback</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr><td>Frame time, p95</td><td>≤ 12 ms (≥ 60 fps)</td><td>≤ 16 ms (≥ 60 fps)</td></tr>
+                                            <tr><td>Frame time, p99</td><td>≤ 24 ms</td><td>≤ 33 ms</td></tr>
+                                            <tr><td>JS main-thread busy time per frame</td><td>≤ 4 ms</td><td>≤ 10 ms</td></tr>
+                                            <tr><td>Persistent allocations beyond cleanup</td><td>0</td><td>0</td></tr>
+                                            <tr><td>Persistent GPU resources beyond cleanup</td><td>0 (program/buffers/VAO are deleted)</td><td>—</td></tr>
+                                            <tr><td>Total animation duration end-to-end</td><td>≤ 4 700 ms</td><td>≤ 4 700 ms</td></tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
                                       <p class="small">
-                                        Visual-regression automation is out of scope for this revision; the deterministic-replay procedure is
-                                        the working substitute. A future revision may add a Playwright fixture that captures and diffs the
-                                        canvas image at a fixed simulated time.
+                                        Devices that miss the WebGL2 p95 target (low-power integrated GPUs, throttled mobile) are expected to
+                                        still complete the animation; they will simply drop frames. Determinism still holds because the
+                                        simulation clock is decoupled from the render clock.
                                       </p>
                                     </section>
 
-                                    <section id="implementation-map" class="card">
-                                      <h2>Implementation map</h2>
-                                      <ul>
-                                        <li><code>docs/assets/docs-nav.js</code> · <code>initBackToTopButton()</code> — owns the FAB lifecycle, arming logic, click handling, reduced-motion gate, and the <code>suppressUntilUserScroll</code> post-launch visibility flag. Calls <code>launchRocketAnimation()</code> on armed clicks.</li>
-                                        <li><code>docs/assets/docs-nav.js</code> · <code>launchRocketAnimation(wrap, onDone)</code> — the closed-scope runtime described in this spec. Returns a <code>cancelFlight</code> function used by the safety-net timeout.</li>
-                                        <li><code>docs/assets/docs-nav.js</code> · <code>finishLaunch()</code> closure — the <code>onDone</code> callback. Sets <code>suppressUntilUserScroll = true</code>, calls <code>updateVisibility()</code>, defers removing <code>--launching</code> by 320 ms so the pill stays transparent through the FAB fade-out, and arms the 4 000 ms safety release.</li>
-                                        <li><code>docs/assets/docs.css</code> · <code>.docs-back-to-top*</code> rules — FAB visual states (compact, armed, launching, nudge), ambient flame/trail/smoke ornaments, reduced-motion overrides.</li>
-                                        <li><code>docs/internal/front/docs-frontend-architecture-map.html</code> — feature ledger entry <code>DFEAT-010</code> points at this page as the authoritative spec.</li>
-                                      </ul>
-                                    </section>
-
-                                    <section id="related" class="card">
-                                      <h2>Related internal docs</h2>
-                                      <ul>
-                                        <li><a href="./docs-frontend-resume-and-back-to-top.html">Resume-reading and back-to-top</a> — sister spec covering FAB visibility, arming, and the resume banner.</li>
-                                        <li><a href="./docs-frontend-report-bug-fab.html">Report-bug FAB</a> — the rocket's launchpad sibling: shared palette and stacking rules.</li>
-                                        <li><a href="./docs-frontend-architecture-map.html">Frontend architecture map</a> — see <code>DFEAT-010</code> for the feature ledger row.</li>
-                                        <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — global reduced-motion policy this spec inherits.</li>
-                                        <li><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a> — runtime contract for <code>docs-nav.js</code>.</li>
-                                        <li><a href="./docs-frontend-css-architecture.html">CSS architecture</a> — where the FAB and ornament styles live.</li>
-                                      </ul>
-                                    </section>
-
-                                    <section id="out-of-scope" class="card">
-                                      <h2>Out of scope</h2>
-                                      <ul>
-                                        <li>Configurable per-page rocket variants, multiple trajectories, or themed palettes — all explicitly rejected to keep the contract auditable.</li>
-                                        <li>Audio or haptic feedback during the launch — none planned.</li>
-                                        <li>Persisting or replaying past launches across navigations — the animation is ephemeral by design.</li>
-                                        <li>Visual-regression CI integration — tracked separately; deterministic-replay is the working substitute.</li>
-                                        <li>WebGPU path — premature; the WebGL2 path is sufficient for the budget.</li>
-                                      </ul>
-                                    </section>
-
-                                    <section id="page-history" class="card">
-                                      <h2>Page history</h2>
-                                      <div class="docs-table-scroll" role="region" aria-label="Page history">
-                                        <table class="docs-page-history">
+                                    <section id="failure-modes" class="card">
+                                      <h2>Failure modes and degradation</h2>
+                                      <div class="docs-table-scroll" role="region" aria-label="Failure modes">
+                                        <table>
                                           <thead>
                                             <tr>
-                                              <th scope="col">Date</th>
-                                              <th scope="col">Change</th>
-                                              <th scope="col">Author</th>
+                                              <th scope="col">Failure</th>
+                                              <th scope="col">Detection</th>
+                                              <th scope="col">Behaviour</th>
                                             </tr>
                                           </thead>
                                           <tbody>
                                             <tr>
-                                              <td><time datetime="2026-05-01">2026-05-01</time></td>
-                                              <td>Added the <a href="#visual-reference">Visual reference</a> section: an inline-SVG mock of the FAB's three morph states (Compact with progress ring, Armed with embers and accent border, Launching with flame, smoke, and speed lines) plus a 4× detail of the four-path rocket glyph (nose cone, porthole, fins, tail line) with annotated parts. Complements the existing trajectory diagram by showing what readers see at each lifecycle stage and how the same DOM yields three visuals via class swaps.</td>
-                                              <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                              <td>WebGL2 unavailable</td>
+                                              <td><code>getContext("webgl2", …)</code> returns <code>null</code></td>
+                                              <td>Canvas2D fallback runs to completion with reduced fidelity.</td>
                                             </tr>
                                             <tr>
-                                              <td><time datetime="2026-04-30">2026-04-30</time></td>
-                                              <td>Added the <strong>Post-launch suppressed</strong> phase to the lifecycle and a matching pre-click state. Documented the <code>suppressUntilUserScroll</code> flag, the two-stage release (settle at <code>scrollY === 0</code>, then first user scroll), and the 4 000 ms safety cap. Updated public surface, acceptance checklist, and implementation map. Reason: the compact pill / progress-ring used to fade in at the bottom-right the moment the rocket exited, before the smooth-scroll-to-top had finished — a "phantom circle" where the rocket used to be.</td>
-                                              <td>Ivan Boyarkin</td>
+                                              <td>Shader compile or link fails on a WebGL2-capable browser</td>
+                                              <td>Compile/link status is <code>false</code></td>
+                                              <td>A console warning is emitted and the renderer becomes a no-op. The rocket still flies; no smoke is drawn. Cleanup runs as normal.</td>
                                             </tr>
                                             <tr>
-                                              <td><time datetime="2026-04-30">2026-04-30</time></td>
-                                              <td>Page created — first authoritative specification for the WebGL2 rocket launch animation, including determinism contract, renderer matrix, particle and visual specs, performance budget, failure modes, acceptance checklist, spec-metadata header, and four diagrams (lifecycle state machine, call-flow sequence, renderer pipeline, and inline-SVG spatial anatomy).</td>
-                                              <td>Ivan Boyarkin</td>
+                                              <td>WebGL context lost (driver reset, OS sleep)</td>
+                                              <td>Browser fires <code>webglcontextlost</code></td>
+                                              <td>Current animation frames may be dropped. The simulation clock continues; cleanup still fires within the safety-net timeout.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Tab backgrounded mid-animation</td>
+                                              <td><code>requestAnimationFrame</code> stalls</td>
+                                              <td>A safety-net <code>setTimeout</code> at <code>PRE_MS + DURATION + POST_SMOKE_MS + 400 ms</code> force-completes cleanup so the FAB remains usable.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Click during another active animation</td>
+                                              <td><code>isLaunching</code> is <code>true</code></td>
+                                              <td>The new click is ignored. There is no animation queue.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>FAB clicked while disarmed</td>
+                                              <td><code>--armed</code> class absent</td>
+                                              <td>A short shake animation plays; no rocket animation runs and no scroll is performed.</td>
+                                            </tr>
+                                            <tr>
+                                              <td><code>prefers-reduced-motion: reduce</code></td>
+                                              <td>Media query at click time</td>
+                                              <td>Animation is skipped entirely. The page jumps to top with <code>behavior: "auto"</code>.</td>
                                             </tr>
                                           </tbody>
                                         </table>
                                       </div>
                                     </section>
 
-                                    <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
-                                  </main>
-                                </div>
-                              </div>
+                                    <section id="dos-and-donts" class="card">
+                                      <h2>Do's and Don'ts</h2>
+                                      <div class="docs-table-scroll" role="region" aria-label="Table">
+                                        <table>
+                                          <thead>
+                                            <tr><th scope="col" style="width:50%;">Do</th><th scope="col" style="width:50%;">Don't</th></tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr>
+                                              <td>Treat <code>SMOKE_SPREAD</code> as the primary dial when reviewing a visual change request — it tunes the cloud width without disturbing density or timing.</td>
+                                              <td>Edit the RNG seed, the trajectory, or <code>FIXED_STEP</code> to "tweak" the look. Those are determinism-load-bearing.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Verify the <code>prefers-reduced-motion: reduce</code> path on every change — the path is a single branch but it is a shipping requirement.</td>
+                                              <td>Add motion-only feedback that the click was registered. The smooth-scroll itself confirms the click; the animation is celebratory, not informational.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Keep the smoke canvas at <code>pointer-events: none</code> and high <code>z-index</code> so it sits over content but never intercepts clicks.</td>
+                                              <td>Portal the canvas into a different stacking context "for layering". Composing across stacking contexts is brittle and the existing setup is verified.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Audit any change that increases pool size, particle size, or shader complexity against the <a href="#perf-budget">performance budget</a>.</td>
+                                              <td>Ship a "wow it's denser" change without measuring frame times on a low-power laptop. The animation runs once, but the first frame is the impression.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Set <code>EMIT_SMOKE_IN_FLIGHT = false</code> in the shipping configuration. The contract is "smoke does not follow the rocket".</td>
+                                              <td>Re-enable <code>EMIT_SMOKE_IN_FLIGHT</code> without first revising <a href="#goals-non-goals">Goals and non-goals</a> and <a href="#determinism-contract">Determinism contract</a>.</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Keep <code>.docs-back-to-top</code> sizing (<code>52 × 52 px</code> button + <code>28 × 28 px</code> glyph) identical on desktop, tablet, and mobile. The bug FAB matches exactly — see <a href="#positioning-and-stacking">§positioning-and-stacking</a>.</td>
+                                              <td>Add a <code>@media (max-width: …)</code> rule that changes <code>.docs-back-to-top</code>'s <code>width</code>, <code>height</code>, or <code>padding</code>. Per <a href="../foundations/motion-and-adaptivity.html#mobile-contract">#mobile-contract</a> the FAB cluster is uniform across viewports.</td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </section>
 
-                            </body></html>
+                                    <section id="acceptance" class="card">
+                                      <h2>Acceptance checklist</h2>
+                                      <ol>
+                                        <li><strong>FAB sizing is identical on every viewport:</strong> <code>52 × 52 px</code>
+                                          button with a <code>28 × 28 px</code> rocket glyph on desktop, tablet, and
+                                          mobile (no <code>@media</code>-conditional shrink). The companion bug FAB
+                                          matches exactly — drift between the two is a review blocker. See
+                                          <a href="#positioning-and-stacking">§positioning-and-stacking</a> and
+                                          <a href="../foundations/motion-and-adaptivity.html#mobile-contract">#mobile-contract</a>.</li>
+                                          <li>Two consecutive launches produce visually indistinguishable smoke shapes at <code>t = 1.5 s</code>.</li>
+                                          <li>The boil phase is visibly thick and wide by <code>t = 1.0 s</code> (cloud spans ≥ 200 px around the FAB at default <code>SMOKE_SPREAD</code>).</li>
+                                          <li>At lift-off the smoke disappears within one rendered frame; no smoke is visible during flight.</li>
+                                          <li>The rocket follows a single fixed trajectory upward; only the rocket SVG translates — no other element animates upward.</li>
+                                          <li>Under <code>prefers-reduced-motion: reduce</code> the click jumps to top instantly with no canvas mounted.</li>
+                                          <li>On WebGL2-incapable browsers the launch completes via the Canvas2D fallback with no console errors.</li>
+                                          <li>Cleanup removes the canvas from the DOM and releases GPU resources within one frame of flight end (or within the safety-net timeout if rAF stalls).</li>
+                                          <li>A second click during an in-flight animation is silently ignored; no double animation.</li>
+                                          <li>The FAB returns to its normal post-launch state (compact pill, no <code>--launching</code> class) after cleanup.</li>
+                                          <li>Immediately after the rocket exits, the FAB stays hidden — no compact pill or progress-ring "phantom circle" appears at the bottom-right while the smooth-scroll-to-top is still in flight.</li>
+                                          <li>The FAB only re-appears once the user starts a fresh scroll movement after the page has settled at <code>scrollY === 0</code>; a 4 000 ms safety timer is the upper bound.</li>
+                                          <li>No persistent timers, listeners, storage entries, or DOM nodes are left behind.</li>
+                                        </ol>
+                                      </section>
+
+                                      <section id="test-plan" class="card">
+                                        <h2>Test plan</h2>
+
+                                        <h3>Deterministic-replay (manual)</h3>
+                                        <ol>
+                                          <li>Open any internal docs page and scroll to the footer.</li>
+                                          <li>Click the rocket. Capture a screenshot at simulated <code>t = 1.5 s</code>.</li>
+                                          <li>Reload the page, repeat. Compare screenshots — they must be pixel-identical (modulo sub-pixel anti-aliasing on different DPRs of the same machine).</li>
+                                        </ol>
+
+                                        <h3>Reduced-motion (manual)</h3>
+                                        <ol>
+                                          <li>Enable OS-level reduced motion (or DevTools emulation).</li>
+                                          <li>Click the rocket. The page must jump to top instantly. No canvas mount in the DOM tree.</li>
+                                        </ol>
+
+                                        <h3>Fallback path (manual)</h3>
+                                        <ol>
+                                          <li>Disable WebGL2 (Chrome: <code>chrome://flags</code> → "WebGL 2.0" → Disabled, restart).</li>
+                                          <li>Click the rocket. The animation must complete using the Canvas2D path.</li>
+                                        </ol>
+
+                                        <h3>Performance regression (semi-automated)</h3>
+                                        <ol>
+                                          <li>Run the launch under DevTools Performance recording on a reference low-power profile.</li>
+                                          <li>Verify p95 frame time and JS busy time against the <a href="#perf-budget">budget table</a>.</li>
+                                        </ol>
+
+                                        <h3>Cleanup invariants (manual)</h3>
+                                        <ol>
+                                          <li>After one launch, verify in DevTools that no <code>&lt;canvas&gt;</code> element remains in the DOM, no <code>requestAnimationFrame</code> handles are pending, and no <code>setTimeout</code>s related to the launch are scheduled.</li>
+                                        </ol>
+
+                                        <p class="small">
+                                          Visual-regression automation is out of scope for this revision; the deterministic-replay procedure is
+                                          the working substitute. A future revision may add a Playwright fixture that captures and diffs the
+                                          canvas image at a fixed simulated time.
+                                        </p>
+                                      </section>
+
+                                      <section id="implementation-map" class="card">
+                                        <h2>Implementation map</h2>
+                                        <ul>
+                                          <li><code>docs/assets/docs-nav.js</code> · <code>initBackToTopButton()</code> — owns the FAB lifecycle, arming logic, click handling, reduced-motion gate, and the <code>suppressUntilUserScroll</code> post-launch visibility flag. Calls <code>launchRocketAnimation()</code> on armed clicks.</li>
+                                          <li><code>docs/assets/docs-nav.js</code> · <code>launchRocketAnimation(wrap, onDone)</code> — the closed-scope runtime described in this spec. Returns a <code>cancelFlight</code> function used by the safety-net timeout.</li>
+                                          <li><code>docs/assets/docs-nav.js</code> · <code>finishLaunch()</code> closure — the <code>onDone</code> callback. Sets <code>suppressUntilUserScroll = true</code>, calls <code>updateVisibility()</code>, defers removing <code>--launching</code> by 320 ms so the pill stays transparent through the FAB fade-out, and arms the 4 000 ms safety release.</li>
+                                          <li><code>docs/assets/docs.css</code> · <code>.docs-back-to-top*</code> rules — FAB visual states (compact, armed, launching, nudge), ambient flame/trail/smoke ornaments, reduced-motion overrides.</li>
+                                          <li><code>docs/internal/front/architecture-map.html</code> — feature ledger entry <code>DFEAT-010</code> points at this page as the authoritative spec.</li>
+                                        </ul>
+                                      </section>
+
+                                      <section id="related" class="card">
+                                        <h2>Related internal docs</h2>
+                                        <ul>
+                                          <li><a href="resume-and-back-to-top.html">Resume-reading and back-to-top</a> — sister spec covering FAB visibility, arming, and the resume banner.</li>
+                                          <li><a href="report-bug-fab.html">Report-bug FAB</a> — the rocket's launchpad sibling: shared palette and stacking rules.</li>
+                                          <li><a href="../architecture-map.html">Frontend architecture map</a> — see <code>DFEAT-010</code> for the feature ledger row.</li>
+                                          <li><a href="../foundations/motion-and-adaptivity.html">UI / motion / adaptivity</a> — global reduced-motion policy this spec inherits.</li>
+                                          <li><a href="../foundations/js-modules.html">JavaScript modules reference</a> — runtime contract for <code>docs-nav.js</code>.</li>
+                                          <li><a href="../foundations/css-architecture.html">CSS architecture</a> — where the FAB and ornament styles live.</li>
+                                        </ul>
+                                      </section>
+
+                                      <section id="out-of-scope" class="card">
+                                        <h2>Out of scope</h2>
+                                        <ul>
+                                          <li>Configurable per-page rocket variants, multiple trajectories, or themed palettes — all explicitly rejected to keep the contract auditable.</li>
+                                          <li>Audio or haptic feedback during the launch — none planned.</li>
+                                          <li>Persisting or replaying past launches across navigations — the animation is ephemeral by design.</li>
+                                          <li>Visual-regression CI integration — tracked separately; deterministic-replay is the working substitute.</li>
+                                          <li>WebGPU path — premature; the WebGL2 path is sufficient for the budget.</li>
+                                        </ul>
+                                      </section>
+
+                                      <section id="page-history" class="card">
+                                        <h2>Page history</h2>
+                                        <div class="docs-table-scroll" role="region" aria-label="Page history">
+                                          <table class="docs-page-history">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Date</th>
+                                                <th scope="col">Change</th>
+                                                <th scope="col">Author</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td><time datetime="2026-05-01">2026-05-01</time></td>
+                                                <td>Added the <a href="#visual-reference">Visual reference</a> section: an inline-SVG mock of the FAB's three morph states (Compact with progress ring, Armed with embers and accent border, Launching with flame, smoke, and speed lines) plus a 4× detail of the four-path rocket glyph (nose cone, porthole, fins, tail line) with annotated parts. Complements the existing trajectory diagram by showing what readers see at each lifecycle stage and how the same DOM yields three visuals via class swaps.</td>
+                                                <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                              </tr>
+                                              <tr>
+                                                <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                                <td>Added the <strong>Post-launch suppressed</strong> phase to the lifecycle and a matching pre-click state. Documented the <code>suppressUntilUserScroll</code> flag, the two-stage release (settle at <code>scrollY === 0</code>, then first user scroll), and the 4 000 ms safety cap. Updated public surface, acceptance checklist, and implementation map. Reason: the compact pill / progress-ring used to fade in at the bottom-right the moment the rocket exited, before the smooth-scroll-to-top had finished — a "phantom circle" where the rocket used to be.</td>
+                                                <td>Ivan Boyarkin</td>
+                                              </tr>
+                                              <tr>
+                                                <td><time datetime="2026-04-30">2026-04-30</time></td>
+                                                <td>Page created — first authoritative specification for the WebGL2 rocket launch animation, including determinism contract, renderer matrix, particle and visual specs, performance budget, failure modes, acceptance checklist, spec-metadata header, and four diagrams (lifecycle state machine, call-flow sequence, renderer pipeline, and inline-SVG spatial anatomy).</td>
+                                                <td>Ivan Boyarkin</td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </section>
+
+                                      <div class="docs-inpage-toc-mount" data-inpage-toc="auto"></div>
+                                    </main>
+                                  </div>
+                                </div>
+
+                              </body></html>

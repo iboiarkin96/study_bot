@@ -36,7 +36,7 @@
           <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> (External vs internal API docs),
           <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> (Internal docs as source of truth)
         </li>
-        <li>Related RFCs: <a href="./0001-docs-search-implementation.html">RFC 0001</a>, <a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a></li>
+        <li>Related RFCs: <a href="0001-docs-search-implementation.html">RFC 0001</a>, <a href="0002-docs-search-kpi-policy-and-slo.html">RFC 0002</a></li>
         <li>Owner: <a href="../internal/portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></li>
       </ul>
     </section>
@@ -72,7 +72,7 @@
             <ul>
               <li><strong>Visual styling.</strong> Typography, colour, spacing, motion, and the design tokens are
                 governed by the docs frontend stylesheet (<code>docs/assets/docs.css</code>) and by
-                <a href="../internal/front/docs-frontend-token-gallery.html">docs-frontend-token-gallery.html</a> —
+                <a href="../internal/front/foundations/tokens.html">foundations/tokens.html</a> —
                 not by this RFC.</li>
                 <li><strong>OpenAPI authoring rules.</strong> Already governed by
                   <a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a> and the shared
@@ -94,8 +94,8 @@
                       <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a> for the audience split,
                       <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a> for the internal
                       layout, <a href="../adr/0007-openapi-governance-and-usability-standard.html">ADR 0007</a> for the
-                      external-contract rules, the <a href="../internal/front/documentation-process.html">documentation
-                      maintenance process</a> for the lifecycle, the <a href="../internal/front/documentation-style-guide.html">documentation
+                      external-contract rules, the <a href="../internal/front/_shared/process.html">documentation
+                      maintenance process</a> for the lifecycle, the <a href="../internal/front/_shared/style-guide.html">documentation
                       style guide</a> for the page skeleton, and finally the two heavy templates
                       (<a href="../internal/api/_shared/spec-template.html">API spec template</a> and
                       <a href="../internal/front/screens/docs-screen-template.html">screen spec template</a>) to actually start
@@ -142,7 +142,7 @@
                             <td><strong>RFC</strong> — Request for Comments</td>
                             <td>Engineers</td>
                             <td>The specification an ADR intentionally omits: implementation, validation, rollout</td>
-                            <td><a href="./0000-template.html"><code>docs/rfc/0000-template.html</code></a></td>
+                            <td><a href="0000-template.html"><code>docs/rfc/0000-template.html</code></a></td>
                           </tr>
                           <tr>
                             <td><strong>API operation spec</strong></td>
@@ -166,7 +166,7 @@
                             <td><strong>Frontend reference</strong></td>
                             <td>Frontend maintainers</td>
                             <td>One cross-cutting frontend system (navigation, motion, tooltips, …)</td>
-                            <td>Convention from <a href="../internal/front/documentation-process.html#document-types">documentation-process.html § Document types</a></td>
+                            <td>Convention from <a href="../internal/front/_shared/process.html#document-types">_shared/process.html § Document types</a></td>
                           </tr>
                           <tr>
                             <td><strong>Runbook</strong></td>
@@ -184,7 +184,7 @@
                             <td><strong>Glossary</strong></td>
                             <td>All readers</td>
                             <td>Single canonical definition of every domain term used elsewhere</td>
-                            <td><a href="../internal/front/docs-frontend-glossary.html">frontend glossary</a> (extend with sections per area as needed)</td>
+                            <td><a href="../internal/front/_shared/glossary.html">frontend glossary</a> (extend with sections per area as needed)</td>
                           </tr>
                           <tr>
                             <td><strong>External API contract</strong></td>
@@ -292,10 +292,10 @@
                           numbered callouts, accessible (<code>&lt;title&gt;</code> + <code>&lt;desc&gt;</code> + caption).</li>
                         </ul>
                         <p>
-                          The reasoning for keeping both is the lesson learned by every long-running design system program:
-                          screenshots rot on every style tweak and are useless in code review diffs, while diagrams age gracefully
-                          and survive cosmetic changes — but only screenshots prove <em>current</em> visual reality. The pair is
-                          cheap to maintain because each artifact has a single authoring path and an automatic refresh hook.
+                          Why keep both: screenshots rot on every style tweak and are useless in code-review diffs,
+                          while diagrams age gracefully and survive cosmetic changes — but only screenshots prove
+                          <em>current</em> visual reality. The pair is cheap to maintain because each artifact has a
+                          single authoring path and an automatic refresh hook.
                         </p>
 
                         <h3>5. Diagrams: PlantUML only</h3>
@@ -311,7 +311,7 @@
                         <p>
                           Every page in this repository is written for engineers whose first language is rarely English. The
                           editorial rules in
-                          <a href="../internal/front/documentation-style-guide.html#plain-language">documentation-style-guide.html § Plain language</a>
+                          <a href="../internal/front/_shared/style-guide.html#plain-language">_shared/style-guide.html § Plain language</a>
                           are normative: short sentences, common vocabulary, one idea per sentence, defined acronyms on first use,
                           active voice for procedures. The standard is modelled on
                           <a href="https://www.gov.uk/service-manual/content" rel="noopener">GOV.UK Content design</a>,
@@ -435,7 +435,7 @@
                               <tr>
                                 <td>Plain-language editorial guidelines</td>
                                 <td>GOV.UK Service Manual; Mailchimp Voice &amp; Tone; Stripe writing principles</td>
-                                <td><a href="../internal/front/documentation-style-guide.html#plain-language">style guide § Plain language</a>.</td>
+                                <td><a href="../internal/front/_shared/style-guide.html#plain-language">style guide § Plain language</a>.</td>
                               </tr>
                               <tr>
                                 <td>One topic per page; cards within a page for sub-topics</td>
@@ -445,7 +445,7 @@
                               <tr>
                                 <td>Definition of done that includes docs</td>
                                 <td>Atlassian DoD; Spotify engineering excellence; GitLab Handbook</td>
-                                <td><a href="../internal/front/documentation-process.html#definition-of-done">documentation-process § DoD</a>.</td>
+                                <td><a href="../internal/front/_shared/process.html#definition-of-done">_shared/process § DoD</a>.</td>
                               </tr>
                               <tr>
                                 <td>Living docs alongside source code (no separate CMS)</td>
@@ -460,7 +460,7 @@
                               <tr>
                                 <td>Glossary as a contract</td>
                                 <td>Stripe API glossary; IBM Carbon "Concepts"; Material Design glossary</td>
-                                <td><a href="../internal/front/docs-frontend-glossary.html">frontend glossary</a>; new terms added in the same PR that introduces them.</td>
+                                <td><a href="../internal/front/_shared/glossary.html">frontend glossary</a>; new terms added in the same PR that introduces them.</td>
                               </tr>
                             </tbody>
                           </table>
@@ -477,7 +477,7 @@
                           <li>
                             <strong>Land this RFC at <code>docs/rfc/0003-documentation-authoring-model.html</code>.</strong>
                             The page is the canonical entry point a contributor reads before touching docs. Add it to the RFC index
-                            (<a href="./README.html"><code>rfc/README.html</code></a>) and to the internal sidebar
+                            (<a href="README.html"><code>rfc/README.html</code></a>) and to the internal sidebar
                             (<code>docs/assets/internal-sidebar.js</code>).
                           </li>
                           <li>
@@ -485,8 +485,8 @@
                             <a href="../adr/0001-docs-as-code.html">ADR 0001</a>,
                             <a href="../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>,
                             <a href="../adr/0026-internal-service-documentation-as-source-of-truth.html">ADR 0026</a>,
-                            <a href="../internal/front/documentation-style-guide.html">style guide</a>, and
-                            <a href="../internal/front/documentation-process.html">documentation-process</a> all link to this RFC
+                            <a href="../internal/front/_shared/style-guide.html">style guide</a>, and
+                            <a href="../internal/front/_shared/process.html">_shared/process</a> all link to this RFC
                             as their single rationale-and-template index.
                           </li>
                           <li>
@@ -497,7 +497,7 @@
                               <li><a href="../internal/api/_shared/spec-definition-of-done.html"><code>docs/internal/api/_shared/spec-definition-of-done.html</code></a> — DoD checklist.</li>
                               <li><a href="../internal/front/screens/docs-screen-template.html"><code>docs/internal/front/screens/docs-screen-template.html</code></a> — screen spec.</li>
                               <li><a href="../adr/0000-template.html"><code>docs/adr/0000-template.html</code></a> — ADR.</li>
-                              <li><a href="./0000-template.html"><code>docs/rfc/0000-template.html</code></a> — RFC.</li>
+                              <li><a href="0000-template.html"><code>docs/rfc/0000-template.html</code></a> — RFC.</li>
                             </ul>
                           </li>
                           <li>
@@ -530,7 +530,7 @@
                         </ul>
                         <h3>Operational checks</h3>
                         <ul>
-                          <li>Quarterly screen-spec re-verify per <a href="../internal/front/documentation-process.html#audit">documentation-process § Audit cadence</a>.</li>
+                          <li>Quarterly screen-spec re-verify per <a href="../internal/front/_shared/process.html#audit">_shared/process § Audit cadence</a>.</li>
                           <li>Glossary scan on every release: any new domain term must have a glossary entry in the same PR.</li>
                           <li>Annual taxonomy review: confirm no new document type has accumulated outside the closed list in §1.</li>
                         </ul>
@@ -633,7 +633,7 @@
                                 <li><strong>Visual gallery</strong> — real screenshots covering desktop-light, desktop-dark, tablet
                                   (761–1024 px), mobile (≤760 px), and every transient state (intro, modal, loading, empty, error).
                                   Tier names follow the
-                                  <a href="../internal/front/docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical
+                                  <a href="../internal/front/foundations/motion-and-adaptivity.html#canonical-breakpoints">canonical
                                     viewport breakpoints</a>.
                                     Files in <code>./assets/&lt;screen-id&gt;-&lt;variant&gt;.png</code>; each <code>&lt;figure&gt;</code>
                                     gets a single-line <code>&lt;figcaption&gt;</code> and is wrapped in a link to the full-size PNG.</li>
@@ -672,12 +672,12 @@
                                               <a href="../adr/0027-client-side-docs-search-index-and-ranking.html">ADR 0027 — Docs search index &amp; ranking</a>.
                                             </li>
                                             <li>Related RFCs:
-                                              <a href="./0001-docs-search-implementation.html">RFC 0001 — docs search implementation</a>,
-                                              <a href="./0002-docs-search-kpi-policy-and-slo.html">RFC 0002 — docs search KPI &amp; SLO</a>.
+                                              <a href="0001-docs-search-implementation.html">RFC 0001 — docs search implementation</a>,
+                                              <a href="0002-docs-search-kpi-policy-and-slo.html">RFC 0002 — docs search KPI &amp; SLO</a>.
                                             </li>
                                             <li>Process pages:
-                                              <a href="../internal/front/documentation-process.html">documentation maintenance process</a>,
-                                              <a href="../internal/front/documentation-style-guide.html">documentation style guide and audit standard</a>,
+                                              <a href="../internal/front/_shared/process.html">documentation maintenance process</a>,
+                                              <a href="../internal/front/_shared/style-guide.html">documentation style guide and audit standard</a>,
                                               <a href="../howto/0002-internal-service-docs-layout.html">how-to: internal service docs layout</a>.
                                             </li>
                                             <li>Templates:
@@ -685,7 +685,7 @@
                                               <a href="../internal/api/_shared/spec-definition-of-done.html">DoD checklist</a>),
                                               <a href="../internal/front/screens/docs-screen-template.html">screen spec</a>,
                                               <a href="../adr/0000-template.html">ADR</a>,
-                                              <a href="./0000-template.html">RFC</a>.
+                                              <a href="0000-template.html">RFC</a>.
                                             </li>
                                             <li>Shared API conventions referenced from every operation spec:
                                               <a href="../internal/api/_shared/auth.html">auth</a>,

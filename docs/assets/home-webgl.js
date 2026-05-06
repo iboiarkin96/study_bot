@@ -8,7 +8,8 @@
 
    Failure modes (any of these → no canvas, existing dotgrid/orbs remain):
      • prefers-reduced-motion: reduce
-     • viewport narrower than ~720px (battery)
+     • viewport ≤ 1024px (desktop-only — tablet/phone don't get the field;
+       its rectangular bounds and tinting framed the H1 as a card)
      • no WebGL2 context
      • avg FPS < 42 for 2s (teardown after first second of measurement)
 */
@@ -16,7 +17,7 @@
 (function () {
   const TARGET_FPS_FLOOR = 42;
   const FPS_GUARD_MS = 2000;
-  const MIN_VIEWPORT_PX = 720;
+  const MIN_VIEWPORT_PX = 1025;
 
   // Public init — orchestrator (home-landing.js) calls this after intro is done.
   window.HomeWebgl = window.HomeWebgl || {};
@@ -84,6 +85,7 @@
     let startTs = 0;
     let lastTs = 0;
     let disposed = false;
+    let resizeObs = null;
 
     // FPS guard
     let frames = 0;
@@ -245,6 +247,7 @@
         if (ext) ext.loseContext();
       } catch (_) { /* noop */ }
       window.removeEventListener("resize", onResize);
+      if (resizeObs) resizeObs.disconnect();
       host.removeEventListener("pointermove", onPointerMove);
       host.removeEventListener("pointerleave", onPointerLeave);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -280,6 +283,16 @@
 
     resize();
     window.addEventListener("resize", onResize, { passive: true });
+    /*
+     * `window.resize` doesn't fire when the hero width changes due to in-page
+     * layout shifts (e.g. SHOW/HIDE MENU collapsing the sidebar). Without a
+     * ResizeObserver the canvas drawing buffer keeps the stale dimensions and
+     * a stretched, unrendered rectangle appears on the right edge.
+     */
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObs = new ResizeObserver(() => resize());
+      resizeObs.observe(host);
+    }
     host.addEventListener("pointermove", onPointerMove, { passive: true });
     host.addEventListener("pointerleave", onPointerLeave, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);

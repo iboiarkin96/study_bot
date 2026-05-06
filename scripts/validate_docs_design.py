@@ -18,7 +18,7 @@ DOCS_ROOT = ROOT / "docs"
 FROZEN_DOCS_REL_PATHS = {
     Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
     # Standalone week backlog calendar (custom layout, not portal doc skeleton).
-    Path("internal/portal/people/ivan-boyarkin/week-calendar-2026-04-25.html"),
+    Path("internal/portal/people/ivan-boyarkin/week-calendar-2026-05-07.html"),
 }
 
 

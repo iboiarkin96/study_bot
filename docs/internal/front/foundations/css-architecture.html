@@ -5,15 +5,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Docs frontend CSS architecture — reference</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
 </head>
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="reference" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
@@ -35,7 +35,7 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
           <time datetime="2026-04-30">2026-04-30</time></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
@@ -51,9 +51,9 @@
             to add a new token to <code>docs.css</code>, or does it belong in a sub-layer?"</em>.
           </p>
           <p class="small">
-            Sister pages: <a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a>,
-            <a href="./docs-frontend-architecture-map.html">architecture map</a>,
-            <a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> (token rationale).
+            Sister pages: <a href="js-modules.html">JavaScript modules reference</a>,
+            <a href="../architecture-map.html">architecture map</a>,
+            <a href="motion-and-adaptivity.html">UI / motion / adaptivity</a> (token rationale).
           </p>
         </section>
 
@@ -230,7 +230,7 @@
             <dl class="docs-module-meta">
               <dt>Loaded by</dt><dd><code>@import</code> in <code>docs.css</code>.</dd>
               <dt>Status</dt>
-              <dd>Ships unconditionally even though the runtime that generates the <code>.st-*</code> token classes — <code>docs-syntax.js</code> — is not currently loaded anywhere. See the <a href="./docs-frontend-js-modules-reference.html#docs-syntax">phantom note in the JS reference</a>. Removing this file is contingent on the same wire-up decision.</dd>
+              <dd>Ships unconditionally even though the runtime that generates the <code>.st-*</code> token classes — <code>docs-syntax.js</code> — is not currently loaded anywhere. See the <a href="js-modules.html#docs-syntax">phantom note in the JS reference</a>. Removing this file is contingent on the same wire-up decision.</dd>
               <dt>Components shipped</dt>
               <dd><code>.st-kw</code> (keyword), <code>.st-str</code> (string), <code>.st-cmt</code> (comment), <code>.st-num</code>, <code>.st-key</code> (object key), <code>.st-bi</code> (builtin), <code>.st-var</code>, <code>.st-flag</code> (CLI), <code>.st-dec</code> (decorator), <code>.st-op</code> (operator). Plus a <code>pre[data-lang]::before</code> language badge.</dd>
               <dt>Dark mode</dt><dd>Defines tokens twice: under <code>@media (prefers-color-scheme: dark)</code> and under <code>html[data-theme="dark"]</code>. Belt-and-braces because syntax colors vary independently of the main palette.</dd>
@@ -249,7 +249,7 @@
               </dd>
               <dt>Custom properties</dt><dd>Reuses <code>--bg</code>, <code>--accent</code>, <code>--line</code>, <code>--text</code> from <code>docs.css</code>; adds <code>--home-*</code> for animation timing.</dd>
               <dt>Surface contract</dt>
-              <dd>Visual anatomy is documented in the <a href="./screens/docs-screen-home-landing.html">home landing screen spec</a>.</dd>
+              <dd>Visual anatomy is documented in the <a href="../screens/docs-screen-home-landing.html">home landing screen spec</a>.</dd>
             </dl>
           </section>
 
@@ -285,7 +285,7 @@
               <strong>Component-level, not device tiers.</strong> The internal-layout sidebar reflows at its own
               cut-offs because the wide rail no longer fits — these numbers are <em>not</em> the canonical
               device tiers. Whenever you describe a device class (mobile / tablet / desktop) in any other doc,
-              use the <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical
+              use the <a href="motion-and-adaptivity.html#canonical-breakpoints">canonical
               viewport breakpoints</a> (≥1025 / 761–1024 / ≤760).
             </p>
             <div class="docs-table-scroll" role="region" aria-label="Sidebar component breakpoints">
@@ -310,7 +310,7 @@
             <p class="small">
               For author-facing rules on mobile readability (typography ladder, table wrapping, what is
               disabled, acceptance checklist), see
-              <a href="./docs-frontend-ui-motion-and-adaptivity.html#mobile-contract">UI motion &amp;
+              <a href="motion-and-adaptivity.html#mobile-contract">UI motion &amp;
                 adaptivity § Mobile contract</a>.
               </p>
 
@@ -340,7 +340,7 @@
                 <li><strong>Open class</strong>: <code>.internal-layout__drawer.is-open</code> → <code>display: block</code>.</li>
                 <li><strong>Closed</strong>: <code>.internal-layout__drawer[hidden]</code> → <code>display: none !important</code> (HTML attribute, set by <code>internal-sidebar.js</code>).</li>
                 <li><strong>Body lock</strong>: <code>body.internal-sidebar-drawer-open</code> → <code>overflow: hidden</code> (prevents page scroll while drawer is open).</li>
-                <li><strong>Drawer-only cut-off (&lt;900 px)</strong>: sidebar moves below page title row in document order (no longer sticky). Component-level cut-off; spans the bottom of the tablet tier and the entire mobile tier per the <a href="./docs-frontend-ui-motion-and-adaptivity.html#canonical-breakpoints">canonical viewport breakpoints</a>.</li>
+                <li><strong>Drawer-only cut-off (&lt;900 px)</strong>: sidebar moves below page title row in document order (no longer sticky). Component-level cut-off; spans the bottom of the tablet tier and the entire mobile tier per the <a href="motion-and-adaptivity.html#canonical-breakpoints">canonical viewport breakpoints</a>.</li>
               </ul>
 
               <h3>Collapsed sidebar</h3>
@@ -383,11 +383,11 @@
             <section id="related" class="card">
               <h2>Related internal docs</h2>
               <ul>
-                <li><a href="./docs-frontend-js-modules-reference.html">JavaScript modules reference</a> — sister page for runtime modules.</li>
-                <li><a href="./docs-frontend-architecture-map.html">Architecture map</a> — block model and runtime ownership.</li>
-                <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — motion tokens, density, theme switching rationale.</li>
-                <li><a href="./docs-frontend-ui-kit.html">UI kit</a> — visual principles and design-token narrative.</li>
-                <li><a href="./documentation-process.html">Maintenance process</a> — change management for layout-impacting CSS edits.</li>
+                <li><a href="js-modules.html">JavaScript modules reference</a> — sister page for runtime modules.</li>
+                <li><a href="../architecture-map.html">Architecture map</a> — block model and runtime ownership.</li>
+                <li><a href="motion-and-adaptivity.html">UI / motion / adaptivity</a> — motion tokens, density, theme switching rationale.</li>
+                <li><a href="ui-kit.html">UI kit</a> — visual principles and design-token narrative.</li>
+                <li><a href="../_shared/process.html">Maintenance process</a> — change management for layout-impacting CSS edits.</li>
               </ul>
             </section>
 

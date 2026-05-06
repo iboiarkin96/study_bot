@@ -12,6 +12,7 @@ DOCS_ROOT = ROOT / "docs"
 DOCS_CSS = DOCS_ROOT / "assets" / "docs.css"
 FROZEN_DOCS_REL_PATHS = {
     Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+    Path("internal/portal/people/ivan-boyarkin/week-calendar-2026-05-07.html"),
 }
 
 

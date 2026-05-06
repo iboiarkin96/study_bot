@@ -15,6 +15,7 @@ DOCS_ROOT = ROOT / "docs"
 DEFAULT_MAINTAINER_ID = "16fc8b78537109162984a2fdbef6e142"
 FROZEN_DOCS_REL_PATHS = {
     Path("internal/portal/people/ivan-boyarkin/sa-growth.html"),
+    Path("internal/portal/people/ivan-boyarkin/week-calendar-2026-05-07.html"),
 }
 BODY_TAG_RE = re.compile(r"(?is)<body\b([^>]*)>")
 MAINTAINERS_ATTR_RE = re.compile(r'data-maintainer-ids\s*=\s*"([^"]*)"')

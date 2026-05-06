@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+
+<head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -16,7 +18,8 @@
   <script defer src="../../assets/docs-spec-status.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="hub" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="hub"
+  data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <p class="internal-layout__sidebar-title">Internal docs</p>
@@ -29,27 +32,27 @@
         <div id="docs-page-meta-mount" hidden=""></div>
         <div class="internal-spec-meta" aria-label="Spec metadata">
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Summary</span>
-          <span>Engineering-facing HTTP API reference: per-resource hubs and per-operation specs.</span></span>
+            <span>Engineering-facing HTTP API reference: per-resource hubs and per-operation specs.</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Status</span>
-          <span data-spec-status-mount=""></span></span>
+            <span data-spec-status-mount=""></span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
-          <span>v1 · Internal</span></span>
+            <span>look at the OpenAPI contract for the latest version of each endpoint</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+            <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Resource</span>
-          <code>/api/v1</code></span>
+            <code>/api/v1</code></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
-          <time datetime="2026-04-29">2026-04-29</time></span>
-          <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
-          <code>v1</code></span>
+            <time datetime="2026-04-29">2026-04-29</time></span>
         </div>
 
         <section class="docs-page-hero" id="overview">
           <h2>Overview</h2>
           <p>
-            Engineering-facing API reference organized by <strong>resource</strong>: each resource has a hub page
-            (business context, data contract, links to methods), and each <code>operationId</code> has its own page so
-            readers are not overloaded with a single endless scroll.
+            This API reference is structured by <strong>resources (User, Conspectus, Error log and others)</strong>.
+            Each resource provides a hub page with
+            business context, data contract details, and method links. Every method is documented on its own dedicated
+            page.
+
           </p>
         </section>
 
@@ -77,7 +80,7 @@
           </ul>
           <p>
             Per-operation pages follow the analyst-spec template in
-            <a href="./_shared/spec-template.html"><code>_shared/spec-template.html</code></a>. Cross-cutting
+            <a href="_shared/spec-template.html"><code>_shared/spec-template.html</code></a>. Cross-cutting
             concerns (idempotency, error envelope, auth, pagination, versioning, observability conventions,
             OpenAPI authoring guide) live once under <code>_shared/</code> and are linked from each operation —
             never duplicated.
@@ -106,126 +109,135 @@
                 <tr>
                   <td><strong>User</strong></td>
                   <td><code>/api/v1/user</code></td>
-                  <td><a href="./user/index.html">user/index.html</a></td>
+                  <td><a href="user/index.html">user/index.html</a></td>
                   <td><span class="spec-status-pill spec-status-pill--implemented">
-                    <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
-                    <span class="spec-status-pill__label">Implemented</span></span>
-                    <span class="small">— 4 ops live</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Conspectus</strong></td>
-                    <td><code>/api/v1/conspectuses</code> ·
-                      <code>/api/v1/schedule/summary</code></td>
-                      <td><a href="./conspectus/index.html">conspectus/index.html</a></td>
-                      <td><span class="spec-status-pill spec-status-pill--draft">
-                        <span class="spec-status-pill__emoji" aria-hidden="true">📝</span>
-                        <span class="spec-status-pill__label">Draft</span></span>
-                        <span class="small">— 5 specs awaiting impl</span></td>
-                      </tr>
-                      <tr>
-                        <td><strong>Error log</strong></td>
-                        <td><code>/api/v1/errors</code></td>
-                        <td><a href="./error-log/index.html">error-log/index.html</a></td>
-                        <td><span class="spec-status-pill spec-status-pill--draft">
-                          <span class="spec-status-pill__emoji" aria-hidden="true">📝</span>
-                          <span class="spec-status-pill__label">Draft</span></span>
-                          <span class="small">— 2 specs awaiting impl</span></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <p class="small">Add a new row when another router gains an internal hub.</p>
-                </section>
+                      <span class="spec-status-pill__emoji" aria-hidden="true">⭐</span>
+                      <span class="spec-status-pill__label">Implemented</span></span>
+                    <span class="small">— 4 ops live</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Conspectus</strong></td>
+                  <td><code>/api/v1/conspectuses</code> ·
+                    <code>/api/v1/schedule/summary</code>
+                  </td>
+                  <td><a href="conspectus/index.html">conspectus/index.html</a></td>
+                  <td><span class="spec-status-pill spec-status-pill--draft">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">📝</span>
+                      <span class="spec-status-pill__label">Draft</span></span>
+                    <span class="small">— 5 specs awaiting impl</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Error log</strong></td>
+                  <td><code>/api/v1/errors</code></td>
+                  <td><a href="error-log/index.html">error-log/index.html</a></td>
+                  <td><span class="spec-status-pill spec-status-pill--draft">
+                      <span class="spec-status-pill__emoji" aria-hidden="true">📝</span>
+                      <span class="spec-status-pill__label">Draft</span></span>
+                    <span class="small">— 2 specs awaiting impl</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">Add a new row when another router gains an internal hub.</p>
+        </section>
 
-                <section id="shared" class="card">
-                  <h2>Shared (cross-cutting concerns)</h2>
-                  <p>
-                    The <code>_shared/</code> folder is the single source of truth for rules that span
-                    every operation. Per-operation specs link to anchors here instead of duplicating
-                    text — when the rule changes, one page changes.
-                  </p>
-                  <ul>
-                    <li><a href="./_shared/spec-template.html">Specification template</a> — golden
-                      skeleton for new operation pages.</li>
-                      <li><a href="./_shared/spec-definition-of-done.html">Definition of Done</a> — DoD
-                        checklist + status badge meanings + lint CLI.</li>
-                        <li><a href="./_shared/idempotency.html">Idempotency</a> — <code>Idempotency-Key</code>
-                          header, replay rules, behaviour matrix.</li>
-                          <li><a href="./_shared/error-envelope.html">Error envelope</a> +
-                            <a href="./_shared/error-catalog.html">error catalog</a> — envelope shape and
-                            global registry of every <code>code/key</code>.</li>
-                            <li><a href="./_shared/auth.html">Authentication &amp; authorization</a> — API key,
-                              ownership, why we collapse cross-tenant to 404.</li>
-                              <li><a href="./_shared/pagination.html">Pagination</a> — bounded list default,
-                                cursor on demand.</li>
-                                <li><a href="./_shared/versioning.html">Versioning</a> — URL-based, breaking-vs-
-                                  additive matrix.</li>
-                                  <li><a href="./_shared/observability-conventions.html">Observability conventions</a>
-                                    — log events, metrics, traces, alerts naming.</li>
-                                    <li><a href="./_shared/field-conventions.html">Field conventions</a> — naming,
-                                      types, timezones, PII classification.</li>
-                                      <li><a href="./_shared/openapi-authoring-guide.html">OpenAPI authoring guide</a>
-                                        — translating internal spec into the public contract.</li>
-                                      </ul>
-                                    </section>
+        <section id="shared" class="card">
+          <h2>Shared (cross-cutting concerns)</h2>
+          <p>
+            The <code>_shared/</code> folder is the single source of truth for rules that span
+            every operation. Per-operation specs link to anchors here instead of duplicating
+            text — when the rule changes, one page changes.
+          </p>
+          <ul>
+            <li><a href="_shared/spec-template.html">Specification template</a> — golden
+              skeleton for new operation pages.</li>
+            <li><a href="_shared/spec-definition-of-done.html">Definition of Done</a> — DoD
+              checklist + status badge meanings + lint CLI.</li>
+            <li><a href="_shared/idempotency.html">Idempotency</a> — <code>Idempotency-Key</code>
+              header, replay rules, behaviour matrix.</li>
+            <li><a href="_shared/error-envelope.html">Error envelope</a> +
+              <a href="_shared/error-catalog.html">error catalog</a> — envelope shape and
+              global registry of every <code>code/key</code>.
+            </li>
+            <li><a href="_shared/auth.html">Authentication &amp; authorization</a> — API key,
+              ownership, why we collapse cross-tenant to 404.</li>
+            <li><a href="_shared/pagination.html">Pagination</a> — bounded list default,
+              cursor on demand.</li>
+            <li><a href="_shared/versioning.html">Versioning</a> — URL-based, breaking-vs-
+              additive matrix.</li>
+            <li><a href="_shared/observability-conventions.html">Observability conventions</a>
+              — log events, metrics, traces, alerts naming.</li>
+            <li><a href="_shared/field-conventions.html">Field conventions</a> — naming,
+              types, timezones, PII classification.</li>
+            <li><a href="_shared/openapi-authoring-guide.html">OpenAPI authoring guide</a>
+              — translating internal spec into the public contract.</li>
+          </ul>
+        </section>
 
-                                    <section id="quality-gates" class="card">
-                                      <h2>Quality gates</h2>
-                                      <ul>
-                                        <li><strong><code>scripts/spec_lint.py</code></strong> — structural lint per
-                                          operation page (required sections, mount points, examples, page history).</li>
-                                          <li><strong><code>scripts/spec_consistency.py</code></strong> — cross-document
-                                            checks: <code>operationId</code> ↔ spec page; error
-                                            <code>code/key</code> ↔ shared catalog.</li>
-                                            <li><strong><code>make docs-spec-check</code></strong> — runs both; wired into
-                                              <code>make docs-check</code> and CI.</li>
-                                            </ul>
-                                          </section>
+        <section id="quality-gates" class="card">
+          <h2>Quality gates</h2>
+          <ul>
+            <li><strong><code>scripts/spec_lint.py</code></strong> — structural lint per
+              operation page (required sections, mount points, examples, page history).</li>
+            <li><strong><code>scripts/spec_consistency.py</code></strong> — cross-document
+              checks: <code>operationId</code> ↔ spec page; error
+              <code>code/key</code> ↔ shared catalog.
+            </li>
+            <li><strong><code>make docs-spec-check</code></strong> — runs both; wired into
+              <code>make docs-check</code> and CI.
+            </li>
+          </ul>
+        </section>
 
-                                          <section id="external" class="card">
-                                            <h2>External contract (separate audience)</h2>
-                                            <p>
-                                              Paths, schemas, and declared errors: <code>docs/openapi/openapi-baseline.json</code>
-                                              and <a href="../../openapi/index.html">OpenAPI / Swagger UI</a>. Internal pages
-                                              here are the source of truth for <em>requirements</em>; OpenAPI is the output
-                                              artefact authored by developers per
-                                              <a href="../../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>
-                                              and
-                                              <a href="../../adr/0026-internal-service-documentation-as-source-of-truth.html">
-                                                ADR 0026</a>.
-                                              </p>
-                                            </section>
+        <section id="external" class="card">
+          <h2>External contract (separate audience)</h2>
+          <p>
+            Paths, schemas, and declared errors: <code>docs/openapi/openapi-baseline.json</code>
+            and <a href="../../openapi/index.html">OpenAPI / Swagger UI</a>. Internal pages
+            here are the source of truth for <em>requirements</em>; OpenAPI is the output
+            artefact authored by developers per
+            <a href="../../adr/0025-external-and-internal-api-documentation.html">ADR 0025</a>
+            and
+            <a href="../../adr/0026-internal-service-documentation-as-source-of-truth.html">
+              ADR 0026</a>.
+          </p>
+        </section>
 
-                                            <section id="page-history" class="card">
-                                              <h2>Page history</h2>
-                                              <div class="docs-table-scroll" role="region" aria-label="Page history">
-                                                <table class="docs-page-history">
-                                                  <thead>
-                                                    <tr>
-                                                      <th scope="col">Date</th>
-                                                      <th scope="col">Change</th>
-                                                      <th scope="col">Author</th>
-                                                    </tr>
-                                                  </thead>
-                                                  <tbody>
-                                                    <tr>
-                                                      <td><time datetime="2026-04-29">2026-04-29</time></td>
-                                                      <td>Phase 6: resource map redesigned — status pills per resource, dedicated
-                                                        Shared / Quality gates / External contract sections.</td>
-                                                        <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                                      </tr>
-                                                      <tr>
-                                                        <td><time datetime="2026-04-21">2026-04-21</time></td>
-                                                        <td>Added Page history section (repository baseline).</td>
-                                                        <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
-                                                      </tr>
-                                                    </tbody>
-                                                  </table>
-                                                </div>
-                                              </section>
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-04-29">2026-04-29</time></td>
+                  <td>Phase 6: resource map redesigned — status pills per resource, dedicated
+                    Shared / Quality gates / External contract sections.</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+                <tr>
+                  <td><time datetime="2026-04-21">2026-04-21</time></td>
+                  <td>Added Page history section (repository baseline).</td>
+                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-                                            </main>
-                                          </div>
-                                        </div>
+      </main>
+    </div>
+  </div>
 
-                                      </body></html>
+</body>
+
+</html>

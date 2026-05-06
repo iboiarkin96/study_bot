@@ -23,7 +23,10 @@
 
     <section id="overview" class="docs-page-hero">
       <h2>Overview</h2>
-      <p>How to run synthetic traffic against the API for metrics and SLO checks.</p>
+      <p>
+        How to drive a configurable mix of HTTP requests against the API to surface
+        latency, error rates, and SLO signals in metrics dashboards.
+      </p>
     </section>
     <section class="card">
 
@@ -32,11 +35,12 @@
         <li>
           Unit tests (<code>make test</code>) verify the contract. A load run shows the
           <strong>2xx / 4xx / 5xx</strong> mix, the latency distribution, and the error
-          shape in Grafana or Prometheus.
+          shape in Grafana or Prometheus — signals you cannot get from pytest alone.
         </li>
         <li>
-          A load run does <strong>not</strong> replace pytest. The runner sends real HTTP,
-          and user-create scenarios <strong>write to the database</strong>.
+          Load runs are <strong>not</strong> a substitute for unit tests, and they
+          <strong>mutate state</strong>: user-create scenarios write to the database, so
+          run them only against local or non-production environments.
         </li>
       </ul>
     </section>
@@ -85,7 +89,7 @@
           If you also want Grafana and Prometheus locally, run
           <code>docker compose -f docker-compose.observability.yml up -d</code> in another terminal
           while <code>make run</code> keeps the API in the first. Details:
-          <a href="./0007-local-development.html">Local development</a>.
+          <a href="0007-local-development.html">Local development</a>.
         </p>
         <p>In a <strong>second</strong> terminal, run the traffic generator (see below).</p>
       </section>
@@ -150,7 +154,7 @@
                 <ul>
                   <li><strong>Connection refused:</strong> the API is not running or the <code>base_url</code> is wrong.</li>
                   <li>
-                    <strong>Script errors on &ldquo;#&rdquo;:</strong> a comment was passed as an
+                    <strong>Script errors on “#”:</strong> a comment was passed as an
                     argument. Run the command again without a trailing <code># ...</code>.
                   </li>
                   <li><strong>Expected 200, got 404</strong> on the user GET: fix <code>ROTATE_SYSTEM_USER_IDS</code> in
@@ -166,8 +170,8 @@
                   <ul>
                     <li><a href="../adr/0012-testing-strategy-and-load-testing.html">ADR 0012 — testing strategy</a></li>
                     <li><a href="../adr/0011-slo-sla-error-budget.html">ADR 0011 — SLOs and alerts</a></li>
-                    <li><a href="./0007-local-development.html">Local development</a></li>
-                    <li><a href="./README.html#howto">Developer guides index</a></li>
+                    <li><a href="0007-local-development.html">Local development</a></li>
+                    <li><a href="README.html#howto">Developer guides index</a></li>
                   </ul>
                 </section>
                 <section id="page-history" class="card">

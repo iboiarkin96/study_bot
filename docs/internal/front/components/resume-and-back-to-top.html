@@ -5,15 +5,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Docs frontend resume reading and back-to-top</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
 </head>
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
@@ -35,7 +35,7 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
           <time datetime="2026-04-30">2026-04-30</time></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
@@ -48,7 +48,7 @@
             Long-page reading aids for internal docs: a top <strong>resume-reading banner</strong> that offers a
             one-click jump back to the reader's previous scroll position, and a floating <strong>back-to-top
             button</strong> that appears after a scroll threshold. Both are opt-in per page — the runtime
-            (<a href="./docs-frontend-js-modules-reference.html#docs-resume"><code>docs-resume.js</code></a>) loads
+            (<a href="../foundations/js-modules.html#docs-resume"><code>docs-resume.js</code></a>) loads
             only where the page declares it.
           </p>
           <p class="small">
@@ -73,7 +73,7 @@
               <p class="small">
                 Both controls are visual children of <code>.internal-layout</code>; they are <em>not</em> portaled into
                 <code>document.body</code>, so the drawer overlay (z-index 1000) still covers them when active. CSS rules
-                live in <a href="./docs-frontend-css-architecture.html#internal-layout-deep-dive"><code>internal-layout.css</code></a>.
+                live in <a href="../foundations/css-architecture.html#internal-layout-deep-dive"><code>internal-layout.css</code></a>.
               </p>
             </section>
 
@@ -242,10 +242,10 @@
                 <figcaption class="sys-diagram__foot">
                   <strong>Source:</strong> inline SVG mock (no external asset). Banner styles per
                   <code>.docs-resume-banner*</code> in
-                  <a href="./docs-frontend-css-architecture.html#internal-layout-deep-dive"><code>internal-layout.css</code></a>;
+                  <a href="../foundations/css-architecture.html#internal-layout-deep-dive"><code>internal-layout.css</code></a>;
                   back-to-top visibility logic per <code>BACK_TO_TOP_THRESHOLD = 600</code> in
                   <code>docs/assets/docs-resume.js</code>; armed-launch behaviour described in
-                  <a href="./docs-frontend-rocket-launch-animation.html">Rocket launch animation</a>.
+                  <a href="rocket-launch-animation.html">Rocket launch animation</a>.
                 </figcaption>
               </figure>
 
@@ -262,7 +262,7 @@
                 deeper threshold (~ 320 px from the footer) <em>arms</em> the rocket; only the armed click
                 actually launches the rocket animation. The full state machine — Compact → Armed → Boil →
                 Flight → Cleanup — is the subject of
-                <a href="./docs-frontend-rocket-launch-animation.html">Rocket launch animation</a>.
+                <a href="rocket-launch-animation.html">Rocket launch animation</a>.
               </p>
             </section>
 
@@ -306,7 +306,7 @@
               <h2>Public surface</h2>
               <dl class="docs-module-meta">
                 <dt>Loaded by</dt>
-                <dd>Pages that opt in via <code>&lt;script defer src="…/assets/docs-resume.js"&gt;</code>. The script
+                <dd>Pages that opt in via <code>&lt;script defer src="../…/assets/docs-resume.js"&gt;</code>. The script
                   gracefully no-ops on pages without scrollable content or without an <code>.internal-layout</code> host.</dd>
                   <dt>Storage keys</dt>
                   <dd>
@@ -388,12 +388,12 @@
                 <section id="related" class="card">
                   <h2>Related internal docs</h2>
                   <ul>
-                    <li><a href="./docs-frontend-js-modules-reference.html#docs-resume">JavaScript modules reference — <code>docs-resume.js</code></a></li>
-                    <li><a href="./docs-frontend-css-architecture.html#internal-layout-deep-dive">CSS architecture — <code>internal-layout.css</code> deep dive</a></li>
-                    <li><a href="./docs-frontend-popups-and-overlays.html">Popups and overlays</a> — sister page covering toast surfaces.</li>
-                    <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">UI / motion / adaptivity</a> — reduced-motion policy.</li>
-                    <li><a href="./docs-frontend-rocket-launch-animation.html">Rocket launch animation</a> — what happens after the armed FAB is clicked: WebGL2 boil-and-launch contract.</li>
-                    <li><a href="./docs-frontend-report-bug-fab.html">Report-bug FAB</a> — the bug-shaped sibling that sits one slot above this rocket; same launchpad palette, opens the page-feedback modal.</li>
+                    <li><a href="../foundations/js-modules.html#docs-resume">JavaScript modules reference — <code>docs-resume.js</code></a></li>
+                    <li><a href="../foundations/css-architecture.html#internal-layout-deep-dive">CSS architecture — <code>internal-layout.css</code> deep dive</a></li>
+                    <li><a href="popups-and-overlays.html">Popups and overlays</a> — sister page covering toast surfaces.</li>
+                    <li><a href="../foundations/motion-and-adaptivity.html">UI / motion / adaptivity</a> — reduced-motion policy.</li>
+                    <li><a href="rocket-launch-animation.html">Rocket launch animation</a> — what happens after the armed FAB is clicked: WebGL2 boil-and-launch contract.</li>
+                    <li><a href="report-bug-fab.html">Report-bug FAB</a> — the bug-shaped sibling that sits one slot above this rocket; same launchpad palette, opens the page-feedback modal.</li>
                   </ul>
                 </section>
 
@@ -412,7 +412,7 @@
                         <tr>
                           <td><time datetime="2026-05-01">2026-05-01</time></td>
                           <td>Added the <a href="#visual-reference">Visual reference</a> section: side-by-side viewport mocks showing the resume banner anchored to the top of <code>.internal-layout__main</code> with primary-action/dismiss/role/TTL annotations, and the back-to-top FAB with the <code>scrollY = 600 px</code> threshold drawn as a horizontal red dashed line plus a scroll-meter on the viewport edge.</td>
-                          <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                          <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                         </tr>
                         <tr>
                           <td><time datetime="2026-04-29">2026-04-29</time></td>

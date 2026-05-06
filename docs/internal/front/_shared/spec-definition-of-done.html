@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frontend spec — Definition of Done — Study App</title>
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="reference" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Frontend spec — Definition of Done</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+        <p class="internal-doc-entity">Internal — Docs frontend · _shared</p>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            A frontend spec page is <strong>Done</strong> when every box for its page-type is ticked. The structural
+            checks are automated by <code>scripts/front_spec_lint.py</code>; content quality is confirmed by peer
+            review. PR cannot merge with a failing lint.
+          </p>
+          <p class="small">
+            Templates: <a href="./component-spec-template.html">component</a>,
+            <a href="./foundation-spec-template.html">foundation</a>,
+            <a href="./contract-spec-template.html">contract</a>. Cross-cutting topics (tokens, motion, breakpoints)
+            live once in <a href="../foundations/">foundations/</a> — link to anchors there instead of repeating.
+          </p>
+        </section>
+
+        <section class="card" id="page-types">
+          <h2>Which DoD applies?</h2>
+          <p>
+            Each page declares its type via <code>data-spec-page</code> on <code>&lt;body&gt;</code>. The DoD section
+            for that type is the one to follow.
+          </p>
+          <div class="docs-table-scroll" role="region" aria-label="Page types and DoD">
+            <table>
+              <thead>
+                <tr>
+                  <th><code>data-spec-page</code></th>
+                  <th>Folder</th>
+                  <th>Template</th>
+                  <th>DoD</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>component</code></td>
+                  <td><code>front/components/</code></td>
+                  <td><a href="./component-spec-template.html">component-spec-template</a></td>
+                  <td><a href="#dod-component">Component DoD</a></td>
+                </tr>
+                <tr>
+                  <td><code>foundation</code></td>
+                  <td><code>front/foundations/</code></td>
+                  <td><a href="./foundation-spec-template.html">foundation-spec-template</a></td>
+                  <td><a href="#dod-foundation">Foundation DoD</a></td>
+                </tr>
+                <tr>
+                  <td><code>contract</code></td>
+                  <td><code>front/contracts/</code></td>
+                  <td><a href="./contract-spec-template.html">contract-spec-template</a></td>
+                  <td><a href="#dod-contract">Contract DoD</a></td>
+                </tr>
+                <tr>
+                  <td><code>screen</code></td>
+                  <td><code>front/screens/</code></td>
+                  <td><a href="../screens/docs-screen-template.html">docs-screen-template</a></td>
+                  <td>(governed by the screen template's own checklist)</td>
+                </tr>
+                <tr>
+                  <td><code>hub</code> · <code>architecture</code> · <code>reference</code></td>
+                  <td>various</td>
+                  <td>—</td>
+                  <td>Style-guide skeleton + page history only.</td>
+                </tr>
+                <tr>
+                  <td><code>template</code></td>
+                  <td><code>front/_shared/</code></td>
+                  <td>(self)</td>
+                  <td>Lint-exempt.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" id="common">
+          <h2>Common to every page</h2>
+          <ul>
+            <li><input type="checkbox" disabled> <strong>Body attributes</strong>: <code>data-spec-page</code>,
+              <code>data-spec-status</code>, <code>data-spec-owner</code> set on <code>&lt;body&gt;</code>.</li>
+            <li><input type="checkbox" disabled> <strong>Status</strong> in metadata strip matches
+              <code>data-spec-status</code> via <code>[data-spec-status-mount]</code> hydrated by
+              <code>docs-spec-status.js</code>.</li>
+            <li><input type="checkbox" disabled> <strong>Owner</strong> linked to a portal people page.</li>
+            <li><input type="checkbox" disabled> <strong>Page-type badge</strong> in H1 matches
+              <code>data-spec-page</code>.</li>
+            <li><input type="checkbox" disabled> <strong>Last reviewed</strong> date refreshed on each spec change.</li>
+            <li><input type="checkbox" disabled> <strong>Page history</strong> table has at least one row.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="dod-component">
+          <h2>Component DoD</h2>
+          <p class="small">For pages with <code>data-spec-page="component"</code> under
+            <code>front/components/</code>.</p>
+          <ul>
+            <li><input type="checkbox" disabled> <strong>1. Overview</strong> — what the component is and when to use it.</li>
+            <li><input type="checkbox" disabled> <strong>2. Anatomy</strong> — labelled inline SVG or numbered parts list. Each part name reused in <em>States</em> and <em>Code handoff</em>.</li>
+            <li><input type="checkbox" disabled> <strong>3. States &amp; variants</strong> — visual matrix covering default + at least one of hover/focus/active/disabled. Theme parity called out.</li>
+            <li><input type="checkbox" disabled> <strong>4. Accessibility</strong> — keyboard, focus management, ARIA, contrast, motion all addressed.</li>
+            <li><input type="checkbox" disabled> <strong>5. Behavior contract</strong> — interactions, lifecycle, edge cases.</li>
+            <li><input type="checkbox" disabled> <strong>6. Do / Don't</strong> — at least three concrete pairs.</li>
+            <li><input type="checkbox" disabled> <strong>7. Code handoff</strong> — JS module, CSS selector prefix, DOM hooks, tokens used, feature ledger ID.</li>
+            <li><input type="checkbox" disabled> <strong>8. Related</strong> (optional) — siblings, foundations, patterns, or section removed.</li>
+          </ul>
+          <p class="small">
+            Lint command: <code>python scripts/front_spec_lint.py --paths
+            docs/internal/front/components/&lt;file&gt;.html</code>.
+          </p>
+        </section>
+
+        <section class="card" id="dod-foundation">
+          <h2>Foundation DoD</h2>
+          <p class="small">For pages with <code>data-spec-page="foundation"</code> under
+            <code>front/foundations/</code>.</p>
+          <ul>
+            <li><input type="checkbox" disabled> <strong>1. Overview</strong> — what the foundation defines and which consumers depend on it.</li>
+            <li><input type="checkbox" disabled> <strong>2. Tokens / values</strong> — table or definition list of canonical values; light + dark columns when relevant.</li>
+            <li><input type="checkbox" disabled> <strong>3. Usage rules</strong> — both <em>when to apply</em> and <em>when not to apply</em>; at least three positive rules and two anti-patterns.</li>
+            <li><input type="checkbox" disabled> <strong>4. Examples</strong> — visual or code demonstrations; every token / value used at least once.</li>
+            <li><input type="checkbox" disabled> <strong>5. Code handoff</strong> — source files, selector group / API, generation script if auto-generated.</li>
+            <li><input type="checkbox" disabled> <strong>6. Related</strong> (optional) — sibling foundations, dependent contracts, affected components, or section removed.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="dod-contract">
+          <h2>Contract DoD</h2>
+          <p class="small">For pages with <code>data-spec-page="contract"</code> under
+            <code>front/contracts/</code>.</p>
+          <ul>
+            <li><input type="checkbox" disabled> <strong>1. Overview</strong> — what the contract governs and the cost of violation.</li>
+            <li><input type="checkbox" disabled> <strong>2. Scope &amp; breakpoints</strong> — viewport tiers covered (referenced from <a href="../foundations/motion-and-adaptivity.html#canonical-breakpoints">canonical breakpoints</a>); explicit out-of-scope.</li>
+            <li><input type="checkbox" disabled> <strong>3. Normative requirements</strong> — numbered MUST / SHOULD / MAY clauses, each independently verifiable.</li>
+            <li><input type="checkbox" disabled> <strong>4. Acceptance checklist</strong> — pass/fail items mapped to requirement IDs.</li>
+            <li><input type="checkbox" disabled> <strong>5. Implementation entry-points</strong> — every JS/CSS file the contract relies on.</li>
+            <li><input type="checkbox" disabled> <strong>6. Visual reference</strong> (optional) — inline SVG mocks or screenshots, or section removed.</li>
+            <li><input type="checkbox" disabled> <strong>7. Related</strong> (optional) — referenced foundations, participating components, sibling contracts, or section removed.</li>
+          </ul>
+        </section>
+
+        <section class="card" id="quality-gates">
+          <h2>Quality gates</h2>
+          <ul>
+            <li><input type="checkbox" disabled> <code>python scripts/front_spec_lint.py --paths &lt;file&gt;</code> exits 0.</li>
+            <li><input type="checkbox" disabled> Page renders cleanly: no broken links, no missing diagrams, examples readable, in-page TOC populated.</li>
+            <li><input type="checkbox" disabled> <code>make docs-fix</code> changes nothing afterwards (no drift).</li>
+            <li><input type="checkbox" disabled> Reviewed by at least one frontend contributor who agrees the spec is implementable as written.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-06">2026-05-06</time></td>
+                  <td>Phase 3: frontend spec Definition of Done seeded — covers component, foundation, and contract page types; aligned with <code>scripts/front_spec_lint.py</code>.</td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+
+</html>

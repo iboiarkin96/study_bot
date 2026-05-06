@@ -108,7 +108,7 @@
               <td><code>app/services/</code></td>
               <td>Use cases and business invariants (for example, a duplicate composite key) live here. Services raise <code>HTTPException</code> with business error payloads when a rule fails.</td>
               <td>Business errors match the governed contract. Layering policy:
-                <a href="./README.html">Developers Docs</a>.
+                <a href="README.html">Developers Docs</a>.
               </td>
             </tr>
             <tr>
@@ -140,7 +140,7 @@
           error shape that clients see. The wiring is registered in <code>app/main.py</code>.
         </li>
         <li>
-          Rules that need the database (for example, &ldquo;this user already exists&rdquo;)
+          Rules that need the database (for example, “this user already exists”)
           run in <code>app/services/</code> and surface as business client errors, not as
           schema-level validation. See
           <a href="../adr/0003-error-contract-governance.html">ADR 0003</a>.

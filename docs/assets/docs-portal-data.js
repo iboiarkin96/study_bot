@@ -217,7 +217,7 @@ window.__DOCS_PORTAL_DATA__ = {
       },
       {
         "path": "howto/0004-how-to-add-post-contract.html",
-        "title": "Guide For Beginners: Add new endpoint and docs"
+        "title": "Beginner walkthrough: add an endpoint and matching docs"
       },
       {
         "path": "howto/0005-how-to-change-docs-frontend-safely.html",
@@ -356,83 +356,87 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "PUT /api/v1/user/{system_uuid}/{system_user_id} — User — Study App"
       },
       {
-        "path": "internal/front/docs-frontend-architecture-map.html",
+        "path": "internal/front/architecture-map.html",
         "title": "Docs frontend architecture map and feature inventory"
       },
       {
-        "path": "internal/front/docs-frontend-css-architecture.html",
+        "path": "internal/front/foundations/css-architecture.html",
         "title": "Docs frontend CSS architecture — reference"
       },
       {
-        "path": "internal/front/docs-frontend-diagrams-and-lightbox.html",
+        "path": "internal/front/components/diagrams-and-lightbox.html",
         "title": "Docs frontend diagrams and lightbox"
       },
       {
-        "path": "internal/front/docs-frontend-fast-entry-by-role.html",
+        "path": "internal/front/_shared/fast-entry-by-role.html",
         "title": "Docs frontend quick entry by role"
       },
       {
-        "path": "internal/front/docs-frontend-feedback-and-editorial-workflow.html",
+        "path": "internal/front/contracts/feedback-and-editorial-workflow.html",
         "title": "Docs frontend feedback and editorial workflow"
       },
       {
-        "path": "internal/front/docs-frontend-glossary.html",
+        "path": "internal/front/_shared/glossary.html",
         "title": "Docs frontend glossary"
       },
       {
-        "path": "internal/front/docs-frontend-hotkeys.html",
+        "path": "internal/front/foundations/hotkeys.html",
         "title": "Docs frontend hotkeys"
       },
       {
-        "path": "internal/front/docs-frontend-js-modules-reference.html",
+        "path": "internal/front/foundations/js-modules.html",
         "title": "Docs frontend JavaScript modules — reference"
       },
       {
-        "path": "internal/front/docs-frontend-menu-and-theme-controls.html",
+        "path": "internal/front/contracts/menu-and-theme.html",
         "title": "Docs frontend navigation and theme controls (normative contract)"
       },
       {
-        "path": "internal/front/docs-frontend-navigation-search-and-discovery.html",
+        "path": "internal/front/contracts/navigation-search-and-discovery.html",
         "title": "Docs frontend navigation, search, and discovery"
       },
       {
-        "path": "internal/front/docs-frontend-popups-and-overlays.html",
+        "path": "internal/front/components/popups-and-overlays.html",
         "title": "Docs frontend: popup and overlay system"
       },
       {
-        "path": "internal/front/docs-frontend-report-bug-fab.html",
+        "path": "internal/front/components/report-bug-fab.html",
         "title": "Docs frontend report-bug FAB"
       },
       {
-        "path": "internal/front/docs-frontend-resume-and-back-to-top.html",
+        "path": "internal/front/components/resume-and-back-to-top.html",
         "title": "Docs frontend resume reading and back-to-top"
       },
       {
-        "path": "internal/front/docs-frontend-rocket-launch-animation.html",
+        "path": "internal/front/components/rocket-launch-animation.html",
         "title": "Docs frontend rocket launch animation"
       },
       {
-        "path": "internal/front/docs-frontend-token-gallery.html",
+        "path": "internal/front/components/sticky-toc.html",
+        "title": "Sticky On this page TOC and scroll-spy"
+      },
+      {
+        "path": "internal/front/foundations/tokens.html",
         "title": "Docs frontend token gallery"
       },
       {
-        "path": "internal/front/docs-frontend-tooltips.html",
+        "path": "internal/front/components/tooltips.html",
         "title": "Docs frontend: tooltips and inline hints"
       },
       {
-        "path": "internal/front/docs-frontend-ui-kit.html",
+        "path": "internal/front/foundations/ui-kit.html",
         "title": "Docs frontend UI kit (component style spec)"
       },
       {
-        "path": "internal/front/docs-frontend-ui-motion-and-adaptivity.html",
+        "path": "internal/front/foundations/motion-and-adaptivity.html",
         "title": "Docs frontend UI system, motion, and adaptivity"
       },
       {
-        "path": "internal/front/documentation-process.html",
+        "path": "internal/front/_shared/process.html",
         "title": "Documentation maintenance process"
       },
       {
-        "path": "internal/front/documentation-style-guide.html",
+        "path": "internal/front/_shared/style-guide.html",
         "title": "Documentation style guide and audit standard"
       },
       {
@@ -470,10 +474,6 @@ window.__DOCS_PORTAL_DATA__ = {
       {
         "path": "internal/portal/people/ivan-boyarkin/index.html",
         "title": "Ivan Boyarkin — Employee portal — Study App"
-      },
-      {
-        "path": "internal/portal/people/ivan-boyarkin/week-calendar-2026-04-25.html",
-        "title": "Work calendar — week 2026-04-25 / 2026-05-02"
       },
       {
         "path": "internal/portal/people/kirill-neustroev/index.html",

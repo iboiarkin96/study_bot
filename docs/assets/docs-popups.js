@@ -5,7 +5,7 @@
  * and close animation; nothing here removes a sibling toast.
  *
  * Public surface: `window.DocsPopups` (see end of file).
- * Visual + behaviour contract: docs/internal/front/docs-frontend-popups-and-overlays.html
+ * Visual + behaviour contract: docs/internal/front/components/popups-and-overlays.html
  */
 (function () {
   const STACK_HOST_ID = "docs-toast-stack";

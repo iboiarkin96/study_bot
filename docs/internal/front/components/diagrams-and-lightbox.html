@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Docs frontend diagrams and lightbox</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
-  <script defer src="../../assets/docs-diagram-lightbox.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-diagram-lightbox.js"></script>
 </head>
 <body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
@@ -35,7 +35,7 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
           <time datetime="2026-04-30">2026-04-30</time></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
@@ -58,7 +58,7 @@
             <li><strong>Style layer:</strong> <code>docs/assets/docs.css</code> selectors <code>.diagram-uml-wrap</code>, <code>.diagram-expand-btn</code>, and <code>.docs-diagram-lightbox*</code>.</li>
             <li><strong>Binding target:</strong> all <code>img.diagram--uml</code> in page content.</li>
             <li><strong>Progressive enhancement:</strong> the image remains readable without JavaScript; JS adds wrapper and expand control.</li>
-            <li><strong>Feature ID:</strong> <code>DFEAT-017</code> in <a href="./docs-frontend-architecture-map.html#feature-implementation-ledger">architecture map ledger</a>.</li>
+            <li><strong>Feature ID:</strong> <code>DFEAT-017</code> in <a href="../architecture-map.html#feature-implementation-ledger">architecture map ledger</a>.</li>
           </ul>
         </section>
 
@@ -73,7 +73,7 @@
               </div>
             </div>
             <div class="sys-diagram__canvas">
-              <img alt="Sequence diagram of the diagram lightbox: bootstrap creates the lightbox surface and wraps every img.diagram--uml with an Expand button; on click, the runtime copies src and alt into the lightbox, resets zoom and pan, locks body scroll, and moves focus to the close button; zoom and pan are processed via wheel, keyboard, and pointer drag; close clears src and alt, removes the body lock, and restores focus to the previously active element." class="diagram diagram--uml" loading="lazy" src="../../uml/rendered/lightbox_open_close_sequence.svg">
+              <img alt="Sequence diagram of the diagram lightbox: bootstrap creates the lightbox surface and wraps every img.diagram--uml with an Expand button; on click, the runtime copies src and alt into the lightbox, resets zoom and pan, locks body scroll, and moves focus to the close button; zoom and pan are processed via wheel, keyboard, and pointer drag; close clears src and alt, removes the body lock, and restores focus to the previously active element." class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/lightbox_open_close_sequence.svg">
             </div>
             <figcaption class="sys-diagram__foot"><strong>Source:</strong>
               <code>docs/uml/sequences/lightbox_open_close_sequence.puml</code>
@@ -431,7 +431,7 @@
                   <td>Inline SVG large enough to need a lightbox — slows page paint and defeats the purpose of the viewer.</td>
                 </tr>
                 <tr>
-                  <td>Author diagrams in PlantUML per <a href="../../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>.</td>
+                  <td>Author diagrams in PlantUML per <a href="../../../adr/0020-c4-plantuml-diagram-style-and-conventions.html">ADR 0020</a>.</td>
                   <td>Use Mermaid or any other diagramming syntax — portal style is PlantUML-only.</td>
                 </tr>
                 <tr>
@@ -450,9 +450,9 @@
         <section id="related-pages" class="card">
           <h2>Related pages</h2>
           <ul>
-            <li><a href="./docs-frontend-architecture-map.html">Docs frontend architecture map and feature inventory</a></li>
-            <li><a href="./docs-frontend-ui-motion-and-adaptivity.html">Docs frontend UI system, motion, and adaptivity</a></li>
-            <li><a href="../../howto/0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely</a></li>
+            <li><a href="../architecture-map.html">Docs frontend architecture map and feature inventory</a></li>
+            <li><a href="../foundations/motion-and-adaptivity.html">Docs frontend UI system, motion, and adaptivity</a></li>
+            <li><a href="../../../howto/0005-how-to-change-docs-frontend-safely.html">How to change docs frontend safely</a></li>
           </ul>
         </section>
 
@@ -471,7 +471,7 @@
                 <tr>
                   <td><time datetime="2026-05-01">2026-05-01</time></td>
                   <td>Added the <a href="#visual-reference">Visual reference</a> section: full-scale anatomy of the lightbox surface (close button, zoom toolbar with +/−/⊙ controls, image stage with a sample diagram, keyboard hint strip) plus a three-thumbnail zoom-level series at <code>1×</code>, <code>3×</code>, and <code>6×</code> with a pan reticle that shrinks as scale climbs.</td>
-                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                 </tr>
                 <tr>
                   <td><time datetime="2026-04-29">2026-04-29</time></td>
@@ -486,7 +486,7 @@
                 <tr>
                   <td><time datetime="2026-04-23">2026-04-23</time></td>
                   <td>Added implementation contract for diagrams and <code>docs-diagram-lightbox.js</code> behavior.</td>
-                  <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                  <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                 </tr>
               </tbody>
             </table>

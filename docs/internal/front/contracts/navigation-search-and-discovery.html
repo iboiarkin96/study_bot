@@ -4,26 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Docs frontend navigation, search, and discovery</title>
-  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
-  <link rel="stylesheet" href="../../assets/docs.css" />
-  <link rel="stylesheet" href="../../assets/docs-theme.css">
-  <link rel="stylesheet" href="../../assets/internal-layout.css">
-  <script defer src="../../assets/internal-sidebar.js"></script>
-  <script defer src="../../assets/docs-nav.js"></script>
-  <script defer src="../../assets/docs-portal-data.js"></script>
-  <script defer src="../../assets/docs-internal-meta.js"></script>
-  <script defer src="../../assets/docs-spec-status.js"></script>
-  <script defer src="../../assets/docs-diagram-lightbox.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+  <link rel="stylesheet" href="../../../assets/docs.css" />
+  <link rel="stylesheet" href="../../../assets/docs-theme.css">
+  <link rel="stylesheet" href="../../../assets/internal-layout.css">
+  <script defer src="../../../assets/internal-sidebar.js"></script>
+  <script defer src="../../../assets/docs-nav.js"></script>
+  <script defer src="../../../assets/docs-portal-data.js"></script>
+  <script defer src="../../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../../assets/docs-spec-status.js"></script>
+  <script defer src="../../../assets/docs-diagram-lightbox.js"></script>
 </head>
 
-<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="component" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142" data-spec-page="contract" data-spec-status="implemented" data-spec-owner="ivan-boyarkin">
   <div class="internal-layout__shell">
     <aside class="internal-layout__sidebar">
       <div id="internal-sidebar-mount"></div>
     </aside>
     <div class="internal-layout__main">
       <main class="container">
-        <h1 class="internal-h1--accent-tail">Docs frontend navigation, search, and discovery <span class="docs-page-type docs-page-type--component">Component</span></h1>
+        <h1 class="internal-h1--accent-tail">Docs frontend navigation, search, and discovery <span class="docs-page-type docs-page-type--contract">Contract</span></h1>
         <div id="docs-top-nav"></div>
         <div id="docs-page-meta-mount" hidden=""></div>
         <p class="internal-doc-entity">Docs portal · Navigation &amp; search</p>
@@ -36,7 +36,7 @@
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Availability</span>
           <span>v1 · Internal</span></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Owner</span>
-          <a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
+          <a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Last reviewed</span>
           <time datetime="2026-04-30">2026-04-30</time></span>
           <span class="internal-spec-meta__item"><span class="internal-spec-meta__label">Spec template</span>
@@ -112,7 +112,7 @@
                                           <li><strong>When to regenerate:</strong> after material content additions, heading changes, or IA rewrites that impact discoverability.</li>
                                           <li><strong>Validation pass:</strong> run a query smoke set (entity names, API terms, internal page titles) and confirm ranking and highlights.</li>
                                           <li><strong>Failure behavior:</strong> if index fails to load, runtime shows explicit fallback guidance (including <code>file://</code> constraints).</li>
-                                          <li><strong>Documentation sync:</strong> update this page and <a href="../../howto/0005-how-to-change-docs-frontend-safely.html">frontend playbooks</a> when index generation process changes.</li>
+                                          <li><strong>Documentation sync:</strong> update this page and <a href="../../../howto/0005-how-to-change-docs-frontend-safely.html">frontend playbooks</a> when index generation process changes.</li>
                                         </ol>
                                       </section>
 
@@ -127,7 +127,7 @@
                                             </div>
                                           </div>
                                           <div class="sys-diagram__canvas">
-                                            <img alt="Command palette state machine: from Closed, Cmd-K opens to Open; typing transitions to Filtering; arrow keys or hover transitions to Selected; Enter on Selected runs the row's command via Closing back to Closed; Escape from any open state goes through Closing back to Closed." class="diagram diagram--uml" loading="lazy" src="../../uml/rendered/command_palette_state_machine.svg">
+                                            <img alt="Command palette state machine: from Closed, Cmd-K opens to Open; typing transitions to Filtering; arrow keys or hover transitions to Selected; Enter on Selected runs the row's command via Closing back to Closed; Escape from any open state goes through Closing back to Closed." class="diagram diagram--uml" loading="lazy" src="../../../uml/rendered/command_palette_state_machine.svg">
                                           </div>
                                           <figcaption class="sys-diagram__foot"><strong>Source:</strong>
                                             <code>docs/uml/sequences/command_palette_state_machine.puml</code>
@@ -339,7 +339,7 @@
                                                     </svg>
                                                   </div>
                                                   <figcaption class="sys-diagram__foot">
-                                                    <strong>Source:</strong> inline SVG mock (no external asset). Mirrors the dialog markup built by the palette runtime in <code>docs/assets/docs-nav.js</code>; states correspond to the FSM diagram above; hotkeys per <a href="./docs-frontend-hotkeys.html">hotkeys reference</a>.
+                                                    <strong>Source:</strong> inline SVG mock (no external asset). Mirrors the dialog markup built by the palette runtime in <code>docs/assets/docs-nav.js</code>; states correspond to the FSM diagram above; hotkeys per <a href="../foundations/hotkeys.html">hotkeys reference</a>.
                                                   </figcaption>
                                                 </figure>
 
@@ -415,7 +415,7 @@
                                                                   <code>removeLegacyManualContents()</code>.</li>
                                                                   <li><strong>Scroll spy:</strong> current section link is highlighted by
                                                                     <code>initInPageTocScrollSpy()</code>; the rail's inner <code>nav</code> auto-scrolls to keep the active link in view via <code>keepActiveLinkVisibleInNav()</code> (window scroll is never moved). Full contract — activation line, near-bottom guard, detached-target filter, page-history exclusion — in the dedicated spec
-                                                                    <a href="./docs-frontend-sticky-toc.html">Sticky On this page TOC and scroll-spy</a>.</li>
+                                                                    <a href="../components/sticky-toc.html">Sticky On this page TOC and scroll-spy</a>.</li>
                                                                     <li><strong>Desktop collapse control:</strong> On desktop, TOC includes a toggle button
                                                                       (<code>&lt;</code> collapse, <code>&gt;</code> expand).</li>
                                                                       <li><strong>Viewport policy:</strong> rendered TOC aside is desktop-only in CSS.</li>
@@ -462,7 +462,7 @@
                                                                     </div>
 
                                                                     <figure class="docs-popup-mock">
-                                                                      <figcaption>Sticky TOC — default vs collapsed (desktop). Promo toast pattern is documented separately in <a href="./docs-frontend-popups-and-overlays.html#stacking">popups and overlays</a>.</figcaption>
+                                                                      <figcaption>Sticky TOC — default vs collapsed (desktop). Promo toast pattern is documented separately in <a href="../components/popups-and-overlays.html#stacking">popups and overlays</a>.</figcaption>
                                                                       <svg viewBox="0 0 540 220" role="img" aria-labelledby="toc-anatomy-title toc-anatomy-desc" xmlns="http://www.w3.org/2000/svg">
                                                                         <title id="toc-anatomy-title">Sticky TOC anatomy — default and collapsed</title>
                                                                         <desc id="toc-anatomy-desc">Two side-by-side panels showing the sticky On this page navigation. The left panel is the default expanded state with a heading, four anchor links and a collapse toggle. The right panel is the collapsed state showing only the toggle as a vertical pill.</desc>
@@ -635,7 +635,7 @@
                                                                                           </tr>
                                                                                           <tr>
                                                                                             <td>Verify the command palette opens with both <kbd>Cmd</kbd>+<kbd>K</kbd> and <kbd>/</kbd> after any keyboard-shortcut change.</td>
-                                                                                            <td>Repurpose either shortcut — both are documented contracts users rely on (see <a href="./docs-frontend-hotkeys.html">hotkeys</a>).</td>
+                                                                                            <td>Repurpose either shortcut — both are documented contracts users rely on (see <a href="../foundations/hotkeys.html">hotkeys</a>).</td>
                                                                                           </tr>
                                                                                           <tr>
                                                                                             <td>Update <code>assets/search-index.json</code> when adding a new top-level page so search results stay complete.</td>
@@ -665,12 +665,12 @@
                                                                                           <tr>
                                                                                             <td><time datetime="2026-05-01">2026-05-01</time></td>
                                                                                             <td>Added the <a href="#palette-visual-reference">Visual reference · palette UI stages</a> section: three side-by-side mocks (Closed launcher, Open empty dialog with grouped suggestions, Filtering with the first row highlighted in accent) plus transition arrows tied to the FSM diagram and a hotkey reference strip at the bottom.</td>
-                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                           </tr>
                                                                                           <tr>
                                                                                             <td><time datetime="2026-04-30">2026-04-30</time></td>
-                                                                                            <td>Added inline-SVG anatomy of the sticky On-this-page TOC (default vs collapsed, with numbered callouts). Sticky-TOC promo toast moved to the popups stack — see <a href="./docs-frontend-popups-and-overlays.html#stacking">popups and overlays § Stacking and lifecycle</a>.</td>
-                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                            <td>Added inline-SVG anatomy of the sticky On-this-page TOC (default vs collapsed, with numbered callouts). Sticky-TOC promo toast moved to the popups stack — see <a href="../components/popups-and-overlays.html#stacking">popups and overlays § Stacking and lifecycle</a>.</td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                           </tr>
                                                                                           <tr>
                                                                                             <td><time datetime="2026-04-29">2026-04-29</time></td>
@@ -685,18 +685,18 @@
                                                                                           <tr>
                                                                                             <td><time datetime="2026-04-23">2026-04-23</time></td>
                                                                                             <td>Added search-index lifecycle workflow and validation guidance for discoverability changes.</td>
-                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                           </tr>
                                                                                           <tr>
                                                                                             <td><time datetime="2026-04-23">2026-04-23</time></td>
                                                                                             <td>Documented desktop-only On this page collapse control (<code>&lt;</code> collapse, <code>&gt;</code> expand), including runtime, CSS, and accessibility details.</td>
-                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                           </tr>
                                                                                           <tr>
                                                                                             <td><time datetime="2026-04-23">2026-04-23</time></td>
                                                                                             <td>Added detailed implementation map for navigation, search, command palette, and in-page discovery.
                                                                                             </td>
-                                                                                            <td><a href="../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
+                                                                                            <td><a href="../../portal/people/ivan-boyarkin/index.html">Ivan Boyarkin</a></td>
                                                                                           </tr>
                                                                                         </tbody>
                                                                                       </table>
