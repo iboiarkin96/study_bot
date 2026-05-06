@@ -18,7 +18,9 @@ import argparse
 import html
 import os
 import re
+import subprocess
 import sys
+from functools import cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -29,6 +31,33 @@ COLOR_CYAN = "" if NO_COLOR else "\033[36m"
 ICON_OK = f"{COLOR_GREEN}✓{COLOR_RESET}"
 ICON_STEP = f"{COLOR_CYAN}→{COLOR_RESET}"
 ICON_INFO = "·"
+
+
+@cache
+def _tracked_dir_set() -> frozenset[Path] | None:
+    """Resolved directories that contain at least one git-tracked file.
+
+    Used to keep the README architecture tree in sync with what CI sees: a
+    directory composed exclusively of gitignored files exists locally but
+    not in CI, so listing it would create non-deterministic drift.
+    """
+    try:
+        output = subprocess.check_output(
+            ["git", "ls-files", "-z"],
+            cwd=ROOT,
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    dirs: set[Path] = set()
+    for rel in output.decode().split("\0"):
+        if not rel:
+            continue
+        parent = (ROOT / rel).resolve().parent
+        while parent != ROOT and parent not in dirs:
+            dirs.add(parent)
+            parent = parent.parent
+    return frozenset(dirs)
 
 
 def _ok(message: str) -> None:
@@ -678,11 +707,14 @@ def _build_tree() -> str:
         if current_depth >= max_depth:
             return
 
+        tracked_dirs = _tracked_dir_set()
         entries = sorted(
             [
                 child
                 for child in directory.iterdir()
-                if child.is_dir() and child.name not in _SKIP_DIRS
+                if child.is_dir()
+                and child.name not in _SKIP_DIRS
+                and (tracked_dirs is None or child.resolve() in tracked_dirs)
             ],
             key=lambda p: p.name,
         )

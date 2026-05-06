@@ -531,6 +531,8 @@ docs-check:
 		git status --short | sed 's/^/    /'; \
 		printf "$(ICON_INFO) %s\n" "Per-file diff size:"; \
 		git diff HEAD --stat | sed 's/^/    /'; \
+		printf "$(ICON_INFO) %s\n" "Full diff (truncated to 200 lines):"; \
+		git diff HEAD | head -200 | sed 's/^/    /'; \
 		rm -f "$$tmp_before" "$$tmp_after"; \
 		exit 1; \
 	fi
