@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 import html5lib
@@ -22,13 +23,33 @@ def _local_name(tag: str) -> str:
     return tag
 
 
+def _tracked_html_paths() -> set[Path] | None:
+    """Return absolute paths of git-tracked HTML files under docs.
+
+    Returns None when git is unavailable (e.g. tarball builds), in which case
+    the caller falls back to scanning the filesystem unfiltered.
+    """
+    try:
+        output = subprocess.check_output(
+            ["git", "ls-files", "-z", "--", "docs"],
+            cwd=ROOT,
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return {ROOT / rel for rel in output.decode().split("\0") if rel.endswith(".html")}
+
+
 def _iter_docs_pages() -> list[Path]:
+    tracked = _tracked_html_paths()
     pages: list[Path] = []
     for path in sorted(DOCS_ROOT.glob("**/*.html")):
         rel = path.relative_to(DOCS_ROOT)
         if rel.parts and rel.parts[0] in {"api", "assets", "pdoc"}:
             continue
         if rel in FROZEN_DOCS_REL_PATHS:
+            continue
+        if tracked is not None and path not in tracked:
             continue
         pages.append(path)
     return pages
