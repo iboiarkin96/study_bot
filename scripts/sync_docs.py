@@ -640,6 +640,11 @@ _SKIP_DIRS = {
 }
 
 # Show only high-level architecture blocks at repository root.
+# Canonical repo name for the README REPO_LAYOUT tree. Pinned so the rendered
+# tree does not drift when the local checkout directory is named differently
+# from the CI working directory (e.g. study_app vs etr_study_api).
+_REPO_NAME = "study_app"
+
 _ARCHITECTURE_ROOT_DIRS = ("app", "alembic", "docs", "ops", "scripts")
 
 # Default depth is 2 (root + one nested level), but some domains are worth 3.
@@ -684,7 +689,7 @@ def _build_tree() -> str:
         Markdown code block string for the ``REPO_LAYOUT`` marker.
     """
 
-    lines: list[str] = [f"{ROOT.name}/"]
+    lines: list[str] = [f"{_REPO_NAME}/"]
 
     _ROOT_FILE_COMMENTS: tuple[tuple[str, str], ...] = (
         ("docker-compose.observability.yml", "Prometheus, Grafana, Blackbox"),

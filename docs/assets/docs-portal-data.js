@@ -500,14 +500,6 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "Ivan Boyarkin — Employee portal — Study App"
       },
       {
-        "path": "internal/portal/people/ivan-boyarkin/notes/sa-growth.html",
-        "title": "SA growth"
-      },
-      {
-        "path": "internal/portal/people/ivan-boyarkin/notes/week-calendar-2026-05-07.html",
-        "title": "Senior SA push — 24 дня до 2026-05-30"
-      },
-      {
         "path": "internal/portal/people/kirill-neustroev/index.html",
         "title": "Kirill Neustroev — Employee portal — Study App"
       },
