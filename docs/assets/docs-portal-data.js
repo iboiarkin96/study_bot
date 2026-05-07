@@ -136,6 +136,10 @@ window.__DOCS_PORTAL_DATA__ = {
         "title": "REST API assessments — index"
       },
       {
+        "path": "audit/bugs/2026-05-07-portal-bug-audit.html",
+        "title": "Bug audit — study_app — 2026-05-07"
+      },
+      {
         "path": "audit/docs/2026-04-14-documentation-experience-assessment.html",
         "title": "Documentation Experience (DX) Assessment — Study App — formed 14 Apr 2026"
       },

@@ -141,6 +141,7 @@ study_app/
 │   ├── assets/
 │   ├── audit/
 │   │   ├── api/
+│   │   ├── bugs/
 │   │   └── docs/
 │   ├── backlog/
 │   ├── developer/  # Developer guides and onboarding
