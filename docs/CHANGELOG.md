@@ -4,6 +4,17 @@ All notable changes to the **documentation tree** under `docs/` (and related doc
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-05-07
+
+### Added
+
+- **ADR/RFC link-checker:** [`scripts/check_adr_rfc_links.py`](../scripts/check_adr_rfc_links.py) validates cross-references inside [`docs/adr/`](adr/) and [`docs/rfc/`](rfc/) at three levels — relative `href`/`src` targets exist on disk, in-page `href="#id"` matches a same-page `id="id"`, and cross-doc `href="path.html#id"` matches an `id="id"` inside the resolved target file. External schemes, `<code>`/`<pre>` bodies, and HTML comments are skipped. Wired into [`.pre-commit-config.yaml`](../.pre-commit-config.yaml) as the `check-adr-rfc-links` hook scoped to `^docs/(adr|rfc)/.*\.html$`. Replaces the previous spot-check approach (full matrix is sub-second on 34 pages).
+- **Bug audit — 2026-05-07:** [`docs/audit/bugs/2026-05-07-portal-bug-audit.html`](audit/bugs/2026-05-07-portal-bug-audit.html) — read-only forensics across portal HTML/CSS/JS, OpenAPI baseline, ADR/RFC, client scripts, search index, and repository hygiene. 22 findings (SEV-1: 1, SEV-2: 8, SEV-3: 9, SEV-4: 4); leading categories are event-listener leaks (5), mobile-contract / font-ladder violations (3), and search-index drift (3). Linked from [`docs/audit/README.html`](audit/README.html) and [`docs/assets/internal-sidebar.js`](assets/internal-sidebar.js) under a new "Bug audit" group.
+
+### Changed
+
+- **OpenAPI loading state:** [`docs/openapi/index.html`](openapi/index.html) renders an `.openapi-skeleton` placeholder (sidebar list + main column bars/blocks) while the Scalar CDN bundle downloads and mounts; the existing theme-sync logic removes it when `.scalar-app` appears in the DOM. Matching styles live in [`docs/assets/docs.css`](assets/docs.css). Reduces the visible blank-page window on slow connections.
+
 ## 2026-05-06
 
 ### Added
