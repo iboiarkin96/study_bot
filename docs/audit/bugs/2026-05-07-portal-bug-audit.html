@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en"><head>
+  <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bug audit — study_app — 2026-05-07</title>
+  <link rel="stylesheet" href="../../assets/docs.css" />
+  <link rel="stylesheet" href="../../assets/docs-theme.css">
+  <script defer src="../../assets/docs-nav.js"></script>
+  <script defer src="../../assets/docs-portal-data.js"></script>
+  <script defer src="../../assets/docs-internal-meta.js"></script>
+  <script defer src="../../assets/internal-sidebar.js"></script>
+  <script defer src="../../assets/docs-syntax.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+</head>
+
+<body class="internal-layout" data-maintainer-ids="16fc8b78537109162984a2fdbef6e142">
+  <div class="internal-layout__shell">
+    <aside class="internal-layout__sidebar">
+      <p class="internal-layout__sidebar-title">Internal docs</p>
+      <div id="internal-sidebar-mount"></div>
+    </aside>
+    <div class="internal-layout__main">
+      <main class="container">
+        <h1 class="internal-h1--accent-tail">Bug audit — <code>study_app</code> documentation portal</h1>
+        <div id="docs-top-nav"></div>
+        <div id="docs-page-meta-mount" hidden=""></div>
+
+        <section class="docs-page-hero" aria-labelledby="overview">
+          <h2 id="overview">Overview</h2>
+          <p>
+            Formation date: <strong>2026-05-07</strong>. Report type: bug audit (read-only forensics, no code edits).
+            Snapshot: working tree — modified files <code>docs/assets/docs.css</code> and
+            <code>docs/openapi/index.html</code>. Coverage: portal HTML/CSS/JS, OpenAPI baseline, ADR/RFC,
+            client scripts, search index, repository hygiene.
+          </p>
+          <p>
+            Total: <strong>22</strong> finding blocks — SEV-1: 1, SEV-2: 8, SEV-3: 9, SEV-4: 4. The leading
+            categories are event-listener leaks (5), mobile-contract / font-ladder violations (3), and
+            search-index drift (3). Two summaries close the document: severity × category, and a prioritised
+            <a href="#top-10">Top-10 first</a>.
+          </p>
+          <p class="docs-callout">
+            <strong>Scope:</strong> the directory
+            <code>docs/internal/portal/people/ivan-boyarkin/notes</code> is excluded from the audit per the prompt
+            (personal scratchpad — drafts, notes, work-in-progress pages).
+          </p>
+          <nav class="docs-page-hero__chips" aria-label="Jump to section">
+            <a class="docs-page-hero__chip" href="#methodology">Methodology</a>
+            <a class="docs-page-hero__chip" href="#sev-1">SEV-1</a>
+            <a class="docs-page-hero__chip" href="#sev-2">SEV-2</a>
+            <a class="docs-page-hero__chip" href="#sev-3">SEV-3</a>
+            <a class="docs-page-hero__chip" href="#sev-4">SEV-4</a>
+            <a class="docs-page-hero__chip" href="#severity-summary">Severity summary</a>
+            <a class="docs-page-hero__chip" href="#top-10">Top-10 first</a>
+            <a class="docs-page-hero__chip" href="#not-found">Out-of-scope / not found</a>
+          </nav>
+        </section>
+
+        <section class="card">
+          <h2 id="methodology">Methodology and invariants</h2>
+          <p>
+            The audit was carried out as six parallel sweeps: links and anchors, OpenAPI, ADR/RFC and docs drift,
+            JS hygiene, mobile contract and font ladder, search index and git/CI. Every finding includes an exact
+            <code>file:line</code>, a category, the rationale (with a citation to the violated invariant), a
+            reproduction path, and a fix direction (no code).
+          </p>
+
+          <h3 id="invariants">Tracked invariants</h3>
+          <ul>
+            <li>
+              <strong>ADR 0020 — “PlantUML only”.</strong> Any Mermaid usage (including dormant CSS rules) counts
+              as a violation.
+            </li>
+            <li>
+              <strong>Mobile contract</strong> (the normative <code>#mobile-contract</code> dated 2026-05-01):
+              three tiers — <code>≥1025 / 761–1024 / ≤760</code>; <code>font-size</code> declarations inside
+              width-conditional media queries are forbidden.
+            </li>
+            <li>
+              <strong>Canonical font ladder</strong>: 8 tiers, body <code>0.9rem</code> (~15.3 px), uniform across
+              desktop / tablet / mobile.
+            </li>
+            <li>
+              <strong>Drawer ↔ sidebar.</strong> The mobile drawer must visually mirror the desktop sidebar — not
+              degrade into a body-sized native list view.
+            </li>
+            <li>
+              <strong>RFC 0003</strong> is the consolidated source of truth for documentation authoring.
+            </li>
+          </ul>
+
+          <h3 id="severity-scale">Severity scale</h3>
+          <ul>
+            <li><strong>SEV-1</strong> — breaks core functionality (broken page, invalid OAS, memory leak, WCAG AA violation).</li>
+            <li><strong>SEV-2</strong> — UX degradation or a direct violation of a documented invariant.</li>
+            <li><strong>SEV-3</strong> — docs ↔ code drift, dead code, duplicates, minor visual bugs.</li>
+            <li><strong>SEV-4</strong> — stylistic issues, potential improvements, technical debt without present-day damage.</li>
+          </ul>
+          <p class="docs-callout docs-callout--warning">
+            A <code>[needs-verification]</code> tag in a heading means the finding was inferred indirectly
+            (without a full browser walkthrough) and should be verified by hand before a ticket is filed.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2 id="sev-1">SEV-1 — breaks core functionality</h2>
+
+          <article id="sev-1-lookbehind" class="card card--nested">
+            <h3>SEV-1 · Regex lookbehind in YAML/HTTP tokenizers breaks Safari &lt; 16.4</h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs-syntax.js:383-384, 431</code></li>
+              <li><strong>Category:</strong> api-compat</li>
+              <li>
+                <strong>What is wrong:</strong> the lookbehind assertions <code>(?&lt;=:\s*)</code> (YAML, lines
+                383–384) and <code>(?&lt;=:\s)</code> (HTTP, line 431) are parsed at module load time. On
+                Safari &lt; 16.4 the literal itself is a <code>SyntaxError</code>, so the entire module fails to
+                evaluate and syntax highlighting is disabled across the portal for that cohort.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> the file header advertises “zero-dependency, safe”, but the actual
+                behaviour is a total breakage on Safari ≤ 16.3 (a meaningful slice of 2022–23 iOS devices).
+              </li>
+              <li>
+                <strong>How to reproduce:</strong> open any page that contains YAML / HTTP code blocks in
+                Safari 16.3 or in an old WebKit simulator; DevTools → Console reports
+                <code>SyntaxError: Invalid regular expression</code>.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> rewrite the offending tokens with capture groups and
+                post-processing, the way <code>tokenizeBashCode()</code> already does (line 361).
+              </li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="card">
+          <h2 id="sev-2">SEV-2 — UX degradation or invariant violation</h2>
+
+          <article id="sev-2-fontsize-docs-css" class="card card--nested">
+            <h3>SEV-2 · <code>font-size</code> inside width-conditional media — <code>docs.css</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs.css:3976, 3980, 3990</code></li>
+              <li><strong>Category:</strong> mobile-contract / font-ladder</li>
+              <li>
+                <strong>What is wrong:</strong> three declarations live inside <code>@media (max-width: 520px)</code>:
+                <ul>
+                  <li>L3976 — <code>.docs-quick-actions__list a, button { font-size: var(--fs-body); }</code></li>
+                  <li>L3980 — <code>.docs-quick-actions__item-pill { font-size: var(--fs-eyebrow); }</code></li>
+                  <li>L3990 — <code>.docs-quick-actions__item-keycap { font-size: var(--fs-eyebrow); }</code></li>
+                </ul>
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> per <code>mobile_contract_done.md</code> and
+                <code>font_ladder_done.md</code>, <code>font-size</code> is forbidden inside width-conditional media —
+                typography must be uniform across viewports.
+              </li>
+              <li><strong>How to reproduce:</strong> viewport ≤ 520 px, the Quick Actions block.</li>
+              <li>
+                <strong>Recommendation:</strong> move the rules into an unconditional selector
+                (<code>@layer components</code>) or rely on cascaded inheritance from the canonical token.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-2-fontsize-home-css" class="card card--nested">
+            <h3>SEV-2 · <code>font-size</code> with <code>clamp()</code> under media-query — <code>home.css</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/home.css:1939, 1959</code></li>
+              <li><strong>Category:</strong> mobile-contract / font-ladder</li>
+              <li>
+                <strong>What is wrong:</strong> inside <code>@media (max-width: 640px)</code> the file declares
+                <code>font-size: clamp(2rem, 8vw, 2.8rem)</code> and <code>font-size: var(--fs-body)</code>. This is
+                a triple violation: a non-canonical breakpoint, a width-conditional <code>font-size</code>, and a
+                viewport-dependent <code>clamp()</code>.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> the canonical 8-tier ladder (body 0.9rem) is broken on principle —
+                <code>clamp()</code> returns different values at different widths.
+              </li>
+              <li><strong>How to reproduce:</strong> viewport ≤ 640 px, hero block on the landing page.</li>
+              <li>
+                <strong>Recommendation:</strong> replace with a fixed tier (<code>var(--fs-h1)</code>) and remove
+                L1959 to inherit from the cascade.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-2-breakpoints" class="card card--nested">
+            <h3>SEV-2 · Non-canonical breakpoints outside <code>≥1025 / 761–1024 / ≤760</code></h3>
+            <ul class="audit-finding">
+              <li>
+                <strong>Files (aggregated):</strong>
+                <ul>
+                  <li><code>docs/assets/docs.css:2353</code> (1200 px); <code>:3958, :5384, :5548</code> (520 px); <code>:3996</code> (900 px)</li>
+                  <li><code>docs/assets/home.css:1218</code> (720 px); <code>:1641, :1929</code> (640 px)</li>
+                  <li><code>docs/assets/internal-layout.css:175</code> (901–1024 sub-tier); <code>:191, :218, :395</code> (900 px); <code>:788</code> (600 px); <code>:1051</code> (720 px); <code>:1605</code> (620 px)</li>
+                  <li><code>docs/assets/docs-premium.css:974</code> (400 px)</li>
+                </ul>
+              </li>
+              <li><strong>Category:</strong> mobile-contract</li>
+              <li>
+                <strong>What is wrong:</strong> 14+ media queries with “foreign” thresholds fragment the three-tier
+                contract and make visual QA non-deterministic between tiers.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> the normative <code>#mobile-contract</code> dated 2026-05-01 fixes
+                three tiers; any deviation is SEV-2.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">grep -nE '@media[^{]*(max|min)-width:\s*(?!(760|761|1024|1025)px)\d+px' docs/assets/*.css</code></pre>
+              </li>
+              <li>
+                <strong>Recommendation:</strong> in a single sweep, fold rules into the canonical tiers; for
+                in-tier shifts use container queries or <code>clamp()</code> on properties other than
+                <code>font-size</code>.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-2-leak-spec-status" class="card card--nested">
+            <h3>SEV-2 · Unbounded document-level listeners in <code>docs-spec-status.js</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs-spec-status.js:165-166</code></li>
+              <li><strong>Category:</strong> leak</li>
+              <li>
+                <strong>What is wrong:</strong> <code>bindOutsideClose()</code> registers
+                <code>document.addEventListener("pointerdown", …)</code> and <code>("keydown", …)</code> for every
+                pill without ever removing them. Closed <code>&lt;details&gt;</code> elements still hold their
+                listeners; the closures retain references to the original pill.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> on pages with many pills (for example
+                <code>docs/developer/README.html</code>), every re-render doubles the count — a real memory leak.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong> reload the affected page several times, then inspect
+                <code>getEventListeners(document).pointerdown.length</code> in DevTools.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> use one delegated pair of listeners on the document root, or store
+                the listener references and detach them on pill teardown.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-2-anchor-anatomy" class="card card--nested">
+            <h3>SEV-2 · Broken anchors on <code>resume-and-back-to-top.html</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/internal/front/patterns/long-form-reading-aids.html:101, 106</code></li>
+              <li><strong>Category:</strong> missing-anchor</li>
+              <li>
+                <strong>What is wrong:</strong> <code>#anatomy-banner</code> and <code>#anatomy-fab</code> do not
+                exist in the target page — only <code>id="anatomy"</code> is defined.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> the HTML fragment-id contract is violated — the link silently
+                scrolls to the top of the page, which breaks the navigational invariant of the portal.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong> click
+                <code>href="../components/resume-and-back-to-top.html#anatomy-fab"</code>.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> either add the missing sub-section <code>id</code>s in the target
+                page, or migrate the links to the existing <code>#anatomy</code>.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-2-oas-descriptions" class="card card--nested">
+            <h3>SEV-2 · OAS schemas missing <code>description</code> (HTTPValidationError, ValidationError)</h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/openapi/openapi-baseline.json:2517, 2527</code></li>
+              <li><strong>Category:</strong> oas-invalid (best-practice)</li>
+              <li>
+                <strong>What is wrong:</strong> two top-level schemas have no <code>description</code> field, which
+                degrades introspection in Scalar / Swagger UI and downstream client generators.
+              </li>
+              <li><strong>Why it’s a bug:</strong> OAS 3.1 best practice; affects integrator DX.</li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">jq '.components.schemas.HTTPValidationError | has("description")' \
+  docs/openapi/openapi-baseline.json
+# → false</code></pre>
+              </li>
+              <li>
+                <strong>Recommendation:</strong> add meaningful descriptions (for the 422 / RFC-7807-style
+                validation flow), and lift a lint rule
+                <code>schemas-must-have-description</code>.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-2-search-index" class="card card--nested">
+            <h3>SEV-2 · <code>search-index.json</code> drifts from real <code>&lt;h1&gt;</code> titles</h3>
+            <ul class="audit-finding">
+              <li>
+                <strong>File:</strong> <code>docs/assets/search-index.json</code>; affected entries:
+                <code>audit/2026-04-14-rest-api-assessment.html</code>, <code>audit/AUDIT_TEMPLATE.html</code>,
+                <code>backlog/README.html</code>, <code>howto/README.html</code>,
+                <code>internal/api/README.html</code>, <code>openapi/index.html</code>,
+                <code>qa/0004-regression-checklist.html</code>, <code>qa/playbooks/api-endpoint-testing.html</code>,
+                <code>rfc/0000-template.html</code>.
+              </li>
+              <li><strong>Category:</strong> search-index / docs-drift</li>
+              <li>
+                <strong>What is wrong:</strong> index titles disagree with the live <code>&lt;h1&gt;</code> on the
+                page (different em-dash / parentheses; literal HTML entities
+                <code>&amp;lt;…&amp;gt;</code> for the RFC template page).
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> the search result label does not match what the user sees on the
+                page — undermines trust in the search.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">jq '.[] | select(.url=="rfc/0000-template.html") | .title' \
+  docs/assets/search-index.json</code></pre>
+                and compare with the file’s <code>&lt;h1&gt;</code>.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> rebuild the index from <code>&lt;h1&gt;</code> with HTML-entity
+                decoding; add a drift test in pre-commit.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-2-syntax-settimeout" class="card card--nested">
+            <h3>SEV-2 · <code>setTimeout(highlightAll, 0)</code> as a <code>requestIdleCallback</code> fallback</h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs-syntax.js:36</code></li>
+              <li><strong>Category:</strong> race-condition / perf</li>
+              <li>
+                <strong>What is wrong:</strong> on devices without <code>requestIdleCallback</code> (older Safari)
+                highlighting fires through <code>setTimeout(…, 0)</code>, blocking the next frame on large code
+                blocks.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> defeats the deferred-loading strategy; produces visible jank on
+                iOS, especially on long developer-docs pages.
+              </li>
+              <li><strong>How to reproduce:</strong> capture a Performance trace on a page with long snippets.</li>
+              <li>
+                <strong>Recommendation:</strong> fall back to <code>requestAnimationFrame</code>, or to an idle
+                polyfill with a 1000 ms timeout.
+              </li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="card">
+          <h2 id="sev-3">SEV-3 — docs ↔ code drift, dead code, duplicates</h2>
+
+          <article id="sev-3-mermaid-css" class="card card--nested">
+            <h3>SEV-3 · Mermaid CSS rule in <code>docs.css</code> (dead code)</h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs.css:1697-1701</code></li>
+              <li><strong>Category:</strong> dead-code / mermaid-violation</li>
+              <li>
+                <strong>What is wrong:</strong> the rule
+                <code>.sys-diagram__canvas .mermaid { … }</code> is present even though no HTML page in
+                <code>docs/</code> uses <code>class="mermaid"</code>.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> ADR 0020 — “PlantUML only” — and the
+                <code>feedback_diagrams_plantuml.md</code> invariant; the rule keeps a door open to accidental
+                Mermaid usage.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">grep -n '\.mermaid' docs/assets/docs.css
+grep -rn 'class="mermaid"' docs/   # → empty</code></pre>
+              </li>
+              <li><strong>Recommendation:</strong> delete lines 1697–1701.</li>
+            </ul>
+          </article>
+
+          <article id="sev-3-leak-themeobserver" class="card card--nested">
+            <h3>SEV-3 · MutationObserver without <code>disconnect()</code> in <code>home-landing.js</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/home-landing.js:607-608</code></li>
+              <li><strong>Category:</strong> leak</li>
+              <li>
+                <strong>What is wrong:</strong> <code>themeObserver</code> watches <code>data-theme</code> on
+                <code>documentElement</code> and is never disconnected, even when the canvas is removed under
+                reduced-motion or a small viewport.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> the proper teardown pattern is already in place in
+                <code>home-webgl.js</code> (commits 5312b05, d361429); <code>home-landing.js</code> lags behind.
+              </li>
+              <li><strong>How to reproduce:</strong> toggle the theme 50 times and watch for FPS regression.</li>
+              <li>
+                <strong>Recommendation:</strong> have <code>bind*</code> factories return a cleanup function;
+                invoke it on <code>pagehide</code> or media-query change.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-3-leak-home-listeners" class="card card--nested">
+            <h3>SEV-3 · Multiple <code>addEventListener</code> calls without removal in <code>home-landing.js</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/home-landing.js:287-289, 602-604, 612, 756, 765, 787</code></li>
+              <li><strong>Category:</strong> leak</li>
+              <li>
+                <strong>What is wrong:</strong> skip-button click, document keydown (Escape), window resize / scroll,
+                host pointermove / leave — all listeners hang for the page lifetime. After
+                <code>closeIntro()</code> the elements are removed, but their closures keep the references alive.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> on long-lived sessions or SPA-style navigation the listeners pile
+                up and may reference stale DOM.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong> in DevTools observe
+                <code>getEventListeners(window).resize.length</code> after several remounts.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> a single bus with a teardown step; or
+                <code>{ once: true }</code> for one-shot listeners; for resize / scroll use a shared throttler.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-3-swallowed-localstorage" class="card card--nested">
+            <h3>SEV-3 · Empty <code>try/catch (e) {}</code> swallows errors in <code>docs-nav.js</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs-nav.js:239, 245</code></li>
+              <li><strong>Category:</strong> swallowed-error</li>
+              <li>
+                <strong>What is wrong:</strong> <code>localStorage.setItem(...)</code> is wrapped in an empty
+                <code>catch</code> — quota-exceeded and Safari ITP failures are silenced, so toasts do not remember
+                their dismissal.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> diagnostics are impossible; the user keeps seeing toasts that
+                should have been dismissed.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong> fill <code>localStorage</code> to quota → dismiss a toast →
+                reload → the toast returns and the console stays silent.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> emit at least a one-shot <code>console.warn</code>; or annotate
+                with <code>/* intentional: storage may be unavailable */</code> plus a counter in memory.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-3-inline-bootstrap" class="card card--nested">
+            <h3>SEV-3 · Inline blocking script without feature detection in <code>docs/index.html</code> <span class="audit-tag">[needs-verification]</span></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/index.html:3</code></li>
+              <li><strong>Category:</strong> a11y / perf (low) / swallowed-error</li>
+              <li>
+                <strong>What is wrong:</strong>
+                <code>&lt;script&gt;(function(){try{… localStorage.getItem …}catch(e){}})()&lt;/script&gt;</code>
+                in <code>&lt;head&gt;</code> blocks first paint, plus the empty <code>catch</code>. This is the
+                well-known “no-flash theme” pattern but the catch deserves at least a comment.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> the pattern is justified (prevents FOUC), but without a comment it
+                reads as a missing error path and invites false-positive corrections in future reviews.
+              </li>
+              <li><strong>How to reproduce:</strong> code review or any automated <code>no-empty-catch</code> rule.</li>
+              <li>
+                <strong>Recommendation:</strong> add a <code>/* no-flash theme bootstrap */</code> comment; do not
+                remove the block.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-3-fragment-not-indexed" class="card card--nested">
+            <h3>SEV-3 · <code>audit-score-legend-fragment.html</code> is missing from the search index</h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/audit-score-legend-fragment.html</code></li>
+              <li><strong>Category:</strong> search-index</li>
+              <li>
+                <strong>What is wrong:</strong> the file exists but is not in <code>search-index.json</code>; it does
+                not match the existing exclusions (<code>docs/pdoc/**</code>, <code>portal/people/**</code>).
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> either the index generator forgets fragments or there should be an
+                explicit rule with a comment.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">grep audit-score-legend-fragment docs/assets/search-index.json
+# → 0</code></pre>
+              </li>
+              <li>
+                <strong>Recommendation:</strong> include it explicitly, or exclude it explicitly with a comment such
+                as “component fragment, intentionally hidden from search”.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-3-rfc-template-entities" class="card card--nested">
+            <h3>SEV-3 · HTML entities in the RFC template <code>&lt;h1&gt;</code></h3>
+            <ul class="audit-finding">
+              <li>
+                <strong>File:</strong> <code>docs/rfc/0000-template.html</code>
+                (<code>&lt;h1&gt;</code> contains <code>&amp;lt;number&amp;gt;: &amp;lt;title&amp;gt;</code>)
+              </li>
+              <li><strong>Category:</strong> docs-drift / search-index</li>
+              <li>
+                <strong>What is wrong:</strong> the page renders literal <code>&lt;number&gt;</code> placeholders;
+                the search index stores “RFC template” — both a drift and a meaningless heading for the user.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> a template should not contain a placeholder that breaks rendering;
+                use a code fence or true placeholders inside comments.
+              </li>
+              <li><strong>How to reproduce:</strong> open the page and observe the literal text.</li>
+              <li>
+                <strong>Recommendation:</strong> replace with
+                <code>&lt;h1&gt;RFC &lt;code&gt;NNNN&lt;/code&gt;: &lt;code&gt;title&lt;/code&gt;&lt;/h1&gt;</code>
+                or a plain-text template free of entities.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-3-leak-internal-meta" class="card card--nested">
+            <h3>SEV-3 · Click handler without cleanup in <code>docs-internal-meta.js</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs-internal-meta.js:176</code></li>
+              <li><strong>Category:</strong> leak (low impact)</li>
+              <li>
+                <strong>What is wrong:</strong> the “+N more” click handler is not removed before
+                <code>moreItem.remove()</code>.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> on one-off pages the impact is small, but the pattern diverges from
+                the proper teardown in <code>home-webgl.js</code>.
+              </li>
+              <li><strong>How to reproduce:</strong> a profile with 4+ maintainers → expand → inspect listeners.</li>
+              <li>
+                <strong>Recommendation:</strong> use <code>{ once: true }</code> or call
+                <code>removeEventListener</code> explicitly before <code>.remove()</code>.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-3-repo-stray" class="card card--nested">
+            <h3>SEV-3 · Stray files at repo root</h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>/PR_BODY.md</code>, <code>/changelog-llm-draft.md</code>, <code>/study_app.db</code>, <code>/.coverage</code></li>
+              <li><strong>Category:</strong> repo-hygiene</li>
+              <li>
+                <strong>What is wrong:</strong> the working tree is cluttered with temporary files (although
+                <code>.gitignore</code> covers them). <code>.coverage</code> is 135 KB; <code>study_app.db</code> is
+                139 KB.
+              </li>
+              <li><strong>Why it’s a bug:</strong> it makes diff review harder and increases the chance of an accidental commit.</li>
+              <li><strong>How to reproduce:</strong> <code>ls -la</code> at the repo root.</li>
+              <li>
+                <strong>Recommendation:</strong> run <code>make clean</code> after CI; add a pre-push hook
+                <code>git diff --cached --name-only | grep -E '\.(coverage|db)$'</code> → fail.
+              </li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="card">
+          <h2 id="sev-4">SEV-4 — stylistic issues, technical debt</h2>
+
+          <article id="sev-4-double-settimeout" class="card card--nested">
+            <h3>SEV-4 · Double-call of <code>syncInternalThemeTogglePlacement</code> <span class="audit-tag">[needs-verification]</span></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs-nav.js:5395</code></li>
+              <li><strong>Category:</strong> race-condition (suspect)</li>
+              <li>
+                <strong>What is wrong:</strong> a synchronous call followed immediately by
+                <code>setTimeout(fn, 0)</code> looks like a band-aid for a race condition.
+              </li>
+              <li><strong>Why it’s a bug:</strong> the code does not explain why the second call is necessary.</li>
+              <li><strong>How to reproduce:</strong> remove the <code>setTimeout</code> and re-test the toggle placement visually.</li>
+              <li>
+                <strong>Recommendation:</strong> replace with a proper <code>ResizeObserver</code> / lifecycle event,
+                or remove the second call with a comment explaining why one suffices.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-4-dead-storage" class="card card--nested">
+            <h3>SEV-4 · <code>docs-palette-hint-dismissed</code> is read but never written <span class="audit-tag">[needs-verification]</span></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/assets/docs-nav.js:4719</code></li>
+              <li><strong>Category:</strong> dead-storage</li>
+              <li>
+                <strong>What is wrong:</strong> the key <code>docs-palette-hint-dismissed</code> is read but no
+                <code>setItem</code> for it was found in <code>docs-nav.js</code> or <code>docs-portal-data.js</code>.
+              </li>
+              <li>
+                <strong>Why it’s a bug:</strong> either the palette hint always shows, or the key is written by code
+                that is invisible to a quick grep — both deserve attention.
+              </li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">grep -rn 'docs-palette-hint-dismissed' docs/</code></pre>
+              </li>
+              <li>
+                <strong>Recommendation:</strong> if dead, drop the read and the related UI; if alive, locate the
+                writer and tag it with a comment.
+              </li>
+            </ul>
+          </article>
+
+          <article id="sev-4-skeleton-uncommitted" class="card card--nested">
+            <h3>SEV-4 · Uncommitted skeleton in <code>docs/openapi/index.html</code></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>docs/openapi/index.html:50-72</code> (working tree)</li>
+              <li><strong>Category:</strong> hero-mismatch (info)</li>
+              <li>
+                <strong>What is wrong:</strong> the working tree adds a
+                <code>&lt;div class="openapi-skeleton"&gt;</code> without committing it; functionally safe (the CSS
+                classes already exist in <code>docs.css</code>), but it lingers as forgotten WIP.
+              </li>
+              <li><strong>Why it’s a bug:</strong> uncommitted state pollutes the next clean review.</li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">git diff docs/openapi/index.html | grep openapi-skeleton</code></pre>
+              </li>
+              <li><strong>Recommendation:</strong> either commit the skeleton as a UX improvement or <code>git restore</code>.</li>
+            </ul>
+          </article>
+
+          <article id="sev-4-pip-audit" class="card card--nested">
+            <h3>SEV-4 · No automated CVE scan in CI <span class="audit-tag">[needs-verification]</span></h3>
+            <ul class="audit-finding">
+              <li><strong>File:</strong> <code>requirements.txt</code>, <code>.pre-commit-config.yaml</code>, <code>.github/workflows/*</code></li>
+              <li><strong>Category:</strong> dependency-cve</li>
+              <li>
+                <strong>What is wrong:</strong> <code>pip-audit</code> is in the dependency list, but a quick grep
+                does not confirm an explicit invocation in pre-commit / GitHub workflows. The recent commit 035a1c5
+                (Mako CVE-2026-44307) was performed by hand.
+              </li>
+              <li><strong>Why it’s a bug:</strong> manual checks do not scale; new CVEs will slip through.</li>
+              <li>
+                <strong>How to reproduce:</strong>
+                <pre><code class="language-bash">pip-audit -r requirements.txt</code></pre>
+              </li>
+              <li>
+                <strong>Recommendation:</strong> add a step in the <code>verify</code> workflow, or a
+                <code>language: system</code> hook in pre-commit, that runs
+                <code>pip-audit -r requirements.txt</code>.
+              </li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="card">
+          <h2 id="severity-summary">Summary 1 — severity × category</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Severity summary">
+            <table class="docs-summary-table">
+              <colgroup>
+                <col style="width: 8rem;" />
+                <col style="width: 4.5rem;" />
+                <col />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Count</th>
+                  <th scope="col">Top categories</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>SEV-1</strong></td>
+                  <td>1</td>
+                  <td>api-compat (1)</td>
+                </tr>
+                <tr>
+                  <td><strong>SEV-2</strong></td>
+                  <td>8</td>
+                  <td>mobile-contract / font-ladder (3), search-index (1), oas-invalid (1), leak (1), missing-anchor (1), perf (1)</td>
+                </tr>
+                <tr>
+                  <td><strong>SEV-3</strong></td>
+                  <td>9</td>
+                  <td>leak (3), search-index / docs-drift (2), dead-code, swallowed-error, repo-hygiene, perf</td>
+                </tr>
+                <tr>
+                  <td><strong>SEV-4</strong></td>
+                  <td>4</td>
+                  <td>dead-storage, race-condition, hero-mismatch, dependency-cve</td>
+                </tr>
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td><strong>22</strong></td>
+                  <td>leak (5), mobile-contract / font-ladder (3), search-index (3) — leading</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="docs-callout">
+            The SEV-2 mobile-contract entry counts as a single block that aggregates 14+ media queries — see
+            <a href="#sev-2-breakpoints">Non-canonical breakpoints</a>.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2 id="top-10">Summary 2 — Top-10 first (impact × effort)</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Top-10 first">
+            <table class="audit-gap-table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Finding</th>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Effort</th>
+                  <th scope="col">Why this order</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td><a href="#sev-1-lookbehind">lookbehind in <code>docs-syntax.js</code></a></td>
+                  <td>SEV-1</td>
+                  <td>S</td>
+                  <td>Mass Safari highlight failure; tight fix — rewrite two regexes the way <code>tokenizeBashCode</code> does.</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td><a href="#sev-2-fontsize-docs-css"><code>font-size</code> inside width-conditional media</a></td>
+                  <td>SEV-2</td>
+                  <td>S</td>
+                  <td>Direct violation of the normative <code>#mobile-contract</code> from 2026-05-01; five lines to remove.</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td><a href="#sev-2-anchor-anatomy">Broken <code>#anatomy-banner</code> / <code>#anatomy-fab</code></a></td>
+                  <td>SEV-2</td>
+                  <td>XS</td>
+                  <td>UX navigation failure; either two new ids or update the links. ~5 minutes.</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td><a href="#sev-2-oas-descriptions">OAS schemas without <code>description</code></a></td>
+                  <td>SEV-2</td>
+                  <td>XS</td>
+                  <td>Two JSON fields; protects the contract; ~5 minutes.</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td><a href="#sev-2-syntax-settimeout"><code>setTimeout(0)</code> fallback in <code>docs-syntax.js</code></a></td>
+                  <td>SEV-2</td>
+                  <td>XS</td>
+                  <td>Replace with <code>requestAnimationFrame</code>; removes jank on iOS. ~10 minutes.</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td><a href="#sev-2-leak-spec-status">Memory leak in <code>docs-spec-status.js</code></a></td>
+                  <td>SEV-2</td>
+                  <td>S</td>
+                  <td>Heaviest-hit pages benefit; delegate listeners to the document root. ~30 minutes.</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td><a href="#sev-2-search-index">Search-index drift</a></td>
+                  <td>SEV-2</td>
+                  <td>S</td>
+                  <td>Restores trust in search; rebuild from <code>&lt;h1&gt;</code> with entity decoding plus a drift test.</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td><a href="#sev-2-breakpoints">Unify breakpoints in <code>home.css</code> / <code>internal-layout.css</code></a></td>
+                  <td>SEV-2</td>
+                  <td>L</td>
+                  <td>High effort but a key invariant. Best done in its own PR with regression screenshots.</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td><a href="#sev-3-swallowed-localstorage">Empty catch around <code>localStorage</code></a></td>
+                  <td>SEV-3</td>
+                  <td>XS</td>
+                  <td>Unblocks future diagnostics; one-line <code>console.warn</code> plus a comment.</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td><a href="#sev-3-mermaid-css">Mermaid CSS rule in <code>docs.css</code></a></td>
+                  <td>SEV-3</td>
+                  <td>XS</td>
+                  <td>Symbolic debt against ADR 0020; one minute. Bundle with #8 inside a hygiene PR.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            <strong>Bonus PR:</strong> the remaining listener leaks in <code>home-landing.js</code>, the index
+            inclusion / RFC-template entity issues, repo hygiene, and the CI <code>pip-audit</code> step group
+            naturally into a single <code>chore: portal hygiene sweep</code>.
+          </p>
+        </section>
+
+        <section class="card">
+          <h2 id="not-found">Out of scope and not found (trust boundaries)</h2>
+          <ul>
+            <li>
+              <strong>Excluded by prompt:</strong>
+              <code>docs/internal/portal/people/ivan-boyarkin/notes</code> (personal scratchpad — drafts, notes,
+              work-in-progress pages). Any defects inside this directory are out of scope and intentionally absent
+              from the report.
+            </li>
+            <li>No invalid OAS 3.1: <code>operationId</code>, <code>tags</code>, <code>$ref</code> in <code>openapi-baseline.json</code> are correct (8 endpoints, 2 tags).</li>
+            <li>No secrets under VCS; no broken pre-commit / workflow paths detected.</li>
+            <li>No theme-asymmetry tokens: light and dark variable sets are paired.</li>
+            <li>
+              Drawer ↔ sidebar: per the aggregate inspection the mirror invariant holds, but no full browser
+              walkthrough was performed —
+              <span class="audit-tag">[needs-verification]</span> before final acceptance.
+            </li>
+            <li>ADR / RFC cross-refs: spot-checked, not exhaustively matrixed; consider a dedicated link checker as a pre-commit hook.</li>
+            <li>CVE list: without a local <code>pip-audit</code> run the exact victim versions are unconfirmed.</li>
+          </ul>
+        </section>
+
+        <section id="page-history" class="card">
+          <h2>Page history</h2>
+          <div class="docs-table-scroll" role="region" aria-label="Page history">
+            <table class="docs-page-history">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Change</th>
+                  <th scope="col">Author</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><time datetime="2026-05-07">2026-05-07</time></td>
+                  <td>Initial publication. 22 findings (people/notes excluded), severity summary, Top-10 first.</td>
+                  <td>Ivan Boyarkin</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+</body></html>

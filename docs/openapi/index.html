@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+
+<head>
   <script>(function () { try { var k = "docs-theme-preference", v = localStorage.getItem(k); if (v === "dark") document.documentElement.setAttribute("data-theme", "dark"); else if (v === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) { } })();</script>
 
   <meta charset="utf-8">
@@ -43,6 +45,32 @@
           </nav>
         </section>
 
+        <!-- Skeleton placeholder shown while the Scalar CDN bundle downloads and mounts.
+        Removed by the theme-sync script below as soon as .scalar-app appears in the DOM. -->
+        <div class="openapi-skeleton" id="openapi-skeleton" role="status" aria-live="polite">
+          <span class="visually-hidden">Loading interactive OpenAPI reference...</span>
+          <div class="openapi-skeleton__grid" aria-hidden="true">
+            <ul class="openapi-skeleton__sidebar portal-skeleton-list">
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+            <div class="openapi-skeleton__main">
+              <div class="openapi-skeleton__bar openapi-skeleton__bar--title"></div>
+              <div class="openapi-skeleton__bar openapi-skeleton__bar--lead"></div>
+              <div class="openapi-skeleton__block"></div>
+              <div class="openapi-skeleton__bar"></div>
+              <div class="openapi-skeleton__bar openapi-skeleton__bar--short"></div>
+              <div class="openapi-skeleton__block openapi-skeleton__block--tall"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Scalar mounts here. The script tag is the mount point — Scalar replaces it
         with its rendered UI when the CDN bundle loads at the bottom of body. -->
         <script id="api-reference" data-url="openapi-baseline.json"></script>
@@ -56,121 +84,121 @@
   -->
   <script>
     (function () {
-    function readIsDark() {
-    /* Theme init script in <head> already set data-theme before body parsed */
-    var attr = document.documentElement.getAttribute("data-theme");
-    if (attr === "dark") return true;
-    if (attr === "light") return false;
-    try { return window.matchMedia("(prefers-color-scheme: dark)").matches; } catch (e) { return false; }
-    }
+      function readIsDark() {
+        /* Theme init script in <head> already set data-theme before body parsed */
+        var attr = document.documentElement.getAttribute("data-theme");
+        if (attr === "dark") return true;
+        if (attr === "light") return false;
+        try { return window.matchMedia("(prefers-color-scheme: dark)").matches; } catch (e) { return false; }
+      }
 
-    /* Map our design-system tokens → Scalar CSS custom properties.
-    var() references update automatically when our root tokens change.
-    We cover both .dark-mode and .light-mode so Scalar's internal
-    mode class doesn't matter — our variables always win. */
-    var scalarCss = [
-    ".scalar-app,",
-    ".scalar-app.dark-mode,",
-    ".scalar-app.light-mode {",
-    "  --scalar-font: inherit;",
-    "  --scalar-font-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;",
-    "  --scalar-color-1: var(--text);",
-    "  --scalar-color-2: color-mix(in srgb, var(--text) 72%, transparent);",
-    "  --scalar-color-3: var(--muted);",
-    "  --scalar-color-disabled: color-mix(in srgb, var(--muted) 55%, transparent);",
-    "  --scalar-background-1: var(--bg);",
-    "  --scalar-background-2: var(--card);",
-    "  --scalar-background-3: color-mix(in srgb, var(--bg) 96%, var(--text));",
-    "  --scalar-background-accent: color-mix(in srgb, var(--accent) 8%, var(--bg));",
-    "  --scalar-border-color: var(--line);",
-    "  --scalar-color-accent: var(--accent);",
-    "  --scalar-sidebar-background-1: var(--bg);",
-    "  --scalar-sidebar-color-1: var(--text);",
-    "  --scalar-sidebar-color-2: var(--muted);",
-    "  --scalar-sidebar-border-color: var(--line);",
-    "}",
-    /* Force text visibility on any element Scalar renders with hardcoded color */
-    ".scalar-app { color: var(--text); }",
-    ".scalar-app h1, .scalar-app h2, .scalar-app h3, .scalar-app h4 { color: var(--text) !important; }",
-    ".scalar-app p, .scalar-app li { color: var(--text); }",
-    ".scalar-app [class*='server'] :is(h2, h3, h4, label, strong), .scalar-app [class*='auth'] :is(h2, h3, h4, label, strong), .scalar-app [class*='client'] :is(h2, h3, h4, label, strong) { font-size: 0.9rem !important; font-weight: 600 !important; line-height: 1.35; }",
-    ".scalar-app [class*='server'] :is(p, span, select), .scalar-app [class*='auth'] :is(p, span, select), .scalar-app [class*='client'] :is(p, span, select) { font-size: 0.82rem !important; line-height: 1.5; }",
-    ".scalar-app pre { border: 1px solid color-mix(in srgb, var(--line) 72%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--card) 92%, var(--bg)); overflow: auto; }",
-    /* Code blocks: smaller font */
-    ".scalar-app pre { font-size: 0.78rem !important; line-height: 1.65; }",
-    ".scalar-app :not(pre) > code { font-size: 0.82em; }",
-    "@media (max-width: 760px) {",
-    "  .scalar-app pre { font-size: 0.74rem !important; line-height: 1.78; }",
-    "}",
-    ].join("\n");
+      /* Map our design-system tokens → Scalar CSS custom properties.
+      var() references update automatically when our root tokens change.
+      We cover both .dark-mode and .light-mode so Scalar's internal
+      mode class doesn't matter — our variables always win. */
+      var scalarCss = [
+        ".scalar-app,",
+        ".scalar-app.dark-mode,",
+        ".scalar-app.light-mode {",
+        "  --scalar-font: inherit;",
+        "  --scalar-font-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;",
+        "  --scalar-color-1: var(--text);",
+        "  --scalar-color-2: color-mix(in srgb, var(--text) 72%, transparent);",
+        "  --scalar-color-3: var(--muted);",
+        "  --scalar-color-disabled: color-mix(in srgb, var(--muted) 55%, transparent);",
+        "  --scalar-background-1: var(--bg);",
+        "  --scalar-background-2: var(--card);",
+        "  --scalar-background-3: color-mix(in srgb, var(--bg) 96%, var(--text));",
+        "  --scalar-background-accent: color-mix(in srgb, var(--accent) 8%, var(--bg));",
+        "  --scalar-border-color: var(--line);",
+        "  --scalar-color-accent: var(--accent);",
+        "  --scalar-sidebar-background-1: var(--bg);",
+        "  --scalar-sidebar-color-1: var(--text);",
+        "  --scalar-sidebar-color-2: var(--muted);",
+        "  --scalar-sidebar-border-color: var(--line);",
+        "}",
+        /* Force text visibility on any element Scalar renders with hardcoded color */
+        ".scalar-app { color: var(--text); }",
+        ".scalar-app h1, .scalar-app h2, .scalar-app h3, .scalar-app h4 { color: var(--text) !important; }",
+        ".scalar-app p, .scalar-app li { color: var(--text); }",
+        ".scalar-app [class*='server'] :is(h2, h3, h4, label, strong), .scalar-app [class*='auth'] :is(h2, h3, h4, label, strong), .scalar-app [class*='client'] :is(h2, h3, h4, label, strong) { font-size: 0.9rem !important; font-weight: 600 !important; line-height: 1.35; }",
+        ".scalar-app [class*='server'] :is(p, span, select), .scalar-app [class*='auth'] :is(p, span, select), .scalar-app [class*='client'] :is(p, span, select) { font-size: 0.82rem !important; line-height: 1.5; }",
+        ".scalar-app pre { border: 1px solid color-mix(in srgb, var(--line) 72%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--card) 92%, var(--bg)); overflow: auto; }",
+        /* Code blocks: smaller font */
+        ".scalar-app pre { font-size: 0.78rem !important; line-height: 1.65; }",
+        ".scalar-app :not(pre) > code { font-size: 0.82em; }",
+        "@media (max-width: 760px) {",
+        "  .scalar-app pre { font-size: 0.74rem !important; line-height: 1.78; }",
+        "}",
+      ].join("\n");
 
-    var config = {
-    layout: "modern",
-    darkMode: readIsDark(),
-    hideDarkModeToggle: true,
-    hideDownloadButton: true,   /* We provide our own download link in the hero */
-    customCss: scalarCss,
-    };
+      var config = {
+        layout: "modern",
+        darkMode: readIsDark(),
+        hideDarkModeToggle: true,
+        hideDownloadButton: true,   /* We provide our own download link in the hero */
+        customCss: scalarCss,
+      };
 
-    var ref = document.getElementById("api-reference");
-    if (ref) ref.dataset.configuration = JSON.stringify(config);
+      var ref = document.getElementById("api-reference");
+      if (ref) ref.dataset.configuration = JSON.stringify(config);
 
-    /* Hero badges — fetch spec asynchronously */
-    fetch("openapi-baseline.json")
-    .then(function (r) { return r.json(); })
-    .then(function (spec) {
-    function toScalarTagSlug(tagName) {
-    return String(tagName || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-    }
+      /* Hero badges — fetch spec asynchronously */
+      fetch("openapi-baseline.json")
+        .then(function (r) { return r.json(); })
+        .then(function (spec) {
+          function toScalarTagSlug(tagName) {
+            return String(tagName || "")
+              .trim()
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "");
+          }
 
-    function normalizeTagHashFromLocation(tags) {
-    var m = /^#tag\/(.+)$/.exec(window.location.hash || "");
-    if (!m) return;
-    var raw = decodeURIComponent(m[1] || "");
-    if (!raw) return;
-    var rawSlug = toScalarTagSlug(raw);
-    if (!rawSlug) return;
-    var exists = tags.some(function (t) {
-    return toScalarTagSlug((t && t.name) || "") === rawSlug;
-    });
-    if (exists && m[1] !== rawSlug) {
-    window.location.replace("#tag/" + rawSlug);
-    }
-    }
+          function normalizeTagHashFromLocation(tags) {
+            var m = /^#tag\/(.+)$/.exec(window.location.hash || "");
+            if (!m) return;
+            var raw = decodeURIComponent(m[1] || "");
+            if (!raw) return;
+            var rawSlug = toScalarTagSlug(raw);
+            if (!rawSlug) return;
+            var exists = tags.some(function (t) {
+              return toScalarTagSlug((t && t.name) || "") === rawSlug;
+            });
+            if (exists && m[1] !== rawSlug) {
+              window.location.replace("#tag/" + rawSlug);
+            }
+          }
 
-    var info = spec.info || {};
-    if (info.version) {
-    var vEl = document.getElementById("js-api-version");
-    if (vEl) vEl.textContent = "v" + info.version;
-    }
-    var methods = ["get", "post", "put", "patch", "delete", "head", "options", "trace"];
-    var count = 0;
-    Object.values(spec.paths || {}).forEach(function (p) {
-    methods.forEach(function (m) { if (p[m]) count++; });
-    });
-    var cEl = document.getElementById("js-endpoint-count");
-    if (cEl) cEl.textContent = count + " endpoint" + (count !== 1 ? "s" : "");
+          var info = spec.info || {};
+          if (info.version) {
+            var vEl = document.getElementById("js-api-version");
+            if (vEl) vEl.textContent = "v" + info.version;
+          }
+          var methods = ["get", "post", "put", "patch", "delete", "head", "options", "trace"];
+          var count = 0;
+          Object.values(spec.paths || {}).forEach(function (p) {
+            methods.forEach(function (m) { if (p[m]) count++; });
+          });
+          var cEl = document.getElementById("js-endpoint-count");
+          if (cEl) cEl.textContent = count + " endpoint" + (count !== 1 ? "s" : "");
 
-    var tags = spec.tags || [];
-    var nav = document.getElementById("js-tag-chips");
-    if (nav && tags.length) {
-    /* Insert tag chips before the download link */
-    var dl = nav.querySelector("a[download]");
-    tags.forEach(function (tag) {
-    var a = document.createElement("a");
-    a.className = "docs-page-hero__chip";
-    a.textContent = tag.name;
-    a.href = "#tag/" + toScalarTagSlug(tag.name);
-    nav.insertBefore(a, dl);
-    });
-    }
-    normalizeTagHashFromLocation(tags);
-    })
-    .catch(function () { });
+          var tags = spec.tags || [];
+          var nav = document.getElementById("js-tag-chips");
+          if (nav && tags.length) {
+            /* Insert tag chips before the download link */
+            var dl = nav.querySelector("a[download]");
+            tags.forEach(function (tag) {
+              var a = document.createElement("a");
+              a.className = "docs-page-hero__chip";
+              a.textContent = tag.name;
+              a.href = "#tag/" + toScalarTagSlug(tag.name);
+              nav.insertBefore(a, dl);
+            });
+          }
+          normalizeTagHashFromLocation(tags);
+        })
+        .catch(function () { });
     })();
   </script>
 
@@ -181,37 +209,45 @@
   Runs after Scalar CDN so .scalar-app exists (or waits until it does). -->
   <script>
     (function () {
-    function syncScalarTheme(app) {
-    var isDark = document.documentElement.getAttribute("data-theme") === "dark"
-    || (!document.documentElement.hasAttribute("data-theme")
-    && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    app.classList.toggle("dark-mode", isDark);
-    app.classList.toggle("light-mode", !isDark);
-    }
+      function syncScalarTheme(app) {
+        var isDark = document.documentElement.getAttribute("data-theme") === "dark"
+          || (!document.documentElement.hasAttribute("data-theme")
+            && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        app.classList.toggle("dark-mode", isDark);
+        app.classList.toggle("light-mode", !isDark);
+      }
 
-    function onScalarReady(app) {
-    syncScalarTheme(app);
-    new MutationObserver(function () {
-    syncScalarTheme(app);
-    }).observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ["data-theme"],
-    });
-    }
+      function hideSkeleton() {
+        var sk = document.getElementById("openapi-skeleton");
+        if (sk && sk.parentNode) sk.parentNode.removeChild(sk);
+      }
 
-    var app = document.querySelector(".scalar-app");
-    if (app) {
-    onScalarReady(app);
-    } else {
-    var mo = new MutationObserver(function () {
-    var found = document.querySelector(".scalar-app");
-    if (!found) return;
-    mo.disconnect();
-    onScalarReady(found);
-    });
-    mo.observe(document.body, { childList: true, subtree: true });
-    }
+      function onScalarReady(app) {
+        hideSkeleton();
+        syncScalarTheme(app);
+        new MutationObserver(function () {
+          syncScalarTheme(app);
+        }).observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["data-theme"],
+        });
+      }
+
+      var app = document.querySelector(".scalar-app");
+      if (app) {
+        onScalarReady(app);
+      } else {
+        var mo = new MutationObserver(function () {
+          var found = document.querySelector(".scalar-app");
+          if (!found) return;
+          mo.disconnect();
+          onScalarReady(found);
+        });
+        mo.observe(document.body, { childList: true, subtree: true });
+      }
     })();
   </script>
 
-</body></html>
+</body>
+
+</html>
