@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Sample multi-file deployment manifests, the env-to-manifest render script, and the matching Make targets. Documentation and ADR 0015 now describe the Docker image only; see `docs/developer/0009-docker-image-and-container.html`.
 
+### Security
+
+- Bumped `Mako` from `1.3.10` to `1.3.12` in [`requirements.txt`](requirements.txt) to clear [CVE-2026-44307](https://nvd.nist.gov/vuln/detail/CVE-2026-44307): on Windows, a URI using backslash traversal (e.g. `\..\..\secret.txt`) bypassed the directory-traversal check in `Template.__init__` and the `posixpath`-based normalization in `TemplateLookup.get_template()`, allowing reads of files outside the configured template directory. Mako is a transitive dependency of `alembic` in this project (no in-repo template lookups), so production exposure is limited; the bump unblocks `make deps-audit` / `make verify` in CI.
+
 ## [1.1.1] — 2026-04-17
 
 ### Added
