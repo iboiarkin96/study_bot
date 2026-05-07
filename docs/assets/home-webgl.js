@@ -17,6 +17,7 @@
 (function () {
   const TARGET_FPS_FLOOR = 42;
   const FPS_GUARD_MS = 2000;
+  const FPS_WARMUP_MS = 400;
   const MIN_VIEWPORT_PX = 1025;
 
   // Public init — orchestrator (home-landing.js) calls this after intro is done.
@@ -92,6 +93,7 @@
     let measureStart = 0;
     let guardElapsed = 0;
     let guardActive = true;
+    let warmupStart = 0;
 
     function clampDpr() {
       return Math.min(window.devicePixelRatio || 1, 1.5);
@@ -204,17 +206,30 @@
       gl.drawArrays(gl.TRIANGLES, 0, 3);
 
       // ── FPS guard ────────────────────────────────────────────────────
+      // Skip the first FPS_WARMUP_MS so shader-compile / first-paint jank
+      // doesn't drag the average below the floor. Frames during a long dt
+      // (≥100ms — tab was hidden / window unfocused / browser throttled rAF)
+      // are not counted, and the window restarts: otherwise resuming after
+      // a tab switch yields a tiny `frames` over a huge `guardElapsed` and
+      // trips fps-guard immediately.
       if (guardActive) {
-        frames++;
-        if (!measureStart) measureStart = ts;
-        guardElapsed = ts - measureStart;
-        if (guardElapsed > 1000) {
-          const fps = (frames * 1000) / guardElapsed;
-          if (fps < TARGET_FPS_FLOOR && guardElapsed > FPS_GUARD_MS) {
-            tearDown("fps-guard");
-            return;
-          }
-          if (guardElapsed > FPS_GUARD_MS && fps >= TARGET_FPS_FLOOR) {
+        if (!warmupStart) warmupStart = ts;
+        const sinceWarmup = ts - warmupStart;
+        const longGap = dt >= 0.1;
+        if (longGap || sinceWarmup < FPS_WARMUP_MS) {
+          measureStart = 0;
+          frames = 0;
+          guardElapsed = 0;
+        } else {
+          frames++;
+          if (!measureStart) measureStart = ts;
+          guardElapsed = ts - measureStart;
+          if (guardElapsed > FPS_GUARD_MS) {
+            const fps = (frames * 1000) / guardElapsed;
+            if (fps < TARGET_FPS_FLOOR) {
+              tearDown("fps-guard");
+              return;
+            }
             guardActive = false; // passed: stop counting forever
           }
         }
@@ -227,6 +242,15 @@
       if (running || disposed) return;
       running = true;
       lastTs = 0;
+      // Reset FPS measurement so a stop/start cycle (tab hidden → visible)
+      // doesn't combine pre-pause frames with post-resume wall time and
+      // synthesise a near-zero FPS that trips the guard.
+      if (guardActive) {
+        warmupStart = 0;
+        measureStart = 0;
+        frames = 0;
+        guardElapsed = 0;
+      }
       if (!rafId) rafId = window.requestAnimationFrame(tick);
     }
 
