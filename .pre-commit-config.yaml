@@ -56,6 +56,12 @@ repos:
         language: system
         files: ^docs/(internal/front/|assets/internal-sidebar\.js)
         pass_filenames: false
+      - id: check-adr-rfc-links
+        name: check ADR/RFC cross-references and anchors
+        entry: .venv/bin/python scripts/check_adr_rfc_links.py --quiet
+        language: system
+        files: ^docs/(adr|rfc)/.*\.html$
+        pass_filenames: false
       - id: sync-pr-body-on-push
         name: sync PR body to GitHub
         entry: scripts/sync_pr_body.sh

@@ -628,6 +628,12 @@
             { label: "REST API 2026-04-14", path: "audit/api/2026-04-14-rest-api-assessment.html" },
           ],
         },
+        {
+          label: "Bug audit",
+          children: [
+            { label: "Bug audit 2026-05-07", path: "audit/bugs/2026-05-07-portal-bug-audit.html" },
+          ],
+        },
       ],
     },
 

@@ -4821,6 +4821,105 @@ body.docs-reading-mode main.container li {
   }
 }
 
+/* docs/openapi/index.html — placeholder while the Scalar CDN bundle mounts */
+.openapi-skeleton {
+  margin: 18px var(--container-pad, 24px) 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  min-height: 480px;
+}
+
+.openapi-skeleton .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.openapi-skeleton__grid {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.openapi-skeleton__sidebar {
+  margin: 0;
+}
+
+.openapi-skeleton__main {
+  display: grid;
+  gap: 12px;
+}
+
+.openapi-skeleton__bar,
+.openapi-skeleton__block {
+  border-radius: 8px;
+  background: linear-gradient(90deg,
+      color-mix(in srgb, var(--card, #fff) 80%, var(--line, #dbe3ef)) 20%,
+      color-mix(in srgb, var(--card, #fff) 92%, var(--line, #dbe3ef)) 55%,
+      color-mix(in srgb, var(--card, #fff) 80%, var(--line, #dbe3ef)) 100%);
+  background-size: 220% 100%;
+  animation: docs-skeleton-sweep 1.2s linear infinite;
+}
+
+.openapi-skeleton__bar {
+  height: 14px;
+}
+
+.openapi-skeleton__bar--title {
+  height: 22px;
+  width: 45%;
+}
+
+.openapi-skeleton__bar--lead {
+  width: 70%;
+}
+
+.openapi-skeleton__bar--short {
+  width: 35%;
+}
+
+.openapi-skeleton__block {
+  height: 120px;
+  border-radius: 10px;
+}
+
+.openapi-skeleton__block--tall {
+  height: 180px;
+}
+
+@media (max-width: 760px) {
+  .openapi-skeleton {
+    margin-left: max(10px, env(safe-area-inset-left, 0px));
+    margin-right: max(10px, env(safe-area-inset-right, 0px));
+  }
+
+  .openapi-skeleton__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .openapi-skeleton__sidebar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .openapi-skeleton__bar,
+  .openapi-skeleton__block,
+  .portal-skeleton-grid>span,
+  .portal-skeleton-list>li {
+    animation: none;
+  }
+}
+
 @media (max-width: 760px) {
   .docs-page-meta--premium {
     gap: 6px 10px;

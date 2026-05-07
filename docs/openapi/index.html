@@ -43,6 +43,32 @@
           </nav>
         </section>
 
+        <!-- Skeleton placeholder shown while the Scalar CDN bundle downloads and mounts.
+        Removed by the theme-sync script below as soon as .scalar-app appears in the DOM. -->
+        <div class="openapi-skeleton" id="openapi-skeleton" role="status" aria-live="polite">
+          <span class="visually-hidden">Loading interactive OpenAPI reference...</span>
+          <div class="openapi-skeleton__grid" aria-hidden="true">
+            <ul class="openapi-skeleton__sidebar portal-skeleton-list">
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+            <div class="openapi-skeleton__main">
+              <div class="openapi-skeleton__bar openapi-skeleton__bar--title"></div>
+              <div class="openapi-skeleton__bar openapi-skeleton__bar--lead"></div>
+              <div class="openapi-skeleton__block"></div>
+              <div class="openapi-skeleton__bar"></div>
+              <div class="openapi-skeleton__bar openapi-skeleton__bar--short"></div>
+              <div class="openapi-skeleton__block openapi-skeleton__block--tall"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Scalar mounts here. The script tag is the mount point — Scalar replaces it
         with its rendered UI when the CDN bundle loads at the bottom of body. -->
         <script id="api-reference" data-url="openapi-baseline.json"></script>
@@ -189,7 +215,13 @@
     app.classList.toggle("light-mode", !isDark);
     }
 
+    function hideSkeleton() {
+    var sk = document.getElementById("openapi-skeleton");
+    if (sk && sk.parentNode) sk.parentNode.removeChild(sk);
+    }
+
     function onScalarReady(app) {
+    hideSkeleton();
     syncScalarTheme(app);
     new MutationObserver(function () {
     syncScalarTheme(app);
