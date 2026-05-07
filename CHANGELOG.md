@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Documentation artifacts:** refreshed generated docs outputs (`docs/audit/README.html`, `docs/audit/bugs/2026-05-07-portal-bug-audit.html`, `docs/openapi/index.html`, `docs/assets/docs-portal-data.js`, `docs/assets/search-index.json`) after running the full docs/verify pipeline so repository state matches formatter/repair/indexer outputs and CI checks remain reproducible.
+
 - **Documentation:** internal frontend docs under `docs/internal/front/` were reorganized into foundations, contracts, components, screens, patterns, and `_shared` authoring folders; added typed-spec templates, [`scripts/front_spec_lint.py`](scripts/front_spec_lint.py), and wired it into `make docs-spec-check`. Details: [`docs/CHANGELOG.md`](docs/CHANGELOG.md#2026-05-06).
 
 - **Documentation:** unified hand-authored inline hints on `data-tooltip` (shared `docs.css` rules), added SDLC RACI matrix under `docs/internal/manager/`, and a normative frontend guide for tooltips at `docs/internal/front/components/tooltips.html`. Details: [`docs/CHANGELOG.md`](docs/CHANGELOG.md#2026-04-24).
