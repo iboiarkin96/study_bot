@@ -11,11 +11,16 @@
      • viewport ≤ 1024px (desktop-only — tablet/phone don't get the field;
        its rectangular bounds and tinting framed the H1 as a card)
      • no WebGL2 context
-     • avg FPS < 42 for 2s (teardown after first second of measurement)
+     • avg FPS < 30 for 2s (after a 400ms warmup)
 */
 
 (function () {
-  const TARGET_FPS_FLOOR = 42;
+  // 30 fps tolerates browsers that throttle rAF for power savings (Yandex
+  // Browser's "energy efficiency" mode and Safari Low Power both cap at
+  // ~30Hz) while still falling back when the device genuinely can't render
+  // the shader. Was 42; lowered after Yandex Browser repeatedly tripped the
+  // guard on machines where Chromium runs the same shader at 60 fps.
+  const TARGET_FPS_FLOOR = 30;
   const FPS_GUARD_MS = 2000;
   const FPS_WARMUP_MS = 400;
   const MIN_VIEWPORT_PX = 1025;
@@ -227,6 +232,15 @@
           if (guardElapsed > FPS_GUARD_MS) {
             const fps = (frames * 1000) / guardElapsed;
             if (fps < TARGET_FPS_FLOOR) {
+              // Diagnostic: surface the actual measured rate so we can tell
+              // whether a browser is throttling rAF (typically 30Hz) versus
+              // genuinely failing to render (≤10 fps). Silent on the page —
+              // console only.
+              // eslint-disable-next-line no-console
+              console.info(
+                "[home-webgl] fps-guard tripped:",
+                fps.toFixed(1), "fps over", Math.round(guardElapsed), "ms"
+              );
               tearDown("fps-guard");
               return;
             }
